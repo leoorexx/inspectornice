@@ -33,7 +33,10 @@ const C=[...cells.values()];
 
 // ── Grün, Bäume, Versorgung (diag-Bundle aus OSM) ──
 const dg=L(`diag_${city}.json`);
-for(const t of dg.trees){const k=key(t[0],t[1]);const c=cells.get(k);if(c)c.trees++;}
+// Bäume: amtliches Baumregister (Gemeente Utrecht, 162k) mit geschätzter Kronenfläche — dieselbe Formel wie in der App
+const OT=JSON.parse(fs.readFileSync(path.join(__dirname,'..','public/data/official',`trees_${city}.json`),'utf8'));
+const Y=new Date().getFullYear(),crown=pj=>{const D=(pj>1800&&pj<=Y)?Math.min(12,1+0.35*(Y-pj)):8;return Math.PI*D*D/4;};
+for(const t of OT.t){const c=cells.get(key(t[0],t[1]));if(c){c.trees++;c.crown=(c.crown||0)+crown(t[2]);}}
 const polyArea=p=>{let a=0;for(let i=0;i<p.length;i++){const j=(i+1)%p.length;a+=p[i][1]*mLon*p[j][0]*mLat-p[j][1]*mLon*p[i][0]*mLat;}return Math.abs(a/2);};
 const greens=dg.green.filter(p=>p.length>2&&polyArea(p)>=5000)   // WHO: zugängliche Grünfläche ≥ 0,5 ha
   .map(p=>[p.reduce((s,x)=>s+x[0],0)/p.length,p.reduce((s,x)=>s+x[1],0)/p.length]);
@@ -63,12 +66,12 @@ for(const c of C){
   c.heat=c.lstA/c.area;
   c.dens=Math.min(1,c.area/(CELL*CELL));                          // überbaute Fläche = Versiegelungs-Näherung
   c.greenD=nearest(ct,greens);
-  c.treeHa=c.trees/(CELL*CELL/10000);
+  c.canopy=Math.min(1,(c.crown||0)/(CELL*CELL));                  // geschätztes Kronendach (3-30-300: Ziel 30 %)
   let nz=0;for(const r of roads){const d=dist(ct,r);if(d<300)nz+=r[2]*(1-d/300);}c.noise=nz;
   c.access=(nearest(ct,dg.shops)+nearest(ct,dg.schools)+nearest(ct,dg.health))/3;
   c.co2=c.co2A/c.area;
   c.water=c.flood/c.n;
-  const d=c.wijk&&WD[c.wijk];c.socRaw=d?[d.sgb2,d.kinderarmut,100-d.wb]:null;
+  const d=c.wijk&&WD[c.wijk];c.socRaw=d?[d.sgb2,d.kinderarmut,-d.einkommen]:null;   // CBS 2024: Bijstand, Armut, Einkommen (Wahlbeteiligung nicht durchgängig belegt)
 }
 const keep=C.filter(c=>c.wijk&&c.socRaw);
 // Perzentil-Rang innerhalb der Stadt (0–1) — macht Merkmale vergleichbar und robust gegen Ausreißer
@@ -77,10 +80,10 @@ const pct=(arr,get)=>{const v=arr.map(get),s=[...v].sort((a,b)=>a-b),n=s.length;
   const lb=x=>{let lo=0,hi=n;while(lo<hi){const m=(lo+hi)>>1;if(s[m]<x)lo=m+1;else hi=m;}return lo;};
   const ub=x=>{let lo=0,hi=n;while(lo<hi){const m=(lo+hi)>>1;if(s[m]<=x)lo=m+1;else hi=m;}return lo;};
   return v.map(x=>((lb(x)+ub(x)-1)/2)/(n-1||1));};
-const P={heat:pct(keep,c=>c.heat),greenD:pct(keep,c=>c.greenD),tree:pct(keep,c=>c.treeHa),dens:pct(keep,c=>c.dens),
+const P={heat:pct(keep,c=>c.heat),greenD:pct(keep,c=>c.greenD),tree:pct(keep,c=>c.canopy),dens:pct(keep,c=>c.dens),
   noise:pct(keep,c=>c.noise),access:pct(keep,c=>c.access),co2:pct(keep,c=>c.co2),water:pct(keep,c=>c.water)};
 const wn=Object.keys(WD).filter(n=>WD[n].sgb2!=null),wp={};
-const wP=[0,1,2].map(j=>pct(wn,n=>[WD[n].sgb2,WD[n].kinderarmut,100-WD[n].wb][j]));
+const wP=[0,1,2].map(j=>pct(wn,n=>[WD[n].sgb2,WD[n].kinderarmut,-WD[n].einkommen][j]));
 wn.forEach((n,i)=>wp[n]=(wP[0][i]+wP[1][i]+wP[2][i])/3);
 const DIMS=['heat','green','dens','noise','access','co2','social','water'];
 keep.forEach((c,i)=>{c.v=[P.heat[i],(P.greenD[i]+(1-P.tree[i]))/2,P.dens[i],P.noise[i],P.access[i],P.co2[i],wp[c.wijk],P.water[i]];});
@@ -117,7 +120,7 @@ const clusters=cent.map((c,j)=>{
 const remap={};clusters.forEach((c,i)=>{remap[c.id]=i;c.id=i;});
 
 const out={city,cell:CELL,dLat:+dLat.toFixed(7),dLon:+dLon.toFixed(7),dims:DIMS,
-  source:'PDOK BAG (Gebäude, LST, CO₂, Gewässernähe) · OpenStreetMap (Grün, Bäume, Versorgung, Hauptstraßen) · CBS Kerncijfers 2023 (Wijk-Ebene)',
+  source:'PDOK BAG (Gebäude, LST, CO₂, Gewässernähe) · Gemeente Utrecht Bomenkaart (162.653 Bäume) · OpenStreetMap (Grünflächen, Versorgung, Hauptstraßen) · CBS Kerncijfers 2024 (Wijk-Ebene)',
   built:new Date().toISOString().slice(0,10),
   clusters,
   cells:keep.map((c,i)=>({c:[+c.ct[0].toFixed(5),+c.ct[1].toFixed(5)],v:c.v.map(x=>Math.round(x*100)),e:Math.round(c.env*100),b:c.biv,t:remap[lab[i]],w:c.wijk,n:c.n}))};
