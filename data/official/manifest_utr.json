@@ -1,0 +1,39 @@
+{
+ "city": "utr",
+ "fetched": "2026-10-14",
+ "sources": {
+  "cbs": {
+   "title": "CBS — Kerncijfers wijken en buurten 2024",
+   "url": "https://opendata.cbs.nl/statline/#/CBS/nl/dataset/85984NED/table",
+   "api": "https://opendata.cbs.nl/ODataApi/odata/85984NED",
+   "license": "CC-BY 4.0",
+   "update": "vierteljährlich (CBS)",
+   "table": "85984NED"
+  },
+  "furniture": {
+   "title": "Gemeente Utrecht — Straatmeubilair (BGT)",
+   "url": "https://data.overheid.nl/dataset/utrecht-straatmeubilair",
+   "api": "https://geodata.utrecht.nl/geoserver/UtrechtOpen/wfs",
+   "license": "CC-BY-SA 4.0 (Dienst) / CC-0 (Datensatz)",
+   "update": "täglich",
+   "counts": {
+    "bank": 7470,
+    "picknicktafel": 663,
+    "speelvoorziening": 8341,
+    "fontein": 44
+   }
+  },
+  "trees": {
+   "title": "Gemeente Utrecht — Bomenkaart 2026",
+   "url": "https://data.overheid.nl/dataset/utrecht-bomen",
+   "api": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/bomenkaart_2026/FeatureServer",
+   "license": "CC-BY-SA 4.0 (Dienst) / CC-0 (Datensatz)",
+   "update": "vierteljährlich",
+   "counts": {
+    "park_straat": 137135,
+    "bosplantsoen": 25518,
+    "total": 162653
+   }
+  }
+ }
+}

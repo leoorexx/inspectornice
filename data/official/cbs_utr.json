@@ -1,0 +1,133 @@
+{
+ "meta": {
+  "title": "CBS — Kerncijfers wijken en buurten 2024",
+  "url": "https://opendata.cbs.nl/statline/#/CBS/nl/dataset/85984NED/table",
+  "api": "https://opendata.cbs.nl/ODataApi/odata/85984NED",
+  "license": "CC-BY 4.0",
+  "update": "vierteljährlich (CBS)",
+  "table": "85984NED",
+  "fetched": "2026-10-14",
+  "definitions": {
+   "pop": "Aantal inwoners (AantalInwoners_5)",
+   "bijstand": "Personen mit Bijstand (Participatiewet) ÷ Einwohner, % (PersonenPerSoortUitkeringBijstand_87)",
+   "armoede": "Personen in Haushalten unter der Armutsgrenze, % (PersonenInArmoede_81)",
+   "inkomen": "Ø persönliches Einkommen je Einwohner in Privathaushalten, € (GemiddeldInkomenPerInwoner_78)",
+   "ww": "Personen mit WW-Leistung (Arbeitslosengeld) ÷ Einwohner, % — keine Erwerbslosenquote (PersonenPerSoortUitkeringWW_89)",
+   "hbowo": "Anteil hbo/wo am höchsten Bildungsabschluss, 15–75 J., % (HboWo_69)",
+   "herkunft": "Herkunft Europa (ohne NL) + außerhalb Europas ÷ Einwohner, % (EuropaExclusiefNederland_18 + BuitenEuropa_19)",
+   "participatie": "Nettoarbeidsparticipatie, % (Nettoarbeidsparticipatie_71)"
+  }
+ },
+ "wijken": {
+  "West": {
+   "code": "WK034401",
+   "pop": 29710,
+   "bijstand": 2.4,
+   "armoede": 4.3,
+   "inkomen": 41000,
+   "ww": 1,
+   "hbowo": 63.3,
+   "herkunft": 36.1,
+   "participatie": 79
+  },
+  "Noordwest": {
+   "code": "WK034402",
+   "pop": 45220,
+   "bijstand": 3.5,
+   "armoede": 4.8,
+   "inkomen": 36400,
+   "ww": 1,
+   "hbowo": 54.7,
+   "herkunft": 39,
+   "participatie": 75
+  },
+  "Overvecht": {
+   "code": "WK034403",
+   "pop": 35255,
+   "bijstand": 7.8,
+   "armoede": 6.6,
+   "inkomen": 26200,
+   "ww": 0.8,
+   "hbowo": 31.9,
+   "herkunft": 63.4,
+   "participatie": 62
+  },
+  "Noordoost": {
+   "code": "WK034404",
+   "pop": 40600,
+   "bijstand": 1,
+   "armoede": 2.9,
+   "inkomen": 44500,
+   "ww": 0.8,
+   "hbowo": 68.5,
+   "herkunft": 27,
+   "participatie": 78
+  },
+  "Oost": {
+   "code": "WK034405",
+   "pop": 33510,
+   "bijstand": 1.4,
+   "armoede": 4.9,
+   "inkomen": 41200,
+   "ww": 0.8,
+   "hbowo": 66.9,
+   "herkunft": 32.4,
+   "participatie": 71
+  },
+  "Binnenstad": {
+   "code": "WK034406",
+   "pop": 20190,
+   "bijstand": 1.5,
+   "armoede": 5,
+   "inkomen": 46400,
+   "ww": 1,
+   "hbowo": 67.6,
+   "herkunft": 36.4,
+   "participatie": 79
+  },
+  "Zuid": {
+   "code": "WK034407",
+   "pop": 28395,
+   "bijstand": 4.2,
+   "armoede": 4.3,
+   "inkomen": 34900,
+   "ww": 0.9,
+   "hbowo": 57.7,
+   "herkunft": 37.8,
+   "participatie": 73
+  },
+  "Zuidwest": {
+   "code": "WK034408",
+   "pop": 40830,
+   "bijstand": 4.6,
+   "armoede": 5.5,
+   "inkomen": 34600,
+   "ww": 0.9,
+   "hbowo": 49.6,
+   "herkunft": 54.4,
+   "participatie": 73
+  },
+  "Leidsche Rijn": {
+   "code": "WK034409",
+   "pop": 49310,
+   "bijstand": 1.9,
+   "armoede": 2.6,
+   "inkomen": 41400,
+   "ww": 1,
+   "hbowo": 54.7,
+   "herkunft": 46.2,
+   "participatie": 80
+  },
+  "Vleuten-De Meern": {
+   "code": "WK034410",
+   "pop": 51195,
+   "bijstand": 1,
+   "armoede": 1.6,
+   "inkomen": 40200,
+   "ww": 0.8,
+   "hbowo": 45.9,
+   "herkunft": 29.3,
+   "participatie": 79
+  }
+ }
+}

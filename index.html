@@ -1109,7 +1109,7 @@ body[data-cc="de"]:not(.dark):not(.plan-on):not(.bm-sat) .leaflet-tile-pane{filt
   <div style="font-size:9px;color:var(--muted);margin-bottom:8px;padding:5px 7px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
     <span data-i18n="hint_europe">Funktioniert in jeder Stadt: hinzoomen (ab Zoom 14), Layer einschalten. Lädt beim Verschieben automatisch nach.</span>
   </div>
-  <div tabindex="0" role="button" onkeydown="if(event.key==='Enter')this.click()" class="lrow" onclick="toggleLayer('osm_trees')">
+  <div tabindex="0" role="button" onkeydown="if(event.key==='Enter')this.click()" class="lrow ffm-only" onclick="toggleLayer('osm_trees')">
     <button class="ltoggle" id="tog-osm_trees"></button>
     <span class="lname"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3 8 9h2l-4 6h12l-4-6h2l-4-6Z"/><path d="M12 15v6"/></svg> <span data-i18n="lay_osm_trees">Bäume (live)</span></span>
     <span class="lstatus" id="st-osm_trees"></span>
@@ -1119,7 +1119,7 @@ body[data-cc="de"]:not(.dark):not(.plan-on):not(.bm-sat) .leaflet-tile-pane{filt
     <span class="lname"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3s5 5.5 5 9.5a5 5 0 0 1-10 0C7 8.5 12 3 12 3Z"/><path d="M8 21h8"/></svg> <span data-i18n="lay_osm_drink">Trinkbrunnen (live)</span></span>
     <span class="lstatus" id="st-osm_drinking"></span>
   </div>
-  <div tabindex="0" role="button" onkeydown="if(event.key==='Enter')this.click()" class="lrow" onclick="toggleLayer('osm_benches')">
+  <div tabindex="0" role="button" onkeydown="if(event.key==='Enter')this.click()" class="lrow ffm-only" onclick="toggleLayer('osm_benches')">
     <button class="ltoggle" id="tog-osm_benches"></button>
     <span class="lname"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M4 9h16M5 9v8M19 9v8M3 13.5h18"/></svg> <span data-i18n="lay_osm_bench">Bänke (live)</span></span>
     <span class="lstatus" id="st-osm_benches"></span>
@@ -1346,7 +1346,7 @@ function setLang(l){ try{document.documentElement.lang=l;}catch(e){} try{setTime
 
 
 const TR={"Straßenbaum-Programm": {"en": "Street tree programme", "nl": "Straatbomenprogramma"}, "Fassadenbegrünung": {"en": "Facade greening", "nl": "Gevelgroen"}, "Schwammstadt-Entsiegelung": {"en": "Sponge-city de-sealing", "nl": "Sponsstad-ontharding"}, "Gründächer Pflichtgebiete": {"en": "Mandatory green roofs", "nl": "Verplichte groendaken"}, "Urbaner Wald (>0,5 ha)": {"en": "Urban forest (>0.5 ha)", "nl": "Stadsbos (>0,5 ha)"}, "Kühlinseln Hitzeaktionsplan": {"en": "Cool islands heat plan", "nl": "Koele eilanden hitteplan"}, "Tempo 30 Zonenerweiterung": {"en": "30 km/h zone extension", "nl": "Uitbreiding 30 km/u-zone"}, "ÖPNV-Takt Verdopplung": {"en": "Doubling transit frequency", "nl": "Verdubbeling OV-frequentie"}, "Schulstraßen (autofrei)": {"en": "School streets (car-free)", "nl": "Schoolstraten (autovrij)"}, "Radschnellweg": {"en": "Cycle highway", "nl": "Snelfietsroute"}, "Community Place (Mehrzweck)": {"en": "Community place (multi-use)", "nl": "Buurthuis (multifunctioneel)"}, "Mehrsprachiges Beratungszentrum": {"en": "Multilingual advice centre", "nl": "Meertalig adviescentrum"}, "Jugendtreff mit Digitalausstattung": {"en": "Youth centre with digital kit", "nl": "Jongerencentrum met digitale uitrusting"}, "Energie-Gemeinschaft (EEG 2023)": {"en": "Energy community (EEG 2023)", "nl": "Energiegemeenschap (EEG 2023)"}, "Luftqualitätssensornetz": {"en": "Air-quality sensor network", "nl": "Luchtkwaliteit-sensornetwerk"}, "Sonnensegel & Verschattungsanlagen": {"en": "Shade sails & shading", "nl": "Schaduwdoeken & beschaduwing"}, "Entsiegelung Innenhöfe & Blockinnenbereiche": {"en": "De-sealing courtyards & blocks", "nl": "Ontharding binnenhoven & blokken"}, "Verdunstungskühlung & öffentliche Trinkbrunnen": {"en": "Evaporative cooling & drinking fountains", "nl": "Verdampingskoeling & drinkfonteinen"}, "Helle Oberflächenbeläge (Cool Pavements)": {"en": "Light surfaces (cool pavements)", "nl": "Lichte bestrating (cool pavements)"}, "Klimatisierte Kühlräume — öffentlicher Hitzeaktionsplan": {"en": "Air-conditioned cool refuges — public heat plan", "nl": "Gekoelde koele plekken — openbaar hitteplan"}, "Kleinklimatische Straßenzug-Analyse (Monitoring)": {"en": "Microclimate street analysis (monitoring)", "nl": "Microklimaat-straatanalyse (monitoring)"}, "Kommunaler Wohnraum-Fonds": {"en": "Municipal housing fund", "nl": "Gemeentelijk woningfonds"}, "Genossenschaftliches Wohnen fördern": {"en": "Promote cooperative housing", "nl": "Coöperatief wonen bevorderen"}, "Bürgerbudget (Participatory Budgeting)": {"en": "Participatory budgeting", "nl": "Burgerbegroting"}, "Digitale Beteiligungsplattform + Quartiersräte": {"en": "Digital participation platform + district councils", "nl": "Digitaal participatieplatform + wijkraden"}, "Starkregen-Frühwarnsystem": {"en": "Heavy-rain early warning", "nl": "Vroegwaarschuwing zware regen"}, "Resiliente Quartiers-Infrastruktur": {"en": "Resilient district infrastructure", "nl": "Veerkrachtige wijkinfrastructuur"}, "Biotopverbund & Wildwiesen": {"en": "Habitat network & wildflower meadows", "nl": "Biotoopverbinding & bloemenweiden"}, "Superblock / Verkehrsberuhigtes Quartier": {"en": "Superblock / traffic-calmed district", "nl": "Superblok / verkeersluwe wijk"}, "50 Straßenbäume inkl. Pflanzgrube, Bewässerung, 5-Jahres-Pflege.": {"en": "50 street trees incl. planting pit, irrigation, 5-year care.", "nl": "50 straatbomen incl. plantgat, irrigatie, 5 jaar onderhoud."}, "Kletterpflanzen oder Modulbegrünung für 500m² Fassadenfläche.": {"en": "Climbing plants or modular greening for 500 m² of facade.", "nl": "Klimplanten of modulair groen voor 500 m² gevel."}, "Versickerungsmulden, Retentionsflächen, Zisternen für 2.000m² Entsiegelung.": {"en": "Swales, retention areas, cisterns for 2,000 m² de-sealing.", "nl": "Wadi's, retentie, cisternen voor 2.000 m² ontharding."}, "Begrünte Dächer auf 1.000m² in Risikogebieten inkl. Substrat und Drainage.": {"en": "Green roofs on 1,000 m² in risk areas incl. substrate and drainage.", "nl": "Groendaken op 1.000 m² in risicogebieden incl. substraat en drainage."}, "Anlage eines zusammenhängenden urbanen Waldstücks als Klimaschutzzelle.": {"en": "A contiguous urban forest patch as a climate-protection cell.", "nl": "Een aaneengesloten stadsbos als klimaatcel."}, "Trinkbrunnen, Sprühnebler, beschattete Sitzflächen je Quartier.": {"en": "Drinking fountains, misters, shaded seating per district.", "nl": "Drinkfonteinen, vernevelaars, beschaduwde zitplekken per wijk."}, "Beschilderung + Bodenmarkierungen für Tempo-30-Zonen (pro Straßenzug).": {"en": "Signage + road markings for 30 km/h zones (per street).", "nl": "Bebording + markering voor 30 km/u-zones (per straat)."}, "10-Minuten-Takt in unterversorgten Stadtteilen (Betriebskosten/Jahr).": {"en": "10-minute frequency in underserved districts (operating cost/year).", "nl": "10-minutenfrequentie in onderbediende wijken (exploitatiekosten/jaar)."}, "Temporäre Sperrung von Schulumgebungen für den Autoverkehr während Schulzeiten.": {"en": "Temporary car closure around schools during school hours.", "nl": "Tijdelijke autoafsluiting rond scholen tijdens schooltijden."}, "Separater Radschnellweg zwischen Stadtteilen (pro km).": {"en": "Separate cycle highway between districts (per km).", "nl": "Aparte snelfietsroute tussen wijken (per km)."}, "Multifunktionaler Gemeinschaftsraum für alle Altersgruppen und Kulturen.": {"en": "Multi-use community space for all ages and cultures.", "nl": "Multifunctionele ontmoetingsruimte voor alle leeftijden en culturen."}, "Muttersprach-Beratung für Migranten: Recht, Soziales, Gesundheit, Wohnen.": {"en": "Native-language advice for migrants: law, social, health, housing.", "nl": "Advies in eigen taal voor migranten: recht, sociaal, gezondheid, wonen."}, "Offener Jugendtreff mit Computern, WLAN, Gaming-Ecke und Betreuung.": {"en": "Open youth centre with computers, Wi-Fi, gaming corner and staff.", "nl": "Open jongerencentrum met computers, wifi, gaminghoek en begeleiding."}, "Bürgerliche Energiegemeinschaft für gemeinsame PV-Nutzung (500 kWp Anlage).": {"en": "Citizen energy community for shared PV (500 kWp system).", "nl": "Burger-energiegemeenschap voor gedeelde PV (500 kWp)."}, "50 Mikroklimasensoren (PM2.5, NO2, Temperatur) im Stadtteil.": {"en": "50 microclimate sensors (PM2.5, NO2, temperature) in the district.", "nl": "50 microklimaatsensoren (PM2.5, NO2, temperatuur) in de wijk."}, "10 Sonnensegel-Anlagen an Hitzepunkten: Spielplätze, Schulhöfe, Bushaltestellen, öffentliche Sitzflächen.": {"en": "10 shade-sail installations at heat spots: playgrounds, schoolyards, bus stops, public seating.", "nl": "10 schaduwdoek-installaties op hittepunten: speelplaatsen, schoolpleinen, bushaltes, openbare zitplekken."}, "Entfernung versiegelter Beläge in Blockinnenbereichen (2.000 m²) inkl. Substrat, Drainage und Bepflanzung.": {"en": "Removing sealed surfaces in courtyards (2,000 m²) incl. substrate, drainage and planting.", "nl": "Verwijderen verharding in binnenhoven (2.000 m²) incl. substraat, drainage en beplanting."}, "Sprühnebelanlagen an 3 Hitzepunkten + 15 öffentliche Trinkbrunnen im Straßenraum.": {"en": "Misting at 3 heat spots + 15 public drinking fountains in the street.", "nl": "Vernevelaars op 3 hittepunten + 15 openbare drinkfonteinen in de straat."}, "Austausch dunkler Asphaltbeläge durch helle, reflektierende Pflastersteine auf 1.000 m² hoch frequentierter Flächen.": {"en": "Replacing dark asphalt with light, reflective paving on 1,000 m² of busy areas.", "nl": "Donker asfalt vervangen door lichte, reflecterende bestrating op 1.000 m² drukke plekken."}, "5 öffentlich zugängliche klimatisierte Gebäude (Bibliotheken, Bürgerämter) als Kühlorte ausweisen, ausstatten und kommunizieren.": {"en": "Designate, equip and communicate 5 public air-conditioned buildings (libraries, offices) as cool refuges.", "nl": "5 openbare gekoelde gebouwen (bibliotheken, loketten) aanwijzen, inrichten en communiceren als koele plekken."}, "Hochauflösende Temperatur- und NDVI-Kartierung auf Straßenzugsebene als Planungsgrundlage für alle Hitzeschutzmaßnahmen.": {"en": "High-resolution temperature and NDVI mapping at street level as a basis for all heat measures.", "nl": "Hoge-resolutie temperatuur- en NDVI-kartering op straatniveau als basis voor alle hittemaatregelen."}, "Ankauf + Sanierung von Bestandswohnungen für dauerhafte Sozialbindung (Quartiersfonds-Modell).": {"en": "Buying + renovating existing flats for lasting social use (district-fund model).", "nl": "Aankoop + renovatie van bestaande woningen voor blijvende sociale binding (wijkfonds)."}, "Beratungsstelle + Erbbaurecht-Vergabe für Wohnprojekte und Genossenschaften.": {"en": "Advice centre + leasehold allocation for housing projects and cooperatives.", "nl": "Adviespunt + erfpachtuitgifte voor woonprojecten en coöperaties."}, "Quartiersbudget über das Bewohner per Abstimmung selbst entscheiden — 200k€ Projektmittel + 50k€ Prozess.": {"en": "District budget residents decide by vote — €200k project funds + €50k process.", "nl": "Wijkbudget waar bewoners zelf over stemmen — €200k projecten + €50k proces."}, "Mehrsprachige Online-Beteiligung (DE/EN/NL/TR/AR) + moderierte Quartiersräte je Stadtteil.": {"en": "Multilingual online participation (DE/EN/NL/TR/AR) + moderated district councils.", "nl": "Meertalige online participatie (DE/EN/NL/TR/AR) + gemodereerde wijkraden."}, "Pegelsensorik an Risikopunkten + automatische Warnung (Warn-App, Sirenen, digitale Tafeln).": {"en": "Water-level sensors at risk points + automatic alerts (app, sirens, digital signs).", "nl": "Peilsensoren op risicopunten + automatische waarschuwing (app, sirenes, digitale borden)."}, "Notstrom-Inseln (PV+Speicher) an Schulen/Bürgerhäusern als Anlaufstellen bei Blackout/Katastrophe.": {"en": "Backup-power islands (PV+storage) at schools/community houses as refuges in blackouts/disasters.", "nl": "Noodstroom-eilanden (PV+opslag) bij scholen/buurthuizen als opvang bij black-out/ramp."}, "Umwandlung von 20.000 m² Schnittrasen in Wildblumenwiesen + Vernetzungskorridore.": {"en": "Converting 20,000 m² of mown lawn into wildflower meadows + linking corridors.", "nl": "20.000 m² maaigazon omvormen tot bloemenweiden + verbindingscorridors."}, "Durchfahrtsverkehr raus, Aufenthaltsqualität rein: modale Filter, Begrünung, Spielstraßen nach Barcelona-Vorbild.": {"en": "Through-traffic out, livability in: modal filters, greening, play streets (Barcelona model).", "nl": "Doorgaand verkeer eruit, verblijfskwaliteit erin: modale filters, groen, speelstraten (Barcelona)."}, "Klimagerechtigkeit": {"en": "Climate justice", "nl": "Klimaatrechtvaardigheid"}, "Gesundheitslast": {"en": "Health burden", "nl": "Gezondheidslast"}, "Mobilität": {"en": "Mobility", "nl": "Mobiliteit"}, "Bildungsstart": {"en": "Education start", "nl": "Onderwijsstart"}, "Wohn-Krise": {"en": "Housing crisis", "nl": "Wooncrisis"}, "Demokratie & Teilhabe": {"en": "Democracy & participation", "nl": "Democratie & participatie"}, "Ökosystem-Gesundheit": {"en": "Ecosystem health", "nl": "Ecosysteemgezondheid"}, "Katastrophenresilienz": {"en": "Disaster resilience", "nl": "Rampenbestendigheid"}, "Identifizierte Risiken": {"en": "Identified risks", "nl": "Geïdentificeerde risico's"}, "Aktive Risikolagen in": {"en": "Active risks in", "nl": "Actieve risico's in"}, "Wie wird der Score berechnet?": {"en": "How is the score calculated?", "nl": "Hoe wordt de score berekend?"}, "Höher = besser. Alle Dimensionen gleichgewichtet.": {"en": "Higher = better. All dimensions weighted equally.", "nl": "Hoger = beter. Alle dimensies even zwaar."}, "Kartenfarbe": {"en": "Map colour", "nl": "Kaartkleur"}, "Hauptschwächen": {"en": "Main weaknesses", "nl": "Belangrijkste zwaktes"}, "Schwächste Dimensionen:": {"en": "Weakest dimensions:", "nl": "Zwakste dimensies:"}, "Soziale Risikolage:": {"en": "Social risk situation:", "nl": "Sociale risicosituatie:"}, "Stabile Soziallage:": {"en": "Stable social situation:", "nl": "Stabiele sociale situatie:"}, "Soziale Lage": {"en": "Social situation", "nl": "Sociale situatie"}, "Wahlbeteiligung": {"en": "Voter turnout", "nl": "Opkomst"}, "Partizipations-Indikator": {"en": "Participation indicator", "nl": "Participatie-indicator"}, "Migrationshintergrund": {"en": "Migration background", "nl": "Migratieachtergrond"}, "Einwohner": {"en": "Inhabitants", "nl": "Inwoners"}, "SGB-II-Quote": {"en": "Social assistance rate", "nl": "Bijstandsquote"}, "Kinderarmut (u18)": {"en": "Child poverty (u18)", "nl": "Kinderarmoede (u18)"}, "Medianeinkommen/Jahr": {"en": "Median income/year", "nl": "Mediaan inkomen/jaar"}, "Arbeitslosigkeit": {"en": "Unemployment", "nl": "Werkloosheid"}, "Abiturquote": {"en": "Higher-ed. rate", "nl": "Hoogopgeleid"}, "Schulabschlüsse · Bildungsmonitoring": {"en": "School qualifications · education monitoring", "nl": "Diploma's · onderwijsmonitoring"}, "Hochwasserrisiko HQ100": {"en": "Flood risk HQ100", "nl": "Overstromingsrisico HQ100"}, "Hitzeinsel identifiziert": {"en": "Heat island identified", "nl": "Hitte-eiland vastgesteld"}, "Luftqualität kritisch": {"en": "Air quality critical", "nl": "Luchtkwaliteit kritiek"}, "Empfohlene Maßnahmen": {"en": "Recommended measures", "nl": "Aanbevolen maatregelen"}, "Investition": {"en": "Investment", "nl": "Investering"}, "ROI 10 Jahre": {"en": "ROI 10 years", "nl": "ROI 10 jaar"}, "förderbar": {"en": "fundable", "nl": "subsidiabel"}, "Förderquote": {"en": "Funding rate", "nl": "Subsidiepercentage"}, "Eigenanteil": {"en": "Own share", "nl": "Eigen bijdrage"}, "Strukturell": {"en": "Structural", "nl": "Structureel"}, "Hoher Sanierungsbedarf": {"en": "High renovation need", "nl": "Hoge renovatiebehoefte"}, "Tipp: Schalte die entsprechenden": {"en": "Tip: switch on the relevant", "nl": "Tip: zet de betreffende"}, "Karten-Layer": {"en": "map layers", "nl": "kaartlagen"}, "ein (Button unten links) um zu sehen wo genau diese Risiken auftreten.": {"en": "on (button lower left) to see exactly where these risks occur.", "nl": "aan (knop linksonder) om te zien waar deze risico’s precies optreden."}, "Maßnahmen (Tab 3) adressieren genau diese Felder.": {"en": "Measures (Tab 3) address exactly these fields.", "nl": "Maatregelen (tab 3) richten zich precies op deze velden."}};
-Object.assign(TR,{"Niedrigeinkommen (Haushalte)": {"en": "Low income (households)", "nl": "Laag inkomen (huishoudens)"}});
+Object.assign(TR,{"Ø Einkommen je Einwohner": {"en": "Avg income per resident", "nl": "Gem. inkomen per inwoner"}, "WW-Bezug (Anteil Einwohner)": {"en": "Unemployment benefit (share of residents)", "nl": "WW-uitkering (aandeel inwoners)"}, "Herkunft außerhalb NL": {"en": "Non-Dutch origin", "nl": "Herkomst buiten NL"}, "Hochschulabschluss (hbo/wo)": {"en": "Higher education (hbo/wo)", "nl": "Hoger onderwijs (hbo/wo)"}, "Gemeinderatswahl 2022": {"en": "Municipal election 2022", "nl": "Gemeenteraadsverkiezing 2022"}, "ungeprüft — Quelle offen": {"en": "unverified — source pending", "nl": "ongeverifieerd — bron open"}, "haben eine Herkunft außerhalb der Niederlande": {"en": "have a non-Dutch origin", "nl": "hebben een herkomst buiten Nederland"}, "CBS Kerncijfers wijken en buurten 2024 (85984NED) · Wahlbeteiligung: Gemeente Utrecht": {"en": "CBS key figures for districts 2024 (85984NED) · turnout: Municipality of Utrecht", "nl": "CBS Kerncijfers wijken en buurten 2024 (85984NED) · opkomst: gemeente Utrecht"}});
 Object.assign(TR,{"Hitze-Ampel: ": {"en": "Heat traffic light: ", "nl": "Hittestoplicht: "}, "Methodik angelehnt an den Hitze-Check der Deutschen Umwelthilfe 2026 (Versiegelung · Grünvolumen · Oberflächentemperatur) — von nice here auf Utrechter Wijken übertragen; die DUH selbst bewertet nur deutsche Städte.": {"en": "Methodology adapted from the German Environmental Aid (DUH) heat check 2026 (sealing · green volume · surface temperature) — transferred to Utrecht's wijken by nice here; DUH itself only rates German cities.", "nl": "Methodiek ontleend aan de DUH-hittecheck 2026 (verharding · groenvolume · oppervlaktetemperatuur) — door nice here overgezet naar de Utrechtse wijken; de DUH zelf beoordeelt alleen Duitse steden."}, "Satelliten messen Wärmestrahlung von Asphalt, Dächern und Böden — nicht die Lufttemperatur auf Augenhöhe. Methodik: Surface Urban Heat Island Indikator (SUHI), Hotspot-Analyse Top-10%-Perzentil. KNMI: Wärmeinseleffekt besonders ausgeprägt bei wolkenarmen, windschwachen Nächten.": {"en": "Satellites measure thermal radiation from asphalt, roofs and soil — not air temperature at eye level. Method: Surface Urban Heat Island indicator (SUHI), hotspot analysis at the top-10% percentile. KNMI: the heat-island effect is most pronounced on cloud-free, low-wind nights.", "nl": "Satellieten meten warmtestraling van asfalt, daken en bodem — niet de luchttemperatuur op ooghoogte. Methode: Surface Urban Heat Island-indicator (SUHI), hotspotanalyse top-10%-percentiel. KNMI: het hitte-eilandeffect is het sterkst in wolkenloze, windstille nachten."}, "75J, Kleinkinder, chronisch Erkrankte, Obdachlose. RIVM Nationaal Hitteplan: Hitzewarnungen und Schutzmaßnahmen richten sich gezielt an diese Gruppen.": {"en": "75+, young children, the chronically ill, homeless people. RIVM National Heat Plan: heat warnings and protective measures target these groups specifically.", "nl": "75+, jonge kinderen, chronisch zieken, daklozen. RIVM Nationaal Hitteplan: hittewaarschuwingen en beschermende maatregelen richten zich specifiek op deze groepen."}});
 Object.assign(TR,{"Oberflächentemperatur (LST), NDVI-Mangel, Bevölkerungsvulnerabilität, Versiegelungsgrad.":{"en":"Surface temperature (LST), NDVI deficit, population vulnerability, surface sealing.","nl":"Oppervlaktetemperatuur (LST), NDVI-tekort, bevolkingskwetsbaarheid, verhardingsgraad."},"PM2.5 + NO2 (EU AQI, Jahresmittel), Lärmexposition Lden dB, RKI Atemwegsrate.":{"en":"PM2.5 + NO₂ (EU AQI, annual mean), noise exposure Lden dB, respiratory-illness rate.","nl":"PM2.5 + NO₂ (EU AQI, jaargemiddelde), geluidsbelasting Lden dB, luchtwegaandoeningen."},"ÖPNV-Takt (GTFS), Radweglänge pro km², 10-Min-Stadt-Score (34 POIs), Unfalldichte.":{"en":"Transit frequency (GTFS), cycle-path length per km², 10-minute-city score (34 POIs), crash density.","nl":"OV-frequentie (GTFS), fietspadlengte per km², 10-minutenstad-score (34 POI's), ongevalsdichtheid."},"Kita-Quote, Schulabbrecherquote, Jugendarbeitslosigkeit U25, SGB-II-Quote.":{"en":"Childcare rate, school drop-out rate, youth unemployment U25, social-assistance rate.","nl":"Opvangquote, schooluitval, jeugdwerkloosheid U25, bijstandsquote."},"Mietbelastungsquote (>30% EK), Gentrifizierungsdruck (Mietpreisanstieg 5J), Überbelegung.":{"en":"Rent-burden ratio (>30% of income), gentrification pressure (5-yr rent rise), overcrowding.","nl":"Huurquote (>30% inkomen), gentrificatiedruk (huurstijging 5 jr), overbewoning."},"Wahlbeteiligung Bundestag + Kommunal, Vereinsdichte, Community Places/10.000 EW.":{"en":"Voter turnout (national + municipal), association density, community places per 10,000 residents.","nl":"Opkomst (nationaal + gemeentelijk), verenigingsdichtheid, buurtplekken per 10.000 inwoners."},"NDVI (Grünanteil), Baumvitalität + Kronendichte, Biotopkonnektivität, Wasserretention.":{"en":"NDVI (green share), tree vitality + canopy density, biotope connectivity, water retention.","nl":"NDVI (groenaandeel), boomvitaliteit + kroondichtheid, biotoopconnectiviteit, waterretentie."},"Hochwasserrisiko HQ100 (Fläche in Überflutungszone), kritische Infrastruktur, Feuerwehr-Reaktionszeit.":{"en":"Flood risk HQ100 (area within flood zone), critical infrastructure, fire-service response time.","nl":"Overstromingsrisico HQ100 (oppervlak in zone), kritieke infrastructuur, responstijd brandweer."},"Modale Filter, Tempo-30-Zone und Schulstraßen nach CROW-Richtlinie — Durchfahrtsverkehr raus, Aufenthalt rein.":{"en":"Modal filters, 30 km/h zone and school streets per CROW guideline — through-traffic out, liveability in.","nl":"Modale filters, 30 km/u-zone en schoolstraten volgens CROW — doorgaand verkeer eruit, verblijf erin."},"Versiegelte Flächen aufbrechen, Steine raus, Beet & Versickerung rein — pro entsiegeltem m² weniger Hitze und Überflutung.":{"en":"Break open sealed surfaces, stones out, planting & infiltration in — every de-sealed m² means less heat and more water buffer.","nl":"Verharding openbreken, stenen eruit, beplanting & infiltratie erin — per onthard m² minder hitte en meer waterbuffer."},"Bepflanzung mit heimischen Arten (Layer 'Heimische Arten'): Fluitenkruid, Hondsdraf, einheimische Sträucher als Nahrung für Igel, Vögel & Hummeln.":{"en":"Planting with native species (see the “Native species” layer): cow parsley, ground ivy and native shrubs as food and nesting base.","nl":"Beplanting met inheemse soorten (laag ‘Inheemse soorten’): fluitenkruid, hondsdraf en inheemse struiken als voedsel- en nestbasis."},"Wadi's, Regentonnen, Gründächer und Abkopplung der Dachflächen vom Mischsystem — Starkregen wird gepuffert statt abgeleitet.":{"en":"Wadis, rain barrels, green roofs and disconnecting roofs from the combined sewer — cloudbursts are buffered instead of overloading the system.","nl":"Wadi's, regentonnen, groendaken en afkoppelen van daken van het gemengde riool — piekbuien worden gebufferd in plaats van het stelsel te overbelasten."},"Dunklen Asphalt durch helle, reflektierende (hoher Albedo) und wasserdurchlässige Beläge ersetzen — kühler und versickerungsfähig.":{"en":"Replace dark asphalt with light, reflective (high-albedo) and permeable surfaces — cooler and rain-resilient.","nl":"Donker asfalt vervangen door lichte, reflecterende (hoge albedo), waterdoorlatende verharding — koeler en regenbestendig."},"EU Renaturierungs-VO 2024/1991: 30% Grünfläche bis 2030":{"en":"EU Nature Restoration Reg. 2024/1991: 30% green space by 2030","nl":"EU-natuurherstelverordening 2024/1991: 30% groen in 2030"},"SDG 4 · Kita-Quote Ziel: >90%":{"en":"SDG 4 · childcare target: >90%","nl":"SDG 4 · opvangdoel: >90%"},"Wohngeldgesetz: Tragbare Mietquote ≤30% des Nettoeinkommens":{"en":"Housing-benefit law: affordable rent share ≤30% of net income","nl":"Norm: draagbare huurquote ≤30% van het netto-inkomen"},"Hitzeinsel: LST deutlich über Stadtdurchschnitt, hohe Versiegelung.":{"en":"Heat island: LST well above city average, high sealing.","nl":"Hitte-eiland: LST ver boven stadsgemiddelde, hoge verharding."},"Gute Durchgrünung, geringe Hitzeexposition.":{"en":"Well greened, low heat exposure.","nl":"Goed doorgroend, lage hittebelasting."},"Über EU-Grenzwerten. Gesundheitsrisiko messbar.":{"en":"Above EU limit values. Measurable health risk.","nl":"Boven EU-grenswaarden. Meetbaar gezondheidsrisico."},"Gesunde Luft, geringe Lärmbelastung.":{"en":"Healthy air, low noise burden.","nl":"Gezonde lucht, weinig geluidshinder."},"Grenzwertnah, Maßnahmen sinnvoll.":{"en":"Near limit values; measures advisable.","nl":"Nabij grenswaarden; maatregelen zinvol."},"Schlechte ÖPNV-Anbindung, wenig Radwege.":{"en":"Poor transit access, few cycle paths.","nl":"Slechte OV-ontsluiting, weinig fietspaden."},"Mittlere Konnektivität, Ausbaupotenzial.":{"en":"Medium connectivity, room to grow.","nl":"Gemiddelde connectiviteit, groeipotentieel."},"Niedrige Kita-Quote + hohe Jugendarbeitslosigkeit.":{"en":"Low childcare rate + high youth unemployment.","nl":"Lage opvangquote + hoge jeugdwerkloosheid."},"Akute Wohnkrise: Mietbelastung >40%, starker Gentrifizierungsdruck.":{"en":"Acute housing crisis: rent burden >40%, strong gentrification pressure.","nl":"Acute wooncrisis: huurlast >40%, sterke gentrificatiedruk."},"Stabile Wohnsituation.":{"en":"Stable housing situation.","nl":"Stabiele woonsituatie."},"Spürbare Belastung, Prävention sinnvoll.":{"en":"Noticeable pressure; prevention advisable.","nl":"Merkbare druk; preventie zinvol."},"Aktive Bürgergesellschaft.":{"en":"Active civil society.","nl":"Actieve burgersamenleving."},"Ausbaufähige Partizipation.":{"en":"Participation with room to grow.","nl":"Participatie met groeipotentieel."},"Stark versiegelt, kaum Biodiversität.":{"en":"Heavily sealed, little biodiversity.","nl":"Sterk verhard, weinig biodiversiteit."},"Gute Ökosystemqualität.":{"en":"Good ecosystem quality.","nl":"Goede ecosysteemkwaliteit."},"Durchschnittliches Grün, Ausbau möglich.":{"en":"Average green provision, expandable.","nl":"Gemiddeld groen, uitbreidbaar."},"Erhöhtes Hochwasserrisiko und/oder eingeschränkte Infrastruktur.":{"en":"Elevated flood risk and/or constrained infrastructure.","nl":"Verhoogd overstromingsrisico en/of beperkte infrastructuur."},"Wohnungsbauverbot":{"en":"Housing-construction ban","nl":"Woningbouwverbod"},"NL-Staatsfonds 20 Mrd€ für Wachstum & Nachhaltigkeit":{"en":"NL national fund, €20bn for growth & sustainability","nl":"NL-staatsfonds, €20 mrd voor groei & duurzaamheid"},"NL-Bundesförderung für kommunale Klimaanpassung":{"en":"NL national funding for municipal climate adaptation","nl":"Rijkssubsidie voor gemeentelijke klimaatadaptatie"},"Sanierung öffentlicher Gebäude in NL":{"en":"Renovating public buildings in NL","nl":"Verduurzaming van publieke gebouwen in NL"},"DE-NL-Kooperationsprojekte — ideal für Frankfurt-Utrecht-Tandem":{"en":"DE–NL cooperation projects — ideal for a Frankfurt–Utrecht tandem","nl":"DE–NL-samenwerkingsprojecten — ideaal voor een Frankfurt–Utrecht-tandem"},"Bürgerbudgets, Beteiligungsplattformen, Städtepartnerschaften":{"en":"Participatory budgets, participation platforms, city partnerships","nl":"Burgerbegrotingen, participatieplatforms, stedenbanden"},"Für Begrünung, Biotop, Klimaanpassung":{"en":"For greening, biotopes, climate adaptation","nl":"Voor vergroening, biotopen, klimaatadaptatie"},"Radschnellwege, ÖPNV-Infrastruktur":{"en":"Cycle highways, public-transport infrastructure","nl":"Snelfietsroutes, OV-infrastructuur"},"Für industrielle Umstrukturierung & Klimawandel":{"en":"For industrial restructuring & climate change","nl":"Voor industriële herstructurering & klimaat"},"Bäume, Parks, Fassadenbegrünung":{"en":"Trees, parks, façade greening","nl":"Bomen, parken, gevelgroen"},"Straßenbahn, Bus, U-Bahn-Infrastruktur":{"en":"Tram, bus, metro infrastructure","nl":"Tram-, bus-, metro-infrastructuur"},"Höchste Quote. Für Beratungszentren, Jugendbeteiligung":{"en":"Highest rate. For advice centres, youth participation","nl":"Hoogste percentage. Voor adviescentra, jongerenparticipatie"},"Für benachteiligte Stadtteile":{"en":"For disadvantaged districts","nl":"Voor achterstandswijken"},"Kühlinseln, Hochwasserschutz, Hitzeschutz":{"en":"Cool islands, flood protection, heat protection","nl":"Koele eilanden, overstromings- en hittebescherming"},"Quartierswärmepumpen, Nah-/Fernwärme":{"en":"District heat pumps, local/district heating","nl":"Wijkwarmtepompen, stads-/blokverwarming"},"Fassaden, Dächer, Dämmung":{"en":"Façades, roofs, insulation","nl":"Gevels, daken, isolatie"},"0,6% p.a. Zinssatz (Stand März 2026). Für Kommunen.":{"en":"0.6% p.a. interest (as of March 2026). For municipalities.","nl":"0,6% rente p.j. (per maart 2026). Voor gemeenten."},"1,0% p.a. Zinssatz. Budget 800 Mio€ für 2025/2026.":{"en":"1.0% p.a. interest. Budget €800m for 2025/2026.","nl":"1,0% rente p.j. Budget €800 mln voor 2025/2026."},"Zuschuss für integrierte Konzepte im Quartier":{"en":"Grant for integrated neighbourhood concepts","nl":"Subsidie voor integrale wijkconcepten"},"Für alle Klimaschutzmaßnahmen in Hessen":{"en":"For all climate-mitigation measures in Hesse","nl":"Voor alle klimaatmaatregelen in Hessen"},"Für wissenschaftliche Begleitung von nice here":{"en":"For scientific evaluation of nice here","nl":"Voor wetenschappelijke begeleiding van nice here"},"Hitzebetroffenheit — Satelliten- & Erdbeobachtungsanalyse":{"en":"Heat exposure — satellite & earth-observation analysis","nl":"Hittebelasting — satelliet- & aardobservatieanalyse"},"DUH Hitze-Check: ":{"en":"DUH heat check: ","nl":"DUH hitte-check: "},"Hitzebetroffenheitsindex":{"en":"Heat-exposure index","nl":"Hittebelastingsindex"},"Hitzebetroffenheit-Score":{"en":"heat-exposure score","nl":"hittebelastingsscore"}," — Composite Hitzebetroffenheit":{"en":" — composite heat exposure","nl":" — samengestelde hittebelasting"},"Grünvolumen":{"en":"Green volume","nl":"Groenvolume"},"LST = Oberflächentemperatur ≠ Lufttemperatur.":{"en":"LST = surface temperature ≠ air temperature.","nl":"LST = oppervlaktetemperatuur ≠ luchttemperatuur."},"Satelliten messen Wärmestrahlung von Asphalt, Dächern und Böden — nicht die Lufttemperatur auf Augenhöhe. Methodik: Surface Urban Heat Island Indikator (SUHI), Hotspot-Analyse Top-10%-Perzentil. DWD: Wärmeinseleffekt besonders ausgeprägt bei wolkenarmen, windschwachen Nächten.":{"en":"Satellites measure thermal radiation from asphalt, roofs and soil — not air temperature at eye level. Method: Surface Urban Heat Island indicator (SUHI), hotspot analysis at the top-10% percentile. DWD: the heat-island effect is most pronounced on cloud-free, low-wind nights.","nl":"Satellieten meten warmtestraling van asfalt, daken en bodem — niet de luchttemperatuur op ooghoogte. Methode: Surface Urban Heat Island-indicator (SUHI), hotspotanalyse top-10%-percentiel. DWD: het hitte-eilandeffect is het sterkst in wolkenloze, windstille nachten."},"NDVI (Normalized Difference Vegetation Index): Vegetationsvitalität aus Sentinel-2 Rot- und NIR-Band. NDBI (Normalized Difference Built-up Index): Bebauungsintensität. Copernicus Tree Cover Density liefert Baumkronendichte als eigenständigen Kühlungsfaktor. Fraunhofer IBP 2024: Grünflächen kühlen durch Evapotranspiration lokal bis −4°C.":{"en":"NDVI (Normalized Difference Vegetation Index): vegetation vitality from Sentinel-2 red and NIR bands. NDBI (Normalized Difference Built-up Index): built-up intensity. Copernicus Tree Cover Density adds canopy density as a separate cooling factor. Fraunhofer IBP 2024: green spaces cool locally by up to −4°C through evapotranspiration.","nl":"NDVI (Normalized Difference Vegetation Index): vegetatievitaliteit uit Sentinel-2 rood- en NIR-band. NDBI (Normalized Difference Built-up Index): bebouwingsintensiteit. Copernicus Tree Cover Density levert kroondichtheid als aparte koelfactor. Fraunhofer IBP 2024: groen koelt lokaal tot −4°C via evapotranspiratie."},"Copernicus HRL Imperviousness (20m): europaweit harmonisierter Versiegelungsgrad. Local Climate Zone (LCZ) nach Stewart & Oke (2012): 17 Zonentypen nach Bebauungsstruktur — dichte LCZ-Typen (LCZ 1–3) speichern Wärme tagsüber und geben sie nachts langsam ab → erhöhte Tropennächte. BBSR 2023: 10% Entsiegelung → LST-Reduktion 0,8–1,2°C.":{"en":"Copernicus HRL Imperviousness (20 m): EU-harmonised sealing degree. Local Climate Zones (LCZ) after Stewart & Oke (2012): 17 zone types by built structure — dense LCZ types (1–3) store heat by day and release it slowly at night → more tropical nights. BBSR 2023: 10% de-sealing → LST reduction of 0.8–1.2°C.","nl":"Copernicus HRL Imperviousness (20 m): EU-geharmoniseerde verhardingsgraad. Local Climate Zones (LCZ) volgens Stewart & Oke (2012): 17 zonetypen naar bebouwing — dichte LCZ-typen (1–3) slaan overdag warmte op en geven die 's nachts langzaam af → meer tropennachten. BBSR 2023: 10% ontharding → LST-reductie 0,8–1,2°C."},"Humane Wärmebelastung (Proxy)":{"en":"Human heat stress (proxy)","nl":"Menselijke hittebelasting (proxy)"},"Vollständige humanbiometeorologische Bewertung erfolgt via PET (Physiological Equivalent Temperature) oder UTCI (Universal Thermal Climate Index) — unter Einbezug von Lufttemperatur, Luftfeuchte, Wind, Strahlung und Verschattung (VDI 3787 Bl. 2). Vulnerable Gruppen: ":{"en":"A full human-biometeorological assessment uses PET (Physiological Equivalent Temperature) or UTCI (Universal Thermal Climate Index) — incorporating air temperature, humidity, wind, radiation and shading (VDI 3787 pt. 2). Vulnerable groups: ","nl":"Een volledige humaan-biometeorologische beoordeling gebeurt via PET (Physiological Equivalent Temperature) of UTCI (Universal Thermal Climate Index) — met luchttemperatuur, vocht, wind, straling en schaduw (VDI 3787 dl. 2). Kwetsbare groepen: "},"75J, Kleinkinder, chronisch Erkrankte, Obdachlose. UBA MK 4.0: ~2 Mio€ Folgekosten/Hitzetod. Frankfurt 2022: ~180 hitzebedingte Übersterblichkeit.":{"en":"75+, young children, the chronically ill, homeless people. UBA MK 4.0: ~€2m follow-up costs per heat death. Frankfurt 2022: ~180 heat-related excess deaths.","nl":"75+, jonge kinderen, chronisch zieken, daklozen. UBA MK 4.0: ~€2 mln vervolgkosten per hittedode. Frankfurt 2022: ~180 hittegerelateerde oversterfte."},"LST-Werte ≠ Lufttemperatur auf Augenhöhe. Einzelzeitpunkte begrenzt — ideal sind mehrjährige Zeitreihen aus mehreren Hitzetagen. Straßenzuggenaue Aussagen erfordern Mikroklimamodellierung (ENVI-met) oder mobile Messungen zur Validierung. Sozialdaten unter Datenschutzvorbehalt (ISO 14091).":{"en":"LST values ≠ air temperature at eye level. Single snapshots are limited — multi-year series over several heat days are ideal. Street-level statements require microclimate modelling (ENVI-met) or mobile measurements for validation. Social data subject to privacy safeguards (ISO 14091).","nl":"LST-waarden ≠ luchttemperatuur op ooghoogte. Losse momentopnamen zijn beperkt — meerjarige reeksen over meerdere hittedagen zijn ideaal. Uitspraken op straatniveau vergen microklimaatmodellering (ENVI-met) of mobiele metingen. Sociale data onder privacyvoorbehoud (ISO 14091)."},"Umlandmittel (SUHI)":{"en":"rural reference mean (SUHI)","nl":"omlandgemiddelde (SUHI)"},"Rote Karte":{"en":"Red card","nl":"Rode kaart"},"Gelbe Karte":{"en":"Yellow card","nl":"Gele kaart"},"Grüne Karte":{"en":"Green card","nl":"Groene kaart"},"Hohe Versiegelung (":{"en":"High surface sealing (","nl":"Hoge verharding ("},"verhindert natürliche Kühlung. LST-Delta aktuell":{"en":"prevents natural cooling. Current LST delta","nl":"verhindert natuurlijke koeling. Actuele LST-delta"}," — basierend auf Klimaprojektionen (DWD RCP 4.5), IAB-Armutsforschung und verfügbaren Förderprogrammen.":{"en":" — based on climate projections (DWD RCP 4.5), IAB poverty research and available funding programmes.","nl":" — gebaseerd op klimaatprojecties (DWD RCP 4.5), IAB-armoedeonderzoek en beschikbare subsidieprogramma's."},"Klimarisiko aktuell überschaubar, aber steigend. Frühe Maßnahmen jetzt sind deutlich günstiger als Reaktionen später.":{"en":"Climate risk currently manageable but rising. Early action now is far cheaper than reacting later.","nl":"Klimaatrisico nu beheersbaar maar stijgend. Vroeg ingrijpen is veel goedkoper dan later reageren."},"Förderfenster verpassen, höhere Eigenmittel nötig":{"en":"funding windows missed, higher own funds needed","nl":"subsidievensters gemist, meer eigen middelen nodig"},"2–3 sofort umsetzbare Maßnahmen mit hohem Wirkungsgrad und verfügbarer Förderung. Stoppwirkung gegen den negativen Trend, aber keine strukturelle Lösung.":{"en":"2–3 immediately implementable measures with high impact and available funding. Halts the negative trend, but no structural solution.","nl":"2–3 direct uitvoerbare maatregelen met hoge impact en beschikbare subsidie. Stopt de negatieve trend, maar geen structurele oplossing."},"bis 75% Förderung möglich":{"en":"up to 75% funding possible","nl":"tot 75% subsidie mogelijk"},"Vollständige Transformation":{"en":"Full transformation","nl":"Volledige transformatie"},"adressierbaren Maßnahmen werden umgesetzt — koordiniert über EU/Bund/Land-Programme.":{"en":"addressable measures are implemented — coordinated across EU/federal/state programmes.","nl":"adresseerbare maatregelen worden uitgevoerd — gecoördineerd via EU-/rijks-/provinciale programma's."}," wird zum Modellstadtteil mit messbarer Wirkung für den EUI Call 4 Antrag.":{"en":" becomes a model district with measurable impact for the EUI Call 4 application.","nl":" wordt modelwijk met meetbaar effect voor de EUI Call 4-aanvraag."},"Förderung (72% Ø)":{"en":"funding (72% avg)","nl":"subsidie (72% gem.)"},"Konkrete Maßnahmen:":{"en":"Concrete measures:","nl":"Concrete maatregelen:"},"Heute: ":{"en":"Today: ","nl":"Nu: "},"Klimadimension A+G: +":{"en":"Climate dimensions A+G: +","nl":"Klimaatdimensies A+G: +"}," Punkte durch Begrünung & Entsiegelung":{"en":" points via greening & de-sealing","nl":" punten door vergroening & ontharding"},"Mobilitysdimension C: +":{"en":"Mobility dimension C: +","nl":"Mobiliteitsdimensie C: +"}," Punkte durch ÖPNV & Radwege":{"en":" points via transit & cycle paths","nl":" punten door OV & fietspaden"},"nach Förderabzug":{"en":"after funding deduction","nl":"na subsidieaftrek"},"Szenario A":{"en":"Scenario A","nl":"Scenario A"},"Szenario B":{"en":"Scenario B","nl":"Scenario B"},"Szenario C":{"en":"Scenario C","nl":"Scenario C"},"Empfehlungen basieren auf den <b>schwächsten Dimensionen</b>. Alle Kosten und ROI sind methodisch belegt (Quellen aufklappbar). Institutionelle Quellen: Fraunhofer IBP · JRC EU · BBSR · WHO Europa · UBA · DWD.":{"en":"Recommendations target the <b>weakest dimensions</b>. All costs and ROI are methodically sourced (expand for sources). Institutional sources: Fraunhofer IBP · JRC EU · BBSR · WHO Europe · UBA · DWD.","nl":"Aanbevelingen richten zich op de <b>zwakste dimensies</b>. Alle kosten en ROI zijn methodisch onderbouwd (bronnen uitklapbaar). Institutionele bronnen: Fraunhofer IBP · JRC EU · BBSR · WHO Europa · UBA · DWD."},"Institutionelle Grundlage:":{"en":"Institutional basis:","nl":"Institutionele basis:"},"Prioritätskandidat (niedriger Score = starke EUI-Begründung)":{"en":"priority candidate (low score = strong EUI justification)","nl":"prioriteitskandidaat (lage score = sterke EUI-onderbouwing)"},"Förderangaben zur Orientierung. Kein Ersatz für individuelle Beratung. Konditionen können sich ändern. Alle 25 Programme: Layer-Architektur in Notion.":{"en":"Funding figures are indicative. No substitute for individual advice. Conditions may change. All 25 programmes: layer architecture in Notion.","nl":"Subsidiecijfers zijn indicatief. Geen vervanging voor individueel advies. Voorwaarden kunnen wijzigen. Alle 25 programma's: layer-architectuur in Notion."},"Quelle:":{"en":"Source:","nl":"Bron:"},"Stand 2024":{"en":"Vintage 2024","nl":"Stand 2024"},"Stand 2023":{"en":"Vintage 2023","nl":"Stand 2023"},"Stand 2022":{"en":"Vintage 2022","nl":"Stand 2022"},"Stand 2021":{"en":"Vintage 2021","nl":"Stand 2021"},"Rot = unteres Fünftel im Vergleich zu allen Stadtteilen":{"en":"Red = bottom fifth compared with all districts","nl":"Rood = onderste vijfde vergeleken met alle wijken"},"Der NICE Score = ":{"en":"The NICE score = ","nl":"De NICE-score = "},"Ø der 8 Dimensionen":{"en":"mean of the 8 dimensions","nl":"gemiddelde van de 8 dimensies"}," (je 0–100). ":{"en":" (each 0–100). ","nl":" (elk 0–100). "},"Quellen:":{"en":"Sources:","nl":"Bronnen:"},"Sehr gute multimodale Erreichbarkeit.":{"en":"Very good multimodal accessibility.","nl":"Zeer goede multimodale bereikbaarheid."},"Gute Bildungsinfrastruktur.":{"en":"Good education infrastructure.","nl":"Goede onderwijsinfrastructuur."}});
 Object.assign(TR,{"Grünflächenamt FFM: ~3.000€/Baum. Referenz: Baumschutzprogramm FFM 2022.":{"en":"FFM parks dept.: ~€3,000/tree. Reference: FFM tree-protection programme 2022.","nl":"Groenbeheer FFM: ~€3.000/boom. Referentie: boombeschermingsprogramma FFM 2022."},"BFA Garten- und Landschaftsbau: 120–180€/m² je nach System. Referenz: Projekt Grüne Meile Frankfurt.":{"en":"Landscaping association: €120–180/m² depending on system. Reference: Grüne Meile Frankfurt.","nl":"Brancheorganisatie groenbouw: €120–180/m² per systeem. Referentie: Grüne Meile Frankfurt."},"Stadtwerke FFM: Kanalkostensatz 95€/m². Bau: ~100€/m² Entsiegelung inkl. Bepflanzung.":{"en":"FFM utilities: sewer rate €95/m². Construction: ~€100/m² de-sealing incl. planting.","nl":"Stadswerken FFM: riooltarief €95/m². Aanleg: ~€100/m² ontharding incl. beplanting."},"Referenz: Hessisches Dachbegrünungsprogramm 2023. Kosten 80–150€/m² je Aufbau.":{"en":"Reference: Hesse green-roof programme 2023. Cost €80–150/m² by build-up.","nl":"Referentie: Hessisch groendakprogramma 2023. Kosten €80–150/m² per opbouw."},"Forstverwaltung Hessen: ~7.000€/ha Anlage + 3.000€/ha/Jahr Pflege. 5ha Referenzprojekt.":{"en":"Hesse forestry: ~€7,000/ha installation + €3,000/ha/yr care. 5 ha reference project.","nl":"Bosbeheer Hessen: ~€7.000/ha aanleg + €3.000/ha/jr onderhoud. 5 ha referentieproject."},"Referenzprojekt Kühlmeile München 2023: ~180.000€, angepasst Frankfurt +10% Lohnkostenniveau.":{"en":"Reference project Kühlmeile Munich 2023: ~€180,000, adjusted +10% Frankfurt wage level.","nl":"Referentieproject Kühlmeile München 2023: ~€180.000, aangepast +10% loonniveau Frankfurt."},"FIS BMVI: Ø 12.000–18.000€/Straßenzug aus 12 deutschen Städten.":{"en":"FIS BMVI: avg €12,000–18,000/street from 12 German cities.","nl":"FIS BMVI: gem. €12.000–18.000/straat uit 12 Duitse steden."},"RMV-Betriebskostenrechnung 2024: ~600k€/Bus/Jahr + 400k€ Fahrzeuginvestition, amortisiert 12J.":{"en":"RMV operating costs 2024: ~€600k/bus/yr + €400k vehicle investment, amortised over 12 yrs.","nl":"RMV-exploitatie 2024: ~€600k/bus/jr + €400k voertuiginvestering, afgeschreven over 12 jr."},"Ordnungsamt FFM: Beschilderung + Poller ~6.000–10.000€ pro Schule. 3h täglich gesperrt.":{"en":"FFM public-order office: signage + bollards ~€6,000–10,000 per school. Closed 3h daily.","nl":"Handhaving FFM: bebording + palen ~€6.000–10.000 per school. Dagelijks 3u afgesloten."},"Verkehrsministerium BW: Ø 600k€–1,2M€/km Radschnellweg inkl. Markierung, Beleuchtung, Entwässerung.":{"en":"BW transport ministry: avg €600k–1.2m/km cycle highway incl. marking, lighting, drainage.","nl":"Ministerie BW: gem. €600k–1,2 mln/km snelfietsroute incl. markering, verlichting, afwatering."},"Sozialbericht FFM 2023: 2 TVöD E9-Stellen (58k€), Miete 14k€, Ausstattung 8k€.":{"en":"FFM social report 2023: 2 staff posts (€58k), rent €14k, equipment €8k.","nl":"Sociaal rapport FFM 2023: 2 fte (€58k), huur €14k, inrichting €8k."},"2 Stellen TVöD E9 (58k€), Miete 24k€, Dolmetscher 14k€, IT 8k€, Übersetzer 16k€.":{"en":"2 staff posts (€58k), rent €24k, interpreters €14k, IT €8k, translators €16k.","nl":"2 fte (€58k), huur €24k, tolken €14k, IT €8k, vertalers €16k."},"Jugendamt FFM: 40k€ einmalig Ausstattung + 40k€/Jahr Personal (TVöD E6). Mietkosten nicht enthalten.":{"en":"FFM youth office: €40k one-off equipment + €40k/yr staffing. Rent not included.","nl":"Jeugdzorg FFM: €40k eenmalig inrichting + €40k/jr personeel. Huur niet inbegrepen."},"Bundesnetzagentur 2024: ~700€/kWp Installationskosten. 500kWp = 350.000€. Amortisation ~8 Jahre.":{"en":"Federal grid agency 2024: ~€700/kWp installation. 500 kWp = €350,000. Payback ~8 yrs.","nl":"Bundesnetzagentur 2024: ~€700/kWp installatie. 500 kWp = €350.000. Terugverdientijd ~8 jr."},"Netatmo/Luftdaten.info: ~800€/Sensor × 50 = 40.000€ + 5.000€ Installation und Plattform.":{"en":"Netatmo/Luftdaten.info: ~€800/sensor × 50 = €40,000 + €5,000 installation and platform.","nl":"Netatmo/Luftdaten.info: ~€800/sensor × 50 = €40.000 + €5.000 installatie en platform."},"Fraunhofer IBP (Institut für Bauphysik) 2023: Marktkosten Sonnenschutzanlagen 3.500–5.500€/Stück inkl. Fundament und Montage. Referenz: Münchner Hitzeaktionsplan 2023 (10 Anlagen, 42.000€).":{"en":"Fraunhofer IBP 2023: market cost of shading installations €3,500–5,500/unit incl. foundation and mounting.","nl":"Fraunhofer IBP 2023: marktkosten schaduwinstallaties €3.500–5.500/stuk incl. fundering en montage."},"BBSR-Gutachten ‚Urbane Entsiegelung als Klimaanpassung' (2023): Rückbau + Neubegrünung 75–95€/m². 2.000 m² = 180k€. Referenz: Frankfurter Programm Innenhofentsiegelung (Stadtplanungsamt FFM 2022).":{"en":"BBSR study 'Urban de-sealing as climate adaptation' (2023): removal + replanting €75–95/m². 2,000 m² = €180k.","nl":"BBSR-studie 'Urbane ontharding als klimaatadaptatie' (2023): verwijdering + herbeplanting €75–95/m². 2.000 m² = €180k."},"WHO Europabüro ‚Heat and Health' (2023): Trinkbrunnen ~2.500€/Stück, Sprühnebelanlagen ~8.000€/Standort. 15 × 2.500€ + 3 × 8.000€ = 61.500€ zzgl. Infrastruktur. Referenz: Paris ‚Vagues de Chaleur' 2022.":{"en":"WHO Europe 'Heat and Health' (2023): drinking fountains ~€2,500/unit, misting systems ~€8,000/site.","nl":"WHO Europa 'Heat and Health' (2023): drinkfonteinen ~€2.500/stuk, vernevelinstallaties ~€8.000/locatie."},"JRC Joint Research Centre EU ‚Cool Surfaces for Urban Heat Islands' (2022): helle Beläge Albedo-Effekt, Kosten 85–110€/m² inkl. Rückbau. Tiefbauamt FFM: Referenzwerte 2024 für Neubepflasterung Innenstadt.":{"en":"JRC EU 'Cool Surfaces for Urban Heat Islands' (2022): light surfaces, albedo effect, €85–110/m² incl. installation.","nl":"JRC EU 'Cool Surfaces for Urban Heat Islands' (2022): lichte verharding, albedo-effect, €85–110/m² incl. aanleg."},"WHO Hitzeaktionsplan Europa 2023: Identifikation, Kennzeichnung, Öffnungszeitverlängerung + Klimaanlage ~20–25k€/Gebäude. 5 Kühlorte = 120k€. Referenz: Frankfurt Stadtbibliotheken 2022 (Hitzenotfall-Öffnung).":{"en":"WHO heat action plan Europe 2023: identification, signage, extended opening + air conditioning ~€20–25k/building.","nl":"WHO-hitteplan Europa 2023: aanwijzing, bebording, ruimere openingstijden + airco ~€20–25k/gebouw."},"HLNUG (Hessisches Landesamt für Naturschutz) + DWD Klimaatlas: Lizenzen + Analyse ~25k€. Eigene Sensorik (20 Stationen): ~13k€. Vergleichsanalyse: Frankfurt Klimaatlas-Neuauflage 2024 (Stadtplanungsamt).":{"en":"HLNUG + DWD climate atlas: licences + analysis ~€25k. Own sensors (20 stations): ~€100k.","nl":"HLNUG + DWD-klimaatatlas: licenties + analyse ~€25k. Eigen sensoren (20 stations): ~€100k."},"Referenz: Frankfurter Wohnungsbaufonds 2024 · Ø 2.500€/m² Ankauf+Sanierung · 1.000 m² Pilotvolumen.":{"en":"Reference: Frankfurt housing fund 2024 · avg €2,500/m² purchase+renovation · 1,000 m² pilot volume.","nl":"Referentie: woningfonds Frankfurt 2024 · gem. €2.500/m² aankoop+renovatie · 1.000 m² pilot."},"1 Stelle TVöD E10 (62k€) + Rechtsberatungsbudget 18k€ + Öffentlichkeitsarbeit 10k€.":{"en":"1 staff post (€62k) + legal-advice budget €18k + outreach €10k.","nl":"1 fte (€62k) + budget juridisch advies €18k + communicatie €10k."},"Referenz: Bürgerbudget Eberswalde, Stadtteilbudgets Berlin-Lichtenberg (250k€/Stadtteil/Jahr).":{"en":"Reference: participatory budget Eberswalde, district budgets Berlin-Lichtenberg (€250k/district/yr).","nl":"Referentie: burgerbegroting Eberswalde, wijkbudgetten Berlin-Lichtenberg (€250k/wijk/jr)."},"Open-Source-Plattform (decidim/CONSUL): Hosting+Anpassung 25k€ + Moderation 40k€/Jahr.":{"en":"Open-source platform (decidim/CONSUL): hosting+customisation €25k + moderation €40k/yr.","nl":"Open-sourceplatform (decidim/CONSUL): hosting+maatwerk €25k + moderatie €40k/jr."},"20 IoT-Pegelsensoren (2k€/Stück) + Integration KATWARN/NINA 30k€ + Betrieb 15k€/Jahr.":{"en":"20 IoT level sensors (€2k each) + KATWARN/NINA integration €30k + operation €15k/yr.","nl":"20 IoT-peilsensoren (€2k/stuk) + KATWARN/NINA-integratie €30k + beheer €15k/jr."},"3 Standorte × 100k€ (30kWp PV + 60kWh Speicher + Notstromverteilung). Referenz: Leuchtturm-Konzept BBK.":{"en":"3 sites × €100k (30 kWp PV + 60 kWh storage + backup distribution). Reference: BBK lighthouse concept.","nl":"3 locaties × €100k (30 kWp PV + 60 kWh opslag + noodstroomverdeling). Referentie: BBK-concept."},"Grünflächenamt FFM: Umwandlung 2–3€/m² einmalig, danach −40% Pflegekosten (2 statt 8 Mahden).":{"en":"FFM parks dept.: conversion €2–3/m² one-off, then −40% maintenance (2 instead of 8 mowings).","nl":"Groenbeheer FFM: omvorming €2–3/m² eenmalig, daarna −40% onderhoud (2 i.p.v. 8 maaibeurten)."},"Stadt Barcelona Superilla: Ø 400–600k€/Block Umbau. Darmstadt + Berlin-Pilotprojekte 2024 vergleichbar.":{"en":"City of Barcelona Superilla: avg €400–600k/block. Darmstadt + Berlin pilots 2024 comparable.","nl":"Barcelona Superilla: gem. €400–600k/blok. Darmstadt + Berlijnse pilots 2024 vergelijkbaar."},"CROW-Ontwerprichtlijn 'Duurzaam Veilig' · Gemeente Utrecht Mobiliteitsplan 'Slimme Routes, Slim Regelen, Slim Bestemmen'.":{"en":"CROW design guideline 'Duurzaam Veilig' · Utrecht mobility plan 'Slimme Routes, Slim Regelen, Slim Bestemmen'.","nl":"CROW-ontwerprichtlijn 'Duurzaam Veilig' · Utrecht mobiliteitsplan 'Slimme Routes, Slim Regelen, Slim Bestemmen'."},"Programm Steenbreek / NK Tegelwippen · jede entsiegelte Fläche entlastet das Mischkanalsystem (Waterschap HDSR).":{"en":"Steenbreek programme / NK Tegelwippen · every de-sealed surface relieves the combined sewer (Waterschap HDSR).","nl":"Programma Steenbreek / NK Tegelwippen · elke ontharde m² ontlast het gemengde riool (Waterschap HDSR)."},"Heimische Arten stützen lokale Nahrungsketten (Akkerhommel, Egel, Vögel). NDFF/GBIF-Beobachtungen als Artenbasis.":{"en":"Native species support local food chains (carder bee, hedgehog, birds). NDFF/GBIF records as species base.","nl":"Inheemse soorten dragen lokale voedselketens (akkerhommel, egel, vogels). NDFF/GBIF-waarnemingen als soortenbasis."},"Klimaatadaptatie Utrecht · Waterschap HDSR-Bergungsnorm (Bui bergen) · NBS-Rückhalt statt Kanalausbau.":{"en":"Klimaatadaptatie Utrecht · Waterschap HDSR storage standard · NBS retention instead of sewer expansion.","nl":"Klimaatadaptatie Utrecht · HDSR-bergingsnorm (bui bergen) · NBS-retentie in plaats van rioolverzwaring."},"UBA/JRC: Cool pavements senken Oberflächentemperatur 5–10 °C · waterpasserende verharding (helle Betonsteine, Drainagebeton).":{"en":"UBA/JRC: cool pavements lower surface temperature by 5–10 °C · permeable paving (light concrete, drainage bed).","nl":"UBA/JRC: cool pavements verlagen oppervlaktetemperatuur 5–10 °C · waterpasserende verharding (lichte betonstenen, drainagebed)."},"Methodik angelehnt an Deutsche Umwelthilfe Hitze-Check 2026 (Versiegelung · Grünvolumen · Oberflächentemperatur) — von nice here auf Stadtteilebene heruntergebrochen. DUH bewertet nur Gesamtstädte.":{"en":"Methodology adapted from the German Environmental Aid (DUH) heat check 2026 (sealing · green volume · surface temperature) — scaled down to district level by nice here. DUH only rates whole cities.","nl":"Methodiek ontleend aan de DUH-hittecheck 2026 (verharding · groenvolume · oppervlaktetemperatuur) — door nice here teruggeschaald naar wijkniveau. DUH beoordeelt alleen hele steden."},"Konfidenz & Datenstand je Dimension siehe Tab „Dimensionen\". Vollständige Methodik & Quellen auf der ":{"en":"Confidence & data vintage per dimension: see the “Dimensions” tab. Full methodology & sources on the ","nl":"Betrouwbaarheid & datastand per dimensie: zie tab “Dimensies”. Volledige methodiek & bronnen op de "},"Methodikseite":{"en":"methodology page","nl":"methodiekpagina"},"Maßnahmen nach Hotspot-Typ":{"en":"Measures by hotspot type","nl":"Maatregelen per hotspottype"},"Hohe Strahlungsbelastung (+":{"en":"High radiant load (+","nl":"Hoge stralingsbelasting (+"},"°C LST) — Verschattung + Kühlung":{"en":"°C LST) — shading + cooling","nl":"°C LST) — schaduw + koeling"},"Vulnerable Bevölkerungsgruppen — Präventiver Hitzeschutz":{"en":"Vulnerable population groups — preventive heat protection","nl":"Kwetsbare groepen — preventieve hittebescherming"},"Hitzeschutz — Priorität":{"en":"Heat protection — priority","nl":"Hittebescherming — prioriteit"},"MITTEL":{"en":"MEDIUM","nl":"GEMIDDELD"},"HOCH":{"en":"HIGH","nl":"HOOG"},"NIEDRIG":{"en":"LOW","nl":"LAAG"},"% versiegelt":{"en":"% sealed","nl":"% verhard"},"Erhöht":{"en":"Elevated","nl":"Verhoogd"},"Zitat":{"en":"Cite","nl":"Citaat"},"Weitere Maßnahmen nach NICE-Score":{"en":"Further measures by NICE score","nl":"Verdere maatregelen naar NICE-score"},"Stadtteil-Bericht (PDF)":{"en":"District report (PDF)","nl":"Wijkrapport (PDF)"}," von nice here":{"en":" by nice here","nl":" door nice here"}});
@@ -1454,16 +1454,16 @@ const CITY_CFG={
     geojson:(location.hostname.endsWith('github.io')?'/'+location.pathname.split('/')[1]:'')+'/data/layers/wijken_utrecht.geojson',
     nameProp:"wijknaam",
     data:{
-      "Binnenstad":        {A:40,B:44,C:90,D:68,E:26,F:70,G:33,H:60,pop:17000,wb:68,mig:38,hw:false,heat:true, noise:80, versieg:78,lst_delta:2.9,sgb2:1.4,kinderarmut:4.9,einkommen:42300,arbeitslos:0.7,abitur:66},
-      "West":              {A:47,B:50,C:65,D:57,E:39,F:54,G:44,H:53,pop:18000,wb:56,mig:35,hw:false,heat:true, noise:66, versieg:66,lst_delta:2.0,sgb2:2.4,kinderarmut:5.3,einkommen:36500,arbeitslos:0.9,abitur:63},
-      "Noordwest":         {A:49,B:51,C:62,D:60,E:43,F:57,G:46,H:55,pop:23000,wb:58,mig:32,hw:false,heat:false,noise:65, versieg:64,lst_delta:1.9,sgb2:3.6,kinderarmut:6.3,einkommen:31800,arbeitslos:0.7,abitur:52},
-      "Overvecht":         {A:31,B:34,C:55,D:42,E:29,F:37,G:30,H:43,pop:31000,wb:40,mig:55,hw:false,heat:true, noise:68, versieg:62,lst_delta:2.2,sgb2:7.7,kinderarmut:10.5,einkommen:23300,arbeitslos:0.7,abitur:30},
-      "Noordoost":         {A:54,B:56,C:68,D:65,E:47,F:61,G:51,H:59,pop:19000,wb:62,mig:28,hw:false,heat:false,noise:62, versieg:58,lst_delta:1.5,sgb2:1.0,kinderarmut:3.6,einkommen:39500,arbeitslos:0.8,abitur:68},
-      "Oost":              {A:62,B:65,C:75,D:75,E:45,F:70,G:58,H:64,pop:26000,wb:70,mig:22,hw:false,heat:false,noise:60, versieg:55,lst_delta:1.4,sgb2:1.3,kinderarmut:5.4,einkommen:37500,arbeitslos:0.6,abitur:64},
-      "Zuid":              {A:57,B:59,C:68,D:64,E:43,F:63,G:54,H:59,pop:22000,wb:64,mig:20,hw:false,heat:false,noise:58, versieg:54,lst_delta:1.3,sgb2:3.8,kinderarmut:6.2,einkommen:31300,arbeitslos:0.8,abitur:56},
-      "Zuidwest":          {A:44,B:46,C:57,D:54,E:37,F:51,G:42,H:51,pop:14000,wb:54,mig:30,hw:false,heat:false,noise:64, versieg:60,lst_delta:1.7,sgb2:4.6,kinderarmut:7.1,einkommen:30300,arbeitslos:0.8,abitur:47},
-      "Leidsche Rijn":     {A:65,B:67,C:60,D:72,E:60,F:66,G:64,H:66,pop:45000,wb:66,mig:18,hw:false,heat:false,noise:50, versieg:48,lst_delta:0.9,sgb2:1.8,kinderarmut:3.6,einkommen:36100,arbeitslos:0.8,abitur:54},
-      "Vleuten-De Meern":  {A:70,B:72,C:52,D:74,E:64,F:68,G:70,H:68,pop:28000,wb:68,mig:12,hw:false,heat:false,noise:46, versieg:34,lst_delta:0.3,sgb2:1.0,kinderarmut:2.2,einkommen:35400,arbeitslos:0.7,abitur:44},
+      "Binnenstad":        {A:40,B:44,C:90,D:68,E:26,F:70,G:33,H:60,pop:20190,wb:68,mig:36,hw:false,heat:true, noise:80, versieg:78,lst_delta:2.9,sgb2:1.5,kinderarmut:5,einkommen:46400,arbeitslos:1,abitur:68},
+      "West":              {A:47,B:50,C:65,D:57,E:39,F:54,G:44,H:53,pop:29710,wb:56,mig:36,hw:false,heat:true, noise:66, versieg:66,lst_delta:2.0,sgb2:2.4,kinderarmut:4.3,einkommen:41000,arbeitslos:1,abitur:63},
+      "Noordwest":         {A:49,B:51,C:62,D:60,E:43,F:57,G:46,H:55,pop:45220,wb:58,mig:39,hw:false,heat:false,noise:65, versieg:64,lst_delta:1.9,sgb2:3.5,kinderarmut:4.8,einkommen:36400,arbeitslos:1,abitur:55},
+      "Overvecht":         {A:31,B:34,C:55,D:42,E:29,F:37,G:30,H:43,pop:35255,wb:35.2,wbOk:true,mig:63,hw:false,heat:true, noise:68, versieg:62,lst_delta:2.2,sgb2:7.8,kinderarmut:6.6,einkommen:26200,arbeitslos:0.8,abitur:32},
+      "Noordoost":         {A:54,B:56,C:68,D:65,E:47,F:61,G:51,H:59,pop:40600,wb:62,mig:27,hw:false,heat:false,noise:62, versieg:58,lst_delta:1.5,sgb2:1,kinderarmut:2.9,einkommen:44500,arbeitslos:0.8,abitur:69},
+      "Oost":              {A:62,B:65,C:75,D:75,E:45,F:70,G:58,H:64,pop:33510,wb:72.5,wbOk:true,mig:32,hw:false,heat:false,noise:60, versieg:55,lst_delta:1.4,sgb2:1.4,kinderarmut:4.9,einkommen:41200,arbeitslos:0.8,abitur:67},
+      "Zuid":              {A:57,B:59,C:68,D:64,E:43,F:63,G:54,H:59,pop:28395,wb:64,mig:38,hw:false,heat:false,noise:58, versieg:54,lst_delta:1.3,sgb2:4.2,kinderarmut:4.3,einkommen:34900,arbeitslos:0.9,abitur:58},
+      "Zuidwest":          {A:44,B:46,C:57,D:54,E:37,F:51,G:42,H:51,pop:40830,wb:54,mig:54,hw:false,heat:false,noise:64, versieg:60,lst_delta:1.7,sgb2:4.6,kinderarmut:5.5,einkommen:34600,arbeitslos:0.9,abitur:50},
+      "Leidsche Rijn":     {A:65,B:67,C:60,D:72,E:60,F:66,G:64,H:66,pop:49310,wb:66,mig:46,hw:false,heat:false,noise:50, versieg:48,lst_delta:0.9,sgb2:1.9,kinderarmut:2.6,einkommen:41400,arbeitslos:1,abitur:55},
+      "Vleuten-De Meern":  {A:70,B:72,C:52,D:74,E:64,F:68,G:70,H:68,pop:51195,wb:68,mig:29,hw:false,heat:false,noise:46, versieg:34,lst_delta:0.3,sgb2:1,kinderarmut:1.6,einkommen:40200,arbeitslos:0.8,abitur:46},
     }
   }
 };
@@ -2027,7 +2027,7 @@ function renderKDPanel(){
           <div class="kd-dot c2"></div>
           <div style="flex:1">
             <div class="kd-name">${name}</div>
-            <div class="kd-why">Klimascore ${cs}/100 ist ${gap} Punkte besser als der Sozialscore (${ss}/100). Das Viertel wertet ökologisch auf — aber ${d.mig}% der Bewohner haben Migrationshintergrund und sind bei steigenden Mieten besonders gefährdet zu verdrängt zu werden.</div>
+            <div class="kd-why">Klimascore ${cs}/100 ist ${gap} Punkte besser als der Sozialscore (${ss}/100). Das Viertel wertet ökologisch auf — aber ${d.mig}% der Bewohner ${city==='utr'?'haben eine Herkunft außerhalb der Niederlande':'haben Migrationshintergrund'} und sind bei steigenden Mieten besonders gefährdet zu verdrängt zu werden.</div>
             <div class="kd-impact">→ Handlungsfenster jetzt · Mietpreisbremse, Sozialbindung prüfen</div>
             <div class="kd-numbers">
               <span class="kd-num yellow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M11 20A7 7 0 0 1 4 13C4 7 9 3 20 4c1 11-3 16-9 16Z"/><path d="M4 21c4-4 7-6 12-8"/></svg> Klima ${cs}/100</span>
@@ -2622,8 +2622,8 @@ function loadLayer(id,statusEl){
       });
       return;
     // ── SOZIALE LAYER ─────────────────────────────────────────
-    case 'trees':           return loadLocal(`trees_${city}.geojson`,id,statusEl,renderTreesLayer);
-    case 'benches':         return loadLocal(`benches_${city}.geojson`,id,statusEl,renderBenchesLayer);
+    case 'trees':           if(city==='utr')return renderOfficialTrees(id,statusEl); return loadLocal(`trees_${city}.geojson`,id,statusEl,renderTreesLayer);
+    case 'benches':         if(city==='utr')return renderOfficialBenches(id,statusEl); return loadLocal(`benches_${city}.geojson`,id,statusEl,renderBenchesLayer);
     case 'footways_quality':return loadLocal(`footways_quality_${city}.geojson`,id,statusEl,renderFootwaysQuality);
     case 'social':          return loadLocal(`social_${city}.geojson`,id,statusEl,renderSocialLayer);
     case 'retail':          return loadLocal(`retail_${city}.geojson`,id,statusEl,renderRetailLayer);
@@ -3047,9 +3047,9 @@ function districtPDF(name){
   // ── 3 · Soziale Indikatoren ──
   y=pdfSecN(doc,y,'3',L2('Soziale Indikatoren','Social indicators','Sociale indicatoren'));
   const soc=[
-    [L2('Wahlbeteiligung','Voter turnout','Opkomst'),d.wb+' %',L2('Migrationshintergrund','Migration background','Migratieachtergrond'),d.mig+' %'],
-    [isNL?L2('Bijstand (Sozialhilfe)','Social assistance (bijstand)','Bijstand'):L2('SGB-II-Quote','Social assistance (SGB II)','Bijstandsquote'),d.sgb2+' %',isNL?L2('Niedrigeinkommen','Low income','Laag inkomen'):L2('Kinderarmut','Child poverty','Kinderarmoede'),d.kinderarmut+' %'],
-    [L2('Einkommen p. P.','Income p.c.','Inkomen p.p.'),(d.einkommen/1000).toFixed(0)+'k €',L2('Arbeitslosigkeit','Unemployment','Werkloosheid'),d.arbeitslos+' %'],
+    [L2('Wahlbeteiligung','Voter turnout','Opkomst'),d.wb+' %',(isNL?L2('Herkunft außerhalb NL','Non-Dutch origin','Herkomst buiten NL'):L2('Migrationshintergrund','Migration background','Migratieachtergrond')),d.mig+' %'],
+    [isNL?L2('Bijstand (Sozialhilfe)','Social assistance (bijstand)','Bijstand'):L2('SGB-II-Quote','Social assistance (SGB II)','Bijstandsquote'),d.sgb2+' %',isNL?L2('Personen in Armut','Persons in poverty','Personen in armoede'):L2('Kinderarmut','Child poverty','Kinderarmoede'),d.kinderarmut+' %'],
+    [L2('Einkommen p. P.','Income p.c.','Inkomen p.p.'),(d.einkommen/1000).toFixed(0)+'k €',(isNL?L2('WW-Bezug','Unemployment benefit (WW)','WW-uitkering'):L2('Arbeitslosigkeit','Unemployment','Werkloosheid')),d.arbeitslos+' %'],
     [L2('Versiegelung','Surface sealing','Verharding'),d.versieg+' %',L2('Hitze-Anomalie (LST)','Heat anomaly (LST)','Hitte-anomalie (LST)'),(d.lst_delta>0?'+':'')+d.lst_delta+' °C']];
   const c4=[{t:L2('Indikator','Indicator','Indicator'),x:PDFX.L},{t:L2('Wert','Value','Waarde'),x:PDFX.L+78,a:'right'},{t:L2('Indikator','Indicator','Indicator'),x:PDFX.L+92},{t:L2('Wert','Value','Waarde'),x:PDFX.R,a:'right'}];
   y=pdfTHead(doc,y,c4);
@@ -3100,7 +3100,7 @@ function areaPDF(){
   const cb=[{t:L('Indikator','Indicator','Indicator'),x:PDFX.L},{t:L('Wert','Value','Waarde'),x:PDFX.L+92,a:'right'},{t:L('Referenz','Benchmark','Referentie'),x:PDFX.R,a:'right'}];
   y=pdfTHead(doc,y,cb);
   [[L('Bäume im Gebiet','Trees in area','Bomen in gebied'),st.trees,'—'],
-   [L('Bäume je Hektar','Trees per hectare','Bomen per hectare'),st.treesPerHa,'min. 8'],
+   [L('Kronendach (geschätzt)','Canopy (estimated)','Kronendak (geschat)'),st.canopyPct+' %','30 %'],
    [L('Grünanteil','Green cover','Groenaandeel'),st.greenPct+' %','min. 25 %'],
    [L('Bänke','Benches','Bankjes'),st.benches,st.shops>=4?'min. 2':'—'],
    [L('Trinkbrunnen','Drinking fountains','Drinkfonteinen'),st.water,'—'],
@@ -3455,9 +3455,9 @@ function heatGrid(b,els,field,view,targetM=62){
   const rows=Math.max(5,Math.min(170,Math.ceil((b.getNorth()-s)/cellH)));
   const cols=Math.max(5,Math.min(170,Math.ceil((b.getEast()-w)/cellW)));
   const grid=[];
-  for(let r=0;r<rows;r++){grid.push([]);for(let c=0;c<cols;c++)grid[r].push({trees:0,shops:0,green:false,lat:s+(r+0.5)*cellH,lon:w+(c+0.5)*cellW,bnds:[[s+r*cellH,w+c*cellW],[s+(r+1)*cellH,w+(c+1)*cellW]]});}
+  for(let r=0;r<rows;r++){grid.push([]);for(let c=0;c<cols;c++)grid[r].push({trees:0,crown:0,shops:0,green:false,lat:s+(r+0.5)*cellH,lon:w+(c+0.5)*cellW,bnds:[[s+r*cellH,w+c*cellW],[s+(r+1)*cellH,w+(c+1)*cellW]]});}
   const idx=(la,lo)=>{const r=Math.floor((la-s)/cellH),c=Math.floor((lo-w)/cellW);return(r>=0&&r<rows&&c>=0&&c<cols)?grid[r][c]:null;};
-  (els.trees||[]).forEach(p=>{const g=idx(p[0],p[1]);if(g)g.trees++;});
+  (els.trees||[]).forEach(p=>{const g=idx(p[0],p[1]);if(g){g.trees++;g.crown+=crownOf(p);}});
   (els.shops||[]).forEach(p=>{const g=idx(p[0],p[1]);if(g)g.shops++;});
   if(field&&field.pts){field.pts.forEach(p=>{const g=idx(p[0],p[1]);if(g)g.bcount=(g.bcount||0)+1;});}   // Gebäude-Dichte je Zelle
   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const g=grid[r][c];for(const poly of (els.green||[])){if(diagPointInPoly(g.lat,g.lon,poly)){g.green=true;break;}}}
@@ -3466,20 +3466,20 @@ function heatGrid(b,els,field,view,targetM=62){
   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
     const g=grid[r][c];
     if(view && (g.lat<view.s||g.lat>view.n||g.lon<view.w||g.lon>view.e))continue;  // nur sichtbare Zellen
-    const treeN=sum(r,c,'trees'), shopN=sum(r,c,'shops');
+    const treeN=sum(r,c,'trees'), shopN=sum(r,c,'shops'), canopy=Math.min(1,sum(r,c,'crown')/(9*targetM*targetM));
     const builtUp=Math.min(1,shopN/8);
     const greenCov=g.green?1:0;
     const realLst=sampleLst(field,g.lat,g.lon);
     let dt0, measured;
     if(realLst!=null){ dt0=Math.max(-1,Math.min(6,realLst)); measured=true; }        // ECHT: gemessene Satelliten-LST
-    else { if(!(treeN||shopN||greenCov||g.bcount))continue; dt0=Math.max(-0.5,Math.min(5,0.6+builtUp*2.8-greenCov*2.2-Math.min(1.2,treeN*0.04))); measured=false; }  // Fallback (OSM-Städte): geschätzt
+    else { if(!(treeN||shopN||greenCov||g.bcount))continue; dt0=Math.max(-0.5,Math.min(5,0.6+builtUp*2.8-greenCov*2.2-Math.min(1.2,canopy*3))); measured=false; }  // Fallback (OSM-Städte): geschätzt
     // Kühl-Lücke: nachweislich heiß UND unterbegrünt UND Platz — sonst 0.
     // Ehrlichkeit: eine Lücke heißt „Teilflächen möglich" (Baumstandorte, Parkstreifen), nie die ganze Zelle.
     const bden=g.bcount||0;
-    const room=Math.max(0,1-bden/7-greenCov-Math.min(0.5,treeN*0.05));
+    const room=Math.max(0,1-bden/7-greenCov-Math.min(0.5,canopy));
     const heatN=Math.max(0,Math.min(1,(dt0-0.3)/1.5));   // an echte LST-Spanne (0–1,8) angepasst
-    const pot=(greenCov>0.5||bden>=7||treeN>=10||dt0<1.0)?0:room*(0.25+0.75*heatN);
-    cells.push({bnds:g.bnds,dt0,builtUp,greenCov,treeN,measured,bden,pot});
+    const pot=(greenCov>0.5||bden>=7||canopy>=0.30||dt0<1.0)?0:room*(0.25+0.75*heatN);
+    cells.push({bnds:g.bnds,dt0,builtUp,greenCov,treeN,canopy,measured,bden,pot});
   }
   return {cells};
 }
@@ -3524,7 +3524,7 @@ function heatCellPopup(c){
     const pi=potInfo(c);
     const lbl=pi.cls==='green'?csTxt('Schon grün — hier ist wenig zu tun','Already green — little to do here','Al groen — weinig te doen'):pi.cls==='dense'?csTxt('Dicht bebaut — wenig Platz','Densely built — little room','Dicht bebouwd — weinig ruimte'):pi.cls==='pot'?(c.pot>=0.8?csTxt('Kühl-Lücke — Priorität hoch','Cooling gap — high priority','Koelkans — hoge prioriteit'):csTxt('Kühl-Lücke','Cooling gap','Koelkans')):csTxt('Keine Lücke','No gap','Geen hiaat');
     const act=pi.cls==='pot'?csTxt('Gemeint sind Teilflächen: Baumstandorte, Parkstreifen, Randstreifen — nicht die ganze Zelle. Möglich: Straßenbäume, Entsiegelung, Fahrbahn verschmälern.','This means partial areas: tree pits, parking strips, verges — not the whole cell. Possible: street trees, de-sealing, narrowing the carriageway.','Bedoeld zijn deelvlakken: boomspiegels, parkeerstroken, bermen — niet de hele cel. Mogelijk: straatbomen, ontharding, rijbaan versmallen.'):'';
-    html='<div style="font-family:inherit"><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#8888aa">'+csTxt('Kühl-Lücke · ~60-m-Zelle','Cooling gap · ~60 m cell','Koelkans · ~60 m cel')+'</div><div style="font-size:14px;font-weight:800;color:'+pi.color+';margin:3px 0">'+lbl+'</div>'+(act?'<div style="font-size:10px;color:#374151;line-height:1.4">'+act+'</div>':'')+'<div style="font-size:9px;color:#8888aa;margin-top:6px">'+csTxt('Hitze','Heat','Hitte')+' +'+c.dt0.toFixed(1)+' °C · '+csTxt('Bäume im Umfeld','trees nearby','bomen nabij')+' '+c.treeN+' · '+csTxt('Gebäude','buildings','gebouwen')+' '+c.bden+'</div></div>';
+    html='<div style="font-family:inherit"><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#8888aa">'+csTxt('Kühl-Lücke · ~60-m-Zelle','Cooling gap · ~60 m cell','Koelkans · ~60 m cel')+'</div><div style="font-size:14px;font-weight:800;color:'+pi.color+';margin:3px 0">'+lbl+'</div>'+(act?'<div style="font-size:10px;color:#374151;line-height:1.4">'+act+'</div>':'')+'<div style="font-size:9px;color:#8888aa;margin-top:6px">'+csTxt('Hitze','Heat','Hitte')+' +'+c.dt0.toFixed(1)+' °C · '+csTxt('Bäume im Umfeld','trees nearby','bomen nabij')+' '+c.treeN+' · '+csTxt('Kronendach','canopy','kronendak')+' ~'+Math.round((c.canopy||0)*100)+' %'+' · '+csTxt('Gebäude','buildings','gebouwen')+' '+c.bden+'</div></div>';
   } else {
     const dt=heatCooled(c);
     html='<div style="font-family:inherit"><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#8888aa">'+csTxt('Hitze · ~60-m-Zelle','Heat · ~60 m cell','Hitte · ~60 m cel')+'</div><div style="font-size:18px;font-weight:800;color:'+heatColor(dt)+';margin:3px 0">+'+dt.toFixed(1)+' °C</div>'+((HEAT.cool.trees||HEAT.cool.deseal||HEAT.cool.green)?'<div style="font-size:10px;color:#15803d">'+csTxt('gekühlt von','cooled from','gekoeld van')+' +'+c.dt0.toFixed(1)+' °C</div>':'')+'<div style="font-size:9px;color:#8888aa;margin-top:6px;border-top:1px solid #eee;padding-top:5px">'+(c.measured?csTxt('Basis: gemessene Satelliten-LST (Copernicus).','Basis: measured satellite LST (Copernicus).','Basis: gemeten satelliet-LST (Copernicus).'):csTxt('Geschätzt aus Versiegelung + Grün.','Estimated from sealing + green.','Geschat uit verharding + groen.'))+'</div></div>';
@@ -3670,10 +3670,10 @@ function renderStreetPanel(state){
   if(!sel.length){P.innerHTML=head+`<div class="ap-body"><div class="diag-hint">${T.hint}</div><div style="font-size:11px;color:var(--muted);padding:6px 0">${T.none}</div></div>`;return;}
   const totLen=Math.round(sel.reduce((s,w)=>s+streetLenM(w.geo),0));
   // Bäume entlang (Bundle, 20 m)
-  let treesAlong=0; const bundle=DIAG.bundle[city];
+  let treesAlong=0,crownAlong=0; const bundle=DIAG.bundle[city];
   if(bundle&&bundle.trees){
     const near=(t)=>sel.some(w=>w.geo.some(v=>distM(t,v)<22));
-    treesAlong=bundle.trees.filter(near).length;
+    const nb=bundle.trees.filter(near);treesAlong=nb.length;crownAlong=nb.reduce((a,t)=>a+crownOf(t),0);
   }
   const potential=Math.floor(totLen/15);
   const M=STREET.applied;
@@ -3681,8 +3681,9 @@ function renderStreetPanel(state){
   const newBench=M.bench?Math.floor(totLen/120):0;
   const treeCost=newTrees*3000, benchCost=newBench*1200, calmCost=M.calm?sel.length*14000:0;
   const totCost=treeCost+benchCost+calmCost;
-  const shade0=Math.min(100,Math.round(treesAlong*10/Math.max(1,totLen)*100));
-  const shade1=Math.min(100,Math.round((treesAlong+newTrees)*10/Math.max(1,totLen)*100));
+  // Kronendach im 44-m-Korridor (±22 m); neue Bäume mit der Krone eines 10-jährigen Baums
+  const shade0=Math.min(100,Math.round(crownAlong/Math.max(1,totLen*44)*100));
+  const shade1=Math.min(100,Math.round((crownAlong+newTrees*crownM2(new Date().getFullYear()-10))/Math.max(1,totLen*44)*100));
   const meas=(id,name,eff,on)=>`<div class="ap-meas${on?' on':''}" onclick="toggleStreetMeasure('${id}')"><div class="mh"><div class="mc">${ic(id==='plant'?'tree':id==='bench'?'bench':'walk',13)}</div><div class="mn">${name}</div><div class="me">${eff}</div></div></div>`;
   let body=`<div class="ap-body">
     <div class="ap-stats" style="grid-template-columns:1fr 1fr">
@@ -3834,7 +3835,8 @@ function analyzeArea(ll){
     }
     const greenPct=inRing?Math.round(inGreen/inRing*100):0;
     const treesPerHa=ha>0?+(trees/ha).toFixed(1):0;
-    areaStats={trees,benches,water,shops,greenPct,treesPerHa,ha};
+    const canopyPct=ha>0?Math.min(100,Math.round(els.trees.filter(inArea).reduce((a,p)=>a+crownOf(p),0)/(ha*100))):0;
+    areaStats={trees,benches,water,shops,greenPct,treesPerHa,canopyPct,ha};
     areaApplied={};
     renderAreaPanel();
   });
@@ -3842,7 +3844,7 @@ function analyzeArea(ll){
 
 function areaScore(st){
   let sc=45;
-  sc+=Math.min(22, st.treesPerHa*1.4);
+  sc+=Math.min(22, (st.canopyPct||0)*0.73);   // 30 % Kronendach (3-30-300) ≈ volle Punktzahl
   sc+=Math.min(14, st.benches*1.5);
   sc+=Math.min(16, st.greenPct*0.4);
   sc+=Math.min(6, st.water*3);
@@ -3851,7 +3853,7 @@ function areaScore(st){
 }
 
 const AREA_MEASURES=[
-  {id:'A01',ic:'tree',cond:s=>s.treesPerHa<10||s.greenPct<35,d:{trees:50},eff:'+50 Bäume'},
+  {id:'A01',ic:'tree',cond:s=>s.canopyPct<30||s.greenPct<35,d:{trees:50},eff:'+50 Bäume'},
   {id:'H02',ic:'building',cond:s=>s.greenPct<25,d:{greenPct:6},eff:'Grünanteil +6 Pp.'},
   {id:'G01',ic:'leaf',cond:s=>s.greenPct<45,d:{greenPct:4},eff:'Grünanteil +4 Pp.'},
   {id:'D02',ic:'bench',cond:s=>s.benches<2&&s.shops>=3,d:{benches:10},eff:'+10 Sitzplätze'},
@@ -3862,7 +3864,7 @@ function projectedStats(){
   const st={...areaStats};
   AREA_MEASURES.forEach(m=>{
     if(!areaApplied[m.id])return;
-    if(m.d.trees){st.trees+=m.d.trees; st.treesPerHa=st.ha>0?+(st.trees/st.ha).toFixed(1):st.treesPerHa;}
+    if(m.d.trees){st.trees+=m.d.trees; st.treesPerHa=st.ha>0?+(st.trees/st.ha).toFixed(1):st.treesPerHa; st.canopyPct=st.ha>0?Math.min(100,Math.round(st.canopyPct+m.d.trees*crownM2(new Date().getFullYear()-10)/(st.ha*100))):st.canopyPct;}
     if(m.d.greenPct)st.greenPct=Math.min(100,st.greenPct+m.d.greenPct);
     if(m.d.benches)st.benches+=m.d.benches;
     if(m.d.water)st.water+=m.d.water;
@@ -3874,7 +3876,7 @@ function areaFindings(st){
   const f=[];
   if(st.greenPct<25)f.push(lang==='en'?`Only ${st.greenPct}% green cover — below a healthy neighbourhood share.`:lang==='nl'?`Slechts ${st.greenPct}% groen — onder een gezond wijkaandeel.`:`Nur ${st.greenPct}% Grünanteil — unter gesundem Quartiersniveau.`);
   if(st.shops>=4&&st.benches<2)f.push(lang==='en'?`Commercial but few benches — passing-through, not lingering.`:lang==='nl'?`Commercieel maar weinig bankjes — doorgangsruimte.`:`Kommerziell, kaum Bänke — Durchgangsraum statt Verweilort.`);
-  if(st.treesPerHa<8)f.push(lang==='en'?`${st.treesPerHa} trees/ha — low canopy, heat-prone.`:lang==='nl'?`${st.treesPerHa} bomen/ha — weinig beschaduwing.`:`${st.treesPerHa} Bäume/ha — wenig Beschattung, hitzeanfällig.`);
+  if(st.canopyPct<30)f.push(lang==='en'?`~${st.canopyPct}% canopy (${st.treesPerHa} trees/ha) — below the 30 % target, heat-prone.`:lang==='nl'?`~${st.canopyPct}% kronendak (${st.treesPerHa} bomen/ha) — onder het doel van 30 %.`:`~${st.canopyPct} % Kronendach (${st.treesPerHa} Bäume/ha) — unter dem Ziel von 30 %, hitzeanfällig.`);
   if(!f.length)f.push(lang==='en'?'Balanced: green, seating and canopy present.':lang==='nl'?'Evenwichtig: groen, zitplekken en bomen aanwezig.':'Ausgewogen: Grün, Sitzgelegenheiten und Bäume vorhanden.');
   return f;
 }
@@ -3893,7 +3895,7 @@ function renderAreaPanel(){
       <div class="ap-stat"><div class="v">${st.trees}</div><div class="l">${ic('tree',11)} ${L0('trees')}</div></div>
       <div class="ap-stat"><div class="v">${st.benches}</div><div class="l">${ic('bench',11)} ${L0('benches')}</div></div>
       <div class="ap-stat"><div class="v">${st.greenPct}%</div><div class="l">${ic('leaf',11)} ${L0('green')}</div></div>
-      <div class="ap-stat"><div class="v">${st.treesPerHa}</div><div class="l">${L0('tph')}</div></div>
+      <div class="ap-stat"><div class="v">${st.canopyPct} %</div><div class="l">${mT('Kronendach','Canopy','Kronendak')}</div></div>
       <div class="ap-stat"><div class="v">${st.shops}</div><div class="l">${ic('shop',11)} ${L0('shops')}</div></div>
       <div class="ap-stat"><div class="v">${st.water}</div><div class="l">${ic('droplet',11)} ${L0('water')}</div></div>
     </div>
@@ -3951,9 +3953,9 @@ const MPKG_ST=[ // Maßnahmenpakete je Straße — Korridore je Abschnitt, skali
  {id:'C',de:'Entsiegelung + Wadi (Schwammstraße)',en:'De-sealing + wadi (sponge street)',nl:'Ontharding + wadi (sponsstraat)',lo:80000,hi:160000,eff:'−1,0–1,8 °C',dur:'1–2 J.'}
 ];
 function mT(de,en,nl){return lang==='en'?en:lang==='nl'?nl:de;}
-// Sozialindikatoren je Stadt: Utrecht = CBS „laag inkomen" (Haushalte) + Bijstand, Frankfurt = Kinderarmut (u18) + SGB II.
+// Sozialindikatoren je Stadt: Utrecht = CBS 2024 „Personen in armoede" + Bijstand, Frankfurt = Kinderarmut (u18) + SGB II.
 function socLbl(short){ return city==='utr'
-  ? (short?mT('Niedrigeinkommen','Low income','Laag inkomen'):mT('Niedrigeinkommen (Haushalte)','Low income (households)','Laag inkomen (huishoudens)'))
+  ? (short?mT('Armut','Poverty','Armoede'):mT('Personen in Armut','Persons in poverty','Personen in armoede'))
   : (short?mT('Kinderarmut','Child poverty','Kinderarmoede'):mT('Kinderarmut (u18)','Child poverty (u18)','Kinderarmoede (<18)')); }
 // Maßnahmen-Kosten stammen aus deutschen Referenzprojekten → für Utrecht offen als übertragen kennzeichnen
 function kwRef(m){ const t=localize(m.kw).split('. ')[0]+'.'; return city==='utr'?mT('Kostenreferenz aus deutschen Projekten, für Utrecht übertragen (nicht lokal kalkuliert): ','Cost reference from German projects, transferred to Utrecht (not locally costed): ','Kostenreferentie uit Duitse projecten, overgezet naar Utrecht (niet lokaal begroot): ')+t:t; }
@@ -4005,7 +4007,7 @@ function csDot(cid){const st=(csGetAll()[cid]||{}).st;if(!st)return '';const col
 function missionListBadge(){const el=document.getElementById('csCount');if(!el)return;const pre=(city==='utr'?'UTR':'FFM')+'-'+(MISSION.kind==='streets'?'STR':'SCH');const n=Object.entries(csGetAll()).filter(([k,v])=>k.startsWith(pre)&&v.st).length;el.textContent=n?n+' '+mT('markiert','marked','gemarkeerd'):'';}
 function missionMeta(k){return MISSIONS.find(m=>m.kind===k)||MISSIONS[0];}
 function msColor(p){return p>=65?'#b34a4a':p>=50?'#c97b4f':p>=35?'#c9a53f':'#5f7a52';}
-function msRec(s){const r=[];if(s.c.heat>=50||s.c.seal>=55)r.push('A');if(s.gd>200||s.trees<8)r.push('B');if(s.c.heat>=70&&s.c.seal>=60)r.push('C');return r.length?r.slice(0,2):['B'];}
+function msRec(s){const r=[];if(s.c.heat>=50||s.c.seal>=55)r.push('A');if(s.gd>200||s.canopy<30)r.push('B');if(s.c.heat>=70&&s.c.seal>=60)r.push('C');return r.length?r.slice(0,2):['B'];}
 function msCost(s){const ids=msRec(s);let lo=0,hi=0;ids.forEach(id=>{const p=MPKG.find(x=>x.id===id);lo+=p.lo;hi+=p.hi;});return {lo,hi,mid:(lo+hi)/2,ids};}
 function toggleMission(){
   if(MISSION.active){closeMission();return;}
@@ -4049,14 +4051,15 @@ function missionLoad(){
   Promise.all([
     fetch(`${DATA_BASE}/pois_${city}.geojson`).then(r=>r.json()),
     fetch(`${DATA_BASE}/green_${city}.geojson`).then(r=>r.json()),
-    fetch(`${DATA_BASE}/trees_${city}.geojson`).then(r=>r.json()).catch(()=>null),
+    treePts(city),
     loadHeatField()
   ]).then(([pois,green,trees,field])=>{
     if(!MISSION.active)return;
     const gc=[];(green.features||[]).forEach(f=>{const c=geoCentroid(f.geometry.coordinates);if(c)gc.push(c);});
     const TI=new Map(),TC=0.0015;
-    ((trees&&trees.features)||[]).forEach(f=>{const g=f.geometry;if(!g||g.type!=='Point')return;const c=g.coordinates;const k=Math.round(c[0]/TC)+'_'+Math.round(c[1]/TC);let a=TI.get(k);if(!a){a=[];TI.set(k,a);}a.push(c);});
+    (trees||[]).forEach(p=>{const c=[p[1],p[0],p[2]];const k=Math.round(c[0]/TC)+'_'+Math.round(c[1]/TC);let a=TI.get(k);if(!a){a=[];TI.set(k,a);}a.push(c);});
     const treesNear=(lat,lon)=>{let n=0;const kx=Math.round(lon/TC),ky=Math.round(lat/TC);for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){const a=TI.get((kx+dx)+'_'+(ky+dy));if(!a)continue;for(const c of a){const mx=(c[0]-lon)*70000,my=(c[1]-lat)*111320;if(mx*mx+my*my<150*150)n++;}}return n;};
+    const canopyNear=(lat,lon,R)=>{let s=0;const kx=Math.round(lon/TC),ky=Math.round(lat/TC),k=Math.ceil(R/(TC*70000))+1;for(let dx=-k;dx<=k;dx++)for(let dy=-k;dy<=k;dy++){const a=TI.get((kx+dx)+'_'+(ky+dy));if(!a)continue;for(const c of a){const mx=(c[0]-lon)*70000,my=(c[1]-lat)*111320;if(mx*mx+my*my<R*R)s+=c[2]||DEFAULT_CROWN;}}return Math.min(100,Math.round(100*s/(Math.PI*R*R)));};
     const gDist=(lat,lon)=>{let b=1e9;for(const c of gc){const mx=(c[0]-lon)*70000,my=(c[1]-lat)*111320,d=mx*mx+my*my;if(d<b)b=d;}return Math.sqrt(b);};
     PAW_DIST_CACHE={};
     const S=[];
@@ -4065,14 +4068,15 @@ function missionLoad(){
       const g=f.geometry;const c=g.type==='Point'?g.coordinates:geoCentroid(g.coordinates);if(!c)return;
       const lat=c[1],lon=c[0];
       const lst=sampleLst(field,lat,lon);const d=pawDistrictAt(lat,lon);
+      if(!d)return;   // außerhalb der Stadtteile: keine amtlichen Daten → nicht bewerten
       const heat=Math.max(0,Math.min(1,(lst!=null?lst:(d?d.lst_delta:1))/3));
       const seal=d?Math.max(0,Math.min(1,((d.versieg||55)-45)/45)):0.5;
       const gd=gDist(lat,lon);const green01=Math.max(0,Math.min(1,gd/400));
-      const soc=d?Math.max(0,Math.min(1,(((d.kinderarmut!=null?d.kinderarmut:15))-5)/35)):0.5;
+      const soc=socRank(d);
       const prio=Math.round(100*(0.35*heat+0.20*seal+0.20*green01+0.25*soc));
       S.push({name:(f.properties&&f.properties.name)||mT('Schule','School','School'),kind:a,lat,lon,
         lst:lst!=null?+(+lst).toFixed(1):null,versieg:d?d.versieg:null,gd:Math.round(gd),
-        soc:d?d.kinderarmut:null,trees:treesNear(lat,lon),prio,
+        soc:d?d.kinderarmut:null,trees:treesNear(lat,lon),canopy:canopyNear(lat,lon,150),prio,
         c:{heat:Math.round(heat*100),seal:Math.round(seal*100),green:Math.round(green01*100),soc:Math.round(soc*100)}});
     });
     S.sort((x,y)=>y.prio-x.prio);
@@ -4127,14 +4131,14 @@ function missionCase(i){
   const rec=msRec(s),cost=msCost(s);
   const viol=[];
   if(s.gd>200)viol.push(mT('Kein Kühlgrün innerhalb 200 m (Utrecht-Ziel 2040)','No cool green within 200 m (Utrecht 2040 target)','Geen koelgroen binnen 200 m (doel 2040)'));
-  if(s.trees<8)viol.push(mT('Wenig Baumkronen ('+s.trees+' Bäume/150 m, Proxy) — Ziel 30 % Schatten','Low canopy ('+s.trees+' trees/150 m, proxy) — 30 % shade target','Weinig boomkronen ('+s.trees+'/150 m) — doel 30 % schaduw'));
+  if(s.canopy<30)viol.push(mT('Wenig Kronendach: ~'+s.canopy+' % im 150-m-Umfeld ('+s.trees+' Bäume) — Ziel 30 % (3-30-300)','Low canopy: ~'+s.canopy+' % within 150 m ('+s.trees+' trees) — 30 % target (3-30-300)','Weinig kronendak: ~'+s.canopy+' % binnen 150 m ('+s.trees+' bomen) — doel 30 % (3-30-300)'));
   if(s.lst!=null&&s.lst>=1.8)viol.push(mT('Hitzeinsel: +'+s.lst+' °C Oberflächentemperatur','Heat island: +'+s.lst+' °C LST','Hitte-eiland: +'+s.lst+' °C'));
   const affected=s.kind==='kindergarten'?120:350;
   const conf=s.lst!=null?mT('Hoch','High','Hoog'):mT('Mittel','Medium','Matig');
   const drv=[];
   if(s.c.heat>=50)drv.push(mT('hohe Hitzelast','high heat load','hoge hittelast'));
   if(s.gd>200||s.c.green>=50)drv.push(mT('fehlendes Kühlgrün','missing cool green','ontbrekend koelgroen'));
-  if(s.trees<8)drv.push(mT('wenig Schatten','little shade','weinig schaduw'));
+  if(s.canopy<30)drv.push(mT('wenig Schatten','little shade','weinig schaduw'));
   if(s.c.soc>=50)drv.push(mT('soziale Verwundbarkeit','social vulnerability','sociale kwetsbaarheid'));
   const why=(drv.length?drv.slice(0,3).join(' + '):mT('moderate Belastung','moderate burden','matige belasting'))+' — '+mT('Kinder gehören zu den hitzeempfindlichsten Gruppen.','children are among the most heat-sensitive groups.','kinderen behoren tot de meest hittegevoelige groepen.');
   const b=document.getElementById('msBody');if(!b)return;
@@ -4147,14 +4151,14 @@ function missionCase(i){
    <div class="case-why"><b>${mT('Warum relevant?','Why relevant?','Waarom relevant?')}</b> ${why}</div>
    <table class="case-metrics"><tbody>
      <tr><td>${mT('Betroffene (Schätzung)','Affected (estimate)','Betrokkenen (schatting)')}</td><td>~${affected} ${mT('Kinder','children','kinderen')}</td></tr>
-     <tr><td>${mT('Verschattung','Shading','Beschaduwing')}</td><td>~${Math.min(25,s.trees*2)} % → ${mT('Ziel','target','doel')} 30 %</td></tr>
+     <tr><td>${mT('Verschattung','Shading','Beschaduwing')}</td><td>~${s.canopy} % → ${mT('Ziel','target','doel')} 30 %</td></tr>
      <tr><td>${mT('Kühlgrün-Distanz','Cool-green distance','Koelgroen-afstand')}</td><td>${s.gd} m → ${mT('Ziel','target','doel')} &lt; 200 m</td></tr>
      <tr><td>${mT('Datenvertrauen','Data confidence','Datavertrouwen')}</td><td>${conf}</td></tr>
    </tbody></table>
    <div class="ms-comp">
      <span><b>${s.c.heat}</b><br>${mT('Hitze','Heat','Hitte')}</span><span><b>${s.c.soc}</b><br>${mT('Sozial','Social','Sociaal')}</span><span><b>${s.c.seal}</b><br>${mT('Versieg.','Sealing','Verhard.')}</span><span><b>${s.c.green}</b><br>${mT('Grün-Defizit','Green gap','Groentekort')}</span>
    </div>
-   <div class="ibox"><b>${mT('Problem','Problem','Probleem')}:</b> ${s.lst!=null?'+'+s.lst+' °C '+mT('Oberflächentemperatur','surface temperature','oppervlaktetemperatuur')+' · ':''}${s.versieg!=null?s.versieg+' % '+mT('Versiegelung im Umfeld','sealing in surroundings','verharding in omgeving')+' · ':''}${mT('nächstes Grün','nearest green','dichtstbijzijnd groen')} ${s.gd} m · ${s.trees} ${mT('Bäume im 150-m-Umfeld','trees within 150 m','bomen binnen 150 m')}${s.soc!=null?' · '+(city==='utr'?mT('Niedrigeinkommen im Wijk','district low income','laag inkomen wijk'):mT('Kinderarmut im Wijk','district child poverty','kinderarmoede wijk'))+' '+s.soc+' %':''}.</div>
+   <div class="ibox"><b>${mT('Problem','Problem','Probleem')}:</b> ${s.lst!=null?'+'+s.lst+' °C '+mT('Oberflächentemperatur','surface temperature','oppervlaktetemperatuur')+' · ':''}${s.versieg!=null?s.versieg+' % '+mT('Versiegelung im Umfeld','sealing in surroundings','verharding in omgeving')+' · ':''}${mT('nächstes Grün','nearest green','dichtstbijzijnd groen')} ${s.gd} m · ${s.trees} ${mT('Bäume im 150-m-Umfeld','trees within 150 m','bomen binnen 150 m')}${s.soc!=null?' · '+(city==='utr'?mT('Armut im Wijk','district poverty','armoede wijk'):mT('Kinderarmut im Wijk','district child poverty','kinderarmoede wijk'))+' '+s.soc+' %':''}.</div>
    ${viol.length?`<div class="ap-sec">${mT('Zielabweichung (Utrecht 2040)','Target gaps (Utrecht 2040)','Doelafwijking (2040)')}</div><div class="ibox" style="border-left-color:#dc2626">${viol.map(v=>'· '+v).join('<br>')}</div>`:''}
    <div class="ap-sec">${mT('Maßnahmenpakete','Action packages','Maatregelpakketten')}</div>
    ${MPKG.map(p=>{const on=rec.indexOf(p.id)>=0;
@@ -4163,7 +4167,7 @@ function missionCase(i){
    <div class="ap-sec">${mT('Vorher / Nachher','Before / after','Voor / na')}</div>
    <div class="ibox" style="font-family:ui-monospace,monospace;font-size:10px;line-height:1.9">
      LST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${s.lst!=null?'+'+s.lst+' °C':'–'} → <b style="color:#16a34a">${s.lst!=null?'+'+Math.max(0,+(s.lst-1.5).toFixed(1))+' °C':'–'}</b><br>
-     ${mT('Schatten','Shade','Schaduw')}&nbsp;&nbsp;~${Math.min(25,s.trees*2)} % → <b style="color:#16a34a">~${Math.min(45,s.trees*2+30)} %</b><br>
+     ${mT('Schatten','Shade','Schaduw')}&nbsp;&nbsp;~${s.canopy} % → <b style="color:#16a34a">${mT('Ziel','target','doel')} 30 %</b><br>
      ${mT('Kühlgrün','Cool green','Koelgroen')}&nbsp;${s.gd} m → <b style="color:#16a34a">${mT('vor Ort','on site','ter plekke')}</b>
    </div>
    ${musterSec('schools')}
@@ -4220,7 +4224,7 @@ function msSwitch(){ // Kopf im Fall/Liste: zurück zur Missionsauswahl + aktuel
    +'<span class="ms-cur"><span class="mc-ic sm" style="background:'+m.accent+'1a;color:'+m.accent+'">'+ic(m.ic,13)+'</span>'+mT(m.t[0],m.t[1],m.t[2])+'</span></div>';
 }
 function setMissionKind(k){ MISSION.view='list'; chooseMission(k); } // Rückwärtskompatibel
-function stRec(s){const r=[];if(s.trees<10||s.c.shade>=55)r.push('A');if(s.c.seal>=55)r.push('B');if(s.c.heat>=60)r.push('C');return r.length?r.slice(0,2):['A'];}
+function stRec(s){const r=[];if(s.canopy<30||s.c.shade>=55)r.push('A');if(s.c.seal>=55)r.push('B');if(s.c.heat>=60)r.push('C');return r.length?r.slice(0,2):['A'];}
 function stCost(s){const ids=stRec(s);let lo=0,hi=0;ids.forEach(id=>{const p=MPKG_ST.find(x=>x.id===id);lo+=p.lo;hi+=p.hi;});return {lo:lo*s.factor,hi:hi*s.factor,mid:(lo+hi)/2*s.factor,ids};}
 function stBudgetCalc(){const B=MISSION.budgetT*1e6;let sum=0;const pick=[];for(const s of MISSION.streets){const cst=stCost(s);if(sum+cst.mid>B)continue;sum+=cst.mid;pick.push(s);if(pick.length>=80)break;}return {pick,sum};}
 function streetsLoad(){
@@ -4228,14 +4232,15 @@ function streetsLoad(){
   Promise.all([
     fetch(`${DATA_BASE}/noise_roads_${city}.geojson`).then(r=>r.json()),
     fetch(`${DATA_BASE}/green_${city}.geojson`).then(r=>r.json()),
-    fetch(`${DATA_BASE}/trees_${city}.geojson`).then(r=>r.json()).catch(()=>null),
+    treePts(city),
     loadHeatField()
   ]).then(([roads,green,trees,field])=>{
     if(!MISSION.active||MISSION.kind!=='streets')return;
     const gc=[];(green.features||[]).forEach(f=>{const c=geoCentroid(f.geometry.coordinates);if(c)gc.push(c);});
     const TI=new Map(),TC=0.0015;
-    ((trees&&trees.features)||[]).forEach(f=>{const g=f.geometry;if(!g||g.type!=='Point')return;const c=g.coordinates;const k=Math.round(c[0]/TC)+'_'+Math.round(c[1]/TC);let a=TI.get(k);if(!a){a=[];TI.set(k,a);}a.push(c);});
+    (trees||[]).forEach(p=>{const c=[p[1],p[0],p[2]];const k=Math.round(c[0]/TC)+'_'+Math.round(c[1]/TC);let a=TI.get(k);if(!a){a=[];TI.set(k,a);}a.push(c);});
     const treesNear=(lat,lon)=>{let n=0;const kx=Math.round(lon/TC),ky=Math.round(lat/TC);for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){const a=TI.get((kx+dx)+'_'+(ky+dy));if(!a)continue;for(const c of a){const mx=(c[0]-lon)*70000,my=(c[1]-lat)*111320;if(mx*mx+my*my<150*150)n++;}}return n;};
+    const canopyNear=(lat,lon,R)=>{let s=0;const kx=Math.round(lon/TC),ky=Math.round(lat/TC),k=Math.ceil(R/(TC*70000))+1;for(let dx=-k;dx<=k;dx++)for(let dy=-k;dy<=k;dy++){const a=TI.get((kx+dx)+'_'+(ky+dy));if(!a)continue;for(const c of a){const mx=(c[0]-lon)*70000,my=(c[1]-lat)*111320;if(mx*mx+my*my<R*R)s+=c[2]||DEFAULT_CROWN;}}return Math.min(100,Math.round(100*s/(Math.PI*R*R)));};
     const gDist=(lat,lon)=>{let b=1e9;for(const c of gc){const mx=(c[0]-lon)*70000,my=(c[1]-lat)*111320,d=mx*mx+my*my;if(d<b)b=d;}return Math.sqrt(b);};
     PAW_DIST_CACHE={};
     const agg=new Map(); // Straßenname → aggregierte Segmente
@@ -4246,18 +4251,19 @@ function streetsLoad(){
       const lat=c[1],lon=c[0];
       const fast=(+p.maxspeed>=70)||/motorway|trunk/.test(p.highway||'')||!!p.railway; // Schiene: Lärmkorridor ja, Umbau-Kandidat nein
       const lst=sampleLst(field,lat,lon);const d=pawDistrictAt(lat,lon);
+      if(!d){f.__ms=null;return;}   // außerhalb der Stadtteile: keine amtlichen Daten → nicht bewerten
       const heat=Math.max(0,Math.min(1,(lst!=null?lst:(d?d.lst_delta:1))/3));
       const seal=d?Math.max(0,Math.min(1,((d.versieg||55)-45)/45)):0.5;
-      const tn=treesNear(lat,lon);
-      const shade=Math.max(0,Math.min(1,1-tn/14)); // Schatten-Defizit: Baum-Proxy, Ziel ~14/150 m
-      const soc=d?Math.max(0,Math.min(1,(((d.kinderarmut!=null?d.kinderarmut:15))-5)/35)):0.5;
+      const tn=treesNear(lat,lon),cn=canopyNear(lat,lon,60);
+      const shade=Math.max(0,Math.min(1,1-cn/30)); // Schatten-Defizit: geschätztes Kronendach im 60-m-Umfeld, Ziel 30 % (3-30-300)
+      const soc=socRank(d);
       const gd=gDist(lat,lon);
       const prio=100*(0.35*heat+0.25*shade+0.20*seal+0.20*soc);
       f.__ms={prio,fast,name:p.name||null};
-      if(fast||!p.name)return; // Karte ja, Ranking nein
+      if(fast||!p.name||/(brug|brücke|steg|viaduct|viadukt|tunnel)$/i.test(p.name))return; // Karte ja, Ranking nein (Brücken/Tunnel: kein Platz für Bäume)
       let a=agg.get(p.name);
-      if(!a){a={name:p.name,n:0,heat:0,shade:0,seal:0,soc:0,lstMax:null,trees:0,gd:1e9,vs:0,vsN:0,socV:null,lat,lon,best:-1,surface:p.surface||''};agg.set(p.name,a);}
-      a.n++;a.heat+=heat;a.shade+=shade;a.seal+=seal;a.soc+=soc;a.trees+=tn;
+      if(!a){a={name:p.name,n:0,heat:0,shade:0,seal:0,soc:0,lstMax:null,trees:0,canopy:0,gd:1e9,vs:0,vsN:0,socV:null,lat,lon,best:-1,surface:p.surface||''};agg.set(p.name,a);}
+      a.n++;a.heat+=heat;a.shade+=shade;a.seal+=seal;a.soc+=soc;a.trees+=tn;a.canopy+=cn;
       if(lst!=null&&(a.lstMax==null||lst>a.lstMax))a.lstMax=+(+lst).toFixed(1);
       if(gd<a.gd)a.gd=gd;
       if(d&&d.versieg!=null){a.vs+=d.versieg;a.vsN++;}
@@ -4267,7 +4273,7 @@ function streetsLoad(){
     const S=[];
     agg.forEach(a=>{
       const c={heat:Math.round(a.heat/a.n*100),shade:Math.round(a.shade/a.n*100),seal:Math.round(a.seal/a.n*100),soc:Math.round(a.soc/a.n*100)};
-      S.push({name:a.name,n:a.n,lat:a.lat,lon:a.lon,lst:a.lstMax,trees:Math.round(a.trees/a.n),
+      S.push({name:a.name,n:a.n,lat:a.lat,lon:a.lon,lst:a.lstMax,trees:Math.round(a.trees/a.n),canopy:Math.round(a.canopy/a.n),
         versieg:a.vsN?Math.round(a.vs/a.vsN):null,gd:Math.round(a.gd),soc:a.socV,surface:a.surface,
         factor:Math.min(6,Math.max(1,Math.ceil(a.n/5))),
         prio:Math.round(0.35*c.heat+0.25*c.shade+0.20*c.seal+0.20*c.soc),c});
@@ -4286,7 +4292,7 @@ function renderStreets(){
   const S=MISSION.streets;
   if(!S.length){b.innerHTML=msSwitch()+'<div style="padding:12px;font-size:11px;color:var(--muted)">'+mT('Keine Straßen gefunden.','No streets found.','Geen straten gevonden.')+'</div>';return;}
   const segs=S.reduce((a,s)=>a+s.n,0);
-  const hot=S.filter(s=>s.prio>=50).length, lowShade=S.filter(s=>s.trees<10).length;
+  const hot=S.filter(s=>s.prio>=50).length, lowShade=S.filter(s=>s.canopy<30).length;
   try{const _b=JSON.parse(localStorage.getItem('nh_briefms_'+city)||'{}');_b.str=hot;_b.ts=Date.now();localStorage.setItem('nh_briefms_'+city,JSON.stringify(_b));}catch(e){}
   const {pick,sum}=stBudgetCalc();
   if(MISSION.layer){try{map.removeLayer(MISSION.layer);}catch(e){}}
@@ -4328,14 +4334,14 @@ function streetCase(i){
   try{map.flyTo([s.lat,s.lon],16,{duration:.8});}catch(e){}
   const rec=stRec(s),cost=stCost(s);
   const viol=[];
-  if(s.trees<10)viol.push(mT('Schatten-Defizit: Ø '+s.trees+' Bäume/150 m (Proxy) — Ziel 30 % Verschattung','Shade deficit: avg '+s.trees+' trees/150 m (proxy) — 30 % shade target','Schaduwtekort: gem. '+s.trees+' bomen/150 m — doel 30 % schaduw'));
+  if(s.canopy<30)viol.push(mT('Schatten-Defizit: ~'+s.canopy+' % Kronendach (Ø '+s.trees+' Bäume im 150-m-Umfeld) — Ziel 30 %','Shade deficit: ~'+s.canopy+' % canopy (avg '+s.trees+' trees within 150 m) — 30 % target','Schaduwtekort: ~'+s.canopy+' % kronendak (gem. '+s.trees+' bomen binnen 150 m) — doel 30 %'));
   if(s.gd>200)viol.push(mT('Kein Kühlgrün innerhalb 200 m (Utrecht-Ziel 2040)','No cool green within 200 m (Utrecht 2040 target)','Geen koelgroen binnen 200 m (doel 2040)'));
   if(s.lst!=null&&s.lst>=1.8)viol.push(mT('Hitzeinsel: bis +'+s.lst+' °C Oberflächentemperatur','Heat island: up to +'+s.lst+' °C LST','Hitte-eiland: tot +'+s.lst+' °C'));
   const corr=s.n*35; // Korridorlänge grob (Proxy, ~35 m/Segment)
   const conf=s.lst!=null?mT('Hoch','High','Hoog'):mT('Mittel','Medium','Matig');
   const drv=[];
   if(s.c.heat>=60)drv.push(mT('hohe Hitzelast','high heat load','hoge hittelast'));
-  if(s.trees<10)drv.push(mT('Schatten-Defizit','shade deficit','schaduwtekort'));
+  if(s.canopy<30)drv.push(mT('Schatten-Defizit','shade deficit','schaduwtekort'));
   if(s.c.seal>=55)drv.push(mT('starke Versiegelung','heavy sealing','sterke verharding'));
   if(s.c.soc>=50)drv.push(mT('soziale Verwundbarkeit','social vulnerability','sociale kwetsbaarheid'));
   const why=(drv.length?drv.slice(0,3).join(' + '):mT('moderate Belastung','moderate burden','matige belasting'))+' — '+mT('entlang eines Straßenzugs mit Anwohnern und Fuß-/Radverkehr.','along a street corridor with residents and foot/cycle traffic.','langs een straat met bewoners en voetgangers/fietsers.');
@@ -4349,14 +4355,14 @@ function streetCase(i){
    <div class="case-why"><b>${mT('Warum relevant?','Why relevant?','Waarom relevant?')}</b> ${why}</div>
    <table class="case-metrics"><tbody>
      <tr><td>${mT('Straßenzug (Proxy)','Corridor (proxy)','Straat (proxy)')}</td><td>${s.n} ${mT('Segm.','segm.','segm.')} · ~${corr.toLocaleString('de-DE')} m</td></tr>
-     <tr><td>${mT('Verschattung','Shading','Beschaduwing')}</td><td>~${Math.min(25,s.trees*2)} % → ${mT('Ziel','target','doel')} 30 %</td></tr>
+     <tr><td>${mT('Verschattung','Shading','Beschaduwing')}</td><td>~${s.canopy} % → ${mT('Ziel','target','doel')} 30 %</td></tr>
      <tr><td>${mT('Kühlgrün-Distanz','Cool-green distance','Koelgroen-afstand')}</td><td>${s.gd} m → ${mT('Ziel','target','doel')} &lt; 200 m</td></tr>
      <tr><td>${mT('Datenvertrauen','Data confidence','Datavertrouwen')}</td><td>${conf}</td></tr>
    </tbody></table>
    <div class="ms-comp">
      <span><b>${s.c.heat}</b><br>${mT('Hitze','Heat','Hitte')}</span><span><b>${s.c.shade}</b><br>${mT('Schatten-Defizit','Shade gap','Schaduwtekort')}</span><span><b>${s.c.seal}</b><br>${mT('Versieg.','Sealing','Verhard.')}</span><span><b>${s.c.soc}</b><br>${mT('Sozial','Social','Sociaal')}</span>
    </div>
-   <div class="ibox"><b>${mT('Problem','Problem','Probleem')}:</b> ${s.lst!=null?mT('bis','up to','tot')+' +'+s.lst+' °C '+mT('Oberflächentemperatur','surface temperature','oppervlaktetemperatuur')+' · ':''}${s.versieg!=null?s.versieg+' % '+mT('Versiegelung im Umfeld','sealing in surroundings','verharding in omgeving')+' · ':''}Ø ${s.trees} ${mT('Bäume/150 m','trees/150 m','bomen/150 m')} · ${mT('nächstes Grün','nearest green','dichtstbijzijnd groen')} ${s.gd} m${s.soc!=null?' · '+(city==='utr'?mT('Niedrigeinkommen im Wijk','district low income','laag inkomen wijk'):mT('Kinderarmut im Wijk','district child poverty','kinderarmoede wijk'))+' '+s.soc+' %':''}${s.surface==='asphalt'?' · '+mT('Asphalt (dunkel, hitzespeichernd)','asphalt (dark, heat-retaining)','asfalt (donker, warmtevasthoudend)'):''}.</div>
+   <div class="ibox"><b>${mT('Problem','Problem','Probleem')}:</b> ${s.lst!=null?mT('bis','up to','tot')+' +'+s.lst+' °C '+mT('Oberflächentemperatur','surface temperature','oppervlaktetemperatuur')+' · ':''}${s.versieg!=null?s.versieg+' % '+mT('Versiegelung im Umfeld','sealing in surroundings','verharding in omgeving')+' · ':''}Ø ${s.trees} ${mT('Bäume/150 m','trees/150 m','bomen/150 m')} · ${mT('nächstes Grün','nearest green','dichtstbijzijnd groen')} ${s.gd} m${s.soc!=null?' · '+(city==='utr'?mT('Armut im Wijk','district poverty','armoede wijk'):mT('Kinderarmut im Wijk','district child poverty','kinderarmoede wijk'))+' '+s.soc+' %':''}${s.surface==='asphalt'?' · '+mT('Asphalt (dunkel, hitzespeichernd)','asphalt (dark, heat-retaining)','asfalt (donker, warmtevasthoudend)'):''}.</div>
    ${viol.length?`<div class="ap-sec">${mT('Zielabweichung (Utrecht 2040)','Target gaps (Utrecht 2040)','Doelafwijking (2040)')}</div><div class="ibox" style="border-left-color:#dc2626">${viol.map(v=>'· '+v).join('<br>')}</div>`:''}
    <div class="ap-sec">${mT('Maßnahmenpakete','Action packages','Maatregelpakketten')} <span class="ms-badge">×${s.factor} ${mT('Länge','length','lengte')}</span></div>
    ${MPKG_ST.map(p=>{const on=rec.indexOf(p.id)>=0;
@@ -4365,7 +4371,7 @@ function streetCase(i){
    <div class="ap-sec">${mT('Vorher / Nachher','Before / after','Voor / na')}</div>
    <div class="ibox" style="font-family:ui-monospace,monospace;font-size:10px;line-height:1.9">
      LST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${s.lst!=null?'+'+s.lst+' °C':'–'} → <b style="color:#16a34a">${s.lst!=null?'+'+Math.max(0,+(s.lst-1.2).toFixed(1))+' °C':'–'}</b><br>
-     ${mT('Schatten','Shade','Schaduw')}&nbsp;&nbsp;~${Math.min(25,s.trees*2)} % → <b style="color:#16a34a">~${Math.min(45,s.trees*2+25)} %</b><br>
+     ${mT('Schatten','Shade','Schaduw')}&nbsp;&nbsp;~${s.canopy} % → <b style="color:#16a34a">${mT('Ziel','target','doel')} 30 %</b><br>
      ${mT('Belag','Surface','Verharding')}&nbsp;&nbsp;&nbsp;${s.surface==='asphalt'?mT('dunkel','dark','donker'):mT('gemischt','mixed','gemengd')} → <b style="color:#16a34a">${mT('hell/durchlässig','light/permeable','licht/doorlatend')}</b>
    </div>
    ${musterSec('streets')}
@@ -4376,7 +4382,7 @@ function streetCase(i){
 function streetsPDF(){
   const doc=pdfDoc();if(!doc){alert('PDF-Bibliothek lädt noch.');return;}
   const L=pdfL3, S=MISSION.streets; const {pick,sum}=stBudgetCalc();
-  const hot=S.filter(x=>x.prio>=50).length, lowShade=S.filter(x=>x.trees<10).length, segs=S.reduce((a,s)=>a+s.n,0);
+  const hot=S.filter(x=>x.prio>=50).length, lowShade=S.filter(x=>x.canopy<30).length, segs=S.reduce((a,s)=>a+s.n,0);
   const repId=pdfRepId('MISSION-STREETS');
   let y=pdfMast(doc,L('Missions-Bericht','Mission report','Missierapport'),
     L('Klimafeste Straßen','Climate-resilient streets','Klimaatbestendige straten'),
@@ -4394,9 +4400,9 @@ function streetsPDF(){
    [L('Erwartete lokale Kühlung je Straßenzug','Expected local cooling per corridor','Verwachte koeling per straat'),'−0,8–1,8 °C']].forEach(r=>{y=pdfTRow(doc,y,ck,r,[1]);});
   y+=3;
   y=pdfSecN(doc,y,'3',L('Prioritätenliste — Top 10','Priority list — Top 10','Prioriteitenlijst — Top 10'));
-  const ct=[{t:'#',x:PDFX.L},{t:L('Straße','Street','Straat'),x:PDFX.L+8},{t:L('Priorität','Priority','Prioriteit'),x:PDFX.L+88,a:'right'},{t:'LST',x:PDFX.L+112,a:'right'},{t:L('Bäume','Trees','Bomen'),x:PDFX.L+138,a:'right'},{t:L('Versieg.','Sealing','Verhard.'),x:PDFX.L+162,a:'right'},{t:L('Seg.','Seg.','Seg.'),x:PDFX.R,a:'right'}];
+  const ct=[{t:'#',x:PDFX.L},{t:L('Straße','Street','Straat'),x:PDFX.L+8},{t:L('Priorität','Priority','Prioriteit'),x:PDFX.L+88,a:'right'},{t:'LST',x:PDFX.L+112,a:'right'},{t:L('Kronend.','Canopy','Kronend.'),x:PDFX.L+138,a:'right'},{t:L('Versieg.','Sealing','Verhard.'),x:PDFX.L+162,a:'right'},{t:L('Seg.','Seg.','Seg.'),x:PDFX.R,a:'right'}];
   y=pdfTHead(doc,y,ct);
-  S.slice(0,10).forEach((s,i)=>{ y=pdfTRow(doc,y,ct,[i+1,(s.name.length>34?s.name.slice(0,32)+'…':s.name),s.prio,s.lst!=null?'+'+s.lst+' °C':'—',s.trees,s.versieg!=null?s.versieg+' %':'—',s.n],[2]); });
+  S.slice(0,10).forEach((s,i)=>{ y=pdfTRow(doc,y,ct,[i+1,(s.name.length>34?s.name.slice(0,32)+'…':s.name),s.prio,s.lst!=null?'+'+s.lst+' °C':'—',s.canopy+' %',s.versieg!=null?s.versieg+' %':'—',s.n],[2]); });
   doc.setFontSize(7.2); pC(doc,PDFX.mut);
   doc.text(L('Priorität relativ im Stadtvergleich skaliert (Top = 100) · LST = Maximum je Straße · Bäume = Ø je 150 m (Proxy)','Priority scaled relative within the city (top = 100) · LST = maximum per street · trees = avg per 150 m (proxy)','Prioriteit relatief geschaald (top = 100) · LST = maximum per straat · bomen = gem. per 150 m'),PDFX.L,y+1); y+=8;
   doc.setFontSize(9.5); pC(doc,PDFX.body);
@@ -4433,10 +4439,10 @@ function caseBrief(kind,i){
   const ek=[{t:L('Kennzahl','Figure','Cijfer'),x:PDFX.L},{t:L('Ist','Actual','Actueel'),x:PDFX.L+108,a:'right'},{t:L('Ziel','Target','Doel'),x:PDFX.R,a:'right'}];
   y=pdfTHead(doc,y,ek);
   [[L('Oberflächentemperatur (LST-Delta)','Surface temperature (LST delta)','Oppervlaktetemp. (LST-delta)'),s.lst!=null?'+'+s.lst+' °C':'—','< +1 °C'],
-   [L('Verschattung (Baum-Proxy)','Shading (tree proxy)','Beschaduwing (boomproxy)'),'~'+Math.min(25,s.trees*2)+' %','30 %'],
+   [city==='utr'?L('Kronendach (geschätzt, Baumregister)','Canopy (estimated, tree register)','Kronendak (geschat, bomenregister)'):L('Kronendach (geschätzt, OSM)','Canopy (estimated, OSM)','Kronendak (geschat, OSM)'),'~'+s.canopy+' %','30 %'],
    [L('Distanz zum Kühlgrün','Distance to cool green','Afstand tot koelgroen'),s.gd+' m','< 200 m'],
    isSt?[L('Versiegelung','Sealing','Verharding'),(s.versieg!=null?s.versieg+' %':'—'),'—']
-       :[(city==='utr'?L('Niedrigeinkommen im Wijk','District low income','Laag inkomen wijk'):L('Kinderarmut im Wijk','District child poverty','Kinderarmoede wijk')),(s.soc!=null?s.soc+' %':'—'),'—']
+       :[(city==='utr'?L('Armut im Wijk','District poverty','Armoede wijk'):L('Kinderarmut im Wijk','District child poverty','Kinderarmoede wijk')),(s.soc!=null?s.soc+' %':'—'),'—']
   ].forEach(r=>{y=pdfTRow(doc,y,ek,r,[1]);});
   y+=3;
   // 3 · Betroffene
@@ -4481,8 +4487,37 @@ function loadCityBundle(c){
     if(!CITY_BUNDLE[c]){res(null);return;}
     if(DIAG.bundle[c]){res(DIAG.bundle[c]);return;}
     fetch(DATA_BASE+'/'+CITY_BUNDLE[c]).then(r=>r.ok?r.json():null)
-      .then(d=>{DIAG.bundle[c]=d;res(d);}).catch(()=>res(null));
+      .then(d=>loadOfficial(c).then(o=>{if(d&&o){d.trees=o.trees;d.benches=o.benches;d.official=o.meta;}DIAG.bundle[c]=d;res(d);})).catch(()=>res(null));
   });
+}
+
+// ── Bäume & Bänke: eine Quelle je Stadt ──────────────────────────────
+// Utrecht: amtliche Register der Gemeente (Bomenkaart, Straatmeubilair; tools/fetch_official_utr.cjs).
+// Andere Städte: OpenStreetMap (unvollständig — so gekennzeichnet). Kronenfläche je Baum aus dem Alter
+// geschätzt: Durchmesser 1 m + 0,35 m/Jahr, höchstens 12 m; ohne Pflanzjahr (und bei OSM) 8 m.
+const OFFICIAL_BASE=DATA_BASE.replace(/\/layers$/,'/official');
+const OFFICIAL={};
+const DEFAULT_CROWN=Math.PI*16;
+function crownM2(pj){const y=new Date().getFullYear(),D=(pj>1800&&pj<=y)?Math.min(12,1+0.35*(y-pj)):8;return Math.PI*D*D/4;}
+const crownOf=p=>(p&&p[2])||DEFAULT_CROWN;
+function loadOfficial(c){
+  if(c!=='utr')return Promise.resolve(null);
+  if(OFFICIAL[c])return Promise.resolve(OFFICIAL[c]);
+  return Promise.all([fetch(OFFICIAL_BASE+'/trees_utr.json').then(r=>r.ok?r.json():null),fetch(OFFICIAL_BASE+'/furniture_utr.json').then(r=>r.ok?r.json():null)])
+    .then(([t,f])=>{if(!t||!f)return null;
+      return OFFICIAL[c]={trees:t.t.map(x=>[x[0],x[1],crownM2(x[2]),x[2],x[3]]),genera:t.genera,benches:f.bank,picnic:f.picknicktafel,play:f.speelvoorziening,fountains:f.fontein,meta:{trees:t.meta,furniture:f.meta}};})
+    .catch(()=>null);
+}
+// Bäume als [lat,lon,kronenM2,…] — amtlich, sonst aus der OSM-Ebene
+function treePts(c){
+  return loadOfficial(c).then(o=>o?o.trees:fetch(`${DATA_BASE}/trees_${c}.geojson`).then(r=>r.json()).then(g=>(g.features||[]).filter(f=>f.geometry&&f.geometry.type==='Point').map(f=>[f.geometry.coordinates[1],f.geometry.coordinates[0],DEFAULT_CROWN])).catch(()=>[]));
+}
+// Soziale Lage als Rang innerhalb der Stadt (0–1): Städte melden verschiedene Kennzahlen (Utrecht Armut, Frankfurt Kinderarmut)
+function socRank(d){
+  if(!d||d.kinderarmut==null)return 0.5;
+  const v=Object.values(CITY_CFG[city].data).map(x=>x.kinderarmut).filter(x=>x!=null).sort((a,b)=>a-b);
+  const lo=v.filter(x=>x<d.kinderarmut).length,eq=v.filter(x=>x===d.kinderarmut).length;
+  return v.length>1?(lo+(eq-1)/2)/(v.length-1):0.5;
 }
 
 const CITY_MOBILITY={ffm:'mobility_ffm.json',utr:'mobility_utr.json'};
@@ -4609,9 +4644,9 @@ function diagBuildGrid(bounds,els,targetM=72){
   const cols=Math.max(4,Math.min(130,Math.ceil((be-w)/cellW)));
   const cellM=targetM;
   const grid=[];
-  for(let r=0;r<rows;r++){grid.push([]);for(let c=0;c<cols;c++)grid[r].push({r,c,trees:0,benches:0,shops:0,water:0,green:false,lat:s+(r+0.5)*cellH,lon:w+(c+0.5)*cellW});}
+  for(let r=0;r<rows;r++){grid.push([]);for(let c=0;c<cols;c++)grid[r].push({r,c,trees:0,crown:0,benches:0,shops:0,water:0,green:false,lat:s+(r+0.5)*cellH,lon:w+(c+0.5)*cellW});}
   const idx=(lat,lon)=>{const r=Math.floor((lat-s)/cellH),c=Math.floor((lon-w)/cellW);return(r>=0&&r<rows&&c>=0&&c<cols)?grid[r][c]:null;};
-  els.trees.forEach(p=>{const g=idx(p[0],p[1]);if(g)g.trees++;});
+  els.trees.forEach(p=>{const g=idx(p[0],p[1]);if(g){g.trees++;g.crown+=crownOf(p);}});
   els.benches.forEach(p=>{const g=idx(p[0],p[1]);if(g)g.benches++;});
   els.shops.forEach(p=>{const g=idx(p[0],p[1]);if(g)g.shops++;});
   els.water.forEach(p=>{const g=idx(p[0],p[1]);if(g)g.water++;});
@@ -4627,19 +4662,19 @@ function diagBuildGrid(bounds,els,targetM=72){
     g.greenDistM=greenCells.length?Math.round(Math.sqrt(best)):9999;}
   // Nachbarschafts-Aggregate (3×3) für Bäume/Bänke/Shops
   const sum=(r,c,f)=>{let t=0;for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<rows&&nc>=0&&nc<cols)t+=grid[nr][nc][f];}return t;};
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const g=grid[r][c];g.nTrees=sum(r,c,'trees');g.nBench=sum(r,c,'benches');g.nShop=sum(r,c,'shops');g.nWater=sum(r,c,'water');}
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const g=grid[r][c];g.nTrees=sum(r,c,'trees');g.canopy=Math.min(100,Math.round(100*sum(r,c,'crown')/(9*cellM*cellM)));g.nBench=sum(r,c,'benches');g.nShop=sum(r,c,'shops');g.nWater=sum(r,c,'water');}
   return {grid,rows,cols,cellM,cellH,cellW,s,w,els};
 }
 
 function diagScore(g){
   // Aufenthaltsqualität 0–100
   let sc=48;
-  sc+=Math.min(20,g.nTrees*2.2);
+  sc+=Math.min(20,(g.canopy||0)*0.67);   // 30 % Kronendach ≈ volle Punktzahl
   sc+=Math.min(16,g.nBench*8);
   sc+=g.greenDistM<150?14:g.greenDistM<300?4:-10;
   sc+=Math.min(6,g.nWater*6);
   if(g.nShop>=3 && g.nBench===0) sc-=18;       // kommerziell, kein Verweilort
-  if(g.nTrees===0 && g.nShop>=2) sc-=12;        // bebaut, kein Schatten
+  if((g.canopy||0)<5 && g.nShop>=2) sc-=12;     // bebaut, kaum Schatten
   return Math.max(2,Math.min(100,Math.round(sc)));
 }
 function diagHasContext(g){ return g.trees||g.benches||g.shops||g.water||g.green||g.greenDistM<500||g.nShop>0; }
@@ -4709,10 +4744,11 @@ function diagPopup(g,bnds){
   if(g.nShop>=3 && g.nBench===0) findings.push({ic:'bench',t:(lang==='en'?`Commercial activity (${g.nShop} shops nearby) but no public bench — a place to pass through, not to linger.`:lang==='nl'?`Commerciële drukte (${g.nShop} winkels) maar geen openbaar bankje — doorgangsruimte, geen verblijfsplek.`:`Kommerziell geprägt (${g.nShop} Geschäfte) aber keine öffentliche Bank — Durchgangsraum statt Verweilort.`),bad:true});
   else if(g.nBench>0) findings.push({ic:'bench',t:(lang==='en'?`${g.nBench} bench(es) nearby.`:lang==='nl'?`${g.nBench} bankje(s) in de buurt.`:`${g.nBench} Sitzgelegenheit(en) im Umfeld.`),bad:false});
   // Schatten / Bäume
-  if(g.nTrees===0 && g.nShop>=2) findings.push({ic:'thermo',t:(lang==='en'?`No tree canopy in a built-up block — heat & comfort deficit.`:lang==='nl'?`Geen boomkronen in bebouwd blok — hitte- en comfortgebrek.`:`Keine Baumüberschirmung im bebauten Block — Hitze- & Aufenthaltsdefizit.`),bad:true});
-  else if(g.nTrees>=3) findings.push({ic:'tree',t:(lang==='en'?`${g.nTrees} trees nearby — good canopy.`:lang==='nl'?`${g.nTrees} bomen — goede beschaduwing.`:`${g.nTrees} Bäume im Umfeld — gute Beschattung.`),bad:false});
+  if((g.canopy||0)<5 && g.nShop>=2) findings.push({ic:'thermo',t:(lang==='en'?`No tree canopy in a built-up block — heat & comfort deficit.`:lang==='nl'?`Geen boomkronen in bebouwd blok — hitte- en comfortgebrek.`:`Keine Baumüberschirmung im bebauten Block — Hitze- & Aufenthaltsdefizit.`),bad:true});
+  else if((g.canopy||0)>=30) findings.push({ic:'tree',t:(lang==='en'?`~${g.canopy}% canopy (${g.nTrees} trees) — meets the 30 % target.`:lang==='nl'?`~${g.canopy}% kronendak (${g.nTrees} bomen) — haalt het doel van 30 %.`:`~${g.canopy} % Kronendach (${g.nTrees} Bäume) — erfüllt das Ziel von 30 %.`),bad:false});
+  else if((g.canopy||0)<15) findings.push({ic:'tree',t:(lang==='en'?`Only ~${g.canopy}% canopy (${g.nTrees} trees) — well below the 30 % target.`:lang==='nl'?`Slechts ~${g.canopy}% kronendak (${g.nTrees} bomen) — ruim onder het doel van 30 %.`:`Nur ~${g.canopy} % Kronendach (${g.nTrees} Bäume) — deutlich unter dem Ziel von 30 %.`),bad:true});
   // passende Maßnahme
-  const measure = (g.greenDistM>300||g.nTrees===0)?'A01':(g.nBench===0&&g.nShop>=2)?'D02':null;
+  const measure = (g.greenDistM>300||(g.canopy||0)<15)?'A01':(g.nBench===0&&g.nShop>=2)?'D02':null;
   const mObj = measure?MASS.find(m=>m.id===measure):null;
   const html='<div class="diag-pop">'+
     '<b>'+(lang==='en'?'Diagnosis · ~70 m cell':lang==='nl'?'Diagnose · ~70 m cel':'Diagnose · ~70 m-Zelle')+'</b>'+
@@ -5555,6 +5591,37 @@ function renderTreesLayer(geojson){
 }
 
 // <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M4 9h16M5 9v8M19 9v8M3 13.5h18"/></svg> BÄNKE — mit Qualitätsstufen
+// Amtliche Register (Utrecht): Bäume nur im Ausschnitt ab Zoom 15, jede Krone in geschätzter Größe
+const fmtN=n=>n.toLocaleString(lang==='en'?'en-GB':'de-DE');
+let offTreeHook=false;
+function renderOfficialTrees(id,statusEl){
+  if(!offTreeHook){offTreeHook=true;map.on('moveend',()=>{if(activeLayers['trees']&&city==='utr')renderOfficialTrees('trees',document.getElementById('st-trees'));});}
+  loadOfficial('utr').then(o=>{
+    if(!activeLayers[id])return;
+    if(layerObjs[id]){map.removeLayer(layerObjs[id]);delete layerObjs[id];}
+    if(!o){if(statusEl)statusEl.textContent='⚠';return;}
+    if(map.getZoom()<15){if(statusEl)statusEl.textContent=`${fmtN(o.trees.length)} · ${mT('näher zoomen','zoom in','zoom in')}`;return;}
+    const b=map.getBounds().pad(.1),S=b.getSouth(),W=b.getWest(),N=b.getNorth(),E=b.getEast();
+    const g=L.layerGroup();let k=0;
+    for(const t of o.trees){if(t[0]<S||t[0]>N||t[1]<W||t[1]>E)continue;k++;
+      const r=Math.sqrt(t[2]/Math.PI);
+      L.circle([t[0],t[1]],{renderer:window.canvasRenderer,radius:r,fillColor:'#2f7a3c',fillOpacity:.35,color:'#1f5a2b',weight:.6,opacity:.6})
+        .bindTooltip(`<b>${o.genera[t[4]]||mT('Baum','Tree','Boom')}</b><br>${t[3]?mT('gepflanzt ','planted ','geplant ')+t[3]+' · ':''}${mT('Krone ~','crown ~','kroon ~')}${(2*r).toFixed(0)} m (${mT('geschätzt','estimated','geschat')})<br><small>Gemeente Utrecht · Bomenkaart</small>`,{sticky:true}).addTo(g);}
+    g.addTo(map);layerObjs[id]=g;
+    if(statusEl)statusEl.textContent=`✓ ${fmtN(o.trees.length)} · ${fmtN(k)} ${mT('im Bild','in view','in beeld')}`;
+  });
+}
+function renderOfficialBenches(id,statusEl){
+  loadOfficial('utr').then(o=>{
+    if(!activeLayers[id])return;
+    if(!o){if(statusEl)statusEl.textContent='⚠';return;}
+    const g=L.layerGroup(),src='<br><small>Gemeente Utrecht · Straatmeubilair</small>';
+    o.benches.forEach(p=>L.circleMarker(p,{renderer:window.canvasRenderer,radius:4,fillColor:'#b45309',fillOpacity:.9,color:'#fff',weight:1}).bindTooltip(`<b>${mT('Bank','Bench','Bank')}</b>${src}`,{sticky:true}).addTo(g));
+    o.picnic.forEach(p=>L.circleMarker(p,{renderer:window.canvasRenderer,radius:4,fillColor:'#6b4f23',fillOpacity:.9,color:'#fff',weight:1}).bindTooltip(`<b>${mT('Picknicktisch','Picnic table','Picknicktafel')}</b>${src}`,{sticky:true}).addTo(g));
+    g.addTo(map);layerObjs[id]=g;
+    if(statusEl)statusEl.textContent=`✓ ${fmtN(o.benches.length)} ${mT('Bänke','benches','bankjes')} · ${fmtN(o.picnic.length)} ${mT('Picknick','picnic','picknick')}`;
+  });
+}
 function renderBenchesLayer(geojson){
   const id='benches';if(!activeLayers[id])return;
   const QUALITY={
@@ -6018,8 +6085,8 @@ function openDrawer(name,d,skipZoom){
   document.getElementById('tp0').innerHTML=`
     <div class="kgrid">
       <div class="kpi"><div class="kval" style="color:${col}">${s}</div><div class="klbl">NICE Score</div><div class="ksub">Stadt-Ø: ${avgS} (${s>avgS?'+':''}${s-avgS})</div></div>
-      <div class="kpi"><div class="kval">${d.wb}%</div><div class="klbl">Wahlbeteiligung</div><div class="ksub">Partizipations-Indikator</div></div>
-      ${d.mig?`<div class="kpi"><div class="kval">${d.mig}%</div><div class="klbl">Migrationshintergrund</div><div class="ksub">${city==='utr'?'CBS 2023':'Zensus 2022'}</div></div>`:''}
+      <div class="kpi"><div class="kval">${d.wb}%</div><div class="klbl">Wahlbeteiligung</div><div class="ksub">${city==='utr'?(d.wbOk?'Gemeinderatswahl 2022':'ungeprüft — Quelle offen'):'Partizipations-Indikator'}</div></div>
+      ${d.mig?`<div class="kpi"><div class="kval">${d.mig}%</div><div class="klbl">${city==='utr'?'Herkunft außerhalb NL':'Migrationshintergrund'}</div><div class="ksub">${city==='utr'?'CBS 2024':'Zensus 2022'}</div></div>`:''}
       <div class="kpi"><div class="kval">${(d.pop/1000).toFixed(0)}k</div><div class="klbl">Einwohner</div><div class="ksub">${city==='utr'?'CBS':'Statistikportal'}</div></div>
     </div>
     <div class="sec">${lang==='en'?'Profile — 8 dimensions':lang==='nl'?'Profiel — 8 dimensies':'Profil — 8 Dimensionen'}</div>
@@ -6053,21 +6120,21 @@ function openDrawer(name,d,skipZoom){
       </div>
       <div class="skpi">
         <div class="skpi-val" style="color:${sEkColor}">${(d.einkommen/1000).toFixed(0)}k€</div>
-        <div class="skpi-lbl">Medianeinkommen/Jahr</div>
+        <div class="skpi-lbl">${city==='utr'?'Ø Einkommen je Einwohner':'Medianeinkommen/Jahr'}</div>
         <div class="skpi-bar"><div class="skpi-fill" style="width:${Math.min(100,(d.einkommen-15000)/500)}%;background:${sEkColor}"></div></div>
       </div>
       <div class="skpi">
         <div class="skpi-val" style="color:${sAlColor}">${d.arbeitslos}%</div>
-        <div class="skpi-lbl">Arbeitslosigkeit</div>
+        <div class="skpi-lbl">${city==='utr'?'WW-Bezug (Anteil Einwohner)':'Arbeitslosigkeit'}</div>
         <div class="skpi-bar"><div class="skpi-fill" style="width:${Math.min(100,d.arbeitslos/18*100)}%;background:${sAlColor}"></div></div>
       </div>
     </div>
     <div class="kgrid" style="grid-template-columns:1fr">
-      <div class="kpi"><div class="kval">${d.abitur}%</div><div class="klbl">Abiturquote</div><div class="ksub">${city==='utr'?'Diploma\'s · DUO/CBS':'Schulabschlüsse · Bildungsmonitoring'}</div></div>
+      <div class="kpi"><div class="kval">${d.abitur}%</div><div class="klbl">${city==='utr'?'Hochschulabschluss (hbo/wo)':'Abiturquote'}</div><div class="ksub">${city==='utr'?'CBS 2024 · 15–75 J.':'Schulabschlüsse · Bildungsmonitoring'}</div></div>
     </div>
     ${d.sgb2>=25||d.kinderarmut>=35?`<div class="soc-risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg> <b>Soziale Risikolage:</b> Überdurchschnittliche Armutsquoten. Handlungsbedarf bei Bildung, Sozialinfrastruktur und Einkommensförderung. Kandidat für ESF+, ERDF Soziale Infrastruktur (80% Förderquote).</div>`:d.sgb2<=8&&d.einkommen>=45000?`<div class="soc-good"><b>Stabile Soziallage:</b> Unterdurchschnittliche Armutsquoten und überdurchschnittliches Einkommen. Gute Bildungsvoraussetzungen.</div>`:''}
     <div style="font-size:8px;color:var(--muted);margin-top:6px;padding:6px 8px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
-      Quellen: ${city==='utr'?'CBS Kerncijfers wijken en buurten 2023 · UWV · Gemeente Utrecht Wijkmonitor':'Frankfurt Stadtmonitoring Soziales 2024 · BA Statistik · Paritätischer Armutsbericht · Zensus 2022'}
+      Quellen: ${city==='utr'?'CBS Kerncijfers wijken en buurten 2024 (85984NED) · Wahlbeteiligung: Gemeente Utrecht':'Frankfurt Stadtmonitoring Soziales 2024 · BA Statistik · Paritätischer Armutsbericht · Zensus 2022'}
     </div>`:''}
     ${d.versieg!=null?(()=>{
       const hb      = hitzebetroffenheit(d);
@@ -7408,7 +7475,7 @@ function renderLocPanel(){
    <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:10px">
      ${LOC.env.lst!=null?`<span class="ms-badge">LST ${LOC.env.lst>=0?'+':''}${LOC.env.lst} °C</span>`:''}
      ${LOC.env.versieg!=null?`<span class="ms-badge">${LOC.env.versieg} % ${mT('versiegelt','sealed','verhard')}</span>`:''}
-     ${LOC.env.kinderarmut!=null?`<span class="ms-badge">${(city==='utr'?mT('Niedrigeinkommen Wijk','district low income','laag inkomen wijk'):mT('Kinderarmut Wijk','district child poverty','kinderarmoede wijk'))} ${LOC.env.kinderarmut} %</span>`:''}
+     ${LOC.env.kinderarmut!=null?`<span class="ms-badge">${(city==='utr'?mT('Armut Wijk','district poverty','armoede wijk'):mT('Kinderarmut Wijk','district child poverty','kinderarmoede wijk'))} ${LOC.env.kinderarmut} %</span>`:''}
    </div>`:''}
    <div class="ap-sec">${mT('Besonnung','Sun exposure','Bezonning')}</div>
    ${LOC.sun?`
