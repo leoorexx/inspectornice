@@ -1,0 +1,34 @@
+name: Supabase wach halten
+
+# Gratis-Projekte pausieren nach ~7 Tagen ohne Anfragen (dann verschwindet die Adresse
+# und Mitwirken speichert nur noch lokal). Ein Ping alle 3 Tage verhindert das.
+# Läuft nur, wenn dieser Branch der Standard-Branch des Repos ist.
+on:
+  schedule:
+    - cron: '17 6 */3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: index.html
+          sparse-checkout-cone-mode: false
+
+      - name: Supabase anpingen
+        run: |
+          URL=$(grep -o "SUPABASE_URL = '[^']*'" index.html | cut -d"'" -f2)
+          KEY=$(grep -o "SUPABASE_KEY = '[^']*'" index.html | cut -d"'" -f2)
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then echo "::warning::Supabase-Konfiguration in index.html nicht gefunden"; exit 0; fi
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+            "$URL/rest/v1/nh_reports?select=id&limit=1" || echo 000)
+          echo "Supabase antwortet mit HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::warning::Supabase nicht erreichbar (HTTP $CODE) — Projekt im Supabase-Dashboard prüfen bzw. wiederherstellen"
+          fi
