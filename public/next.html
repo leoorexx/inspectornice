@@ -3,196 +3,262 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f1ede5">
 <title>Inspector Nice — Stadt-Signatur</title>
-<meta name="description" content="Ein verschmolzenes Bild von Klima, Umwelt und sozialer Lage — jeder Ort mit eigener Signatur.">
+<meta name="description" content="Jeder Ort hat eine Signatur aus Klima, Umwelt und sozialer Lage — ein Bild statt 35 Ebenen.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{
-  --ink:#14141f;--ink2:#3b3b4f;--mute:#6e6e82;--line:rgba(20,20,31,.09);--line2:rgba(20,20,31,.16);
-  --bg:#f4f2ec;--glass:rgba(255,255,255,.82);--card:#ffffff;--soft:#f6f5f1;
-  --accent:#FFD600;--chrome:#14141f;
-  --sh:0 1px 2px rgba(20,20,31,.06),0 8px 28px rgba(20,20,31,.10);
-  --sh2:0 2px 6px rgba(20,20,31,.08),0 24px 60px rgba(20,20,31,.18);
-  --r:18px;--r2:12px;--ease:cubic-bezier(.22,1,.36,1);
+  --paper:#f1ede5;--ink:#17151c;--ink2:#46424f;--mute:#7c7786;--line:rgba(23,21,28,.08);--line2:rgba(23,21,28,.15);
+  --glass:rgba(250,248,243,.86);--card:#fbfaf6;--soft:#eee9df;--soft2:#e6e0d4;
+  --accent:#FFD600;--chrome:#17151c;
+  --sh:0 1px 1px rgba(23,21,28,.04),0 6px 20px rgba(23,21,28,.08);
+  --sh2:0 2px 4px rgba(23,21,28,.06),0 22px 56px rgba(23,21,28,.16);
+  --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
   --serif:'Fraunces',Georgia,serif;--sans:'Archivo',system-ui,-apple-system,sans-serif;
+  --tap:44px;
+}
+:root[data-theme="dark"]{
+  --paper:#121016;--ink:#f3efe7;--ink2:#cfc9d6;--mute:#938da0;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.15);
+  --glass:rgba(27,24,32,.86);--card:#1c1922;--soft:#25212c;--soft2:#2e2936;
+  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --ink:#f2f1ec;--ink2:#cfcfd8;--mute:#9a9aae;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.16);
-  --bg:#101018;--glass:rgba(24,24,34,.82);--card:#1b1b26;--soft:#22222e;--sh:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.4);--sh2:0 24px 60px rgba(0,0,0,.55)}}
-:root[data-theme="dark"]{--ink:#f2f1ec;--ink2:#cfcfd8;--mute:#9a9aae;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.16);
-  --bg:#101018;--glass:rgba(24,24,34,.82);--card:#1b1b26;--soft:#22222e;--sh:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.4);--sh2:0 24px 60px rgba(0,0,0,.55)}
+  --paper:#121016;--ink:#f3efe7;--ink2:#cfc9d6;--mute:#938da0;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.15);
+  --glass:rgba(27,24,32,.86);--card:#1c1922;--soft:#25212c;--soft2:#2e2936;
+  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55)}}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:var(--sans);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;overflow:hidden;font-size:14px}
-button{font-family:inherit;cursor:pointer;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;overflow:hidden;font-size:14px;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer;color:inherit;-webkit-user-select:none;user-select:none}
+button:active{transform:scale(.97)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:10px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
-#map{position:fixed;inset:0;background:var(--bg)}
-.leaflet-tile-pane{filter:saturate(.6) contrast(.95) brightness(1.03)}
-:root[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.4)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.4)}}
-.leaflet-control-attribution{background:var(--glass)!important;backdrop-filter:blur(8px);color:var(--mute)!important;font-size:10px;border-radius:8px 0 0 0}
+/* ── Karte: Papierton, Basiskarte tritt zurück ── */
+#map{position:fixed;inset:0;background:var(--paper)}
+.leaflet-container{background:var(--paper);font-family:var(--sans)}
+.leaflet-tile-pane{filter:grayscale(.85) contrast(.82) brightness(1.06) sepia(.12);opacity:.78}
+:root[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) grayscale(.8) brightness(.78) contrast(.9);opacity:.6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) grayscale(.8) brightness(.78) contrast(.9);opacity:.6}}
+.leaflet-control-attribution{background:transparent!important;color:var(--mute)!important;font-size:10px}
 .leaflet-control-attribution a{color:var(--ink2)!important}
-.leaflet-control-zoom{border:none!important;box-shadow:var(--sh)!important;border-radius:12px!important;overflow:hidden}
-.leaflet-control-zoom a{background:var(--glass)!important;backdrop-filter:blur(12px);color:var(--ink)!important;border-color:var(--line)!important;width:36px!important;height:36px!important;line-height:36px!important}
+.leaflet-control-zoom{border:none!important;box-shadow:var(--sh)!important;border-radius:14px!important;overflow:hidden;margin:0 14px 18px 0!important}
+.leaflet-control-zoom a{background:var(--glass)!important;backdrop-filter:blur(12px);color:var(--ink)!important;border-color:var(--line)!important;width:var(--tap)!important;height:var(--tap)!important;line-height:var(--tap)!important;font-size:20px!important}
+.arc{fill:none;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
 
 /* ── Kopf ── */
 .top{position:fixed;top:14px;left:14px;right:14px;z-index:1000;display:flex;align-items:center;gap:10px;pointer-events:none}
 .top>*{pointer-events:auto}
-.brand{display:flex;align-items:center;gap:9px;background:var(--chrome);color:#fff;border-radius:14px;padding:9px 14px 9px 11px;box-shadow:var(--sh);text-decoration:none;flex:none}
-.brand svg{flex:none}
-.brand b{font-weight:800;font-size:14px;letter-spacing:-.01em}
-.brand small{display:block;font-size:10px;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-top:1px}
-.search{flex:1;max-width:520px;position:relative}
-.search input{width:100%;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--sh);padding:0 16px 0 44px;font:500 15px var(--sans);color:var(--ink);outline:none;transition:box-shadow .2s var(--ease),border-color .2s}
+.brand{display:flex;align-items:center;gap:10px;background:var(--chrome);color:#f3efe7;border-radius:16px;height:52px;padding:0 16px 0 12px;box-shadow:var(--sh);text-decoration:none;flex:none}
+.brand b{font:600 17px var(--serif);letter-spacing:-.01em;display:block;line-height:1}
+.brand small{display:block;font-size:10px;color:rgba(243,239,231,.55);font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-top:3px}
+.search{flex:1;max-width:560px;position:relative}
+.search input{width:100%;height:52px;border-radius:16px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--sh);padding:0 18px 0 48px;font:500 15.5px var(--sans);color:var(--ink);outline:none;transition:box-shadow .25s var(--ease),border-color .25s}
 .search input::placeholder{color:var(--mute)}
-.search input:focus{border-color:var(--accent);box-shadow:var(--sh2)}
-.search .ic{position:absolute;left:15px;top:14px;color:var(--mute);pointer-events:none}
-.sugg{position:absolute;top:52px;left:0;right:0;background:var(--card);border-radius:14px;box-shadow:var(--sh2);overflow:hidden;display:none;border:1px solid var(--line)}
-.sugg.on{display:block;animation:pop .18s var(--ease)}
-.sugg button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:none;background:none;padding:11px 14px;font-size:14px;border-bottom:1px solid var(--line)}
+.search input:focus{border-color:var(--ink);box-shadow:var(--sh2)}
+.search .ic{position:absolute;left:17px;top:17px;color:var(--mute);pointer-events:none}
+.sugg{position:absolute;top:58px;left:0;right:0;background:var(--card);border-radius:16px;box-shadow:var(--sh2);overflow:hidden;display:none;border:1px solid var(--line)}
+.sugg.on{display:block;animation:pop .2s var(--ease)}
+.sugg button{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;text-align:left;border:none;background:none;padding:10px 16px;font-size:15px;border-bottom:1px solid var(--line)}
 .sugg button:last-child{border-bottom:none}
 .sugg button:hover,.sugg button.act{background:var(--soft)}
-.sugg small{color:var(--mute);font-size:11px;margin-left:auto;text-transform:uppercase;letter-spacing:.05em}
-.tools{display:flex;gap:6px;margin-left:auto;flex:none}
-.tbtn{height:46px;min-width:46px;padding:0 13px;border-radius:14px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--sh);font:700 12px var(--sans);display:flex;align-items:center;justify-content:center;gap:7px;color:var(--ink);text-decoration:none;transition:transform .15s var(--ease)}
-.tbtn:hover{transform:translateY(-1px)}
-.lang{display:flex;background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);padding:4px;height:46px}
-.lang button{border:none;background:none;border-radius:10px;padding:0 11px;font:800 12px var(--sans);color:var(--mute)}
+.sugg i{width:28px;height:28px;border-radius:9px;background:var(--soft);display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink2);font-style:normal}
+.sugg small{color:var(--mute);font-size:11px;margin-left:auto;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.tools{display:flex;gap:8px;margin-left:auto;flex:none}
+.tbtn{height:52px;min-width:52px;padding:0 15px;border-radius:16px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--sh);font:700 13px var(--sans);display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ink);text-decoration:none;transition:transform .2s var(--spring),background .2s}
+.tbtn:hover{background:var(--card)}
+.lang{display:flex;background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:5px;height:52px;gap:2px}
+.lang button{border:none;background:none;border-radius:11px;min-width:40px;font:800 12.5px var(--sans);color:var(--mute);transition:background .2s,color .2s}
 .lang button.on{background:var(--chrome);color:var(--accent)}
 
 /* ── Linsen ── */
-.lenses{position:fixed;left:14px;top:72px;z-index:1000;transition:max-width .45s var(--ease);display:flex;gap:4px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh);padding:5px;max-width:calc(100vw - 28px);overflow-x:auto;scrollbar-width:none}
-body.panel-on .lenses{max-width:calc(100vw - 456px)}
+.lenses{position:fixed;left:14px;top:78px;z-index:999;display:flex;gap:6px;max-width:calc(100vw - 28px);overflow-x:auto;scrollbar-width:none;padding:2px 2px 10px;transition:max-width .45s var(--ease);-webkit-mask:linear-gradient(90deg,#000 92%,transparent);mask:linear-gradient(90deg,#000 92%,transparent)}
 .lenses::-webkit-scrollbar{display:none}
-.lens{flex:none;border:none;background:none;border-radius:13px;padding:9px 13px;font:700 13px var(--sans);color:var(--ink2);display:flex;align-items:center;gap:7px;white-space:nowrap;transition:background .2s var(--ease),color .2s}
-.lens:hover{background:var(--soft)}
-.lens.on{background:var(--chrome);color:#fff}
-.lens.on svg{color:var(--accent)}
-.lens.hero{font-weight:800}
-.lsep{width:1px;background:var(--line2);margin:8px 3px;flex:none}
+body.panel-on .lenses{max-width:calc(100vw - 480px)}
+.lens{flex:none;height:var(--tap);border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--sh);border-radius:22px;padding:0 16px 0 12px;font:700 13.5px var(--sans);color:var(--ink2);display:flex;align-items:center;gap:9px;white-space:nowrap;transition:background .25s var(--ease),color .25s,transform .2s var(--spring),box-shadow .25s}
+.lens:hover{background:var(--card);color:var(--ink)}
+.lens .sw{width:16px;height:16px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5)}
+.lens.on{background:var(--chrome);color:#f3efe7;border-color:var(--chrome);box-shadow:var(--sh2)}
+.lens.on .sw{box-shadow:0 0 0 2.5px var(--accent)}
 
-/* ── Legende ── */
-.legend{position:fixed;left:14px;bottom:22px;z-index:999;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;width:250px;animation:rise .35s var(--ease)}
-.legend h4{font:600 17px var(--serif);letter-spacing:-.01em;margin-bottom:3px}
-.legend p{font-size:12px;color:var(--mute);line-height:1.45;margin-bottom:11px}
-.bivw{display:flex;gap:12px;align-items:stretch}
-.biv{display:grid;grid-template-columns:repeat(3,24px);grid-template-rows:repeat(3,24px);gap:3px;flex:none}
-.biv span{border-radius:5px;display:block}
-.bivl{display:flex;flex-direction:column;justify-content:space-between;font-size:11.5px;font-weight:700;color:var(--ink2);line-height:1.3}
+/* ── Legende / Stadtporträt ── */
+.legend{position:fixed;left:14px;bottom:18px;z-index:999;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:22px;box-shadow:var(--sh);padding:16px 18px 16px;width:300px;animation:rise .5s var(--ease)}
+.legend h4{font:600 20px var(--serif);letter-spacing:-.015em;line-height:1.1}
+.legend .lead{font-size:12.5px;color:var(--mute);line-height:1.45;margin:4px 0 12px}
+.bivw{display:flex;gap:14px;align-items:flex-end}
+.biv{display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);gap:4px;flex:none}
+.biv button{border:none;border-radius:9px;font:800 10.5px var(--sans);color:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;transition:transform .2s var(--spring),box-shadow .2s;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.biv button.light{color:rgba(23,21,28,.62);text-shadow:none}
+.biv button:hover,.biv button.on{transform:scale(1.1);box-shadow:0 0 0 2.5px var(--ink)}
+.bivl{font-size:12px;font-weight:700;color:var(--ink2);line-height:1.35;display:flex;flex-direction:column;gap:6px;padding-bottom:2px}
 .bivl em{font-style:normal;font-weight:600;color:var(--mute)}
-.xa{font-size:11.5px;font-weight:700;color:var(--ink2);margin-top:6px}
-.ramp{height:10px;border-radius:6px;margin:4px 0 5px}
-.rlab{display:flex;justify-content:space-between;font-size:11px;color:var(--mute)}
-.types{display:flex;flex-direction:column;gap:4px}
-.types button{display:flex;align-items:center;gap:9px;border:none;background:none;text-align:left;padding:5px 6px;border-radius:9px;font-size:12.5px;color:var(--ink);line-height:1.25}
+.xa{font-size:12px;font-weight:700;color:var(--ink2);margin-top:8px}
+.stat{display:flex;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.stat button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;text-align:left;min-height:var(--tap);transition:border-color .2s,transform .2s var(--spring)}
+.stat button:hover,.stat button.on{border-color:var(--ink)}
+.stat b{display:block;font:600 22px var(--serif);line-height:1}
+.stat span{font-size:11px;color:var(--mute);font-weight:600}
+.hist{display:flex;align-items:flex-end;gap:2px;height:56px;margin:2px 0 6px}
+.hist i{flex:1;border-radius:3px 3px 1px 1px;min-height:2px;transition:height .6s var(--ease)}
+.hist-wrap{position:relative}
+.marker{position:absolute;top:-6px;bottom:2px;width:2px;background:var(--ink);border-radius:2px;transition:left .5s var(--ease)}
+.marker::after{content:attr(data-v);position:absolute;top:-16px;left:50%;transform:translateX(-50%);font:800 10.5px var(--sans);background:var(--ink);color:var(--paper);border-radius:6px;padding:1px 5px}
+.rlab{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mute);font-weight:600}
+.types{display:flex;flex-direction:column;gap:4px;max-height:44vh;overflow:auto;margin:0 -6px}
+.types button{display:flex;align-items:center;gap:11px;border:none;background:none;text-align:left;padding:5px 6px;border-radius:14px;font-size:13px;color:var(--ink);line-height:1.25;min-height:52px;transition:background .2s,opacity .25s}
 .types button:hover{background:var(--soft)}
-.types button.dim{opacity:.35}
-.types i{width:14px;height:14px;border-radius:4px;flex:none}
-.types em{font-style:normal;margin-left:auto;color:var(--mute);font-size:11px}
+.types button.dim{opacity:.32}
+.types svg{flex:none}
+.types em{font-style:normal;margin-left:auto;color:var(--mute);font-size:11.5px;font-weight:700;padding-left:8px}
+
+/* ── Vorschau beim Überfahren ── */
+.hov{position:fixed;z-index:1100;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh2);padding:12px 14px 12px 12px;display:flex;gap:12px;align-items:center;opacity:0;transform:translateY(6px) scale(.97);transition:opacity .16s,transform .2s var(--ease);max-width:300px}
+.hov.on{opacity:1;transform:none}
+.hov b{font:600 16px var(--serif);display:block;line-height:1.15}
+.hov span{font-size:12px;color:var(--mute);line-height:1.35;display:block;margin-top:3px}
 
 /* ── Orts-Karte ── */
-.panel{position:fixed;top:74px;right:14px;bottom:22px;width:400px;z-index:1001;background:var(--card);border-radius:22px;box-shadow:var(--sh2);display:flex;flex-direction:column;transform:translateX(calc(100% + 30px));transition:transform .45s var(--ease);border:1px solid var(--line)}
+.panel{position:fixed;top:14px;right:14px;bottom:14px;width:440px;z-index:1001;background:var(--card);border-radius:28px;box-shadow:var(--sh2);display:flex;flex-direction:column;transform:translateX(calc(100% + 30px));transition:transform .55s var(--ease);border:1px solid var(--line);overflow:hidden}
 .panel.on{transform:none}
-.ph{padding:20px 22px 14px;border-bottom:1px solid var(--line);position:relative}
-.ph .kick{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
-.ph h2{font:600 28px var(--serif);letter-spacing:-.02em;line-height:1.05;margin:5px 0 9px}
-.close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:var(--soft);display:flex;align-items:center;justify-content:center}
-.type{display:inline-flex;align-items:center;gap:8px;background:var(--soft);border-radius:10px;padding:6px 10px 6px 8px;font-size:12.5px;font-weight:700}
-.type i{width:12px;height:12px;border-radius:4px}
-.pb{flex:1;overflow-y:auto;padding:18px 22px 24px;scrollbar-width:thin}
-.say{font-size:15px;line-height:1.55;color:var(--ink);margin-bottom:18px}
-.say b{font-weight:700}
-.flag{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(135deg,rgba(87,66,73,.10),rgba(200,90,90,.08));border:1px solid rgba(87,66,73,.22);border-radius:14px;padding:12px 14px;margin:-4px 0 18px;font-size:13px;line-height:1.45}
-.flag svg{flex:none;margin-top:1px;color:#985356}
-.h{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.grab{display:none}
+.ph{padding:22px 24px 6px;position:relative;flex:none}
+.ph .kick{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.ph h2{font:600 34px var(--serif);letter-spacing:-.025em;line-height:1;margin:7px 0 10px;padding-right:50px}
+.close{position:absolute;top:18px;right:18px;width:var(--tap);height:var(--tap);border-radius:50%;border:1px solid var(--line);background:var(--soft);display:flex;align-items:center;justify-content:center;transition:transform .2s var(--spring),background .2s}
+.close:hover{background:var(--soft2)}
+.type{display:inline-flex;align-items:center;gap:8px;background:var(--soft);border-radius:20px;padding:7px 12px 7px 9px;font-size:13px;font-weight:700}
+.type i{width:12px;height:12px;border-radius:50%}
+.pb{flex:1;overflow-y:auto;padding:4px 24px 28px;scrollbar-width:thin;overscroll-behavior:contain}
+.hero{display:flex;align-items:center;gap:18px;margin:10px 0 6px}
+.hero .rose{flex:none}
+.say{font:400 17px/1.5 var(--serif);color:var(--ink)}
+.say b{font-weight:600}
+.flag{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(120deg,rgba(208,88,60,.12),rgba(76,78,168,.12));border-radius:18px;padding:13px 15px;margin:14px 0 4px;font-size:13.5px;line-height:1.45}
+.flag svg{flex:none;margin-top:1px}
+.h{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin:24px 0 11px;display:flex;align-items:center;gap:8px}
 .h::after{content:"";flex:1;height:1px;background:var(--line)}
-.sig{display:flex;flex-direction:column;gap:9px}
-.row{display:grid;grid-template-columns:118px 1fr 34px;align-items:center;gap:10px;font-size:13px}
-.row .lb{color:var(--ink2);font-weight:600}
-.bar{height:9px;background:var(--soft);border-radius:6px;overflow:hidden;position:relative}
-.bar::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line2)}
-.bar i{display:block;height:100%;border-radius:6px;width:0;transition:width .8s var(--ease)}
-.row .v{font-weight:800;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
-.note{font-size:11.5px;color:var(--mute);line-height:1.5;margin-top:9px}
-.cta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:18px;border:none;border-radius:14px;padding:14px;background:var(--chrome);color:#fff;font:800 14px var(--sans);transition:transform .15s var(--ease),box-shadow .2s}
+.dims{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dt{display:flex;flex-direction:column;gap:7px;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:11px 12px 12px;text-align:left;min-height:72px;transition:border-color .2s,transform .2s var(--spring),box-shadow .2s}
+.dt:hover{border-color:var(--line2);box-shadow:var(--sh)}
+.dt.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.dt .t{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--ink2)}
+.dt .t i{width:9px;height:9px;border-radius:50%;flex:none}
+.dt .t b{margin-left:auto;font:600 19px var(--serif);color:var(--ink);font-variant-numeric:tabular-nums}
+.dt .m{height:6px;border-radius:4px;background:var(--soft);position:relative;overflow:hidden}
+.dt .m u{position:absolute;inset:0 auto 0 0;border-radius:4px;width:0;transition:width .9s var(--ease)}
+.dt .m::after{content:"";position:absolute;left:50%;top:-1px;bottom:-1px;width:1.5px;background:var(--line2)}
+.dt[disabled]{cursor:default}
+.note{font-size:12px;color:var(--mute);line-height:1.5;margin-top:10px}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:18px;border:none;border-radius:18px;min-height:56px;padding:0 18px;background:var(--chrome);color:#f3efe7;font:800 15px var(--sans);transition:transform .2s var(--spring),box-shadow .25s}
 .cta svg{color:var(--accent)}
-.cta:hover{transform:translateY(-1px);box-shadow:var(--sh)}
-.cta.ghost{background:var(--soft);color:var(--ink)}
+.cta:hover{box-shadow:var(--sh2)}
+.cta.ghost{background:var(--soft);color:var(--ink);min-height:var(--tap);font-size:13.5px}
 .cta.ghost svg{color:var(--ink2)}
-.sim{margin-top:12px;background:var(--soft);border-radius:14px;padding:13px 14px;font-size:13px;line-height:1.5;display:none;animation:rise .35s var(--ease)}
+.sim{margin-top:12px;background:var(--soft);border-radius:18px;padding:14px 16px;font-size:14px;line-height:1.5;display:none;animation:rise .4s var(--ease)}
 .sim.on{display:block}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-.chip{border:1px solid var(--line2);background:var(--card);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:700}
+.sim b{font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.chip{border:1px solid var(--line2);background:var(--card);border-radius:22px;min-height:40px;padding:0 14px;font-size:13px;font-weight:700;transition:border-color .2s,transform .2s var(--spring)}
 .chip:hover{border-color:var(--ink)}
-.mu{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:12px;background:var(--card)}
-.mu svg{display:block;width:100%;height:auto;background:var(--soft)}
-.mu div{padding:11px 14px 13px}
-.mu b{font-size:14px;display:block;margin-bottom:3px}
-.mu p{font-size:12.5px;color:var(--ink2);line-height:1.5}
-.mu em{display:inline-block;font-style:normal;font-size:11px;font-weight:800;color:#985356;background:rgba(200,90,90,.10);border-radius:6px;padding:2px 7px;margin-bottom:6px}
-details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}
-summary{font-size:12px;font-weight:800;color:var(--ink2);cursor:pointer;list-style:none;display:flex;align-items:center;gap:7px}
+.carousel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -24px;padding:2px 24px 6px;scrollbar-width:none}
+.carousel::-webkit-scrollbar{display:none}
+.mu{flex:0 0 86%;scroll-snap-align:start;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--card)}
+.mu svg{display:block;width:100%;height:auto;background:#f7f5ef}
+.mu div{padding:12px 15px 15px}
+.mu em{display:inline-block;font-style:normal;font-size:11px;font-weight:800;letter-spacing:.02em;color:#a2442c;background:rgba(208,88,60,.12);border-radius:20px;padding:3px 9px;margin-bottom:7px}
+.mu b{font:600 17px var(--serif);display:block;margin-bottom:4px;letter-spacing:-.01em}
+.mu p{font-size:13px;color:var(--ink2);line-height:1.5}
+details{margin-top:24px;border-top:1px solid var(--line);padding-top:6px}
+summary{font-size:13px;font-weight:800;color:var(--ink2);cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;min-height:var(--tap)}
 summary::-webkit-details-marker{display:none}
-details p{font-size:12px;color:var(--mute);line-height:1.6;margin-top:9px}
-.classic{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12.5px;font-weight:700;color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:1px}
+details p{font-size:12.5px;color:var(--mute);line-height:1.6;margin-top:4px}
+.classic{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:13px;font-weight:700;color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--line2);padding:6px 0 2px}
 
-/* ── Erstbesuch-Hinweis ── */
-.hint{position:fixed;top:134px;left:14px;z-index:999;width:330px;background:var(--chrome);color:#fff;border-radius:var(--r);box-shadow:var(--sh2);padding:16px 18px;animation:rise .5s var(--ease) .3s both}
-.hint h3{font:600 19px var(--serif);margin-bottom:6px;letter-spacing:-.01em}
-.hint p{font-size:13px;line-height:1.5;color:rgba(255,255,255,.78)}
-.hint p b{color:var(--accent);font-weight:700}
-.hint button{margin-top:12px;border:none;background:var(--accent);color:var(--chrome);border-radius:10px;padding:9px 14px;font:800 12.5px var(--sans)}
-.loading{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:opacity .5s}
+/* ── Rosette ── */
+.rose path{transform-box:fill-box;transform-origin:center;transition:transform .7s var(--spring),opacity .4s}
+.rose.grow path.w{animation:petal .8s var(--spring) both}
+@keyframes petal{from{transform:scale(0);opacity:0}}
+
+/* ── Erstbesuch ── */
+.intro{position:fixed;inset:0;z-index:1500;display:flex;align-items:center;justify-content:center;background:rgba(241,237,229,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fade .4s var(--ease)}
+:root[data-theme="dark"] .intro{background:rgba(18,16,22,.6)}
+.intro .box{background:var(--card);border-radius:28px;box-shadow:var(--sh2);padding:28px 30px 26px;max-width:440px;margin:16px;text-align:center;animation:rise .55s var(--ease)}
+.intro h3{font:600 30px/1.08 var(--serif);letter-spacing:-.025em;margin:12px 0 10px}
+.intro h3 i{font-style:italic;font-weight:400}
+.intro p{font-size:15px;line-height:1.55;color:var(--ink2)}
+.intro .row{display:flex;gap:10px;justify-content:center;margin-top:20px}
+.intro .go{border:none;background:var(--chrome);color:#f3efe7;border-radius:16px;min-height:52px;padding:0 24px;font:800 15px var(--sans)}
+.intro .go2{border:1px solid var(--line2);background:none;border-radius:16px;min-height:52px;padding:0 20px;font:700 14px var(--sans)}
+.loading{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:var(--paper);transition:opacity .6s}
 .loading.off{opacity:0;pointer-events:none}
-.loading div{font:600 22px var(--serif);color:var(--ink2);display:flex;align-items:center;gap:12px}
-.pulse{width:12px;height:12px;border-radius:50%;background:var(--accent);animation:pl 1s infinite alternate}
-@keyframes pl{to{transform:scale(1.6);opacity:.5}}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.loading div{font:400 24px var(--serif);font-style:italic;color:var(--ink2);display:flex;align-items:center;gap:14px}
+.dots i{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 3px;animation:bob .9s var(--ease) infinite alternate}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes bob{to{transform:translateY(-7px);opacity:.5}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes pop{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}}
 
-/* ── Mobil: Kopf kompakt, Linsen oben, Karte als Bottom-Sheet ── */
+/* ── Mobil: Kopf kompakt, Linsen oben, Orts-Karte als ziehbares Sheet ── */
 @media (max-width:760px){
-  .top{top:10px;left:10px;right:10px;gap:7px;flex-wrap:wrap}
-  .brand small,.brand b{display:none}
-  .brand{padding:11px}
+  .top{top:10px;left:10px;right:10px;gap:8px;flex-wrap:wrap}
+  .brand{height:var(--tap);padding:0 12px}
+  .brand .wm{display:none}
   .search{order:2;flex-basis:100%;max-width:none}
-  .tools{order:1;margin-left:auto}
+  .search input{height:50px}
+  .tools{order:1;margin-left:auto;gap:6px}
+  .tbtn,.lang{height:var(--tap)}
+  .tbtn{min-width:var(--tap);padding:0 12px}
   .tools .classicbtn span{display:none}
-  .lenses{top:118px;left:10px;right:10px;border-radius:16px}
+  .lenses{top:118px;left:0;right:0;max-width:none;padding:2px 10px 10px}
   body.panel-on .lenses{max-width:none}
-  .legend{left:10px;right:10px;bottom:12px;width:auto;padding:11px 13px}
-  .legend p{display:none}
-  .panel{top:auto;left:0;right:0;bottom:0;width:auto;max-height:78vh;border-radius:24px 24px 0 0;transform:translateY(105%)}
-  .panel.on{transform:none}
-  .hint{top:auto;bottom:150px;left:10px;right:10px;width:auto}
+  .legend{left:10px;right:10px;bottom:10px;width:auto;padding:13px 15px}
+  .legend .lead{display:none}
+  .legend.l-all{display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
+  .legend.l-all h4{grid-column:1/3;margin-bottom:8px;font-size:17px}
+  .legend.l-all .bivl,.legend.l-all .xa,.legend.l-all #allBtn{display:none}
+  .legend.l-all .biv{grid-template-columns:repeat(3,26px);grid-template-rows:repeat(3,26px);gap:3px}
+  .legend.l-all .biv button{font-size:9.5px;border-radius:7px}
+  .legend.l-all .stat{grid-column:2;grid-row:2;margin:0;padding:0;border:0;align-self:stretch}
+  .legend.l-all .stat button{display:flex;flex-direction:column;justify-content:center}
+  .types{max-height:30vh}
   .leaflet-control-zoom{display:none}
-  body.panel-on .legend{display:none}
+  .panel{top:auto;left:0;right:0;bottom:0;width:auto;height:92vh;border-radius:28px 28px 0 0;transform:translateY(105%);transition:transform .5s var(--ease)}
+  .panel.dragging{transition:none}
+  .grab{display:block;width:44px;height:5px;border-radius:3px;background:var(--line2);margin:10px auto 0;flex:none}
+  .ph{padding:12px 20px 4px;touch-action:none;cursor:grab}
+  .ph h2{font-size:30px}
+  .pb{padding:4px 20px 40px}
+  .carousel{margin:0 -20px;padding:2px 20px 6px}
+  body.panel-on .legend{opacity:0;pointer-events:none}
+  .hov{display:none}
 }
 </style>
 </head>
 <body>
-<div class="loading" id="loading"><div><span class="pulse"></span><span id="ldTxt">Stadt-Signatur wird geladen …</span></div></div>
+<div class="loading" id="loading"><div><span class="dots"><i style="background:#d0583c"></i><i style="background:#c49a2b"></i><i style="background:#4c4ea8"></i></span><span id="ldTxt">Stadt-Signatur wird geladen</span></div></div>
 <div id="map" role="application" aria-label="Karte"></div>
+<div class="hov" id="hov" aria-hidden="true"></div>
 
 <header class="top">
   <a class="brand" href="index.html" title="Inspector Nice">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="7" cy="8" r="3.4" fill="#FFD600"/><circle cx="16.5" cy="7" r="2.6" fill="#c97b4f"/><circle cx="12" cy="16.5" r="3.6" fill="#8ba36e"/><path d="M7 8 12 16.5 16.5 7" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/></svg>
-    <span><b>Inspector Nice</b><small id="cityLbl">Utrecht · Stadt-Signatur</small></span>
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g transform="translate(13 13)"><path d="M0-2.4 4.2-10.6A11 11 0 0 1 10.6-4.2Z" fill="#d0583c"/><path d="M2.4 0 10.6 4.2A11 11 0 0 1 4.2 10.6Z" fill="#c49a2b"/><path d="M0 2.4-4.2 10.6A11 11 0 0 1-10.6 4.2Z" fill="#4c4ea8"/><path d="M-2.4 0-10.6-4.2A11 11 0 0 1-4.2-10.6Z" fill="#7a8c3a"/><circle r="2.1" fill="#FFD600"/></g></svg>
+    <span class="wm"><b>Inspector Nice</b><small id="cityLbl">Utrecht · Stadt-Signatur</small></span>
   </a>
   <div class="search">
-    <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     <input id="q" type="search" autocomplete="off" aria-label="Ort suchen">
     <div class="sugg" id="sugg" role="listbox"></div>
   </div>
   <div class="tools">
     <div class="lang" role="group" aria-label="Sprache"><button data-l="de">DE</button><button data-l="en">EN</button><button data-l="nl">NL</button></div>
-    <button class="tbtn" id="themeBtn" aria-label="Hell/Dunkel"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
-    <a class="tbtn classicbtn" href="index.html" id="classicBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M3 10h6"/></svg><span id="classicTxt">Klassische Ansicht</span></a>
+    <button class="tbtn" id="themeBtn" aria-label="Hell/Dunkel"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
+    <a class="tbtn classicbtn" href="index.html" id="classicBtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M3 10h6"/></svg><span id="classicTxt">Klassische Ansicht</span></a>
   </div>
 </header>
 
@@ -200,212 +266,327 @@ details p{font-size:12px;color:var(--mute);line-height:1.6;margin-top:9px}
 <aside class="legend" id="legend" aria-live="polite"></aside>
 
 <section class="panel" id="panel" aria-label="Ort">
-  <div class="ph">
+  <div class="grab" aria-hidden="true"></div>
+  <div class="ph" id="ph">
     <div class="kick" id="pKick"></div>
     <h2 id="pTitle"></h2>
     <span class="type" id="pType"></span>
-    <button class="close" id="pClose" aria-label="Schließen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="close" id="pClose" aria-label="Schließen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   </div>
   <div class="pb" id="pBody"></div>
 </section>
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// Inspector Nice — Stadt-Signatur (Prototyp der neuen Oberfläche)
-// Ein verschmolzenes Bild statt 35 Ebenen: jede 200-m-Zelle trägt
-// einen Fingerabdruck aus Klima, Umwelt und sozialer Lage.
+// Inspector Nice — Stadt-Signatur
+// Jeder 200-m-Ort ist ein Punkt: Farbe = Umweltlast × soziale Lage
+// (fließend), Größe = Gesamtlast. Jeder Ort hat eine Rosette aus
+// 8 Merkmalen (Nightingale-Prinzip: Fläche ∝ Wert).
 // ══════════════════════════════════════════════════════════════
 let lang=(()=>{try{return localStorage.getItem('ul_lang')}catch(e){return null}})()||((navigator.language||'').startsWith('nl')?'nl':(navigator.language||'').startsWith('de')?'de':'en');
 const T=(de,en,nl)=>lang==='en'?en:lang==='nl'?nl:de;
 const STORE={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const MM=q=>window.matchMedia?matchMedia(q):{matches:false,addEventListener(){}};
+const REDUCED=MM('(prefers-reduced-motion: reduce)').matches;
+const MOBILE=()=>innerWidth<=760;
 
-// Merkmale: höher = mehr Belastung (außer Wasser: neutrale Eigenschaft)
+// Merkmale: höher = mehr Belastung (Wasser: neutrale Eigenschaft)
 const DIM=[
- {k:'heat',  de:'Hitze',            en:'Heat',             nl:'Hitte',            ramp:['#fbe9df','#b34a4a'], why:['Oberflächentemperatur (Satellit) der Gebäude','surface temperature of buildings (satellite)','oppervlaktetemperatuur gebouwen (satelliet)']},
- {k:'green', de:'Grünmangel',       en:'Lack of green',    nl:'Groentekort',      ramp:['#eef2e3','#7a5a32'], why:['Weg zur nächsten Grünfläche ≥ 0,5 ha + Bäume','distance to green ≥ 0.5 ha + trees','afstand tot groen ≥ 0,5 ha + bomen']},
- {k:'dens',  de:'Dichte',           en:'Density',          nl:'Dichtheid',        ramp:['#eeeeee','#2d2d3a'], why:['überbauter Anteil der Fläche','built-up share of the area','bebouwd aandeel']},
- {k:'noise', de:'Verkehrslärm',     en:'Traffic noise',    nl:'Verkeerslawaai',   ramp:['#efeaf5','#5b3f8c'], why:['Nähe zu Hauptstraßen, nach Straßenklasse','proximity to main roads by class','nabijheid hoofdwegen per klasse']},
- {k:'access',de:'Weite Wege',       en:'Long trips',       nl:'Lange afstanden',  ramp:['#e3f1f5','#2a6f8a'], why:['Weg zu Laden, Schule und Arzt','distance to shop, school and doctor','afstand tot winkel, school en huisarts']},
- {k:'co2',   de:'Gebäude-CO₂',      en:'Building CO₂',     nl:'Gebouw-CO₂',       ramp:['#f6efd9','#8a6a12'], why:['Wärmebedarf nach echtem Baujahr (BAG)','heat demand by real construction year (BAG)','warmtevraag naar bouwjaar (BAG)']},
- {k:'social',de:'Soziale Lage',     en:'Social strain',    nl:'Sociale druk',     ramp:['#ece6f0','#574249'], why:['Bijstand, laag inkomen, Wahlbeteiligung (Wijk)','assistance, low income, turnout (wijk)','bijstand, laag inkomen, opkomst (wijk)']},
- {k:'water', de:'Wassernähe',       en:'Near water',       nl:'Nabij water',      ramp:['#e6f0f6','#2f6f9f'], why:['Anteil gewässernaher Gebäude (Näherung)','share of buildings near water (approx.)','aandeel gebouwen nabij water'], neutral:true},
+ {k:'heat',  col:'#d0583c', de:'Hitze',        en:'Heat',          nl:'Hitte',          why:['Oberflächentemperatur der Gebäude (Satellit)','surface temperature of buildings (satellite)','oppervlaktetemperatuur gebouwen (satelliet)']},
+ {k:'green', col:'#7a8c3a', de:'Grünmangel',   en:'Lack of green', nl:'Groentekort',    why:['Weg zur nächsten Grünfläche ab 0,5 ha, plus Bäume','distance to green space ≥ 0.5 ha, plus trees','afstand tot groen ≥ 0,5 ha, plus bomen']},
+ {k:'dens',  col:'#4a4855', de:'Dichte',       en:'Density',       nl:'Dichtheid',      why:['überbauter Anteil der Fläche','built-up share of the area','bebouwd aandeel van het oppervlak']},
+ {k:'noise', col:'#a05a9a', de:'Verkehrslärm', en:'Traffic noise', nl:'Verkeerslawaai', why:['Nähe zu Hauptstraßen, nach Straßenklasse','proximity to main roads, by road class','nabijheid hoofdwegen, per wegklasse']},
+ {k:'access',col:'#2a8a9f', de:'Weite Wege',   en:'Long trips',    nl:'Lange afstanden',why:['Weg zu Laden, Schule und Arzt','distance to shop, school and doctor','afstand tot winkel, school en huisarts']},
+ {k:'co2',   col:'#c49a2b', de:'Gebäude-CO₂',  en:'Building CO₂',  nl:'Gebouw-CO₂',     why:['Wärmebedarf nach echtem Baujahr (BAG)','heat demand by real construction year (BAG)','warmtevraag naar echt bouwjaar (BAG)']},
+ {k:'social',col:'#4c4ea8', de:'Soziale Lage', en:'Social strain', nl:'Sociale druk',   why:['Bijstand, niedriges Einkommen, Wahlbeteiligung (Wijk)','social assistance, low income, turnout (wijk)','bijstand, laag inkomen, opkomst (wijk)']},
+ {k:'water', col:'#6aa4cf', de:'Wassernähe',   en:'Near water',    nl:'Nabij water',    why:['Anteil gewässernaher Gebäude (Näherung)','share of buildings near water (approx.)','aandeel gebouwen nabij water (benadering)'], neutral:true},
 ];
-const BIV=[['#e8e8e8','#b0d5df','#64acbe'],['#e4acac','#ad9ea5','#627f8c'],['#c85a5a','#985356','#574249']]; // [Umwelt][Sozial] — Stevens
-const TYPE_COL=['#b34a4a','#c97b4f','#c9a53f','#8ba36e','#5f7a52','#4f7c8a'];
+// Umwelt × Sozial: fließender Farbraum zwischen vier Ecken (rot ↔ indigo, wie klassische bivariate Karten)
+const CORN={o:[235,230,221],e:[208,88,60],s:[76,78,168],x:[46,29,61]};
+const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+const rgb=a=>'#'+a.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+// Dunkel: der unbelastete Ausgangspunkt wird dunkel statt papierhell — Belastung bleibt das Auffälligste
+const isDark=()=>document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&MM('(prefers-color-scheme: dark)').matches);
+const LOW=()=>isDark()?[58,53,66]:[235,230,221];
+const bivRGB=(e,s)=>{const o=LOW(),x=isDark()?[236,210,226]:CORN.x;return mix(mix(o,CORN.e,e),mix(CORN.s,x,e),s);};
+const tint=(hex,t)=>{const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));return rgb(mix(isDark()?[52,48,60]:[238,233,224],c,t));};
+const TYPE_COL=['#b5402e','#d0783c','#c49a2b','#7a8c3a','#3f6f5a','#3f6f9a'];
 const I={
- all:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="9" r="5"/><circle cx="16" cy="9" r="5"/><circle cx="12" cy="16" r="5"/></svg>',
- types:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
- heat:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z"/></svg>',
- green:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 20A7 7 0 0 1 4 13C4 7 9 3 20 4c1 11-3 16-9 16Z"/><path d="M4 21c4-4 7-6 12-8"/></svg>',
- noise:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>',
- dens:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="9" width="6" height="12"/><rect x="12" y="4" width="8" height="17"/></svg>',
- access:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8 17c6 0 2-10 8-10"/></svg>',
- social:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9.5" r="2.5"/><path d="M16.5 14.5a5 5 0 0 1 5 5"/></svg>',
- similar:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.7 10.7 15.3 7.3M8.7 13.3l6.6 3.4"/></svg>',
- warn:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg>',
- info:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+ all:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="9" r="5"/><circle cx="16" cy="9" r="5"/><circle cx="12" cy="16" r="5"/></svg>',
+ similar:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="5" cy="12" r="2.6"/><circle cx="19" cy="5" r="2.6"/><circle cx="19" cy="19" r="2.6"/><path d="M7.5 11c3-4 6-5 9-5.6M7.5 13c3 4 6 5 9 5.6"/></svg>',
+ warn:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b3550" stroke-width="2" stroke-linecap="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg>',
+ info:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+ pin:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+ area:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7l8-4 8 4v10l-8 4-8-4Z"/></svg>',
 };
-const LENSES=[
- {id:'all',ic:'all',hero:true,de:'Gesamtbild',en:'Full picture',nl:'Totaalbeeld'},
- {id:'types',ic:'types',de:'Stadttypen',en:'City types',nl:'Stadstypen'},
- {sep:true},
- {id:'heat',ic:'heat'},{id:'green',ic:'green'},{id:'noise',ic:'noise'},{id:'dens',ic:'dens'},{id:'access',ic:'access'},{id:'social',ic:'social'},
-];
+const LENSES=[{id:'all'},{id:'types'},...DIM.filter(d=>!d.neutral).map(d=>({id:d.k}))];
 
-let F=null, MU=[], map, cellLayer, lens=STORE.get('nx_lens')||'all', sel=null, simSet=null, typeFilter=null;
+let F=null,MU=[],map,dotLayer,arcLayer,selRing=null,lens=STORE.get('nx_lens')||'all',sel=null,simSet=null,typeFilter=null,bivFilter=null,dblOnly=false;
 
-// ── Karte: amtliche Basiskarte (PDOK, Open Data) ──
-map=L.map('map',{zoomControl:false,attributionControl:true,zoomSnap:.5,preferCanvas:true}).setView([52.0907,5.1214],13);
-L.control.zoom({position:'bottomright'}).addTo(map);
-L.tileLayer('https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/grijs/EPSG:3857/{z}/{x}/{y}.png',{maxZoom:20,maxNativeZoom:19,attribution:'© <a href="https://www.pdok.nl" target="_blank" rel="noopener">Kadaster / PDOK</a> · Signatur: BAG · OSM · CBS'}).addTo(map);
-const rend=L.canvas({padding:.4});
-
-function lerp(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);return '#'+A.map((x,i)=>Math.round(x+(B[i]-x)*t).toString(16).padStart(2,'0')).join('');}
-function colorOf(c){
-  if(lens==='all')return BIV[Math.floor(c.b/3)][c.b%3];
-  if(lens==='types')return TYPE_COL[c.t];
-  const d=DIM.findIndex(x=>x.k===lens); return lerp(DIM[d].ramp[0],DIM[d].ramp[1],c.v[d]/100);
-}
-function styleOf(c){
-  const base={fillColor:colorOf(c),fillOpacity:.72,color:'#fff',weight:.6,opacity:.55};
-  if(typeFilter!=null&&c.t!==typeFilter)return {...base,fillOpacity:.07,opacity:.1};
-  if(simSet){
-    if(c===sel)return {...base,fillOpacity:.95,color:'#14141f',weight:3,opacity:1};
-    if(simSet.has(c))return {...base,fillOpacity:.9,color:'#FFD600',weight:2.2,opacity:1};
-    return {...base,fillOpacity:.08,opacity:.08};
-  }
-  if(c===sel)return {...base,fillOpacity:.9,color:'#14141f',weight:3,opacity:1};
-  return base;
-}
-function drawCells(){
-  if(cellLayer)map.removeLayer(cellLayer);
-  cellLayer=L.layerGroup();
-  const h=F.dLat/2,w=F.dLon/2;
-  F.cells.forEach(c=>{
-    const r=L.rectangle([[c.c[0]-h,c.c[1]-w],[c.c[0]+h,c.c[1]+w]],{renderer:rend,...styleOf(c)});
-    r.on('click',()=>openPlace(c)); r._cell=c; c._r=r; cellLayer.addLayer(r);
+// ── Rosette (Nightingale): Blattfläche ∝ Wert; gestrichelter Ring = Stadtmitte (50) ──
+function rose(v,size,opt){
+  opt=opt||{};const c=size/2,r0=size*.07,R=size*.47,n=DIM.length,step=2*Math.PI/n,gap=opt.gap!=null?opt.gap:.05;
+  const pt=(r,a)=>[(c+r*Math.sin(a)).toFixed(2),(c-r*Math.cos(a)).toFixed(2)];
+  let s=`<svg class="rose${opt.grow&&!REDUCED?' grow':''}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">`;
+  const r50=r0+(R-r0)*Math.sqrt(.5);
+  s+=`<circle cx="${c}" cy="${c}" r="${R}" fill="none" stroke="var(--line)" stroke-width="1"/><circle cx="${c}" cy="${c}" r="${r50.toFixed(2)}" fill="none" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 3"/>`;
+  DIM.forEach((d,i)=>{
+    const r=r0+(R-r0)*Math.sqrt(Math.max(.02,v[i]/100)),a0=i*step+gap,a1=(i+1)*step-gap;
+    const [x0,y0]=pt(r0,a0),[x1,y1]=pt(r,a0),[x2,y2]=pt(r,a1),[x3,y3]=pt(r0,a1);
+    s+=`<path class="w" d="M${x0} ${y0}L${x1} ${y1}A${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${x2} ${y2}L${x3} ${y3}A${r0} ${r0} 0 0 0 ${x0} ${y0}Z" fill="${d.col}" fill-opacity="${d.neutral?.45:.92}" style="animation-delay:${opt.grow?i*45:0}ms"><title>${T(d.de,d.en,d.nl)}: ${v[i]}</title></path>`;
   });
-  cellLayer.addTo(map);
+  s+=`<circle cx="${c}" cy="${c}" r="${(r0*.75).toFixed(2)}" fill="var(--card)"/></svg>`;
+  return s;
 }
-function restyle(){F.cells.forEach(c=>c._r&&c._r.setStyle(styleOf(c)));}
 
-// ── Linsen & Legende ──
-function renderLenses(){
-  document.getElementById('lenses').innerHTML=LENSES.map(l=>{
-    if(l.sep)return '<span class="lsep"></span>';
-    const d=DIM.find(x=>x.k===l.id); const name=d?T(d.de,d.en,d.nl):T(l.de,l.en,l.nl);
-    return `<button class="lens${l.hero?' hero':''}${lens===l.id?' on':''}" data-id="${l.id}" aria-pressed="${lens===l.id}">${I[l.ic]}${name}</button>`;}).join('');
-  document.querySelectorAll('.lens').forEach(b=>b.onclick=()=>{lens=b.dataset.id;STORE.set('nx_lens',lens);typeFilter=null;renderLenses();renderLegend();restyle();if(sel)renderPanel(sel);});
+// ── Karte ──
+map=L.map('map',{zoomControl:false,zoomSnap:.25,zoomDelta:.5,preferCanvas:true,minZoom:11}).setView([52.0907,5.1214],MOBILE()?12.25:13);
+L.control.zoom({position:'bottomright'}).addTo(map);
+L.tileLayer('https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/grijs/EPSG:3857/{z}/{x}/{y}.png',{maxZoom:20,maxNativeZoom:19,attribution:'© <a href="https://www.pdok.nl" target="_blank" rel="noopener">Kadaster / PDOK</a> · BAG · OSM · CBS'}).addTo(map);
+const rend=L.canvas({padding:.5,tolerance:4}),svgR=L.svg({padding:.5});
+
+const load=c=>(c.e+c.v[6])/200;                                   // Gesamtlast 0–1
+const baseR=c=>58+52*load(c);                                       // Radius in Metern (Zelle = 200 m)
+function fillOf(c){
+  if(lens==='all')return rgb(bivRGB(c.e/100,c.v[6]/100));
+  if(lens==='types')return TYPE_COL[c.t];
+  const i=DIM.findIndex(d=>d.k===lens);return tint(DIM[i].col,.08+.92*(c.v[i]/100));
 }
+function visible(c){
+  if(typeFilter!=null&&lens==='types'&&c.t!==typeFilter)return false;
+  if(bivFilter!=null&&lens==='all'&&c.b!==bivFilter)return false;
+  if(dblOnly&&!(c.e>=66&&c.v[6]>=66))return false;
+  if(simSet&&!simSet.has(c)&&c!==sel)return false;
+  return true;
+}
+function styleOf(c){return {fillColor:c._fill||fillOf(c),fillOpacity:visible(c)?(c===sel?1:.9):.1,stroke:false};}
+function drawDots(){
+  if(dotLayer)map.removeLayer(dotLayer);
+  dotLayer=L.layerGroup();
+  F.cells.forEach(c=>{
+    c._fill=fillOf(c);
+    const m=L.circle(c.c,{renderer:rend,radius:REDUCED?baseR(c):1,...styleOf(c)});
+    m.on('click',()=>openPlace(c));
+    m.on('mouseover',e=>hover(c,e.originalEvent));m.on('mousemove',e=>moveHov(e.originalEvent));m.on('mouseout',()=>hover(null));
+    c._m=m;dotLayer.addLayer(m);
+  });
+  dotLayer.addTo(map);
+  if(!REDUCED)reveal();
+}
+// Eröffnung: Punkte wachsen von der Mitte nach außen
+function reveal(){
+  const ctr=map.getCenter(),t0=performance.now();
+  const dly=F.cells.map(c=>Math.hypot(c.c[0]-ctr.lat,(c.c[1]-ctr.lng)*.62)*9000);
+  (function f(now){now=now||performance.now();let busy=false;
+    F.cells.forEach((c,i)=>{const t=Math.min(1,Math.max(0,(now-t0-dly[i])/520));if(t<1)busy=true;const k=1-Math.pow(1-t,3);c._m.setRadius(Math.max(1,baseR(c)*k*(1+.12*Math.sin(Math.PI*t))));});
+    if(busy)requestAnimationFrame(f);})(t0);
+}
+// Linsenwechsel: Farben gleiten in 450 ms ineinander
+function recolor(){
+  const from=F.cells.map(c=>c._fill),to=F.cells.map(fillOf);
+  const P=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  if(REDUCED){F.cells.forEach((c,i)=>{c._fill=to[i];c._m.setStyle(styleOf(c));});return;}
+  const A=from.map(P),B=to.map(P),t0=performance.now();
+  (function f(now){now=now||performance.now();const t=Math.min(1,(now-t0)/450),k=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    F.cells.forEach((c,i)=>{c._fill=rgb(mix(A[i],B[i],k));c._m.setStyle(styleOf(c));});
+    if(t<1)requestAnimationFrame(f);})(t0);
+}
+function restyle(){F.cells.forEach(c=>c._m&&c._m.setStyle(styleOf(c)));}
+
+// ── Vorschau beim Überfahren (Desktop) ──
+const hov=document.getElementById('hov');
+const typeName=t=>F.clusters[t].name[lang]||F.clusters[t].name.de;
+function hover(c,ev){
+  if(!c||MOBILE()){hov.classList.remove('on');return;}
+  hov.innerHTML=rose(c.v,64,{gap:.07})+`<div><b>${c.w}</b><span>${typeName(c.t)}</span></div>`;
+  hov.classList.add('on');moveHov(ev);
+  if(c._m&&!REDUCED)c._m.setRadius(baseR(c)*1.25);
+  hov._c&&hov._c!==c&&hov._c._m&&hov._c._m.setRadius(baseR(hov._c));hov._c=c;
+  map.getContainer().style.cursor='pointer';
+}
+function moveHov(ev){if(!ev)return;const x=Math.min(ev.clientX+16,innerWidth-hov.offsetWidth-10),y=Math.min(ev.clientY+16,innerHeight-hov.offsetHeight-10);hov.style.left=x+'px';hov.style.top=y+'px';}
+map.on('mouseout',()=>{hover(null);if(hov._c&&hov._c._m)hov._c._m.setRadius(baseR(hov._c));map.getContainer().style.cursor='';});
+document.addEventListener('mousemove',e=>{if(hov.classList.contains('on')&&!e.target.closest('.leaflet-container')){hover(null);}});
+
+// ── Linsen ──
+function lensMeta(id){const d=DIM.find(x=>x.k===id);
+  if(d)return {name:T(d.de,d.en,d.nl),sw:`background:${d.col}`};
+  if(id==='types')return {name:T('Stadttypen','City types','Stadstypen'),sw:'background:conic-gradient('+TYPE_COL.map((c,i)=>`${c} ${i*60}deg ${(i+1)*60}deg`).join(',')+')'};
+  return {name:T('Gesamtbild','Full picture','Totaalbeeld'),sw:`background:linear-gradient(135deg,${rgb(CORN.e)},${rgb(CORN.x)} 55%,${rgb(CORN.s)})`};}
+function renderLenses(){
+  document.getElementById('lenses').innerHTML=LENSES.map(l=>{const m=lensMeta(l.id);return `<button class="lens${lens===l.id?' on':''}" data-id="${l.id}" aria-pressed="${lens===l.id}"><span class="sw" style="${m.sw}"></span>${m.name}</button>`;}).join('');
+  document.querySelectorAll('.lens').forEach(b=>b.onclick=()=>setLens(b.dataset.id));
+}
+function setLens(id){
+  if(id===lens)return;lens=id;STORE.set('nx_lens',lens);typeFilter=null;bivFilter=null;
+  renderLenses();renderLegend();recolor();if(sel)markDims();
+  const on=document.querySelector('.lens.on');if(on&&on.scrollIntoView)on.scrollIntoView({behavior:REDUCED?'auto':'smooth',inline:'nearest',block:'nearest'});
+}
+
+// ── Legende: interaktiv ──
 function renderLegend(){
-  const el=document.getElementById('legend');
+  const el=document.getElementById('legend');el.className='legend'+(lens==='all'?' l-all':'');
+  const nDbl=F.cells.filter(c=>c.e>=66&&c.v[6]>=66).length;
   if(lens==='all'){
-    let g='';for(let e=2;e>=0;e--)for(let s=0;s<3;s++)g+=`<span style="background:${BIV[e][s]}"></span>`;
-    el.innerHTML=`<h4>${T('Gesamtbild','Full picture','Totaalbeeld')}</h4><p>${T('Klima-/Umweltlast und soziale Lage in einer Farbe. Dunkel = doppelte Belastung.','Climate/environmental load and social strain in one colour. Dark = double burden.','Klimaat-/milieudruk en sociale druk in één kleur. Donker = dubbele last.')}</p><div class="bivw"><div class="biv">${g}</div><div class="bivl"><span>↑ ${T('Klima & Umwelt','Climate & environment','Klimaat & milieu')}</span><em>${T('dunkel = beides hoch','dark = both high','donker = beide hoog')}</em></div></div><div class="xa">${T('soziale Lage','social strain','sociale druk')} →</div>`;
+    const cnt=Array(9).fill(0);F.cells.forEach(c=>cnt[c.b]++);
+    let g='';for(let e=2;e>=0;e--)for(let s=0;s<3;s++){const b=e*3+s,col=bivRGB(e/2,s/2);g+=`<button data-b="${b}" class="${(e+s<2&&!isDark())||(e===2&&s===2&&isDark())?'light':''}${bivFilter===b?' on':''}" style="background:${rgb(col)}" aria-label="${cnt[b]}">${cnt[b]}</button>`;}
+    el.innerHTML=`<h4>${T('Gesamtbild','Full picture','Totaalbeeld')}</h4><p class="lead">${T('Farbe = Klima-/Umweltlast und soziale Lage zugleich. Größe = wie viel zusammenkommt.','Colour = climate/environmental load and social strain at once. Size = how much adds up.','Kleur = klimaat-/milieudruk én sociale druk. Grootte = hoeveel er samenkomt.')}</p>
+      <div class="bivw"><div class="biv">${g}</div><div class="bivl"><span>↑ ${T('Klima & Umwelt','Climate & environment','Klimaat & milieu')}</span><em>${T('Feld antippen = nur diese Orte','tap a square = only those places','tik een vak = alleen die plekken')}</em></div></div>
+      <div class="xa">${T('soziale Lage','social strain','sociale druk')} →</div>
+      <div class="stat"><button id="dblBtn" class="${dblOnly?'on':''}"><b>${nDbl}</b><span>${T('Orte mit doppelter Belastung','places with a double burden','plekken met dubbele last')}</span></button><button id="allBtn"><b>${F.cells.length}</b><span>${T('Orte à 200 m','places of 200 m','plekken van 200 m')}</span></button></div>`;
+    el.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const v=+b.dataset.b;bivFilter=bivFilter===v?null:v;dblOnly=false;renderLegend();restyle();});
+    el.querySelector('#dblBtn').onclick=()=>{dblOnly=!dblOnly;bivFilter=null;renderLegend();restyle();};
+    el.querySelector('#allBtn').onclick=()=>{dblOnly=false;bivFilter=null;renderLegend();restyle();};
   } else if(lens==='types'){
-    el.innerHTML=`<h4>${T('Stadttypen','City types','Stadstypen')}</h4><p>${T('Orte mit ähnlicher Signatur, automatisch gruppiert. Klick filtert.','Places with a similar signature, grouped automatically. Click to filter.','Plekken met een vergelijkbare signatuur, automatisch gegroepeerd. Klik filtert.')}</p><div class="types">${F.clusters.map(c=>`<button data-t="${c.id}" class="${typeFilter!=null&&typeFilter!==c.id?'dim':''}"><i style="background:${TYPE_COL[c.id]}"></i>${c.name[lang]||c.name.de}<em>${c.n}</em></button>`).join('')}</div>`;
+    el.innerHTML=`<h4>${T('Stadttypen','City types','Stadstypen')}</h4><p class="lead">${T('Orte mit ähnlicher Signatur, automatisch gruppiert. Antippen filtert.','Places with a similar signature, grouped automatically. Tap to filter.','Plekken met een vergelijkbare signatuur, automatisch gegroepeerd. Tik filtert.')}</p><div class="types">${F.clusters.map(c=>`<button data-t="${c.id}" class="${typeFilter!=null&&typeFilter!==c.id?'dim':''}">${rose(c.c,40,{gap:.08})}<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${TYPE_COL[c.id]};margin-right:6px"></span>${c.name[lang]||c.name.de}</span><em>${c.n}</em></button>`).join('')}</div>`;
     el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{const t=+b.dataset.t;typeFilter=typeFilter===t?null:t;renderLegend();restyle();});
   } else {
-    const d=DIM.find(x=>x.k===lens);
-    el.innerHTML=`<h4>${T(d.de,d.en,d.nl)}</h4><p>${T(...d.why)}. ${T('Im Vergleich zu ganz Utrecht.','Relative to all of Utrecht.','Ten opzichte van heel Utrecht.')}</p><div class="ramp" style="background:linear-gradient(90deg,${d.ramp[0]},${d.ramp[1]})"></div><div class="rlab"><span>${T('niedrig','low','laag')}</span><span>${T('hoch','high','hoog')}</span></div>`;
+    const i=DIM.findIndex(x=>x.k===lens),d=DIM[i],bins=Array(20).fill(0);
+    F.cells.forEach(c=>bins[Math.min(19,Math.floor(c.v[i]/5))]++);const mx=Math.max(...bins);
+    el.innerHTML=`<h4>${T(d.de,d.en,d.nl)}</h4><p class="lead">${T(...d.why)} — ${T('so verteilt sich Utrecht.','this is how Utrecht spreads out.','zo verdeelt Utrecht zich.')}</p>
+      <div class="hist-wrap"><div class="hist">${bins.map((n,k)=>`<i style="height:${Math.round(n/mx*100)}%;background:${tint(d.col,.15+.85*(k/19))}"></i>`).join('')}</div>${sel?`<span class="marker" data-v="${sel.v[i]}" style="left:calc(${sel.v[i]}% - 1px)"></span>`:''}</div>
+      <div class="rlab"><span>${T('wenig','low','weinig')}</span><span>${T('Stadtmitte','city median','stadsmediaan')}</span><span>${T('viel','high','veel')}</span></div>`;
   }
 }
 
-// ── Ort: Signatur, Klartext, ähnliche Orte, passende Muster ──
-const typeName=t=>F.clusters[t].name[lang]||F.clusters[t].name.de;
+// ── Orts-Karte ──
 function say(c){
-  const burdens=DIM.map((d,i)=>({d,v:c.v[i]})).filter(x=>!x.d.neutral&&x.d.k!=='social'&&x.v>=66).sort((a,b)=>b.v-a.v).slice(0,3);
-  const strengths=DIM.map((d,i)=>({d,v:c.v[i]})).filter(x=>!x.d.neutral&&x.d.k!=='social'&&x.v<=25).sort((a,b)=>a.v-b.v).slice(0,2);
-  const pctTxt=v=>T(`als ${v} % der Stadt`,`than ${v}% of the city`,`dan ${v}% van de stad`);
-  const phr={heat:T('heißer','hotter','heter'),green:T('grünärmer','less green','groenarmer'),dens:T('dichter bebaut','more built-up','dichter bebouwd'),noise:T('lauter','noisier','lawaaiiger'),access:T('weiter von Laden, Schule und Arzt entfernt','further from shop, school and doctor','verder van winkel, school en arts'),co2:T('energieintensiver gebaut','more energy-intensive','energie-intensiever gebouwd')};
+  const top=DIM.map((d,i)=>({d,v:c.v[i]})).filter(x=>!x.d.neutral&&x.d.k!=='social');
+  const burdens=top.filter(x=>x.v>=66).sort((a,b)=>b.v-a.v).slice(0,2);
+  const strengths=top.filter(x=>x.v<=30).sort((a,b)=>a.v-b.v).slice(0,2);
+  const phr={heat:T('heißer','hotter','heter'),green:T('grünärmer','greener-starved','groenarmer'),dens:T('dichter bebaut','more built-up','dichter bebouwd'),noise:T('lauter','noisier','lawaaiiger'),access:T('weiter weg von Laden, Schule und Arzt','further from shop, school and doctor','verder van winkel, school en arts'),co2:T('energieintensiver gebaut','more energy-intensive','energie-intensiever gebouwd')};
+  if(lang==='en')phr.green='shorter on green';
   const good={heat:T('kühl','cool','koel'),green:T('viel Grün in Reichweite','plenty of green nearby','veel groen dichtbij'),dens:T('offen bebaut','openly built','open bebouwd'),noise:T('ruhig','quiet','rustig'),access:T('kurze Wege zum Alltag','short trips to daily needs','korte afstanden'),co2:T('energieeffizient gebaut','energy-efficient','energiezuinig')};
   let s='';
-  if(burdens.length) s+=T('Dieser Ort ist ','This place is ','Deze plek is ')+burdens.map(x=>`<b>${phr[x.d.k]}</b> ${pctTxt(x.v)}`).join(', ')+'. ';
-  else s+=T('Dieser Ort liegt bei Klima und Umwelt <b>im Mittelfeld</b> von Utrecht. ','This place is <b>mid-range</b> for climate and environment in Utrecht. ','Deze plek zit qua klimaat en milieu <b>in de middenmoot</b> van Utrecht. ');
-  if(strengths.length) s+=T('Stärken: ','Strengths: ','Sterke punten: ')+strengths.map(x=>good[x.d.k]).join(T(' und ',' and ',' en '))+'.';
+  if(burdens.length)s+=T('Dieser Ort ist ','This place is ','Deze plek is ')+burdens.map(x=>`<b>${phr[x.d.k]}</b> ${T('als','than','dan')} ${x.v} %`).join(T(' und ',' and ',' en '))+T(' der Stadt.',' of the city.',' van de stad.');
+  else s+=T('Bei Klima und Umwelt liegt dieser Ort <b>im Mittelfeld</b> Utrechts.','For climate and environment this place is <b>mid-range</b> in Utrecht.','Qua klimaat en milieu zit deze plek <b>in de middenmoot</b> van Utrecht.');
+  if(strengths.length)s+=' '+T('Dafür: ','On the plus side: ','Wel: ')+strengths.map(x=>good[x.d.k]).join(T(' und ',' and ',' en '))+'.';
   return s;
 }
 function matchMuster(c){
   const v=Object.fromEntries(DIM.map((d,i)=>[d.k,c.v[i]]));
-  const cand=[
+  return [
     {id:'M3',s:Math.max(v.heat,v.green),why:T('heiß, wenig Grün','hot, little green','heet, weinig groen')},
     {id:'M4',s:(v.dens+v.heat)/2,why:T('dicht und heiß','dense and hot','dicht en heet')},
     {id:'M7',s:(v.social+v.heat)/2,why:T('sozial belastet und heiß — Kinder zuerst','socially strained and hot — children first','sociaal kwetsbaar en heet — kinderen eerst')},
     {id:'M5',s:v.noise,why:T('laut — weniger Autoverkehr hilft','noisy — less car traffic helps','lawaaiig — minder autoverkeer helpt')},
     {id:'M1',s:v.access,why:T('weite Wege — gute Fußwege zählen','long trips — good footpaths matter','lange afstanden — goede voetpaden tellen')},
-  ].filter(x=>x.s>=60).sort((a,b)=>b.s-a.s).slice(0,2);
-  return cand.map(x=>({...x,m:MU.find(m=>m.id===x.id)})).filter(x=>x.m);
+  ].filter(x=>x.s>=60).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>({...x,m:MU.find(m=>m.id===x.id)})).filter(x=>x.m);
 }
 function openPlace(c){
-  sel=c; simSet=null; restyle(); renderPanel(c);
-  document.getElementById('panel').classList.add('on'); document.body.classList.add('panel-on');
+  sel=c;simSet=null;clearArcs();hover(null);
+  restyle();ring(c);renderPanel(c);
+  const P=document.getElementById('panel');P.classList.add('on');document.body.classList.add('panel-on');
+  if(MOBILE())sheet('half');
+  focusPlace(c);
   try{const u=new URL(location.href);u.searchParams.set('at',c.c.join(','));history.replaceState(null,'',u);}catch(e){}
-  hideHint();
+  if(lens!=='all'&&lens!=='types')renderLegend();
+}
+// Ort in die Mitte der freien Fläche rücken (neben der Orts-Karte bzw. über dem Sheet)
+function focusPlace(c){
+  const p=flyPad(),sz=map.getSize(),z=Math.max(map.getZoom(),MOBILE()?13.75:13.5);
+  const fx=(p.paddingTopLeft[0]+sz.x-p.paddingBottomRight[0])/2,fy=(p.paddingTopLeft[1]+sz.y-p.paddingBottomRight[1])/2;
+  const pt=map.latLngToContainerPoint(c.c),inside=pt.x>p.paddingTopLeft[0]&&pt.x<sz.x-p.paddingBottomRight[0]&&pt.y>p.paddingTopLeft[1]&&pt.y<sz.y-p.paddingBottomRight[1];
+  if(inside&&z===map.getZoom())return;
+  const target=map.project(c.c,z).subtract(L.point(fx-sz.x/2,fy-sz.y/2));
+  map.flyTo(map.unproject(target,z),z,{duration:REDUCED?0:.7});
+}
+function ring(c){
+  if(selRing)map.removeLayer(selRing);
+  selRing=L.layerGroup([L.circle(c.c,{renderer:svgR,radius:baseR(c)+26,fill:false,color:document.documentElement.dataset.theme==='dark'?'#f3efe7':'#17151c',weight:2.5,interactive:false}),
+    L.circle(c.c,{renderer:svgR,radius:baseR(c)+52,fill:false,color:'#FFD600',weight:2,opacity:.9,dashArray:'3 6',interactive:false})]).addTo(map);
 }
 function renderPanel(c){
-  const env=c.e, soc=c.v[6], dbl=env>=66&&soc>=66;
+  const dbl=c.e>=66&&c.v[6]>=66;
   document.getElementById('pKick').textContent=T('Ort in ','Place in ','Plek in ')+c.w+' · 200 m';
   document.getElementById('pTitle').textContent=c.w;
   document.getElementById('pType').innerHTML=`<i style="background:${TYPE_COL[c.t]}"></i>${typeName(c.t)}`;
   const mus=matchMuster(c);
   document.getElementById('pBody').innerHTML=`
-    <p class="say">${say(c)}</p>
-    ${dbl?`<div class="flag">${I.warn}<span><b>${T('Doppelte Belastung','Double burden','Dubbele last')}:</b> ${T('hohe Klima-/Umweltlast trifft auf eine sozial belastete Nachbarschaft. Hier wirken Maßnahmen doppelt.','high climate/environmental load meets a socially strained neighbourhood. Measures pay off twice here.','hoge klimaat-/milieudruk in een sociaal kwetsbare buurt. Maatregelen werken hier dubbel.')}</span></div>`:''}
-    <div class="h">${T('Signatur','Signature','Signatuur')}</div>
-    <div class="sig">${DIM.map((d,i)=>`<div class="row" title="${T(...d.why)}"><span class="lb">${T(d.de,d.en,d.nl)}</span><span class="bar"><i data-w="${c.v[i]}" style="background:${d.neutral?d.ramp[1]:lerp(d.ramp[0],d.ramp[1],.35+c.v[i]/160)}"></i></span><span class="v">${c.v[i]}</span></div>`).join('')}</div>
-    <p class="note">${T('0–100 = Rang innerhalb Utrechts (50 = Mitte). Soziale Lage gilt für den ganzen Wijk.','0–100 = rank within Utrecht (50 = median). Social strain applies to the whole wijk.','0–100 = rang binnen Utrecht (50 = mediaan). Sociale druk geldt voor de hele wijk.')}</p>
+    <div class="hero">${rose(c.v,148,{grow:true})}<p class="say">${say(c)}</p></div>
+    ${dbl?`<div class="flag">${I.warn}<span><b>${T('Doppelte Belastung','Double burden','Dubbele last')}.</b> ${T('Hohe Klima- und Umweltlast trifft auf eine sozial belastete Nachbarschaft. Hier wirkt jede Maßnahme doppelt.','High climate and environmental load meets a socially strained neighbourhood. Every measure pays off twice here.','Hoge klimaat- en milieudruk in een sociaal kwetsbare buurt. Hier werkt elke maatregel dubbel.')}</span></div>`:''}
+    <div class="h">${T('Signatur · antippen = auf der Karte zeigen','Signature · tap = show on map','Signatuur · tik = op de kaart')}</div>
+    <div class="dims">${DIM.map((d,i)=>`<button class="dt" data-k="${d.k}" ${d.neutral?'disabled':''} title="${T(...d.why)}"><span class="t"><i style="background:${d.col}"></i>${T(d.de,d.en,d.nl)}<b>${c.v[i]}</b></span><span class="m"><u data-w="${c.v[i]}" style="background:${d.col}"></u></span></button>`).join('')}</div>
+    <p class="note">${T('0–100 = Rang innerhalb Utrechts, Strich = Stadtmitte. Soziale Lage gilt für den ganzen Wijk.','0–100 = rank within Utrecht, tick = city median. Social strain applies to the whole wijk.','0–100 = rang binnen Utrecht, streep = stadsmediaan. Sociale druk geldt voor de hele wijk.')}</p>
     <button class="cta" id="simBtn">${I.similar}${T('Ähnliche Orte finden','Find similar places','Vergelijkbare plekken')}</button>
     <div class="sim" id="simBox"></div>
-    ${mus.length?`<div class="h">${T('Was hier hilft','What helps here','Wat hier helpt')}</div>`+mus.map(x=>`<div class="mu">${x.m.svg}<div><em>${T('Passt, weil','Fits because','Past, want')}: ${x.why}</em><b>${x.m.id} · ${x.m.n[lang]||x.m.n.de}</b><p>${x.m.wirkung[lang]||x.m.wirkung.de}</p></div></div>`).join(''):''}
+    ${mus.length?`<div class="h">${T('Was hier hilft','What helps here','Wat hier helpt')}</div><div class="carousel">${mus.map(x=>`<article class="mu">${x.m.svg}<div><em>${T('Passt, weil','Fits because','Past, want')} ${x.why}</em><b>${x.m.n[lang]||x.m.n.de}</b><p>${x.m.wirkung[lang]||x.m.wirkung.de}</p></div></article>`).join('')}</div>`:''}
     <details><summary>${I.info}${T('Woher kommen die Werte?','Where do the values come from?','Waar komen de waarden vandaan?')}</summary>
-      <p>${T('Jede 200-m-Zelle bündelt alle Gebäude darin (PDOK BAG: Oberflächentemperatur, Baujahr → CO₂, Gewässernähe), Grün, Bäume und Alltagsorte (OpenStreetMap) sowie die Sozialdaten des Wijks (CBS Kerncijfers 2023). Alle Werte sind Ränge innerhalb Utrechts — sie zeigen, wo ein Ort im Stadtvergleich steht, keine absoluten Grenzwerte. Gewässernähe ist eine Abstands-Näherung, kein Überflutungsmodell.','Each 200 m cell combines its buildings (PDOK BAG: surface temperature, construction year → CO₂, proximity to water), green, trees and everyday places (OpenStreetMap) and the wijk\'s social data (CBS 2023). All values are ranks within Utrecht — relative position, not absolute thresholds. Proximity to water is a distance approximation, not a flood model.','Elke cel van 200 m bundelt de gebouwen (PDOK BAG: oppervlaktetemperatuur, bouwjaar → CO₂, nabijheid water), groen, bomen en voorzieningen (OpenStreetMap) en de sociale data van de wijk (CBS 2023). Alle waarden zijn rangen binnen Utrecht. Nabijheid water is een afstandsbenadering, geen overstromingsmodel.')}</p></details>
+      <p>${T('Jeder Punkt bündelt alle Gebäude in seinem 200-m-Feld (PDOK BAG: Oberflächentemperatur, Baujahr → CO₂, Gewässernähe), Grün, Bäume und Alltagsorte (OpenStreetMap) sowie die Sozialdaten des Wijks (CBS Kerncijfers 2023). Alle Werte sind Ränge innerhalb Utrechts — sie zeigen, wo ein Ort im Stadtvergleich steht, keine absoluten Grenzwerte. Gewässernähe ist eine Abstands-Näherung, kein Überflutungsmodell.','Each dot combines all buildings in its 200 m field (PDOK BAG: surface temperature, construction year → CO₂, proximity to water), green, trees and everyday places (OpenStreetMap) and the wijk\'s social data (CBS 2023). All values are ranks within Utrecht — relative position, not absolute thresholds. Proximity to water is a distance approximation, not a flood model.','Elke stip bundelt de gebouwen in zijn veld van 200 m (PDOK BAG: oppervlaktetemperatuur, bouwjaar → CO₂, nabijheid water), groen, bomen en voorzieningen (OpenStreetMap) en de sociale data van de wijk (CBS 2023). Alle waarden zijn rangen binnen Utrecht. Nabijheid water is een afstandsbenadering, geen overstromingsmodel.')}</p></details>
     <a class="classic" href="index.html?district=${encodeURIComponent(c.w)}">${T('Alle Details zu','Full details for','Alle details over')} ${c.w} ${T('in der klassischen Ansicht','in the classic view','in de klassieke weergave')} →</a>`;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.bar i').forEach(b=>b.style.width=b.dataset.w+'%')));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.dt .m u').forEach(b=>b.style.width=b.dataset.w+'%')));
+  document.querySelectorAll('.dt[data-k]:not([disabled])').forEach(b=>b.onclick=()=>setLens(b.dataset.k));
+  markDims();
   document.getElementById('simBtn').onclick=()=>findSimilar(c);
 }
-// Ähnlichkeit: Kosinus der zentrierten Signaturen (wie Embedding-Suche, nur mit lesbaren Merkmalen)
+function markDims(){document.querySelectorAll('.dt').forEach(b=>b.classList.toggle('on',b.dataset.k===lens));}
+
+// ── Ähnliche Orte: Kosinus der zentrierten Signaturen, verbunden durch Bögen ──
+function clearArcs(){if(arcLayer){map.removeLayer(arcLayer);arcLayer=null;}}
+function arc(a,b){
+  const [y1,x1]=a,[y2,x2]=b,mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,k=.22;
+  const cx=mx-dy*k*1.6,cy=my+dx*k;const pts=[];
+  for(let t=0;t<=1.0001;t+=1/28)pts.push([(1-t)**2*y1+2*(1-t)*t*cy+t*t*y2,(1-t)**2*x1+2*(1-t)*t*cx+t*t*x2]);
+  return pts;
+}
 function findSimilar(c){
-  const z=v=>v.map(x=>x-50), a=z(c.v), na=Math.hypot(...a)||1;
+  const z=v=>v.map(x=>x-50),a=z(c.v),na=Math.hypot(...a)||1;
   const scored=F.cells.filter(x=>x!==c).map(x=>{const b=z(x.v),nb=Math.hypot(...b)||1;return {x,s:a.reduce((t,ai,i)=>t+ai*b[i],0)/(na*nb)};}).sort((p,q)=>q.s-p.s);
   const top=scored.filter(o=>o.s>=.85).slice(0,Math.max(12,Math.round(F.cells.length*.04)));
-  simSet=new Set(top.map(o=>o.x)); restyle();
+  simSet=new Set(top.map(o=>o.x));restyle();clearArcs();
+  arcLayer=L.layerGroup().addTo(map);
+  top.forEach((o,k)=>{const l=L.polyline(arc(c.c,o.x.c),{renderer:svgR,className:'arc',color:'#17151c',weight:1.6,opacity:.55,interactive:false}).addTo(arcLayer);
+    if(l._path){l._path.setAttribute('pathLength','1');l._path.style.animationDelay=(REDUCED?0:k*45)+'ms';}});
   const byW={};top.forEach(o=>byW[o.x.w]=(byW[o.x.w]||0)+1);
   const box=document.getElementById('simBox');box.classList.add('on');
   box.innerHTML=top.length?`<b>${top.length} ${T('Orte mit sehr ähnlicher Signatur','places with a very similar signature','plekken met een zeer vergelijkbare signatuur')}</b> ${T('in','in','in')} ${Object.keys(byW).length} ${T('Wijken. Was hier hilft, hilft vermutlich auch dort.','wijken. What helps here likely helps there too.','wijken. Wat hier helpt, helpt daar waarschijnlijk ook.')}<div class="chips">${Object.entries(byW).sort((p,q)=>q[1]-p[1]).map(([w,n])=>`<button class="chip" data-w="${w}">${w} · ${n}</button>`).join('')}</div><button class="cta ghost" id="simOff" style="margin-top:12px">${T('Ähnlichkeit ausblenden','Hide similarity','Verberg overeenkomst')}</button>`
     :T('Keine Orte mit sehr ähnlicher Signatur — dieser Ort ist in Utrecht ziemlich einzigartig.','No places with a very similar signature — this place is fairly unique in Utrecht.','Geen plekken met een zeer vergelijkbare signatuur — deze plek is vrij uniek in Utrecht.');
-  box.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{const pts=top.filter(o=>o.x.w===b.dataset.w).map(o=>o.x.c);map.flyToBounds(L.latLngBounds(pts).pad(.3),{...fitPad(),duration:.8,maxZoom:15});});
-  const off=document.getElementById('simOff');if(off)off.onclick=()=>{simSet=null;restyle();box.classList.remove('on');};
-  if(top.length)map.flyToBounds(L.latLngBounds(top.map(o=>o.x.c).concat([c.c])).pad(.08),{...fitPad(),duration:.9,maxZoom:14.5});
+  box.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{const pts=top.filter(o=>o.x.w===b.dataset.w).map(o=>o.x.c);map.flyToBounds(L.latLngBounds(pts).pad(.3),{...flyPad(),duration:.8,maxZoom:15});});
+  const off=document.getElementById('simOff');if(off)off.onclick=()=>{simSet=null;clearArcs();restyle();box.classList.remove('on');};
+  if(top.length)map.flyToBounds(L.latLngBounds(top.map(o=>o.x.c).concat([c.c])).pad(.08),{...flyPad(),duration:.9,maxZoom:14.5});
+  if(MOBILE())sheet('peek');
 }
-// Kartenausschnitt um Kopf, Linsen und Orts-Karte herum wählen (Desktop rechts, Mobil unten)
-const fitPad=()=>innerWidth<=760?{paddingTopLeft:[16,170],paddingBottomRight:[16,Math.round(innerHeight*.62)]}:{paddingTopLeft:[24,130],paddingBottomRight:[document.body.classList.contains('panel-on')?440:24,40]};
-function closePanel(){document.getElementById('panel').classList.remove('on');document.body.classList.remove('panel-on');sel=null;simSet=null;restyle();try{const u=new URL(location.href);u.searchParams.delete('at');history.replaceState(null,'',u);}catch(e){}}
+const flyPad=()=>MOBILE()?{paddingTopLeft:[16,180],paddingBottomRight:[16,Math.round(innerHeight*(SHEET==='peek'?.3:.55))]}:{paddingTopLeft:[24,140],paddingBottomRight:[document.body.classList.contains('panel-on')?480:24,40]};
+function closePanel(){document.getElementById('panel').classList.remove('on');document.body.classList.remove('panel-on');sel=null;simSet=null;clearArcs();if(selRing){map.removeLayer(selRing);selRing=null;}restyle();if(lens!=='all'&&lens!=='types')renderLegend();try{const u=new URL(location.href);u.searchParams.delete('at');history.replaceState(null,'',u);}catch(e){}}
 document.getElementById('pClose').onclick=closePanel;
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
 const cellAt=(lat,lon)=>F.cells.reduce((b,c)=>{const d=(c.c[0]-lat)**2+((c.c[1]-lon)*.62)**2;return d<b.d?{c,d}:b;},{c:null,d:1e9});
 
+// ── Mobil: ziehbares Sheet mit drei Höhen ──
+let SHEET='half';
+const SNAP={peek:()=>innerHeight*.92-200,half:()=>innerHeight*.92*.42,full:()=>0};
+function sheet(s){SHEET=s;const P=document.getElementById('panel');if(!MOBILE()){P.style.transform='';return;}P.style.transform=P.classList.contains('on')?`translateY(${SNAP[s]()}px)`:'';}
+(()=>{const P=document.getElementById('panel'),H=document.getElementById('ph');let y0=null,t0=0,base=0;
+  const down=e=>{if(!MOBILE()||e.target.closest('.close'))return;y0=e.clientY;t0=performance.now();base=SNAP[SHEET]();P.classList.add('dragging');H.setPointerCapture(e.pointerId);};
+  const move=e=>{if(y0==null)return;const y=Math.max(0,base+(e.clientY-y0));P.style.transform=`translateY(${y}px)`;};
+  const up=e=>{if(y0==null)return;P.classList.remove('dragging');const dy=e.clientY-y0,v=dy/Math.max(1,performance.now()-t0),y=base+dy;y0=null;
+    if(Math.abs(dy)<6){sheet(SHEET==='full'?'half':SHEET==='half'?'full':'half');return;}
+    if(v>1.1||y>SNAP.peek()+80){if(SHEET==='peek'||y>innerHeight*.85){closePanel();P.style.transform='';return;}}
+    const opts=['full','half','peek'].map(s=>({s,d:Math.abs(SNAP[s]()-y)})).sort((a,b)=>a.d-b.d);sheet(v<-1.1?'full':v>1.1?(SHEET==='full'?'half':'peek'):opts[0].s);};
+  H.addEventListener('pointerdown',down);H.addEventListener('pointermove',move);H.addEventListener('pointerup',up);H.addEventListener('pointercancel',up);
+  addEventListener('resize',()=>sheet(SHEET));})();
+
 // ── Suche: Wijken lokal + Adressen/Buurten über PDOK Locatieserver (amtlich, ohne Schlüssel) ──
 const q=document.getElementById('q'),sg=document.getElementById('sugg');let qT=null,qAbort=null;
-q.addEventListener('input',()=>{clearTimeout(qT);qT=setTimeout(search,220);});
+q.addEventListener('input',()=>{clearTimeout(qT);qT=setTimeout(search,200);});
 q.addEventListener('keydown',e=>{const bs=[...sg.querySelectorAll('button')];let i=bs.findIndex(b=>b.classList.contains('act'));
   if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();bs.forEach(b=>b.classList.remove('act'));i=e.key==='ArrowDown'?Math.min(bs.length-1,i+1):Math.max(0,i-1);if(bs[i])bs[i].classList.add('act');}
   if(e.key==='Enter'){(bs[i]||bs[0])&&(bs[i]||bs[0]).click();}
   if(e.key==='Escape'){sg.classList.remove('on');}});
 document.addEventListener('click',e=>{if(!e.target.closest('.search'))sg.classList.remove('on');});
 function search(){
-  const s=q.value.trim(); if(s.length<2){sg.classList.remove('on');return;}
-  const wj=[...new Set(F.cells.map(c=>c.w))].filter(w=>w.toLowerCase().includes(s.toLowerCase())).map(w=>({label:w,kind:'Wijk',go:()=>{const cs=F.cells.filter(c=>c.w===w);map.flyToBounds(L.latLngBounds(cs.map(c=>c.c)).pad(.05),{...fitPad(),duration:.8});}}));
+  const s=q.value.trim();if(s.length<2){sg.classList.remove('on');return;}
+  const wj=[...new Set(F.cells.map(c=>c.w))].filter(w=>w.toLowerCase().includes(s.toLowerCase())).map(w=>({label:w,kind:'Wijk',ic:I.area,go:()=>{const cs=F.cells.filter(c=>c.w===w);map.flyToBounds(L.latLngBounds(cs.map(c=>c.c)).pad(.05),{...flyPad(),duration:.8});}}));
   show(wj);
   if(qAbort)qAbort.abort();qAbort=new AbortController();
   fetch(`https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${encodeURIComponent(s)}&fq=gemeentenaam:Utrecht&rows=6&fl=weergavenaam,centroide_ll,type`,{signal:qAbort.signal})
-    .then(r=>r.json()).then(j=>{
-      const docs=(j.response&&j.response.docs)||[];
-      show(wj.concat(docs.map(d=>{const m=/POINT\(([\d.]+) ([\d.]+)\)/.exec(d.centroide_ll||'');return m?{label:d.weergavenaam.replace(/, Utrecht$| Utrecht$/,''),kind:d.type,go:()=>{const lat=+m[2],lon=+m[1];map.flyTo([lat,lon],16,{duration:.9});const h=cellAt(lat,lon);if(h.c&&h.d<.00002)setTimeout(()=>openPlace(h.c),700);}}:null;}).filter(Boolean)).slice(0,8));
+    .then(r=>r.json()).then(j=>{const docs=(j.response&&j.response.docs)||[];
+      show(wj.concat(docs.map(d=>{const m=/POINT\(([\d.]+) ([\d.]+)\)/.exec(d.centroide_ll||'');return m?{label:d.weergavenaam.replace(/, Utrecht$| Utrecht$/,''),kind:d.type,ic:I.pin,go:()=>{const lat=+m[2],lon=+m[1];const h=cellAt(lat,lon);if(h.c&&h.d<.00002)openPlace(h.c);else map.flyTo([lat,lon],16,{duration:.9});}}:null;}).filter(Boolean)).slice(0,8));
     }).catch(()=>{});
 }
 function show(items){
   if(!items.length){sg.classList.remove('on');return;}
-  sg.innerHTML=items.map((it,i)=>`<button data-i="${i}" role="option">${it.label}<small>${it.kind}</small></button>`).join('');
+  sg.innerHTML=items.map((it,i)=>`<button data-i="${i}" role="option"><i>${it.ic}</i>${it.label}<small>${it.kind}</small></button>`).join('');
   sg.querySelectorAll('button').forEach(b=>b.onclick=()=>{items[+b.dataset.i].go();sg.classList.remove('on');q.blur();});
   sg.classList.add('on');
 }
@@ -414,33 +595,39 @@ function show(items){
 function applyLang(){
   document.documentElement.lang=lang;STORE.set('ul_lang',lang);
   document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===lang));
-  q.placeholder=T('Adresse, Buurt oder Wijk in Utrecht …','Address, neighbourhood or wijk in Utrecht …','Adres, buurt of wijk in Utrecht …');
+  q.placeholder=T('Adresse, Buurt oder Wijk in Utrecht','Address, neighbourhood or wijk in Utrecht','Adres, buurt of wijk in Utrecht');
   document.getElementById('classicTxt').textContent=T('Klassische Ansicht','Classic view','Klassieke weergave');
   document.getElementById('cityLbl').textContent='Utrecht · '+T('Stadt-Signatur','City signature','Stadssignatuur');
-  document.getElementById('ldTxt').textContent=T('Stadt-Signatur wird geladen …','Loading city signature …','Stadssignatuur laden …');
-  if(F){renderLenses();renderLegend();if(sel)renderPanel(sel);}
+  document.getElementById('ldTxt').textContent=T('Stadt-Signatur wird geladen','Loading city signature','Stadssignatuur laden');
+  if(F){renderLenses();renderLegend();if(sel){renderPanel(sel);}}
 }
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();});
 const theme=STORE.get('nx_theme');if(theme)document.documentElement.dataset.theme=theme;
-document.getElementById('themeBtn').onclick=()=>{const dark=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()==='#101018';const t=dark?'light':'dark';document.documentElement.dataset.theme=t;STORE.set('nx_theme',t);};
-function showHint(){
+document.getElementById('themeBtn').onclick=()=>{const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&MM('(prefers-color-scheme: dark)').matches);const t=dark?'light':'dark';document.documentElement.dataset.theme=t;STORE.set('nx_theme',t);if(sel)ring(sel);if(F){recolor();renderLegend();}};
+MM('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(F&&!document.documentElement.dataset.theme){recolor();renderLegend();}});
+function showIntro(){
   if(STORE.get('nx_hint'))return;
-  const h=document.createElement('div');h.className='hint';h.id='hint';
-  h.innerHTML=`<h3>${T('Ein Bild statt 35 Ebenen','One picture instead of 35 layers','Eén beeld in plaats van 35 lagen')}</h3><p>${T('Jede Fläche ist ein 200-m-Ort mit eigener <b>Signatur</b> aus Klima, Umwelt und sozialer Lage. Klicke einen Ort — oder suche deine Adresse.','Each square is a 200 m place with its own <b>signature</b> of climate, environment and social strain. Click a place — or search your address.','Elk vlak is een plek van 200 m met een eigen <b>signatuur</b> van klimaat, milieu en sociale druk. Klik een plek — of zoek je adres.')}</p><button id="hintOk">${T('Verstanden','Got it','Begrepen')}</button>`;
-  document.body.appendChild(h);document.getElementById('hintOk').onclick=hideHint;
+  const sample=F.cells.slice().sort((a,b)=>(b.e+b.v[6])-(a.e+a.v[6]))[Math.floor(F.cells.length*.1)];
+  const d=document.createElement('div');d.className='intro';d.id='hint';
+  d.innerHTML=`<div class="box">${rose(sample.v,112,{grow:true})}<h3>${T('Jeder Punkt ist <i>ein Ort</i>.','Every dot is <i>a place</i>.','Elke stip is <i>een plek</i>.')}</h3><p>${T('Farbe und Größe zeigen, wie Klima, Umwelt und soziale Lage dort zusammenwirken. Jeder Ort hat eine eigene Rosette aus acht Merkmalen — tippe einen an.','Colour and size show how climate, environment and social strain add up there. Every place has its own rosette of eight traits — tap one.','Kleur en grootte tonen hoe klimaat, milieu en sociale druk daar samenkomen. Elke plek heeft een eigen rozet van acht kenmerken — tik er een aan.')}</p><div class="row"><button class="go" id="hintOk">${T('Los geht\'s','Let\'s go','Aan de slag')}</button><button class="go2" id="hintDbl">${T('Doppelte Belastung zeigen','Show double burden','Toon dubbele last')}</button></div></div>`;
+  document.body.appendChild(d);
+  document.getElementById('hintOk').onclick=hideHint;
+  document.getElementById('hintDbl').onclick=()=>{hideHint();if(lens!=='all')setLens('all');dblOnly=true;renderLegend();restyle();};
 }
 function hideHint(){const h=document.getElementById('hint');if(h){h.remove();STORE.set('nx_hint','1');}}
 
 // ── Laden ──
 applyLang();
 Promise.all([fetch('data/layers/fusion_utr.json').then(r=>r.json()),fetch('data/muster.json').then(r=>r.json()).catch(()=>[])]).then(([f,mu])=>{
-  F=f;MU=mu;drawCells();renderLenses();renderLegend();
+  F=f;MU=mu;
+  if(!new URLSearchParams(location.search).get('at')&&map.getSize().x>0)map.fitBounds(L.latLngBounds(F.cells.map(c=>c.c)),MOBILE()?{paddingTopLeft:[8,170],paddingBottomRight:[8,150]}:{paddingTopLeft:[330,130],paddingBottomRight:[40,30]});
+  drawDots();renderLenses();renderLegend();
   document.getElementById('loading').classList.add('off');
   const at=new URLSearchParams(location.search).get('at');
   if(at){const [la,lo]=at.split(',').map(Number);const h=cellAt(la,lo);if(h.c){map.setView(h.c.c,15);openPlace(h.c);}}
-  else showHint();
+  else showIntro();
 }).catch(()=>{document.getElementById('ldTxt').textContent=T('Daten konnten nicht geladen werden.','Data could not be loaded.','Data kon niet worden geladen.');});
-window.__NX={get F(){return F},get MU(){return MU},openPlace,findSimilar,matchMuster,say,get lens(){return lens},get simSet(){return simSet}};
+window.__NX={get F(){return F},get MU(){return MU},openPlace,findSimilar,matchMuster,say,rose,setLens,get lens(){return lens},get simSet(){return simSet},get dblOnly(){return dblOnly}};
 </script>
 </body>
 </html>
