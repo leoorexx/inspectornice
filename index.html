@@ -654,6 +654,11 @@ body.dark .nav{background:#12121f}
 body.dark .tool-btn:not(.tool-primary):not(.on){background:#1a1a2e;color:#fff}
 /* ── Karten-Bühne: gedämpfte Basemap, Datenfarben unberührt (nur Tile-Pane) ── */
 body:not(.dark):not(.plan-on):not(.bm-sat) .leaflet-tile-pane{filter:saturate(.78) contrast(1.03)}
+/* Dark Mode: amtliche Karten gibt es nur hell → umkehren, Farbton zurückdrehen, Kontrast zähmen */
+body.dark:not(.plan-on):not(.bm-sat) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.85) saturate(.55)}
+body.mission-on:not(.dark):not(.plan-on):not(.bm-sat) .leaflet-tile-pane{filter:saturate(.45) contrast(.98)}
+/* basemap.de ist dichter und dunkler als PDOK → stärker zurücknehmen, damit die Daten führen */
+body[data-cc="de"]:not(.dark):not(.plan-on):not(.bm-sat) .leaflet-tile-pane{filter:contrast(.72) brightness(1.12)}
 /* ── Motion: sanfter Eintritt (reduced-motion wird global respektiert) ── */
 @keyframes nhIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 .layer-panel.open{animation:nhIn .22s ease both}
@@ -1387,7 +1392,7 @@ function preloadAllCities(){
 
 const CITY_CFG={
   ffm:{
-    name:"Frankfurt am Main",center:[50.1109,8.6821],zoom:12,
+    name:"Frankfurt am Main",center:[50.1109,8.6821],zoom:12,country:'de',
     skyline:[50.1118,8.6705,15.3],   // Bankenviertel-Vantage → 3D-Skyline beim Öffnen
     bbox:"50.05,8.55,50.22,8.82",
     geojson:(location.hostname.endsWith('github.io')?'/'+location.pathname.split('/')[1]:'')+'/data/layers/stadtteile_ffm.geojson',
@@ -1442,7 +1447,7 @@ const CITY_CFG={
     }
   },
   utr:{
-    name:"Utrecht",center:[52.0907,5.1214],zoom:12,
+    name:"Utrecht",center:[52.0907,5.1214],zoom:12,country:'nl',
     bbox:"52.04,5.05,52.14,5.20",
     geojson:(location.hostname.endsWith('github.io')?'/'+location.pathname.split('/')[1]:'')+'/data/layers/wijken_utrecht.geojson',
     nameProp:"wijknaam",
@@ -2119,21 +2124,39 @@ function initMap(){
   map.createPane('choropleth');
   map.getPane('choropleth').style.zIndex=200;
   map.getPane('choropleth').style.pointerEvents='none'; // clicks pass through to map
-  const baseVoyager=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    {attribution:'© OpenStreetMap © CARTO',maxZoom:20,maxNativeZoom:20,pane:'tilePane'}).addTo(map);
-  const baseDark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    {attribution:'© OpenStreetMap © CARTO',maxZoom:20,maxNativeZoom:20,pane:'tilePane'});
-  const baseNolabel=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
-    {attribution:'© OpenStreetMap © CARTO',maxZoom:20,maxNativeZoom:20,pane:'tilePane'});
+  // Amtliche Basiskarten — Open Data, ohne Schlüssel, behördlich betrieben:
+  // NL = PDOK BRT-Achtergrondkaart (Kadaster), DE = basemap.de (BKG). Dark Mode = Farbumkehr per CSS.
+  // CARTO liefert seit Herbst 2026 ohne API-Schlüssel nur noch ein Platzhalterbild.
+  const BASE_SRC={
+    nl:{map:'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/grijs/EPSG:3857/{z}/{x}/{y}.png',
+        plan:'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/water/EPSG:3857/{z}/{x}/{y}.png',
+        attr:'© <a href="https://www.pdok.nl" target="_blank" rel="noopener">Kadaster / PDOK</a> (CC BY 4.0)'},
+    de:{map:'https://sgx.geodatenzentrum.de/wmts_basemapde/tile/1.0.0/de_basemapde_web_raster_grau/default/GLOBAL_WEBMERCATOR/{z}/{y}/{x}.png',
+        plan:'https://sgx.geodatenzentrum.de/wmts_basemapde/tile/1.0.0/de_basemapde_web_raster_grau/default/GLOBAL_WEBMERCATOR/{z}/{y}/{x}.png',
+        attr:'© <a href="https://basemap.de" target="_blank" rel="noopener">basemap.de / BKG</a> (CC BY 4.0)'}
+  };
+  window.BASE_SRC=BASE_SRC;
+  window.baseSrc=()=>BASE_SRC[(CITY_CFG[city]&&CITY_CFG[city].country)||'nl'];
+  const baseMap=L.tileLayer(baseSrc().map,{maxZoom:20,maxNativeZoom:19,pane:'tilePane'}).addTo(map);
   const satImg=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     {attribution:'© Esri · Maxar · Earthstar Geographics',maxZoom:20,maxNativeZoom:19,pane:'tilePane'});
-  const satLabels=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',
-    {maxZoom:20,maxNativeZoom:20,pane:'tilePane'});
+  const satLabels=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    {maxZoom:20,maxNativeZoom:19,pane:'tilePane'});
+  let baseAttr=null;
+  // Quelle passend zu Stadt + Modus (auch beim Stadtwechsel aus loadCity aufgerufen)
+  window.baseRefresh=function(){
+    const s=baseSrc(), url=BASEMAP==='plan'?s.plan:s.map;
+    if(baseMap._url!==url)baseMap.setUrl(url);
+    document.body.dataset.cc=(CITY_CFG[city]&&CITY_CFG[city].country)||'nl';
+    const a=BASEMAP==='sat'?null:s.attr;
+    if(baseAttr!==a){ if(baseAttr)map.attributionControl.removeAttribution(baseAttr); if(a)map.attributionControl.addAttribution(a); baseAttr=a; }
+  };
+  baseRefresh();
   window.setBasemap=function(mode){ if(mode===BASEMAP)return; BASEMAP=mode;
-    [baseVoyager,baseDark,baseNolabel,satImg,satLabels].forEach(l=>{try{map.removeLayer(l);}catch(e){}});
+    [baseMap,satImg,satLabels].forEach(l=>{try{map.removeLayer(l);}catch(e){}});
     if(mode==='sat'){ satImg.addTo(map); satLabels.addTo(map); }
-    else if(mode==='plan'){ baseNolabel.addTo(map); }
-    else (window.THEME==='dark'?baseDark:baseVoyager).addTo(map);
+    else baseMap.addTo(map);
+    baseRefresh();
     document.body.classList.toggle('bm-sat',mode==='sat');
     try{ if(mode==='plan')planEnable(); else planDisable(); }catch(e){}
     document.querySelectorAll('#baseToggle button').forEach(b=>b.classList.toggle('on',b.dataset.bm===mode)); };
@@ -2141,7 +2164,6 @@ function initMap(){
   window.applyTheme=function(t){
     window.THEME=t;document.body.classList.toggle('dark',t==='dark');
     try{localStorage.setItem('nh_theme',t);}catch(e){}
-    if(BASEMAP==='map'){[baseVoyager,baseDark].forEach(l=>{try{map.removeLayer(l);}catch(e){}});(t==='dark'?baseDark:baseVoyager).addTo(map);}
     const b=document.getElementById('themeBtn');if(b)b.classList.toggle('on',t==='dark');
   };
   window.toggleTheme=function(){applyTheme(window.THEME==='dark'?'light':'dark');};
@@ -2351,6 +2373,7 @@ function switchCity(c){
 
 function loadCity(c){
   city=c;
+  try{baseRefresh();}catch(e){}
   const cfg=CITY_CFG[c];
   fetch(cfg.geojson)
     .then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()})
@@ -2508,9 +2531,7 @@ function opNext(){
   if(!opQueue.length){opRunning=false;return;}
   opRunning=true;
   const {query,id,statusEl,onData}=opQueue.shift();
-  const url='https://overpass-api.de/api/interpreter?data='+encodeURIComponent(query.trim());
-  fetch(url)
-    .then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json();})
+  overpassFetch(query.trim())
     .then(data=>{if(activeLayers[id])onData(data);})
     .catch(err=>{console.warn('Overpass',id,err);if(statusEl)statusEl.textContent='⚠ API';})
     .finally(()=>setTimeout(opNext,800));
@@ -2641,7 +2662,7 @@ function renderTrafficCO2(id,statusEl){
   if(CITY_MOBILITY[city]){ loadCityMobility(city).then(mob=>{ if(!mob||!activeLayers['traffic_co2'])return; const ways=roadsInView(mob,b).map(r=>({geo:r.geo,hw:r.hw,name:''})); trafficCache[key]=ways; draw(ways); }); return; }
   const bbox=`${b.getSouth().toFixed(5)},${b.getWest().toFixed(5)},${b.getNorth().toFixed(5)},${b.getEast().toFixed(5)}`;
   const q=`[out:json][timeout:30];way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street)$"](${bbox});out geom 3000;`;
-  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
+  overpassFetch(q).then(j=>{
     const ways=(j.elements||[]).filter(e=>e.type==='way'&&e.geometry).map(e=>({geo:e.geometry.map(g=>[g.lat,g.lon]),hw:e.tags.highway,name:e.tags.name||''}));
     trafficCache[key]=ways; draw(ways);
   }).catch(()=>{statusEl.textContent='⚠ Overpass-Limit';});
@@ -2667,7 +2688,7 @@ function renderRaumklang(id,statusEl){
   if(CITY_MOBILITY[city]&&!FREE){ loadCityMobility(city).then(mob=>{ if(!mob||!activeLayers['raumklang'])return; const roads=roadsInView(mob,bb); const data=raumGrid(bb,roads,view); raumCache[key]=data; drawRaum(data,id,statusEl); }); return; }
   const bbox=`${bb.getSouth().toFixed(5)},${bb.getWest().toFixed(5)},${bb.getNorth().toFixed(5)},${bb.getEast().toFixed(5)}`;
   const q=`[out:json][timeout:30];way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street)$"](${bbox});out geom 2500;`;
-  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
+  overpassFetch(q).then(j=>{
     if(!activeLayers['raumklang'])return;
     const roads=(j.elements||[]).filter(e=>e.type==='way'&&e.geometry).map(e=>({hw:e.tags.highway,geo:e.geometry.map(g=>[g.lat,g.lon])}));
     const data=raumGrid(bb,roads,view);
@@ -3134,26 +3155,54 @@ const SUPABASE_URL = 'https://hhstfiwqkmmkcgmmcmhc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kOgZOeQ8bfRgVjPevPMzbA_qTkneP6Y';   // publishable key (öffentlich by design, Daten via RLS geschützt)
 const supaOn  = ()=> !!(SUPABASE_URL && SUPABASE_KEY);
 const supaHdr = ()=>({apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'});
+// ok: null = ungeprüft · true = Server antwortet · false = nicht erreichbar (Beiträge bleiben lokal)
+const SUPA={ok:null,inflight:new Set()};
 function supaInsert(table,obj){
   return fetch(`${SUPABASE_URL}/rest/v1/${table}`,{method:'POST',headers:{...supaHdr(),Prefer:'return=representation'},body:JSON.stringify(obj)})
-    .then(r=>r.ok?r.json():null).catch(()=>null);
+    .then(r=>{SUPA.ok=true;return r.ok?r.json():null;}).catch(()=>{SUPA.ok=false;return null;});
 }
 function supaDelete(table,id){
   if(id==null)return; fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`,{method:'DELETE',headers:supaHdr()}).catch(()=>{});
 }
-// Server → localStorage-Cache (authoritativ), dann neu zeichnen
+// Offline-Warteschlange: Beiträge ohne Server-Bestätigung bleiben lokal und werden nachgereicht.
+// Ohne sie würde der nächste erfolgreiche Sync (Server = autoritativ) sie überschreiben.
+function supaPushReport(rec){
+  SUPA.inflight.add(rec.ts);
+  return supaInsert('nh_reports',{city:rec.city||city,lat:rec.lat,lon:rec.lon,type:rec.type,ts:rec.ts}).then(res=>{
+    SUPA.inflight.delete(rec.ts);
+    if(!res)return;
+    const a=getReports(); const x=a.find(r=>r.id==null&&r.ts===rec.ts&&r.lat===rec.lat&&r.lon===rec.lon);
+    if(x){ const id=res[0]&&res[0].id; if(id!=null)x.id=id; else x.sent=true; saveReports(a); }
+  });
+}
+function supaPushVote(pv){
+  SUPA.inflight.add('v'+pv.ts);
+  return supaInsert('nh_votes',{city,measure_id:pv.measure_id,ts:pv.ts}).then(res=>{
+    SUPA.inflight.delete('v'+pv.ts);
+    if(res)saveVotePend(getVotePend().filter(x=>!(x.ts===pv.ts&&x.measure_id===pv.measure_id)));
+  });
+}
+function mitPendingN(){return getReports().filter(r=>r.id==null&&!r.sent).length+getVotePend().length;}
+// Server → localStorage-Cache (authoritativ, plus noch nicht übertragene eigene Beiträge), dann neu zeichnen
 function supaSync(){
   if(!supaOn())return;
-  fetch(`${SUPABASE_URL}/rest/v1/nh_reports?city=eq.${city}&select=id,lat,lon,type,ts&order=ts.desc`,{headers:supaHdr()})
-    .then(r=>r.ok?r.json():null).then(rows=>{ if(!rows)return;
-      saveReports(rows.map(r=>({id:r.id,lat:r.lat,lon:r.lon,type:r.type,ts:r.ts})));
-      if(typeof MIT!=='undefined'&&MIT.active){renderReportMarkers();renderMitPanel();}
-    }).catch(()=>{});
-  fetch(`${SUPABASE_URL}/rest/v1/nh_votes?city=eq.${city}&select=measure_id`,{headers:supaHdr()})
-    .then(r=>r.ok?r.json():null).then(rows=>{ if(!rows)return;
-      const v={}; rows.forEach(x=>v[x.measure_id]=(v[x.measure_id]||0)+1); saveVotes(v);
-      if(typeof MIT!=='undefined'&&MIT.active)renderMitPanel();
-    }).catch(()=>{});
+  const pr=getReports().filter(r=>r.id==null&&!r.sent&&!SUPA.inflight.has(r.ts));
+  const pv=getVotePend().filter(x=>!SUPA.inflight.has('v'+x.ts));
+  const redraw=()=>{ if(typeof MIT!=='undefined'&&MIT.active){renderReportMarkers();renderMitPanel();} };
+  Promise.all(pr.map(supaPushReport).concat(pv.map(supaPushVote))).then(()=>{
+    fetch(`${SUPABASE_URL}/rest/v1/nh_reports?city=eq.${city}&select=id,lat,lon,type,ts&order=ts.desc`,{headers:supaHdr()})
+      .then(r=>{SUPA.ok=true;return r.ok?r.json():null;}).then(rows=>{ if(!rows)return;
+        const pend=getReports().filter(r=>r.id==null&&!r.sent);
+        saveReports(rows.map(r=>({id:r.id,lat:r.lat,lon:r.lon,type:r.type,ts:r.ts})).concat(pend));
+        redraw();
+      }).catch(()=>{SUPA.ok=false;redraw();});
+    fetch(`${SUPABASE_URL}/rest/v1/nh_votes?city=eq.${city}&select=measure_id`,{headers:supaHdr()})
+      .then(r=>r.ok?r.json():null).then(rows=>{ if(!rows)return;
+        const v={}; rows.forEach(x=>v[x.measure_id]=(v[x.measure_id]||0)+1);
+        getVotePend().forEach(x=>v[x.measure_id]=(v[x.measure_id]||0)+1);
+        saveVotes(v); redraw();
+      }).catch(()=>{});
+  });
 }
 
 function mitKey(){return 'nh_reports_'+city;}
@@ -3162,6 +3211,8 @@ function getReports(){try{return JSON.parse(localStorage.getItem(mitKey())||'[]'
 function saveReports(a){try{localStorage.setItem(mitKey(),JSON.stringify(a));}catch(e){}}
 function getVotes(){try{return JSON.parse(localStorage.getItem(voteKey())||'{}');}catch(e){return {};}}
 function saveVotes(o){try{localStorage.setItem(voteKey(),JSON.stringify(o));}catch(e){}}
+function getVotePend(){try{return JSON.parse(localStorage.getItem('nh_votes_pend_'+city)||'[]');}catch(e){return [];}}
+function saveVotePend(a){try{localStorage.setItem('nh_votes_pend_'+city,JSON.stringify(a));}catch(e){}}
 
 function toggleMitwirkung(){
   MIT.active=!MIT.active;
@@ -3205,12 +3256,13 @@ function addReport(lat,lon,type){
   const rec={city,lat:+lat.toFixed(5),lon:+lon.toFixed(5),type,ts:Date.now()};
   const a=getReports(); a.push(rec); saveReports(a);
   map.closePopup(); renderReportMarkers(); renderMitPanel();
-  if(supaOn()) supaInsert('nh_reports',rec).then(()=>supaSync());
+  if(supaOn()) supaPushReport(rec).then(()=>supaSync());
 }
 function removeReport(i){ const a=getReports(); const r=a[i]; a.splice(i,1); saveReports(a); map.closePopup(); renderReportMarkers(); renderMitPanel();
   if(supaOn()&&r&&r.id!=null) supaDelete('nh_reports',r.id); }
-function voteMeasure(id){ const v=getVotes(); v[id]=(v[id]||0)+1; saveVotes(v); renderMitPanel();
-  if(supaOn()) supaInsert('nh_votes',{city,measure_id:id,ts:Date.now()}).then(()=>supaSync()); }
+function voteMeasure(id){ const v=getVotes(); v[id]=(v[id]||0)+1; saveVotes(v);
+  if(supaOn()){ const pv={measure_id:id,ts:Date.now()}; const p=getVotePend(); p.push(pv); saveVotePend(p); supaPushVote(pv).then(()=>supaSync()); }
+  renderMitPanel(); }
 
 function renderMitPanel(){
   const P=document.getElementById('mitPanel'); P.classList.add('open');
@@ -3258,7 +3310,11 @@ function renderMitPanel(){
         <b style="font-size:12px;color:#a60ba6">${v} <span style="font-size:8px;color:var(--muted);font-weight:400">${T.votes}</span></b>
       </div>`).join('')+`</div>`;
   }
-  const note=supaOn()?(lang==='en'?'Registered server-side — visible to all users.':lang==='nl'?'Serverzijde geregistreerd — voor alle gebruikers zichtbaar.':'Serverseitig registriert — für alle Nutzer sichtbar.'):T.proto;
+  const pendN=supaOn()?mitPendingN():0;
+  const note=!supaOn()?T.proto
+    : SUPA.ok===false?`<b style="color:#b45309">${mT('Server gerade nicht erreichbar','Server currently unreachable','Server momenteel onbereikbaar')}</b> — ${mT('deine Beiträge sind sicher in diesem Browser gespeichert','your contributions are safely stored in this browser','je bijdragen zijn veilig opgeslagen in deze browser')}${pendN?' ('+pendN+' '+mT('wartend','waiting','wachtend')+')':''} ${mT('und werden automatisch nachgereicht, sobald er wieder antwortet. Bis dahin sieht sie nur dieser Browser.','and will be sent automatically once it responds again. Until then only this browser sees them.','en worden automatisch nagestuurd zodra hij weer reageert. Tot dan ziet alleen deze browser ze.')}`
+    : pendN?`${pendN} ${mT('Beitrag/Beiträge werden übertragen …','contribution(s) being sent …','bijdrage(n) worden verstuurd …')}`
+    : mT('Serverseitig registriert — für alle Nutzer sichtbar.','Registered server-side — visible to all users.','Serverzijde geregistreerd — voor alle gebruikers zichtbaar.');
   body+=`<div style="font-size:9px;color:var(--muted);margin-top:10px;padding:7px 9px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">${note}</div></div>`;
   P.innerHTML=body;
 }
@@ -3564,8 +3620,8 @@ function loadStreets(){
     });
     STREET.layer.addTo(map); renderStreetPanel();
   }); return; }
-  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q))
-    .then(r=>r.json()).then(j=>{
+  overpassFetch(q)
+    .then(j=>{
       if(!STREET.active)return;
       if(STREET.layer)map.removeLayer(STREET.layer);
       STREET.layer=L.layerGroup(); STREET.ways={};
@@ -3736,7 +3792,7 @@ function getAreaEls(b){
     if(CITY_BUNDLE[city]){ loadCityBundle(city).then(bn=>res(bn?bundleToEls(bn,b):null)); return; }
     const bbox=`${b.getSouth().toFixed(5)},${b.getWest().toFixed(5)},${b.getNorth().toFixed(5)},${b.getEast().toFixed(5)}`;
     const q=`[out:json][timeout:30];(node["natural"="tree"](${bbox});node["amenity"="bench"](${bbox});node["shop"](${bbox});node["amenity"~"^(drinking_water|fountain)$"](${bbox});way["leisure"~"park|garden|playground|pitch|common"](${bbox});way["landuse"~"grass|recreation_ground|forest|meadow|village_green|cemetery"](${bbox}););out geom 7000;`;
-    fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
+    overpassFetch(q).then(j=>{
       const els={trees:[],benches:[],shops:[],water:[],green:[]};
       (j.elements||[]).forEach(e=>{
         if(e.type==='node'){const am=e.tags&&e.tags.amenity;
@@ -4514,8 +4570,7 @@ function diagRun(){
 function diagRunLive(bb,view,key){
   const bbox=`${bb.getSouth().toFixed(5)},${bb.getWest().toFixed(5)},${bb.getNorth().toFixed(5)},${bb.getEast().toFixed(5)}`;
   const q=`[out:json][timeout:30];(node["natural"="tree"](${bbox});node["amenity"="bench"](${bbox});node["shop"](${bbox});node["amenity"~"^(cafe|restaurant|bar|fast_food|bank|pharmacy)$"](${bbox});node["amenity"~"^(drinking_water|fountain)$"](${bbox});way["leisure"~"park|garden|playground|pitch|common"](${bbox});way["landuse"~"grass|recreation_ground|forest|meadow|village_green|cemetery"](${bbox}););out geom 7000;`;
-  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q))
-    .then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json();})
+  overpassFetch(q)
     .then(j=>{
       if(!DIAG.active)return;
       const els={trees:[],benches:[],shops:[],water:[],green:[]};
@@ -4809,8 +4864,7 @@ function loadOSMLiveViewport(id,statusEl){
   // Cache-Hit: sofort rendern, keine Overpass-Anfrage
   if(window.__osmCache&&window.__osmCache[ckey]){render(window.__osmCache[ckey]);return;}
   const q=`[out:json][timeout:25];${cfgL.q(bb)}out ${cfgL.out} ${cfgL.cap};`;
-  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q))
-    .then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json();})
+  overpassFetch(q)
     .then(j=>{
       const elements=j.elements||[];
       window.__osmCache=window.__osmCache||{};window.__osmCache[ckey]=elements;
@@ -6787,6 +6841,17 @@ document.getElementById('stList').addEventListener('click',e=>{
 });
 
 // ── 3D-Modus (MapLibre, in die Hauptkarte integriert statt separate Seite) ──
+// 3D-Basiskarte an die aktuelle Stadt anpassen (PDOK deckt nur NL ab, basemap.de nur DE)
+function m3baseSync(){
+  try{ const src=M3.map.getSource('base'), u=baseSrc().map;
+    if(!src||(src.tiles&&src.tiles[0]===u))return;
+    if(typeof src.setTiles==='function'){src.setTiles([u]);return;}
+    const below=(M3.map.getStyle().layers.find(l=>l.id!=='base')||{}).id;
+    M3.map.removeLayer('base'); M3.map.removeSource('base');
+    M3.map.addSource('base',{type:'raster',tiles:[u],tileSize:256});
+    M3.map.addLayer({id:'base',type:'raster',source:'base'},below);
+  }catch(e){}
+}
 function ensureMapLibre(){
   if(window.maplibregl)return Promise.resolve();
   if(window.__mlPromise)return window.__mlPromise;
@@ -6858,13 +6923,13 @@ function enter3D(){
     if(!M3.active)return;
     if(!M3.map){
       M3.map=new maplibregl.Map({container:'map3d-overlay',style:{version:8,
-        sources:{carto:{type:'raster',tiles:['https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png','https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png','https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'],tileSize:256,attribution:'© OpenStreetMap © CARTO · Gebäude: '+(city==='utr'?'PDOK BAG':'OpenStreetMap')}},
-        layers:[{id:'carto',type:'raster',source:'carto'}]},
+        sources:{base:{type:'raster',tiles:[baseSrc().map],tileSize:256,attribution:'© '+(CITY_CFG[city].country==='de'?'basemap.de / BKG':'Kadaster / PDOK')+' (CC BY 4.0) · Gebäude: '+(city==='utr'?'PDOK BAG':'OpenStreetMap')}},
+        layers:[{id:'base',type:'raster',source:'base'}]},
         center:[c.lng,c.lat],zoom:Math.max(15.2,z),pitch:58,bearing:-18,maxPitch:80,antialias:true});
       M3.map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
       M3.map.once('load',()=>{M3.map.resize();m3load();});
     } else {
-      M3.map.resize();
+      M3.map.resize(); m3baseSync();
       M3.map.flyTo({center:[c.lng,c.lat],zoom:Math.max(15.2,z),pitch:58,bearing:-18,duration:600});
       m3load();
     }
@@ -7215,17 +7280,26 @@ const LOC_CATS=[
  {k:'green',de:'Park & Grün',en:'Parks & green',nl:'Park & groen',r:300,goal:[1,1],col:'#5f7a52',
   m:t=>t.leisure==='park'||t.landuse==='grass'||t.leisure==='garden'}
 ];
-// Overpass mit Spiegel-Ausweichen: die Haupt-Instanz drosselt regelmäßig.
+// Overpass mit Server-Ausweichen: die Haupt-Instanz drosselt regelmäßig (429/504).
 // Antwort ist nur gültig, wenn echtes JSON kommt (Fehlerseiten sind HTML).
-const OVP_HOSTS=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];   // osm.ch entfernt: nur CH-Daten → lieferte für NL/DE stumm leere Ergebnisse. Lieber ehrlicher Fehler als leere Karte.
-function overpassFetch(q,i){
-  i=i||0; if(i>=OVP_HOSTS.length)return Promise.reject(new Error('overpass unavailable'));
-  return fetch(OVP_HOSTS[i],{method:'POST',body:'data='+encodeURIComponent(q)})
+// Fremd-Spiegel sind tot oder gesperrt (kumi → private.coffee antwortet nicht, osm.ch nur CH,
+// openstreetmap.fr nur Whitelist) — z/lz4 sind die zwei Einzelserver hinter overpass-api.de.
+// overpass-api.de lehnt Browser-Anfragen ohne Referer mit 406 ab → Herkunft explizit mitsenden.
+const OVP_HOSTS=['https://overpass-api.de/api/interpreter','https://z.overpass-api.de/api/interpreter','https://lz4.overpass-api.de/api/interpreter'];
+function overpassFetch(q,i,t0,round){
+  i=i||0; t0=t0||Date.now(); round=round||0;
+  if(i>=OVP_HOSTS.length){
+    // Alle schnell abgewiesen (Drossel) → einmal kurz warten, zweite Runde; nach Zeitüberschreitungen nicht mehr.
+    if(round===0&&Date.now()-t0<15000)return new Promise(r=>setTimeout(r,2500)).then(()=>overpassFetch(q,0,t0,1));
+    return Promise.reject(new Error('overpass unavailable'));
+  }
+  const sig=(typeof AbortSignal!=='undefined'&&AbortSignal.timeout)?AbortSignal.timeout(28000):undefined;
+  return fetch(OVP_HOSTS[i],{method:'POST',body:'data='+encodeURIComponent(q),referrerPolicy:'origin',signal:sig})
     .then(r=>r.ok?r.text():Promise.reject(new Error('http '+r.status)))
     .then(t=>{ const s=t.trim();
       if(!s.startsWith('{'))throw new Error('kein JSON');   // Drossel-/Fehlerseite
       return JSON.parse(s); })
-    .catch(()=>overpassFetch(q,i+1));
+    .catch(()=>overpassFetch(q,i+1,t0,round));
 }
 // Gefundene Orte auf der Karte zeigen — Architekten denken räumlich, nicht in Tabellen
 function locDrawPois(){
