@@ -1,0 +1,156 @@
+{
+ "meta": {
+  "title": "KNMI'23 klimaatscenario's — Station De Bilt",
+  "url": "https://klimaatscenarios-data.knmi.nl",
+  "api": "https://klimaatscenarios-data.knmi.nl/api/v1/climate-table-data",
+  "fetched": "2026-10-15",
+  "station": "De Bilt",
+  "reference": "1991-2020",
+  "scenarios": {
+   "Ld": "laag, droog",
+   "Ln": "laag, nat",
+   "Md": "midden, droog",
+   "Mn": "midden, nat",
+   "Hd": "hoog, droog",
+   "Hn": "hoog, nat"
+  },
+  "note": "Stationswerte (ländliche Messstation). In der Stadt kommt die Wärmeinsel hinzu. 2033: nur Szenario L."
+ },
+ "ind": {
+  "zomers": {
+   "de": "Sommertage (≥ 25 °C)",
+   "en": "Summer days (≥ 25 °C)",
+   "nl": "Zomerse dagen (≥ 25 °C)",
+   "ref": 28,
+   "y": {
+    "2033": {
+     "L": 37
+    },
+    "2050": {
+     "Ld": 41,
+     "Ln": 39,
+     "Md": 45,
+     "Mn": 42,
+     "Hd": 54,
+     "Hn": 46
+    },
+    "2100": {
+     "Ld": 41,
+     "Ln": 39,
+     "Md": 59,
+     "Mn": 53,
+     "Hd": 98,
+     "Hn": 88
+    }
+   }
+  },
+  "tropisch": {
+   "de": "Tropentage (≥ 30 °C)",
+   "en": "Tropical days (≥ 30 °C)",
+   "nl": "Tropische dagen (≥ 30 °C)",
+   "ref": 5,
+   "y": {
+    "2033": {
+     "L": 7.6
+    },
+    "2050": {
+     "Ld": 9.9,
+     "Ln": 8.8,
+     "Md": 10,
+     "Mn": 8.9,
+     "Hd": 14,
+     "Hn": 10
+    },
+    "2100": {
+     "Ld": 9.9,
+     "Ln": 8.8,
+     "Md": 16,
+     "Mn": 12,
+     "Hd": 39,
+     "Hn": 28
+    }
+   }
+  },
+  "heet": {
+   "de": "Tage ≥ 35 °C",
+   "en": "Days ≥ 35 °C",
+   "nl": "Dagen ≥ 35 °C",
+   "ref": 0.2,
+   "y": {
+    "2033": {
+     "L": 0.5
+    },
+    "2050": {
+     "Ld": 0.7,
+     "Ln": 0.5,
+     "Md": 0.8,
+     "Mn": 0.6,
+     "Hd": 1.6,
+     "Hn": 1
+    },
+    "2100": {
+     "Ld": 0.7,
+     "Ln": 0.5,
+     "Md": 1.5,
+     "Mn": 1.1,
+     "Hd": 8.3,
+     "Hn": 4.3
+    }
+   }
+  },
+  "nachten": {
+   "de": "Tropennächte (≥ 20 °C)",
+   "en": "Tropical nights (≥ 20 °C)",
+   "nl": "Tropische nachten (≥ 20 °C)",
+   "ref": 0.3,
+   "y": {
+    "2033": {
+     "L": 0.8
+    },
+    "2050": {
+     "Ld": 1.2,
+     "Ln": 1.2,
+     "Md": 1.4,
+     "Mn": 1.2,
+     "Hd": 3.4,
+     "Hn": 2.4
+    },
+    "2100": {
+     "Ld": 1.2,
+     "Ln": 1.2,
+     "Md": 3.5,
+     "Mn": 3.3,
+     "Hd": 24,
+     "Hn": 20
+    }
+   }
+  },
+  "warmste": {
+   "de": "Wärmster Tag des Jahres (°C)",
+   "en": "Hottest day of the year (°C)",
+   "nl": "Warmste dag van het jaar (°C)",
+   "ref": 25.5,
+   "y": {
+    "2033": {
+     "L": 26.5
+    },
+    "2050": {
+     "Ld": 27.2,
+     "Ln": 27,
+     "Md": 27.5,
+     "Mn": 27.1,
+     "Hd": 28.5,
+     "Hn": 27.8
+    },
+    "2100": {
+     "Ld": 27.2,
+     "Ln": 27,
+     "Md": 28.5,
+     "Mn": 28.2,
+     "Hd": 32.4,
+     "Hn": 31.1
+    }
+   }
+  }
+ }
+}
