@@ -183,7 +183,8 @@ LAB.addTool({id:'street',order:3,
         ${row(T('Aufheizung der Beläge','surface heating','opwarming verharding'),mb.heat,ma&&ma.heat,' / 100',(a,b)=>a<b)}
         ${ma&&ma.newTrees?`<tr><th>${T('neue Bäume je 100 m','new trees per 100 m','nieuwe bomen per 100 m')}</th><td>—</td><td class="up">+${ma.newTrees}</td></tr>`:''}
       </tbody></table>
-      <div class="sx-act"><button class="cta ghost lab-mini" id="sxEdit">${EDIT?T('Umbau zurücksetzen','Reset redesign','Herinrichting terugzetten'):T('Umbauen — Flächen antippen und neu nutzen','Redesign — tap areas to change their use','Herinrichten — tik vlakken aan en geef ze een nieuw gebruik')}</button></div>`;
+      <div class="sx-act"><button class="cta ghost lab-mini" id="sxEdit">${EDIT?T('Umbau zurücksetzen','Reset redesign','Herinrichting terugzetten'):T('Umbauen — Flächen antippen und neu nutzen','Redesign — tap areas to change their use','Herinrichten — tik vlakken aan en geef ze een nieuw gebruik')}</button></div>
+      ${LAB.measures?LAB.measures.html():''}`;
   },
   bind(root){
     A.bindTime(root,()=>{const sv=root.querySelector('.sx');if(sv&&SEC&&!SEC.err)sv.outerHTML=profile();bindHits(root);const su=root.querySelector('.sx-sun');if(su)su.outerHTML=sunLine();});
@@ -192,6 +193,7 @@ LAB.addTool({id:'street',order:3,
     root.querySelectorAll('.sx-seg').forEach(el=>el.onclick=()=>pick(+el.dataset.i));
     root.querySelectorAll('.sx-pal [data-ty]').forEach(el=>el.onclick=()=>{EDIT[PICK]=el.dataset.ty;A.rerender();A.req();});
     bindHits(root);
+    if(LAB.measures)LAB.measures.bind(root);
   },
   draw(g,X){
     const dark=A.dark();
@@ -208,7 +210,7 @@ LAB.addTool({id:'street',order:3,
   },
   click(e){
     busy=true;EDIT=null;PICK=-1;A.rerender();
-    return section(e.latlng).then(s=>{SEC=s;busy=false;A.rerender();A.req();return null;}).catch(()=>{busy=false;SEC={err:T('Querschnitt nicht möglich — Daten fehlen hier.','Cross-section not possible — data missing here.','Dwarsprofiel niet mogelijk — data ontbreken hier.')};A.rerender();return null;});
+    return section(e.latlng).then(s=>{SEC=s;busy=false;A.rerender();A.req();if(LAB.measures&&!s.err)LAB.measures.context(s).then(()=>A.rerender());return null;}).catch(()=>{busy=false;SEC={err:T('Querschnitt nicht möglich — Daten fehlen hier.','Cross-section not possible — data missing here.','Dwarsprofiel niet mogelijk — data ontbreken hier.')};A.rerender();return null;});
   },
   moved(){if(SEC&&!SEC.err){const c=A.map.latLngToContainerPoint(SEC.ll),sz=A.map.getSize();if(c.x<-200||c.y<-200||c.x>sz.x+200||c.y>sz.y+200){SEC=null;EDIT=null;PICK=-1;A.rerender();}}},
   note:()=>T('Querschnitt entlang der kürzesten Linie von Fassade zu Fassade durch den angetippten Punkt. Flächen und ihre Nutzung aus der BGT (nur aktuell gültige Objekte), Fassadenhöhen gemessen (3D BAG, 70-%-Dachhöhe), Bäume aus dem Register (Größe aus dem Pflanzjahr geschätzt). „Schatten jetzt" nimmt eine lange, gerade Straße an. Sonnenstunden entlang des Schnitts kommen aus dem 2D-Schattenmodell mit allen Gebäuden und Bäumen ringsum. Umbau-Werte: Literatur-Albedo der neuen Beläge, neue Baumstreifen mit 7 m Krone und 8 m Abstand.','Cross-section along the shortest line from façade to façade through the tapped point. Areas and their use from the BGT (current objects only), façade heights measured (3D BAG, 70 % roof height), trees from the register (size estimated from planting year). "Shade now" assumes a long, straight street. Sun hours along the cut come from the 2D shadow model with all surrounding buildings and trees. Redesign values: literature albedo of new surfaces, new tree strips with 7 m crowns spaced 8 m apart.','Dwarsprofiel langs de kortste lijn van gevel tot gevel door het aangetikte punt. Vlakken en gebruik uit de BGT (alleen actuele objecten), gevelhoogtes gemeten (3D BAG, 70%-dakhoogte), bomen uit het register (grootte geschat uit plantjaar). "Schaduw nu" neemt een lange, rechte straat aan. Zonuren langs de snede komen uit het 2D-schaduwmodel met alle gebouwen en bomen eromheen. Herinrichting: literatuur-albedo van nieuwe verharding, nieuwe bomenstroken met 7 m kroon en 8 m afstand.'),
@@ -218,5 +220,5 @@ function sunLine(){const S=SEC,sh=shadeNow(),sa=sunAlong(),meanSun=sa?sa.vals.re
   return `<div class="sx-sun">${sh.night?T('Sonne unter dem Horizont','Sun below the horizon','Zon onder de horizon'):`${T('Schatten jetzt','Shade now','Schaduw nu')} <b>${Math.round(100*sh.shaded/(S.L1+S.L2))} %</b> ${T('des Querschnitts','of the cross-section','van het profiel')} · ${A.hhmm(LAB.min)}`}${meanSun!=null?` · ${T('Ø Sonne','avg. sun','gem. zon')} <b>${A.nf(meanSun,1)} h</b>`:''}</div>`;}
 function pick(i){if(!EDIT)EDIT=SEC.segs.map(s=>s.t);PICK=PICK===i?-1:i;A.rerender();A.req();}
 function bindHits(root){root.querySelectorAll('.sx-hit').forEach(el=>el.onclick=()=>pick(+el.dataset.i));}
-LAB.street={get SEC(){return SEC},set SEC(v){SEC=v},section,metrics,shadeNow,typeOf,TY};
+LAB.street={get SEC(){return SEC},set SEC(v){SEC=v},get EDIT(){return EDIT},set EDIT(v){EDIT=v;PICK=-1;},section,metrics,shadeNow,typeOf,TY,tn};
 })();
