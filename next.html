@@ -7,7 +7,7 @@
 <title>Inspector Nice — Stadt-Signatur</title>
 <meta name="description" content="Jeder Ort hat eine Signatur aus Klima, Umwelt und sozialer Lage — ein Bild statt 35 Ebenen.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:opsz,wght,WONK@9..144,400..700,0&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -191,14 +191,14 @@ details p{font-size:12.5px;color:var(--mute);line-height:1.6;margin-top:4px}
 :root[data-theme="dark"] .intro{background:rgba(18,16,22,.6)}
 .intro .box{background:var(--card);border-radius:28px;box-shadow:var(--sh2);padding:28px 30px 26px;max-width:440px;margin:16px;text-align:center;animation:rise .55s var(--ease)}
 .intro h3{font:600 30px/1.08 var(--serif);letter-spacing:-.025em;margin:12px 0 10px}
-.intro h3 i{font-style:italic;font-weight:400}
+.intro h3 i{font-style:normal;font-weight:600;box-shadow:inset 0 -.28em 0 rgba(255,214,0,.6)}
 .intro p{font-size:15px;line-height:1.55;color:var(--ink2)}
 .intro .row{display:flex;gap:10px;justify-content:center;margin-top:20px}
 .intro .go{border:none;background:var(--chrome);color:#f3efe7;border-radius:16px;min-height:52px;padding:0 24px;font:800 15px var(--sans)}
 .intro .go2{border:1px solid var(--line2);background:none;border-radius:16px;min-height:52px;padding:0 20px;font:700 14px var(--sans)}
 .loading{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:var(--paper);transition:opacity .6s}
 .loading.off{opacity:0;pointer-events:none}
-.loading div{font:400 24px var(--serif);font-style:italic;color:var(--ink2);display:flex;align-items:center;gap:14px}
+.loading div{font:500 24px var(--serif);color:var(--ink2);display:flex;align-items:center;gap:14px}
 .dots i{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 3px;animation:bob .9s var(--ease) infinite alternate}
 .dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
 @keyframes bob{to{transform:translateY(-7px);opacity:.5}}
@@ -706,6 +706,7 @@ function focusPlace(c){
   const fx=(p.paddingTopLeft[0]+sz.x-p.paddingBottomRight[0])/2,fy=(p.paddingTopLeft[1]+sz.y-p.paddingBottomRight[1])/2;
   const pt=map.latLngToContainerPoint(c.c),inside=pt.x>p.paddingTopLeft[0]&&pt.x<sz.x-p.paddingBottomRight[0]&&pt.y>p.paddingTopLeft[1]&&pt.y<sz.y-p.paddingBottomRight[1];
   if(inside&&z===map.getZoom())return;
+  if(!sz.x||!sz.y){map.setView(c.c,z,{animate:false});return;}                // Karte ohne Größe (verborgen): flyTo rechnet sonst mit NaN
   const target=map.project(c.c,z).subtract(L.point(fx-sz.x/2,fy-sz.y/2));
   map.flyTo(map.unproject(target,z),z,{duration:REDUCED?0:.7});
 }
