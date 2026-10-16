@@ -100,8 +100,14 @@ function rahmenOf(m){
   const ORD={offen:0,laufend:1,ungeklaert:2,geschlossen:3},fo=(x.foerder||[]).map(id=>R.foerder.find(f=>f.id===id)).filter(Boolean).sort((a,b)=>(ORD[a.status]??4)-(ORD[b.status]??4));
   const SN={offen:T('offen','open','open'),laufend:T('läuft','running','lopend'),geschlossen:T('geschlossen','closed','gesloten'),ungeklaert:T('Status unklar','status unclear','status onduidelijk')};
   const no=(x.normen||[]).map(id=>R.normen.find(n=>n.id===id)).filter(Boolean);
-  return `${cost}${fo.length?`<p class="ms-fo"><span>${T('Förderung','Funding','Subsidie')}</span>${fo.map(f=>`<a class="${f.status}" href="${f.quelle}" target="_blank" rel="noopener" title="${(f.frist||'').replace(/"/g,'')}">${tx(f.titel)} <em>${SN[f.status]||f.status}</em>${f.geprueft===false?` <em>${T('ungeprüft','unverified','ongecontroleerd')}</em>`:''}</a>`).join('')}</p>`:''}
-    ${no.length?`<p class="ms-no"><span>${T('Regelwerk','Rules','Regels')}</span>${no.map(n=>`<a href="${n.quelle}" target="_blank" rel="noopener">${tx(n.titel)}${n.verbindlich==='ja'?` <em>${T('verbindlich','binding','bindend')}</em>`:''}${n.geprueft===false?` <em>${T('ungeprüft','unverified','ongecontroleerd')}</em>`:''}</a>`).join('')}</p>`:''}
+  // HIG: progressive Offenlegung — sichtbar nur, was jetzt zählt (offene Förderung, verbindliche Regeln); der Rest aufklappbar
+  const foA=f=>`<a class="${f.status}" href="${f.quelle}" target="_blank" rel="noopener" title="${(f.frist||'').replace(/"/g,'')}">${tx(f.titel)} <em>${SN[f.status]||f.status}</em>${f.geprueft===false?` <em>${T('ungeprüft','unverified','ongecontroleerd')}</em>`:''}</a>`;
+  const noA=n=>`<a href="${n.quelle}" target="_blank" rel="noopener">${tx(n.titel)}${n.verbindlich==='ja'?` <em>${T('verbindlich','binding','bindend')}</em>`:''}${n.geprueft===false?` <em>${T('ungeprüft','unverified','ongecontroleerd')}</em>`:''}</a>`;
+  const foN=fo.filter(f=>f.status==='offen'||f.status==='laufend'),foR=fo.filter(f=>!foN.includes(f)),noN=no.filter(n=>n.verbindlich==='ja'),noR=no.filter(n=>!noN.includes(n));
+  const more=foR.length+noR.length;
+  return `${cost}${fo.length?`<p class="ms-fo"><span>${T('Förderung','Funding','Subsidie')}</span>${foN.length?foN.map(foA).join(''):`<i class="ms-none">${T('gerade nichts offen','nothing open right now','nu niets open')}</i>`}</p>`:''}
+    ${noN.length?`<p class="ms-no"><span>${T('Pflicht','Required','Verplicht')}</span>${noN.map(noA).join('')}</p>`:''}
+    ${more?`<details class="ms-ah ms-more"><summary>${T(`Weitere Programme und Regeln (${more})`,`More programmes and rules (${more})`,`Meer regelingen en regels (${more})`)}</summary>${foR.length?`<p class="ms-fo">${foR.map(foA).join('')}</p>`:''}${noR.length?`<p class="ms-no">${noR.map(noA).join('')}</p>`:''}</details>`:''}
     ${(x.hemmnisse||[]).length?`<details class="ms-ah"><summary>${T('Anreize und Hemmnisse','Incentives and barriers','Prikkels en belemmeringen')}</summary>${(x.anreize||[]).map(a=>`<p class="pro">+ ${tx(a)}</p>`).join('')}${(x.hemmnisse||[]).map(h=>`<p class="con">− ${tx(h)}</p>`).join('')}</details>`:''}`;
 }
 
@@ -115,7 +121,7 @@ function html(){
   const NX=window.__NX,b=CX.buurt;if(b&&NX&&NX.score){const sc=NX.score(b),g=NX.grade(sc);if(sc!=null)ops.push(`<p class="ms-op soft">${T('Quartier','Neighbourhood','Buurt')} <b>${b.name}</b>: ${T('Klimabelastung','climate burden','klimaatbelasting')} ${Math.round(sc)}/100 (${'ABCDE'[g]})</p>`);}
   if(!ms.length)return `<div class="ms"><div class="ms-h">${T('Maßnahmen','Measures','Maatregelen')}</div>${ops.join('')}<p class="lab-hint">${T('Für diesen Querschnitt schlägt das Labor nichts vor: keine Parkspur, keine überbreite Fahrbahn, keine dunklen Wege. Mit „Umbauen" kannst du trotzdem Flächen tauschen.','The lab suggests nothing for this cross-section: no parking lane, no oversized carriageway, no dark paths. You can still swap areas with “Redesign”.','Het lab stelt voor dit profiel niets voor: geen parkeerstrook, geen te brede rijbaan, geen donkere paden. Met „Herinrichten" kun je toch vlakken wisselen.')}</p></div>`;
   return `<div class="ms"><div class="ms-h">${T('Maßnahmen für diesen Straßenraum','Measures for this street','Maatregelen voor deze straat')}<small>${T('je 100 m Straße','per 100 m of street','per 100 m straat')}</small></div>${ops.join('')}
-    ${ms.map((m,k)=>{const mu=MU.find(x=>x.id===m.mu);return `<article class="ms-c${k===0?' top':''}">
+    ${ms.map((m,k)=>{const mu=MU.find(x=>x.id===m.mu);return `<article class="ms-c${k===0?' best':''}">
       <div class="ms-t">${k===0?`<em>${T('passt hier am besten','fits best here','past hier het best')}</em>`:''}<b>${m.t}</b></div>
       <p class="ms-why">${m.why}</p>
       <div class="ms-q">${m.q.map(([v,l])=>`<span><b>${v}</b>${l}</span>`).join('')}</div>
