@@ -136,7 +136,7 @@ function profile(){
   S.segs.forEach((s,i)=>{const t=types[i],c=(TY[t]||TY.none).col,x0=X(s.x0),w=Math.max(.5,s.w*sc);
     g+=`<rect x="${x0}" y="${yg}" width="${w}" height="9" fill="${c}"${t!==s.t?' stroke="#FFD600" stroke-width="2"':''}/>`;
     g+=picto(t,(s.x0+s.x1)/2,s.w,X,Y,sc);
-    if(s.w*sc>26)g+=`<text x="${x0+w/2}" y="${yg+21}" text-anchor="middle" class="sx-w">${A.nf(s.w,1)}</text>`;
+    if(s.w*sc>30)g+=`<text x="${x0+w/2}" y="${yg+22}" text-anchor="middle" class="sx-w">${A.nf(s.w,1)}</text>`;
     g+=`<rect class="sx-hit${PICK===i?' on':''}" data-i="${i}" x="${x0}" y="${Y(Math.min(hmax,4))}" width="${w}" height="${yg+24-Y(Math.min(hmax,4))}"><title>${tn(t)} · ${A.nf(s.w,1)} m</title></rect>`;});
   // Bäume (Register) + neue Baumstreifen
   const tree=(s,r,Hh,col,op)=>`<line x1="${X(s)}" y1="${yg}" x2="${X(s)}" y2="${Y(Hh*.55)}" stroke="#6b5a3e" stroke-width="${Math.max(1.2,.35*sc)}"/><circle cx="${X(s)}" cy="${Y(Hh*.65)}" r="${Math.max(3,r*sc)}" fill="${col}" fill-opacity="${op}" stroke="#3f5a25" stroke-opacity=".5"/>`;
