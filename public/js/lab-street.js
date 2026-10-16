@@ -42,7 +42,9 @@ let SEC=null,EDIT=null,PICK=-1,busy=false;
 
 // ── Querschnitt berechnen ──
 async function section(ll){
+  if(A.tooFar())return {err:T('Für den Querschnitt näher heranzoomen (ab Zoom 16).','Zoom in further for the cross-section (level 16+).','Zoom verder in voor het dwarsprofiel (vanaf niveau 16).')};
   await Promise.all([A.ensure('b'),A.ensure('s'),A.ensureTrees().then(A.measureTrees)]);
+  if(!A.B.list.length&&!A.S.list.length)return {err:T('Hier sind gerade keine Gebäude- und Flächendaten geladen — kurz warten und erneut tippen.','No building or surface data loaded here yet — wait a moment and tap again.','Hier zijn nog geen gebouw- en vlakdata geladen — even wachten en opnieuw tikken.')};
   const m=A.m20(),[px,py]=A.w20(ll.lat,ll.lng);
   if(A.hits(A.B,px,py).length)return {err:T('Das ist ein Gebäude — bitte auf eine Straße tippen.','That is a building — please tap a street.','Dat is een gebouw — tik op een straat.')};
   const at=(ux,uy,d)=>[px+ux*d/m,py+uy*d/m];

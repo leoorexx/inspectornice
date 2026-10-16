@@ -439,6 +439,9 @@ body.act-on .legend{display:none}
 .act-cost{font:700 15px var(--sans);color:var(--ink);margin-top:2px}.act-cost small{font-weight:600;color:var(--mute);font-size:11px}
 .act-tag{margin-top:4px}.act-tag a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line2)}
 .act-pro{color:#2f6a55;margin-top:4px}.act-con{color:#8a2a3a;margin-top:2px}.act-src{display:block;margin-top:4px;color:var(--mute)}
+.act-fo{display:flex;flex-direction:column;gap:3px;margin-top:6px}.act-fo a{font:600 12px var(--sans);color:var(--ink);text-decoration:none}.act-fo a em{font-style:normal;font-weight:700;font-size:10.5px;padding:1px 6px;border-radius:7px;background:var(--soft);color:var(--ink2)}
+.act-fo a.offen em,.act-fo a.laufend em{background:color-mix(in srgb,#3f7f6a 18%,transparent);color:#2f6a55}.act-fo small{font-size:11px;color:var(--mute);margin:-2px 0 3px}
+.act-ms em.ug,.act-fo em.ug{background:color-mix(in srgb,#c49a2b 20%,transparent)!important;color:#7a5a12!important;font-style:normal}
 .act-status{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}
 .act-status button{min-height:40px;border-radius:12px;border:1px solid var(--line2);background:var(--card);font:700 11.5px var(--sans);color:var(--ink2)}
 .act-status button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
@@ -509,6 +512,14 @@ body.act-on .legend{display:none}
 .ms-a{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
 .ms-a .cta{width:auto;margin:0}
 .ms-mu{font:600 11.5px var(--sans);color:var(--ink2)}
+.ms-cost{margin-top:8px;font-size:12px;color:var(--ink2)}.ms-cost b{font:700 15px var(--sans);color:var(--ink)}.ms-cost small{display:block;color:var(--mute)}
+.ms-fo,.ms-no{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;align-items:center}
+.ms-fo span,.ms-no span{font:700 10.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-right:2px}
+.ms-fo a,.ms-no a{font:600 11.5px var(--sans);color:var(--ink);text-decoration:none;padding:3px 8px;border-radius:9px;background:var(--soft)}
+.ms-fo a.offen,.ms-fo a.laufend{background:color-mix(in srgb,#3f7f6a 16%,transparent)}.ms-fo a.geschlossen{opacity:.7}
+.ms-fo em,.ms-no em{font-style:normal;font-weight:700;color:var(--mute);font-size:10.5px}
+.ms-ah{margin-top:6px;font-size:12px}.ms-ah summary{cursor:pointer;font-weight:700;color:var(--ink2);min-height:32px;display:flex;align-items:center}
+.ms-ah .pro{color:#2f6a55;margin-top:3px}.ms-ah .con{color:#8a2a3a;margin-top:3px}
 .ms-n{font-size:11px;color:var(--mute);margin-top:10px;line-height:1.45}
 /* Export */
 .ex-cks{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}

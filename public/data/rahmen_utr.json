@@ -1,0 +1,1345 @@
+{
+ "meta": {
+  "stand": "2026-10-16",
+  "stadt": "utr",
+  "hinweis": {
+   "de": "Rahmen, Förderungen, Kosten und Plandaten für Utrecht, Stand 16.10.2026. Jede Angabe mit Quelle; „geprueft: false“ heißt: nicht am Originaldokument bestätigt. Keine Rechtsberatung. Kosten sind Spannen aus niederländischen Quellen (verschiedene Jahre), keine Utrechter Einheitspreise.",
+   "en": "Frameworks, funding, costs and plan data for Utrecht as of 16 Oct 2026. Every item has a source; 'geprueft: false' means not confirmed in the original document. Not legal advice. Costs are Dutch ranges (various years), not Utrecht unit rates.",
+   "nl": "Kaders, subsidies, kosten en plandata voor Utrecht, stand 16-10-2026. Elke vermelding met bron; 'geprueft: false' betekent: niet in het originele document bevestigd. Geen juridisch advies. Kosten zijn Nederlandse bandbreedtes (verschillende jaren), geen Utrechtse eenheidsprijzen."
+  }
+ },
+ "normen": [
+  {
+   "id": "omgevingswet",
+   "titel": {"de": "Omgevingswet und Omgevingsplan", "en": "Environment and Planning Act and omgevingsplan", "nl": "Omgevingswet en omgevingsplan"},
+   "ebene": "Rijk",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Seit 01.01.2024 in Kraft. Alte Bestemmingsplannen gelten als vorläufiger Teil des Omgevingsplans; bis 01.01.2032 braucht Utrecht einen vollständigen Omgevingsplan. Darin kann die Gemeente z. B. Abkopplung oder Grün auf Privatgrund vorschreiben.",
+    "en": "In force since 1 Jan 2024. Old zoning plans count as the temporary part of the omgevingsplan; by 1 Jan 2032 Utrecht needs a complete omgevingsplan. In it the city can require e.g. rainwater disconnection or green on private plots.",
+    "nl": "Sinds 1-1-2024 van kracht. Oude bestemmingsplannen vormen het tijdelijk deel van het omgevingsplan; uiterlijk 1-1-2032 moet Utrecht een volledig omgevingsplan hebben. Daarin kan de gemeente bijv. afkoppelen of groen op eigen terrein voorschrijven."
+   },
+   "themen": ["hitze", "wasser", "gruen", "laerm", "mobilitaet", "luft", "bio"],
+   "zahl": "bis 01.01.2032",
+   "quelle": "https://www.binnenlandsbestuur.nl/bestuur-en-organisatie/kokxdevoogd/hoe-ga-je-soepel-om-met-bruidsschat-en-bkl-in-omgevingsplan",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "bbl_tojuli",
+   "titel": {"de": "Bbl: Überhitzungsgrenze für neue Wohnungen (TOjuli)", "en": "Bbl: overheating limit for new homes (TOjuli)", "nl": "Bbl: oververhittingsgrens nieuwbouwwoningen (TOjuli)"},
+   "ebene": "Rijk",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Neue Wohnungen dürfen einen TOjuli-Wert von höchstens 1,2 haben (Bbl Art. 4.149b), sonst ist eine Zusatzrechnung nötig (höchstens 450 gewichtete Überschreitungsstunden). Gilt nur für Neubau, nicht für bestehende Häuser oder den Straßenraum.",
+    "en": "New homes may have a TOjuli value of at most 1.2 (Bbl art. 4.149b); otherwise an extra calculation is required (max. 450 weighted exceedance hours). Applies only to new builds, not to existing homes or street space.",
+    "nl": "Nieuwe woningen mogen een TOjuli van maximaal 1,2 hebben (Bbl art. 4.149b); anders is een GTO-berekening nodig (maximaal 450 uur). Geldt alleen voor nieuwbouw, niet voor bestaande woningen of de straat."
+   },
+   "themen": ["hitze"],
+   "zahl": "TOjuli ≤ 1,2",
+   "quelle": "https://iplo.nl/regelgeving/regels-voor-activiteiten/technische-bouwactiviteit/nieuwbouw/rijksregels/oververhitting-woningen/",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "maatlat_hitze",
+   "titel": {"de": "Landelijke Maatlat: Hitze", "en": "National benchmark (Maatlat): heat", "nl": "Landelijke Maatlat: hitte"},
+   "ebene": "Rijk",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "Richtlinie, noch kein Gesetz. 40 % Schatten auf wichtigen Fuß- und Radwegen und Aufenthaltsorten, 30 % im ganzen Viertel (21. Juni, 15:30 Uhr); ein kühler grüner Ort ab 200 m² höchstens 300 m entfernt. Seit April 2025 gilt die Maatlat nur noch für die Gestaltung von Gebieten; die Richtlinie zu hitzeabweisenden Oberflächen wurde gestrichen.",
+    "en": "Guideline, not yet law. 40 % shade on key walking and cycling routes and places to stay, 30 % across the neighbourhood (21 June, 15:30); a cool green place of at least 200 m² within 300 m. Since April 2025 it only applies to area design; the guideline on heat-reflecting surfaces was dropped.",
+    "nl": "Richtlijn, nog geen wet. 40 % schaduw op belangrijke loop- en fietsroutes en verblijfsplekken, 30 % op buurtniveau (21 juni, 15:30 uur); een koele groene plek van minstens 200 m² binnen 300 m. Sinds april 2025 alleen voor gebiedsinrichting; de richtlijn over warmtewerende oppervlakken is geschrapt."
+   },
+   "themen": ["hitze", "gruen"],
+   "zahl": "40 % Schatten · 300 m",
+   "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
+   "stand": "2025-04",
+   "geprueft": true
+  },
+  {
+   "id": "maatlat_wasser",
+   "titel": {"de": "Landelijke Maatlat: Starkregen", "en": "National benchmark (Maatlat): heavy rain", "nl": "Landelijke Maatlat: wateroverlast"},
+   "ebene": "Rijk",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "Kein Wasserschaden bis zu einem Regen, der einmal in 100 Jahren vorkommt; Startwert 70 mm in einer Stunde (Klima 2050). Lebenswichtige Einrichtungen bis 90 mm pro Stunde (1× in 250 Jahren). Bebauter Privatgrund verarbeitet 40–70 mm selbst. Gemeinden können das im Omgevingsplan festlegen; Gesetzespflicht ist es noch nicht.",
+    "en": "No water damage up to a 1-in-100-year storm; starting point 70 mm in one hour (2050 climate). Vital functions up to 90 mm per hour (1 in 250 years). Built private plots handle 40–70 mm themselves. Municipalities can set this in the omgevingsplan; it is not yet a legal duty.",
+    "nl": "Geen waterschade tot een bui van 1× per 100 jaar; startpunt 70 mm in één uur (klimaat 2050). Vitale functies tot 90 mm per uur (1× per 250 jaar). Bebouwd privaat terrein verwerkt zelf 40–70 mm. Gemeenten kunnen dit in het omgevingsplan vastleggen; wettelijk verplicht is het nog niet."
+   },
+   "themen": ["wasser"],
+   "zahl": "70 mm in 1 Stunde",
+   "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
+   "stand": "2025-04",
+   "geprueft": true
+  },
+  {
+   "id": "maatlat_gruen",
+   "titel": {"de": "Landelijke Maatlat: Grün und Biodiversität", "en": "National benchmark (Maatlat): green and biodiversity", "nl": "Landelijke Maatlat: groen en biodiversiteit"},
+   "ebene": "Rijk",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "Keine festen Normen, nur Richtlinien: wertvolle Lebensräume erhalten und eine Grünnorm je Viertel festlegen. Es zählt Grün auf öffentlichem und privatem Grund, auch Dächer und ausgewachsene Baumkronen. Die 3-30-300-Regel wird als Grundlage genannt.",
+    "en": "No fixed norms, only guidelines: keep valuable habitats and set a green-space norm per neighbourhood. Public and private green counts, including roofs and mature tree crowns. The 3-30-300 rule is cited as a basis.",
+    "nl": "Geen normen, alleen richtlijnen: waardevolle habitat behouden en een groennorm per buurt vaststellen. Groen op publiek en privaat terrein telt mee, ook daken en volwassen boomkronen. De 3-30-300-regel wordt als basis genoemd."
+   },
+   "themen": ["gruen", "bio", "hitze"],
+   "zahl": "Grünnorm je Viertel (lokal festzulegen)",
+   "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
+   "stand": "2023-02",
+   "geprueft": true
+  },
+  {
+   "id": "dpra",
+   "titel": {"de": "Deltaplan Raumanpassung (DPRA)", "en": "Delta Plan on Spatial Adaptation (DPRA)", "nl": "Deltaplan Ruimtelijke Adaptatie (DPRA)"},
+   "ebene": "Rijk",
+   "verbindlich": "teilweise",
+   "kern": {
+    "de": "Vereinbarung von Rijk, Provinzen, Wasserverbänden und Gemeinden: bis 2050 klimafest und wasserrobust. Schritte: Stresstest (alle 6 Jahre, 2. Runde 2025), Risikodialog, Umsetzungsagenda. Kein Gesetz, aber Grundlage für Förderung.",
+    "en": "Agreement of state, provinces, water boards and municipalities: climate-proof and water-robust by 2050. Steps: stress test (every 6 years, 2nd round 2025), risk dialogue, implementation agenda. Not a law, but the basis for funding.",
+    "nl": "Afspraak van Rijk, provincies, waterschappen en gemeenten: in 2050 klimaatbestendig en waterrobuust. Stappen: stresstest (elke 6 jaar, 2e ronde 2025), risicodialoog, uitvoeringsagenda. Geen wet, wel basis voor financiering."
+   },
+   "themen": ["wasser", "hitze"],
+   "zahl": "klimafest bis 2050",
+   "quelle": "https://vng.nl/artikelen/deltaplan-ruimtelijke-adaptatie",
+   "stand": "2025-05",
+   "geprueft": true
+  },
+  {
+   "id": "hemelwater",
+   "titel": {"de": "Regenwasser-Pflicht (Omgevingswet Art. 2.16)", "en": "Rainwater duty (Environment and Planning Act art. 2.16)", "nl": "Hemelwaterzorgplicht (Omgevingswet art. 2.16)"},
+   "ebene": "Gemeente",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Zuerst ist der Grundeigentümer für sein Regenwasser verantwortlich. Die Gemeente kümmert sich um den öffentlichen Raum und springt ein, wo es Eigentümern nicht zuzumuten ist. Im Omgevingsplan kann sie die Abkopplung vom Kanal vorschreiben.",
+    "en": "The landowner is responsible for their rainwater first. The municipality handles public space and steps in where owners cannot reasonably cope. In the omgevingsplan it can require disconnection from the sewer.",
+    "nl": "De perceeleigenaar is in principe zelf verantwoordelijk voor zijn hemelwater. De gemeente zorgt voor openbaar terrein en springt bij waar dat redelijkerwijs niet van eigenaren te vragen is. In het omgevingsplan kan zij afkoppelen voorschrijven."
+   },
+   "themen": ["wasser"],
+   "zahl": "Eigentümer zuerst",
+   "quelle": "https://iplo.nl/thema/water/stedelijk-afvalwater/stedelijk-waterbeheer/hemelwatertaak-gemeente/",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "nhv_art8",
+   "titel": {"de": "EU-Wiederherstellungsverordnung, Art. 8 (Stadtgrün)", "en": "EU Nature Restoration Regulation, art. 8 (urban green)", "nl": "EU-natuurherstelverordening, art. 8 (stedelijk groen)"},
+   "ebene": "EU",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Bis 31.12.2030 kein Netto-Verlust an Stadtgrün und Baumkronenfläche gegenüber 2024, ab 2031 ein steigender Trend. Pflicht für die Niederlande, umgesetzt über den nationalen Natuurplan (Entwurf an die EU bis 01.09.2026). Für Gemeinden indirekt, aber messbar.",
+    "en": "By 31 Dec 2030 no net loss of urban green space and tree canopy compared to 2024, an increasing trend from 2031. Binding on the Netherlands via the national Natuurplan (draft due to the EU by 1 Sep 2026). Indirect for municipalities, but measurable.",
+    "nl": "Tot 31-12-2030 geen netto verlies aan stedelijk groen en boomkroonbedekking ten opzichte van 2024, vanaf 2031 een stijgende trend. Verplicht voor Nederland via het Natuurplan (ontwerp naar de EU uiterlijk 1-9-2026). Voor gemeenten indirect, maar meetbaar."
+   },
+   "themen": ["gruen", "bio", "hitze"],
+   "zahl": "kein Netto-Verlust bis 2030",
+   "quelle": "https://www.pbl.nl/publicaties/stedelijke-ecosystemen-en-nulmeting-groen",
+   "stand": "2026-08",
+   "geprueft": true
+  },
+  {
+   "id": "regel_33300",
+   "titel": {"de": "3-30-300-Regel", "en": "3-30-300 rule", "nl": "3-30-300-regel"},
+   "ebene": "Richtwert",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "Faustregel: 3 Bäume vom Fenster aus sichtbar, 30 % Kronendach im Viertel, höchstens 300 m bis zum nächsten Park. Die Maatlat nennt sie als Grundlage. Einen Utrechter Ratsbeschluss zur ganzen Regel haben wir nicht gefunden; Utrecht selbst nennt 200 m bis zu einem kühlen grünen Ort.",
+    "en": "Rule of thumb: 3 trees visible from every window, 30 % canopy per neighbourhood, at most 300 m to the nearest park. The Maatlat cites it as a basis. We found no Utrecht council decision adopting the full rule; Utrecht itself uses 200 m to a cool green place.",
+    "nl": "Vuistregel: 3 bomen zichtbaar vanuit huis, 30 % kronendak in de buurt, maximaal 300 m tot het dichtstbijzijnde park. De Maatlat noemt haar als basis. Een Utrechts raadsbesluit voor de hele regel vonden we niet; Utrecht hanteert zelf 200 m tot een koele groene plek."
+   },
+   "themen": ["gruen", "hitze", "bio"],
+   "zahl": "3 · 30 % · 300 m",
+   "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
+   "stand": "2023-02",
+   "geprueft": true
+  },
+  {
+   "id": "utr_hitte",
+   "titel": {"de": "Utrecht: Hitze-Ziele", "en": "Utrecht: heat targets", "nl": "Utrecht: hitte-ambities"},
+   "ebene": "Gemeente",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "Die Stadt soll sich höchstens 5 °C wärmer anfühlen als das Umland. Auf den wichtigsten Fußwegen 40 % Schatten zur heißesten Zeit, sonst 30 %. Alle wohnen höchstens 200 m von einem kühlen grünen Ort ab 200 m². Grundlage: Visie Klimaatadaptatie (2022) und Utrechter Hitteplan; neue Fassung des Hitteplans für Q1 2027 angekündigt.",
+    "en": "The city should feel at most 5 °C warmer than its surroundings. 40 % shade on the main walking routes at the hottest time, 30 % elsewhere. Everyone lives within 200 m of a cool green place of at least 200 m². Based on the 2022 climate adaptation vision and the Utrecht heat plan; a revised heat plan is announced for Q1 2027.",
+    "nl": "De stad mag maximaal 5 °C warmer aanvoelen dan buiten de stad. Op de belangrijkste looproutes 40 % schaduw op het heetst van de dag, elders 30 %. Iedereen woont binnen 200 m van een koele groene plek van minstens 200 m². Basis: Visie Klimaatadaptatie (2022) en het Utrechtse hitteplan; een nieuwe versie is aangekondigd voor Q1 2027."
+   },
+   "themen": ["hitze", "gruen"],
+   "zahl": "5 °C · 40 % · 200 m",
+   "quelle": "https://www.utrecht.nl/wonen-en-leven/duurzame-stad/groen-en-water/hitte",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "utr_bomen",
+   "titel": {"de": "Utrecht: Baumpolitik und Nachpflanzen nach Wert", "en": "Utrecht: tree policy and value-based replanting", "nl": "Utrecht: bomenbeleid en herplant naar waarde"},
+   "ebene": "Gemeente",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Wer einen Baum mit Nachpflanzpflicht fällt, pflanzt gleichwertig nach: 1 großer Baum = 1 großer oder 2 mittlere. Stammumfang mindestens 16–18 cm, in der Hauptstruktur 20–25 cm, ökologisch wertvolle Arten. Fassung 2023 geprüft; seit 01.02.2025 gilt eine neue Fassung (nicht erneut geprüft). Evaluation der Baumpolitik für 2027 angekündigt.",
+    "en": "Whoever fells a tree with a replanting duty replants equal value: 1 large tree = 1 large or 2 medium. Minimum girth 16–18 cm, 20–25 cm in the main structure, ecologically valuable species. 2023 version checked; a new version applies since 1 Feb 2025 (not re-checked). Tree policy evaluation announced for 2027.",
+    "nl": "Wie een boom met herplantplicht kapt, plant gelijkwaardig terug: 1 boom 1e grootte = 1 boom 1e grootte of 2 van 2e grootte. Stamomtrek minimaal 16–18 cm, in de hoofdstructuur 20–25 cm, ecologisch waardevolle soorten. Versie 2023 gecontroleerd; sinds 1-2-2025 geldt een nieuwe versie (niet opnieuw gecontroleerd). Evaluatie bomenbeleid aangekondigd voor 2027."
+   },
+   "themen": ["gruen", "bio"],
+   "zahl": "1 groß = 2 mittel",
+   "quelle": "https://lokaleregelgeving.overheid.nl/CVDR698023/1",
+   "stand": "2025-02",
+   "geprueft": false
+  },
+  {
+   "id": "utr_geveltuin",
+   "titel": {"de": "Utrecht: Regeln für Fassadengärten", "en": "Utrecht: façade garden rules", "nl": "Utrecht: regels geveltuin"},
+   "ebene": "Gemeente",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Ohne Genehmigung erlaubt, wenn die Fassade direkt am Gehweg liegt: bis 60 cm tief, mindestens 1,20 m Gehweg bleiben frei, 0,9 m Abstand zu Laternen. Mieter:innen brauchen das Okay der Eigentümer:in.",
+    "en": "Allowed without a permit where the façade meets the pavement: up to 60 cm deep, at least 1.20 m of pavement stays clear, 0.9 m from lamp posts. Tenants need the owner's consent.",
+    "nl": "Zonder toestemming toegestaan als de gevel aan de stoep grenst: maximaal 60 cm diep, minstens 1,20 m loopruimte, 0,9 m afstand tot lantaarnpalen. Huurders hebben akkoord van de eigenaar nodig."
+   },
+   "themen": ["gruen", "wasser", "hitze", "bio"],
+   "zahl": "60 cm tief · 1,20 m frei",
+   "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "utr_parkeren",
+   "titel": {"de": "Utrecht: Parkplatznormen für Bauvorhaben", "en": "Utrecht: parking standards for developments", "nl": "Utrecht: parkeernormen bij bouwplannen"},
+   "ebene": "Gemeente",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Für neue Bauvorhaben legt die Beleidsregel parkeernormen auto 2021 (aktuelle Fassung seit 22.04.2025) Mindest- und Höchstzahlen je Lage fest. Gilt für Baugenehmigungen, nicht für bestehende Straßenparkplätze.",
+    "en": "For new developments, the 2021 car parking standards policy (current version since 22 Apr 2025) sets minimum and maximum numbers per location. Applies to building permits, not to existing on-street parking.",
+    "nl": "Voor nieuwe bouwplannen legt de Beleidsregel parkeernormen auto 2021 (actuele versie sinds 22-04-2025) minimum- en maximumnormen per gebied vast. Geldt voor vergunningen, niet voor bestaande straatparkeerplaatsen."
+   },
+   "themen": ["mobilitaet"],
+   "zahl": "Min.- und Max.-Normen je Lage",
+   "quelle": "https://lokaleregelgeving.overheid.nl/CVDR668780",
+   "stand": "2025-04",
+   "geprueft": true
+  },
+  {
+   "id": "utr_mobiliteitsplan",
+   "titel": {"de": "Utrecht: Mobilitätsplan 2040 – Straßenparkplätze abbauen", "en": "Utrecht: Mobility Plan 2040 – reducing on-street parking", "nl": "Utrecht: Mobiliteitsplan 2040 – straatparkeren afbouwen"},
+   "ebene": "Gemeente",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "Laut einer Zusammenfassung wird jedes Jahr im Schnitt 0,5–1 % der Straßenparkplätze für bessere öffentliche Räume aufgehoben: über Bürgerinitiativen, Umbauprojekte und abgegebene Parkausweise. Originaltext nicht geprüft.",
+    "en": "According to a summary, on average 0.5–1 % of on-street parking is removed each year to improve public space: via resident initiatives, redesign projects and returned permits. Original text not checked.",
+    "nl": "Volgens een samenvatting wordt jaarlijks gemiddeld 0,5–1 % van de straatparkeercapaciteit opgeheven voor betere openbare ruimte: via initiatieven, herinrichtingen en ingeleverde vergunningen. Originele tekst niet gecontroleerd."
+   },
+   "themen": ["mobilitaet", "gruen"],
+   "zahl": "0,5–1 % Parkplätze pro Jahr",
+   "quelle": "https://bestuur.gooisemeren.nl/fileadmin/user_upload/221121_PLEK_Beantwoording_schriftelijke_vragen_-_Parkeerbeleid.pdf",
+   "stand": "2022-11",
+   "geprueft": false
+  },
+  {
+   "id": "eu_laerm",
+   "titel": {"de": "EU-Umgebungslärmrichtlinie", "en": "EU Environmental Noise Directive", "nl": "EU-richtlijn omgevingslawaai"},
+   "ebene": "EU",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Alle 5 Jahre Lärmkarten und Aktionspläne für Ballungsräume wie Utrecht: nächste Karten bis 30.06.2027, Aktionspläne bis 18.07.2029. In den Niederlanden über die Omgevingswet geregelt.",
+    "en": "Every 5 years noise maps and action plans for agglomerations such as Utrecht: next maps by 30 Jun 2027, action plans by 18 Jul 2029. Implemented in the Netherlands via the Omgevingswet.",
+    "nl": "Elke 5 jaar geluidbelastingkaarten en actieplannen voor agglomeraties zoals Utrecht: volgende kaarten uiterlijk 30-6-2027, actieplannen uiterlijk 18-7-2029. In Nederland geregeld via de Omgevingswet."
+   },
+   "themen": ["laerm"],
+   "zahl": "Karten 2027 · Pläne 2029",
+   "quelle": "https://iplo.nl/thema/geluid/monitoring-toezicht/regels-kaart-actieplan/europese-richtlijn-omgevingslawaai/",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "utr_geluid",
+   "titel": {"de": "Utrecht: Aktionsplan Lärm und Erschütterungen 2026–2029", "en": "Utrecht: noise and vibration action plan 2026–2029", "nl": "Utrecht: Actieplan Geluid en Trillingen 2026–2029"},
+   "ebene": "Gemeente",
+   "verbindlich": "teilweise",
+   "kern": {
+    "de": "Handlungsschwelle 63 dB Lden an normalen Gemeindestraßen, 68 dB an Verbindungsstraßen; rund 8.400 Wohnungen liegen darüber. Wichtigste Maßnahme: Tempo 30 auf vielen Straßen ab 2026, dazu Flüsterasphalt. Bindet die Gemeente selbst, nicht die Bürger:innen.",
+    "en": "Action threshold 63 dB Lden on ordinary municipal streets, 68 dB on connector roads; about 8,400 homes are above it. Main measure: 30 km/h on many streets from 2026, plus quiet asphalt. Binds the municipality itself, not residents.",
+    "nl": "Plandrempel 63 dB Lden op overige gemeentelijke wegen, 68 dB op verbindingswegen; circa 8.400 woningen liggen erboven. Belangrijkste maatregel: 30 km/uur op veel straten vanaf 2026, plus stil asfalt. Bindt de gemeente zelf, niet inwoners."
+   },
+   "themen": ["laerm", "mobilitaet"],
+   "zahl": "63 dB · ≈ 8.400 Wohnungen",
+   "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1",
+   "stand": "2026-06",
+   "geprueft": true
+  },
+  {
+   "id": "who_laerm",
+   "titel": {"de": "WHO-Richtwert Straßenlärm (2018)", "en": "WHO road noise guideline (2018)", "nl": "WHO-advieswaarde wegverkeerslawaai (2018)"},
+   "ebene": "Richtwert",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "Die WHO empfiehlt für Straßenverkehr höchstens 53 dB Lden. Das entspricht dem niederländischen Standardwert für Gemeindestraßen.",
+    "en": "WHO recommends at most 53 dB Lden for road traffic. This equals the Dutch standard value for municipal roads.",
+    "nl": "De WHO adviseert voor wegverkeer maximaal 53 dB Lden. Dat is gelijk aan de Nederlandse standaardwaarde voor gemeentelijke wegen."
+   },
+   "themen": ["laerm"],
+   "zahl": "53 dB Lden",
+   "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1",
+   "stand": "2026-06",
+   "geprueft": true
+  },
+  {
+   "id": "eu_luft",
+   "titel": {"de": "EU-Luftqualitätsrichtlinie 2024/2881", "en": "EU Ambient Air Quality Directive 2024/2881", "nl": "EU-richtlijn luchtkwaliteit 2024/2881"},
+   "ebene": "EU",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Ab 2030 strengere Jahresgrenzwerte: NO₂ 20 µg/m³ (bisher 40), PM2,5 10 µg/m³, PM10 20 µg/m³. In Kraft seit 10.12.2024; Umsetzung in den Niederlanden bis 11.12.2026.",
+    "en": "Stricter annual limits from 2030: NO₂ 20 µg/m³ (previously 40), PM2.5 10 µg/m³, PM10 20 µg/m³. In force since 10 Dec 2024; Dutch transposition due by 11 Dec 2026.",
+    "nl": "Vanaf 2030 strengere jaargrenswaarden: NO₂ 20 µg/m³ (was 40), PM2,5 10 µg/m³, PM10 20 µg/m³. Van kracht sinds 10-12-2024; omzetting in Nederland uiterlijk 11-12-2026."
+   },
+   "themen": ["luft"],
+   "zahl": "NO₂ 20 · PM2,5 10 µg/m³ (2030)",
+   "quelle": "https://iplo.nl/thema/lucht/implementatie-europese-richtlijn-luchtkwaliteit/herziening-europese-richtlijn-luchtkwaliteit/",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "who_luft",
+   "titel": {"de": "WHO-Luftleitwerte 2021", "en": "WHO air quality guidelines 2021", "nl": "WHO-advieswaarden luchtkwaliteit 2021"},
+   "ebene": "Richtwert",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "WHO-Empfehlung im Jahresmittel: PM2,5 5 µg/m³, NO₂ 10 µg/m³, PM10 15 µg/m³. Empfehlung, kein Gesetz.",
+    "en": "WHO annual-mean recommendation: PM2.5 5 µg/m³, NO₂ 10 µg/m³, PM10 15 µg/m³. Advisory, not law.",
+    "nl": "WHO-advies jaargemiddelde: PM2,5 5 µg/m³, NO₂ 10 µg/m³, PM10 15 µg/m³. Advies, geen wet."
+   },
+   "themen": ["luft"],
+   "zahl": "PM2,5 5 · NO₂ 10 µg/m³",
+   "quelle": "https://www.who.int/publications/i/item/9789240034228",
+   "stand": "2021-09",
+   "geprueft": true
+  },
+  {
+   "id": "utr_luft",
+   "titel": {"de": "Utrecht: Gesunde Luft für alle (2025–2030)", "en": "Utrecht: healthy air for everyone (2025–2030)", "nl": "Utrecht: Gezonde lucht voor iedereen (2025–2030)"},
+   "ebene": "Gemeente",
+   "verbindlich": "nein",
+   "kern": {
+    "de": "Utrecht ist Mitglied im Schone Lucht Akkoord: 50 % weniger Gesundheitsschaden durch Luft bis 2030 gegenüber 2016. Laut Koalitionsvertrag strebt die Stadt die WHO-Werte 2021 an.",
+    "en": "Utrecht is a member of the Clean Air Agreement: 50 % less health damage from air pollution by 2030 compared to 2016. Per the coalition agreement the city aims for the 2021 WHO values.",
+    "nl": "Utrecht is deelnemer aan het Schone Lucht Akkoord: 50 % gezondheidswinst in 2030 ten opzichte van 2016. Volgens het coalitieakkoord streeft de stad naar de WHO-waarden van 2021."
+   },
+   "themen": ["luft"],
+   "zahl": "−50 % Gesundheitsschaden bis 2030",
+   "quelle": "https://gemeenteraad.groningen.nl/Vergaderingen/Politieke-woensdag-Dag-agenda/2025/10-september/09:00/Houtrook-i-c-m-luchtkwaliteit/Presentatie-Luchtkwaliteitsbeleid-gemeente-Utrecht-Gemeenteraad-Groningen-1.pdf",
+   "stand": "2025-09",
+   "geprueft": true
+  },
+  {
+   "id": "stedin_afstand",
+   "titel": {"de": "Abstand Baum – Kabel und Leitungen (Stedin)", "en": "Distance between trees and cables (Stedin)", "nl": "Afstand boom – kabels en leidingen (Stedin)"},
+   "ebene": "Richtwert",
+   "verbindlich": "teilweise",
+   "kern": {
+    "de": "Richtlinie des Netzbetreibers: Baummitte mindestens 2,5 m vom Rand der Leitungstrasse, Sträucher 1 m. Für Schäden an Leitungen verlangt Stedin Ersatz vom Eigentümer. Details für Gas in NEN 7244.",
+    "en": "Grid operator guideline: tree centre at least 2.5 m from the edge of the cable route, shrubs 1 m. Stedin claims damages from the owner for harm to cables. Gas details in NEN 7244.",
+    "nl": "Richtlijn van de netbeheerder: hart boom minimaal 2,5 m van de rand van het leidingentracé, struiken 1 m. Voor schade aan leidingen vraagt Stedin vergoeding van de eigenaar. Details voor gas in NEN 7244."
+   },
+   "themen": ["gruen"],
+   "zahl": "2,5 m",
+   "quelle": "https://www.stedin.net/-/media/project/online/files/aansluiting/stedin-richtlijnen-kabels-en-leidingen.pdf",
+   "stand": "2016-08",
+   "geprueft": true
+  },
+  {
+   "id": "prov_nnn",
+   "titel": {"de": "Natuurnetwerk Nederland (Provinz Utrecht)", "en": "Nature Network Netherlands (Province of Utrecht)", "nl": "Natuurnetwerk Nederland (provincie Utrecht)"},
+   "ebene": "Provincie",
+   "verbindlich": "ja",
+   "kern": {
+    "de": "Von der Provinz abgegrenzte Naturflächen (früher EHS), in denen Bauen und Umnutzen nur unter strengen Regeln möglich ist. 390 Flächen in der Provinz; Lage zur Stadt in den Geodaten prüfen. Schutzwirkung über die Provinzverordnung nicht am Text geprüft.",
+    "en": "Nature areas designated by the province (formerly EHS) where building and change of use are tightly restricted. 390 areas in the province; check the geodata for the city. Protective effect via the provincial ordinance not checked in the text.",
+    "nl": "Door de provincie begrensde natuurgebieden (voorheen EHS) waar bouwen en ander gebruik streng beperkt zijn. 390 vlakken in de provincie; ligging t.o.v. de stad in de geodata controleren. Beschermende werking via de verordening niet in de tekst gecontroleerd."
+   },
+   "themen": ["bio", "gruen"],
+   "zahl": "390 Flächen (Provinz)",
+   "quelle": "https://data.overheid.nl/dataset/83254-natuurnetwerk-nederland",
+   "stand": "2025-09",
+   "geprueft": false
+  }
+ ],
+ "foerder": [
+  {
+   "id": "utr_groenblauwe_daken",
+   "titel": {"de": "Utrecht: Förderung grün-blaue Dächer", "en": "Utrecht: green-blue roof subsidy", "nl": "Utrecht: subsidie groenblauwe daken"},
+   "geber": "Gemeente Utrecht",
+   "fuer": ["bewohner", "vve", "unternehmen"],
+   "themen": ["wasser", "gruen", "hitze", "bio"],
+   "betrag": {
+    "de": "30–70 €/m² je nach Dachtyp und Wasserspeicher, höchstens 50 % der Kosten; mit U-Pas 60–140 €/m² bis 100 %. Höchstens 20.000 € für Privatpersonen, 50.000 € für Organisationen; ab 6 m².",
+    "en": "€30–70/m² depending on roof type and water storage, max. 50 % of costs; with a U-pas €60–140/m² up to 100 %. Max. €20,000 for individuals, €50,000 for organisations; from 6 m².",
+    "nl": "€ 30–70/m² afhankelijk van daktype en waterberging, maximaal 50 % van de kosten; met U-pas € 60–140/m² tot 100 %. Maximaal € 20.000 voor particulieren, € 50.000 voor organisaties; vanaf 6 m²."
+   },
+   "frist": "ganzjährig; bis 3 Monate nach Einbau; Vergabe nach Eingang bis das Jahresbudget erschöpft ist",
+   "status": "offen",
+   "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852",
+   "stand": "2024-07",
+   "geprueft": true
+  },
+  {
+   "id": "utr_groenblauw_vastgoed",
+   "titel": {"de": "Utrecht: grün-blaue gesellschaftliche Gebäude", "en": "Utrecht: green-blue community buildings", "nl": "Utrecht: groenblauw maatschappelijk vastgoed"},
+   "geber": "Gemeente Utrecht",
+   "fuer": ["unternehmen", "schule"],
+   "themen": ["wasser", "gruen"],
+   "betrag": {
+    "de": "Je m²: 40 € fürs Entsiegeln und Begrünen, 20–40 € fürs Abkoppeln; 2.000–50.000 € je Standort. Für Vereine, Stiftungen, Sportanlagen, Kirchen und Bürgerhäuser; Grundschulen nutzen die Schulhof-Regel.",
+    "en": "Per m²: €40 for unsealing and greening, €20–40 for disconnecting; €2,000–50,000 per site. For associations, foundations, sports grounds, churches and community centres; primary schools use the schoolyard scheme.",
+    "nl": "Per m²: € 40 voor ontharden en vergroenen, € 20–40 voor afkoppelen; € 2.000–50.000 per locatie. Voor verenigingen, stichtingen, sportaccommodaties, kerken en buurthuizen; basisscholen gebruiken de schoolpleinregeling."
+   },
+   "frist": "ganzjährig, mindestens 13 Wochen vor Baubeginn; Umsetzung in 24 Monaten",
+   "status": "offen",
+   "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729119",
+   "stand": "2025-01",
+   "geprueft": true
+  },
+  {
+   "id": "utr_schoolpleinen",
+   "titel": {"de": "Utrecht: grün-blaue Schulhöfe", "en": "Utrecht: green-blue schoolyards", "nl": "Utrecht: groenblauwe schoolpleinen"},
+   "geber": "Gemeente Utrecht",
+   "fuer": ["schule"],
+   "themen": ["hitze", "wasser", "gruen", "bio"],
+   "betrag": {
+    "de": "Fest bis 55.000 € in Vierteln mit niedrigem sozioökonomischem Status, sonst 22.000 €; dazu bis 50.000 € fürs Entsiegeln und Abkoppeln (20–40 €/m²); Bodenuntersuchung bis 1.500 €. Für Grund- und Förderschulen.",
+    "en": "Fixed up to €55,000 in low-SES neighbourhoods, otherwise €22,000; plus up to €50,000 for unsealing and disconnecting (€20–40/m²); soil survey up to €1,500. For primary and special schools.",
+    "nl": "Vast tot € 55.000 in lage-SES-buurten, anders € 22.000; plus tot € 50.000 voor ontharden en afkoppelen (€ 20–40/m²); bodemonderzoek tot € 1.500. Voor basis- en speciaal onderwijs."
+   },
+   "frist": "ganzjährig, mindestens 13 Wochen vor Baubeginn; Hof danach 08–20 Uhr öffentlich zugänglich",
+   "status": "offen",
+   "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114",
+   "stand": "2025-01",
+   "geprueft": true
+  },
+  {
+   "id": "utr_initiatievenfonds",
+   "titel": {"de": "Utrecht: Initiatievenfonds (Ideen aus der Nachbarschaft)", "en": "Utrecht: Initiatives Fund (neighbourhood ideas)", "nl": "Utrecht: Initiatievenfonds"},
+   "geber": "Gemeente Utrecht",
+   "fuer": ["bewohner"],
+   "themen": ["gruen", "hitze", "bio", "mobilitaet"],
+   "betrag": {
+    "de": "Geld für Ideen, die Straße oder Viertel grüner machen, z. B. mehrere Fassadengärten oder eine grüne Straße. Höchstbetrag nicht gefunden; Jahresbudget 2026 laut Subsidienübersicht etwa 3,0 Mio. € (ungeprüft).",
+    "en": "Money for ideas that make a street or neighbourhood greener, e.g. several façade gardens or a green street. No maximum found; 2026 annual budget about €3.0 million per the subsidy overview (unverified).",
+    "nl": "Geld voor ideeën die straat of buurt groener maken, bijv. meerdere geveltuinen of een groene straat. Maximumbedrag niet gevonden; jaarbudget 2026 volgens subsidieoverzicht circa € 3,0 mln (niet gecontroleerd)."
+   },
+   "frist": "laufend, über das Wijkbureau",
+   "status": "offen",
+   "quelle": "https://www.utrecht.nl/bestuur-en-organisatie/initiatief-en-invloed/uw-initiatief/initiatievenfonds",
+   "stand": "2026-10",
+   "geprueft": false
+  },
+  {
+   "id": "utr_geveltuin_pakket",
+   "titel": {"de": "Utrecht: Fassadengarten-Paket", "en": "Utrecht: façade garden kit", "nl": "Utrecht: geveltuinpakket"},
+   "geber": "Gemeente Utrecht",
+   "fuer": ["bewohner"],
+   "themen": ["gruen", "wasser"],
+   "betrag": {
+    "de": "Sachleistung: Erde und Randsteine, Schaufel und Fliesenschneider zum Ausleihen, Lastenrad oder Anhänger; Geveltuin-Nachbarschaftstage kostenlos.",
+    "en": "In kind: soil and edging, a spade and tile cutter on loan, cargo bike or trailer; façade garden neighbour days free of charge.",
+    "nl": "In natura: potgrond en opsluitbanden, schep en tegelknipper in bruikleen, bakfiets of aanhanger; geveltuinenburendagen gratis."
+   },
+   "frist": "laufend",
+   "status": "laufend",
+   "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "hdsr_bbi",
+   "titel": {"de": "HDSR: Blauwe Bewonersinitiatieven", "en": "HDSR: Blue Residents' Initiatives", "nl": "HDSR: Blauwe Bewonersinitiatieven"},
+   "geber": "Hoogheemraadschap De Stichtse Rijnlanden",
+   "fuer": ["bewohner", "schule"],
+   "themen": ["wasser", "gruen"],
+   "betrag": {
+    "de": "Bis 5.000 € (Schulhöfe 7.500 €), höchstens 50 % der Kosten (Regentonnen und Gründächer 30 %); Gruppe mit mindestens 4 weiteren Beteiligten; Jahresbudget 180.000 €. Möglicherweise nur, wo die Gemeinde keine eigene Förderung hat (unklar).",
+    "en": "Up to €5,000 (schoolyards €7,500), max. 50 % of costs (rain barrels and green roofs 30 %); a group with at least 4 other participants; annual budget €180,000. Possibly only where the municipality has no own scheme (unclear).",
+    "nl": "Tot € 5.000 (schoolpleinen € 7.500), maximaal 50 % van de kosten (regentonnen en groene daken 30 %); groep met minstens 4 andere deelnemers; jaarbudget € 180.000. Mogelijk alleen waar de gemeente geen eigen regeling heeft (onduidelijk)."
+   },
+   "frist": "vor Projektbeginn; jährliches Budget",
+   "status": "ungeklaert",
+   "quelle": "https://www.hdsr.nl/actueel/nieuws/@225182/blauwe-bewonerssubsidie-weer-beschikbaar/",
+   "stand": "2025-01",
+   "geprueft": false
+  },
+  {
+   "id": "prov_groene_steden",
+   "titel": {"de": "Provinz Utrecht: Grüne, gesunde und klimafeste Städte und Dörfer 2025–2027", "en": "Province of Utrecht: green, healthy and climate-proof towns 2025–2027", "nl": "Provincie Utrecht: Groene, gezonde en klimaatbestendige steden en dorpen 2025–2027"},
+   "geber": "Provincie Utrecht",
+   "fuer": ["gemeente", "schule", "vve", "unternehmen"],
+   "themen": ["hitze", "wasser", "gruen", "bio"],
+   "betrag": {
+    "de": "Schulhof-Voucher 15.000 € (20.000 € in versteinerten oder sozial schwachen Vierteln); Initiativen 10.000–50.000 € (50 %), dort bis 75.000 € (75 %); Gemeinden 50.000–150.000 €; Gewerbegebiet-Voucher 15.000 €. Privatpersonen nicht.",
+    "en": "Schoolyard voucher €15,000 (€20,000 in heavily paved or low-SES areas); initiatives €10,000–50,000 (50 %), there up to €75,000 (75 %); municipalities €50,000–150,000; business park voucher €15,000. Not for individuals.",
+    "nl": "Schoolpleinvoucher € 15.000 (€ 20.000 in versteende of lage-SES-wijken); initiatieven € 10.000–50.000 (50 %), daar tot € 75.000 (75 %); gemeenten € 50.000–150.000; voucher bedrijventerrein € 15.000. Niet voor particulieren."
+   },
+   "frist": "05.01.–30.11.2026; Budget für §2–4 erreicht, nur Gewerbegebiet-Voucher (§5) noch offen; Schulhof-Voucher wieder ab 04.01.2027",
+   "status": "geschlossen",
+   "quelle": "https://www.provincie-utrecht.nl/loket/subsidies/groene-gezonde-en-klimaatbestendige-steden-en-dorpen-2025-2027",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "prov_ggm",
+   "titel": {"de": "Provinz Utrecht: Tender Groen Groeit Mee", "en": "Province of Utrecht: Groen Groeit Mee tender", "nl": "Provincie Utrecht: Tenderregeling Groen Groeit Mee"},
+   "geber": "Provincie Utrecht",
+   "fuer": ["gemeente"],
+   "themen": ["gruen", "bio", "hitze", "wasser"],
+   "betrag": {
+    "de": "250.000–1.000.000 € für integrale grüne Gebietspläne, höchstens 60 %, mindestens 40 % Eigenanteil; mindestens zwei öffentliche Antragsteller.",
+    "en": "€250,000–1,000,000 for integrated green area plans, max. 60 %, at least 40 % co-funding; at least two public applicants.",
+    "nl": "€ 250.000–1.000.000 voor integrale groene gebiedsplannen, maximaal 60 %, minstens 40 % cofinanciering; minstens twee publieke aanvragers."
+   },
+   "frist": "15.04.–15.06.2026; Entscheidung bis 01.12.2026; Regelung endet 01.01.2027",
+   "status": "geschlossen",
+   "quelle": "https://www.provincie-utrecht.nl/loket/subsidies/tenderregeling-groen-groeit-mee",
+   "stand": "2026-06",
+   "geprueft": true
+  },
+  {
+   "id": "rijk_impuls",
+   "titel": {"de": "Rijk: Impulsregeling klimaatadaptatie 2021–2027", "en": "National: climate adaptation impulse scheme 2021–2027", "nl": "Rijk: Tijdelijke impulsregeling klimaatadaptatie 2021–2027"},
+   "geber": "Rijk (Ministerie IenW)",
+   "fuer": ["gemeente"],
+   "themen": ["wasser"],
+   "betrag": {
+    "de": "200 Mio. € landesweit; das Rijk zahlt höchstens ein Drittel, die Region zwei Drittel; Antrag über die DPRA-Arbeitsregion; nicht für Hitzestress.",
+    "en": "€200 million nationwide; the state pays at most one third, the region two thirds; applied for via the DPRA work region; not for heat stress.",
+    "nl": "€ 200 mln landelijk; het Rijk betaalt maximaal een derde, de regio twee derde; aanvraag via de DPRA-werkregio; niet voor hittestress."
+   },
+   "frist": "Anträge bis 31.12.2023 (geschlossen); Umsetzung bis 31.12.2027",
+   "status": "laufend",
+   "quelle": "https://klimaatadaptatienederland.nl/beleid/nationale-aanpak/dpra/deltaplan/stimuleren-faciliteren/impulsregeling-klimaatadaptatie/",
+   "stand": "2026-10",
+   "geprueft": true
+  },
+  {
+   "id": "rijk_mia_vamil",
+   "titel": {"de": "Rijk: MIA/Vamil – Gründach (F 5300)", "en": "National: MIA/Vamil tax relief – green roof (F 5300)", "nl": "Rijk: MIA/Vamil – groendak (F 5300)"},
+   "geber": "Rijk (RVO)",
+   "fuer": ["unternehmen"],
+   "themen": ["wasser", "gruen"],
+   "betrag": {
+    "de": "Steuervorteil: 45 % Investitionsabzug (MIA) und 75 % freie Abschreibung (Vamil) für Gründächer; Budget 2026: 135 Mio. € MIA, 20 Mio. € Vamil.",
+    "en": "Tax relief: 45 % investment deduction (MIA) and 75 % free depreciation (Vamil) for green roofs; 2026 budget: €135 million MIA, €20 million Vamil.",
+    "nl": "Fiscaal voordeel: 45 % investeringsaftrek (MIA) en 75 % willekeurige afschrijving (Vamil) voor groendaken; budget 2026: € 135 mln MIA, € 20 mln Vamil."
+   },
+   "frist": "innerhalb von 3 Monaten nach der Bestellung melden",
+   "status": "offen",
+   "quelle": "https://www.rvo.nl/milieu-en-energielijst-2026/5300",
+   "stand": "2026-01",
+   "geprueft": true
+  },
+  {
+   "id": "eu_life_cca",
+   "titel": {"de": "EU LIFE 2026 – Klimaanpassung", "en": "EU LIFE 2026 – climate change adaptation", "nl": "EU LIFE 2026 – klimaatadaptatie"},
+   "geber": "EU (CINEA)",
+   "fuer": ["gemeente", "unternehmen"],
+   "themen": ["hitze", "wasser", "gruen"],
+   "betrag": {
+    "de": "28 Mio. € für Anpassungsprojekte (LIFE-2026-SAP-CLIMA-CCA); Förderquote meist bis 60 % (im Aufruf prüfen).",
+    "en": "€28 million for adaptation projects (LIFE-2026-SAP-CLIMA-CCA); co-funding usually up to 60 % (check the call).",
+    "nl": "€ 28 mln voor adaptatieprojecten (LIFE-2026-SAP-CLIMA-CCA); cofinanciering meestal tot 60 % (in de call controleren)."
+   },
+   "frist": "22.09.2026, 17:00 Uhr – vorbei; nächster Aufruf voraussichtlich 2027 (ungeprüft)",
+   "status": "geschlossen",
+   "quelle": "https://cinea.ec.europa.eu/news-events/news/life-calls-proposals-2026-eu6015-million-greener-more-competitive-europe-2026-04-22_en",
+   "stand": "2026-04",
+   "geprueft": true
+  },
+  {
+   "id": "eu_eui_ia",
+   "titel": {"de": "European Urban Initiative – Innovative Actions (4. Aufruf)", "en": "European Urban Initiative – Innovative Actions (call 4)", "nl": "European Urban Initiative – Innovative Actions (4e call)"},
+   "geber": "EU (EFRE)",
+   "fuer": ["gemeente"],
+   "themen": ["hitze", "wasser", "gruen", "mobilitaet", "luft", "laerm", "bio"],
+   "betrag": {
+    "de": "60 Mio. € gesamt; bis 2 Mio. € je Projekt, 80 % Förderung; Städte ab 25.000 Einwohner:innen.",
+    "en": "€60 million in total; up to €2 million per project, 80 % co-funding; cities with at least 25,000 inhabitants.",
+    "nl": "€ 60 mln totaal; tot € 2 mln per project, 80 % cofinanciering; steden vanaf 25.000 inwoners."
+   },
+   "frist": "15.06.2026 – vorbei; Ergebnisse 11/2026",
+   "status": "geschlossen",
+   "quelle": "https://www.urban-initiative.eu/news/eui-launches-innovative-actions-call-4-support-local-led-innovation",
+   "stand": "2026-02",
+   "geprueft": true
+  },
+  {
+   "id": "eu_horizon_cca",
+   "titel": {"de": "Horizon Europe – Mission Klimaanpassung", "en": "Horizon Europe – Mission Adaptation to Climate Change", "nl": "Horizon Europe – Missie klimaatadaptatie"},
+   "geber": "EU (Horizon Europe)",
+   "fuer": ["gemeente", "unternehmen"],
+   "themen": ["hitze", "wasser", "gruen", "bio"],
+   "betrag": {
+    "de": "2026: 82,2 Mio. € in 7 Themen. 2027: Thema „Urban nature restoration“ (gemeinsam mit der Cities-Mission), 40 Mio. € gesamt; Konsortium aus mindestens 4 Städten in 4 Ländern.",
+    "en": "2026: €82.2 million across 7 topics. 2027: topic 'urban nature restoration' (joint with the Cities Mission), €40 million in total; consortium of at least 4 cities in 4 countries.",
+    "nl": "2026: € 82,2 mln in 7 topics. 2027: topic 'urban nature restoration' (samen met de Cities-missie), € 40 mln totaal; consortium van minstens 4 steden in 4 landen."
+   },
+   "frist": "2026: 23.09.2026 – vorbei; 2027: 09.02.–21./22.09.2027",
+   "status": "geschlossen",
+   "quelle": "https://mission-adaptation-portal.ec.europa.eu/funding-financing/calls-and-opportunities_en",
+   "stand": "2026-02",
+   "geprueft": true
+  },
+  {
+   "id": "eu_interreg_nwe",
+   "titel": {"de": "Interreg Nordwesteuropa (NWE)", "en": "Interreg North-West Europe (NWE)", "nl": "Interreg Noordwest-Europa (NWE)"},
+   "geber": "EU (Interreg NWE)",
+   "fuer": ["gemeente", "unternehmen"],
+   "themen": ["hitze", "wasser", "gruen"],
+   "betrag": {
+    "de": "Reguläre Aufrufe 2021–2027 beendet (der 5. Aufruf 2025 war der letzte); 2026/27 nur Kapitalisierungsaufrufe für bereits bewilligte Projekte.",
+    "en": "Regular 2021–2027 calls are over (call 5 in 2025 was the last); 2026/27 only capitalisation calls for already approved projects.",
+    "nl": "Reguliere calls 2021–2027 afgelopen (de 5e call in 2025 was de laatste); 2026/27 alleen kapitalisatiecalls voor goedgekeurde projecten."
+   },
+   "frist": "Kapitalisierung: 2. Aufruf ab 02.12.2026, nur für bestehende Projekte",
+   "status": "geschlossen",
+   "quelle": "https://www.hezelburcht.com/nieuws/vijfde-call-interreg-nwe-gepubliceerd/",
+   "stand": "2026-10",
+   "geprueft": false
+  }
+ ],
+ "massnahmen": [
+  {
+   "id": "trees",
+   "titel": {"de": "Bäume statt Parkplätze", "en": "Trees instead of parking", "nl": "Bomen in plaats van parkeren"},
+   "kosten": {
+    "einheit": {"de": "€ je Baum in Verharding (Kauf und Pflanzung inkl. Pflanzgrube)", "en": "€ per tree in paving (purchase and planting incl. pit)", "nl": "€ per boom in verharding (aankoop en aanplant incl. groeiplaats)"},
+    "lo": 3500,
+    "hi": 7500,
+    "quelle": "https://beverwijk.bestuurlijkeinformatie.nl/Document/View/8636f1fe-8be1-4490-931c-6f05f52768b0",
+    "hinweis": {
+     "de": "Beverwijk 2024: 5.000 € in Verharding, 7.500 € mit druckverteilender Konstruktion, 1.000 € im offenen Boden. Oegstgeest 2025 (CVDR738456): im Schnitt 3.500 € in Verharding. Entsiegeln der Parkspur kommt dazu. Keine Utrechter Einheitspreise.",
+     "en": "Beverwijk 2024: €5,000 in paving, €7,500 with a load-spreading structure, €1,000 in open ground. Oegstgeest 2025 (CVDR738456): €3,500 on average in paving. Unsealing the parking lane comes on top. No Utrecht unit rates.",
+     "nl": "Beverwijk 2024: € 5.000 in verharding, € 7.500 met drukspreidende constructie, € 1.000 in open grond. Oegstgeest 2025 (CVDR738456): gemiddeld € 3.500 in verharding. Ontharden van de parkeerstrook komt erbij. Geen Utrechtse eenheidsprijzen."
+    },
+    "geprueft": true
+   },
+   "normen": ["maatlat_hitze", "utr_hitte", "nhv_art8", "regel_33300", "utr_bomen", "stedin_afstand", "utr_mobiliteitsplan"],
+   "foerder": ["utr_initiatievenfonds", "prov_groene_steden", "prov_ggm", "eu_horizon_cca"],
+   "anreize": [
+    {"de": "Schatten wirkt am stärksten: Auf einem Parkplatz in der Sonne fühlt es sich 10–15 °C heißer an als im Schatten eines Baums.", "en": "Shade works best: a car park in the sun feels 10–15 °C hotter than the shade of a tree.", "nl": "Schaduw werkt het best: op een parkeerplaats in de zon is de gevoelstemperatuur 10–15 °C hoger dan in de schaduw van een boom.", "quelle": "https://klimaatadaptatienederland.nl/kennisdossiers/hitte/gevolgen/gebied", "geprueft": true},
+    {"de": "Mitbauen spart: Die Gemeente plant je Straße, wann sie Fahrbahn oder Kanal erneuert (MJIP); dann ist die Straße ohnehin offen.", "en": "Building along saves money: the city plans per street when it renews the road or sewer (MJIP); the street is open anyway.", "nl": "Meekoppelen bespaart: de gemeente plant per straat wanneer rijbaan of riool vernieuwd wordt (MJIP); de straat ligt dan toch open.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer", "geprueft": true},
+    {"de": "Utrecht plant rund 32 Mio. € bis 2030 für Begrünungsprojekte in der ganzen Stadt.", "en": "Utrecht plans about €32 million for greening projects across the city until 2030.", "nl": "Utrecht trekt tot 2030 circa € 32 mln uit voor vergroeningsprojecten in de hele stad.", "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-", "geprueft": true},
+    {"de": "Bäume und Hauspreise: Das PBL (2023) findet je nach Ort sehr unterschiedliche Effekte; einen festen Prozentwert gibt es nicht (Zahlen nicht geprüft).", "en": "Trees and house prices: PBL (2023) finds very different effects depending on location; there is no single percentage (figures not checked).", "nl": "Bomen en woningprijzen: het PBL (2023) vindt per locatie sterk verschillende effecten; één vast percentage is er niet (cijfers niet gecontroleerd).", "quelle": "https://pbl.nl/downloads/pbl-2023-bomen-en-woningprijzen-5083pdf", "geprueft": false}
+   ],
+   "hemmnisse": [
+    {"de": "Kabel und Leitungen: Stedin verlangt 2,5 m von der Baummitte bis zur Leitungstrasse.", "en": "Cables and pipes: Stedin requires 2.5 m from the tree centre to the cable route.", "nl": "Kabels en leidingen: Stedin hanteert 2,5 m van hart boom tot het leidingentracé.", "quelle": "https://www.stedin.net/-/media/project/online/files/aansluiting/stedin-richtlijnen-kabels-en-leidingen.pdf", "geprueft": true},
+    {"de": "Der Untergrund wird voller: Utrecht erwartet in den nächsten 15 Jahren rund 1.000 zusätzliche Trafohäuschen.", "en": "The subsurface is filling up: Utrecht expects about 1,000 extra substations over the next 15 years.", "nl": "De ondergrond raakt voller: Utrecht verwacht de komende 15 jaar zo'n 1.000 extra elektriciteitshuisjes.", "quelle": "https://www.utrecht.nl/nieuws/nieuwsbericht-gemeente-utrecht/winnaars-ontwerpwedstrijd-elektriciteitshuisjes-bekend", "geprueft": true},
+    {"de": "Parkplätze sind umstritten: In der Reggestraat wären 12 Bäume möglich gewesen, gepflanzt wurden 4 ohne Parkplatzverlust.", "en": "Parking is contested: on Reggestraat 12 trees would have been possible; 4 were planted without losing parking.", "nl": "Parkeren ligt gevoelig: in de Reggestraat konden 12 bomen, er zijn er 4 geplant zonder parkeerverlies.", "quelle": "https://utrecht.bestuurlijkeinformatie.nl/Document/View/d6e30c9f-adfa-4f20-9f1b-1c4f31cbb418", "geprueft": true},
+    {"de": "Pflege: Junge Bäume brauchen 2 Jahre Nachsorge (Beverwijk: etwa 250 € je Baum).", "en": "Care: young trees need 2 years of aftercare (Beverwijk: about €250 per tree).", "nl": "Beheer: jonge bomen hebben 2 jaar nazorg nodig (Beverwijk: circa € 250 per boom).", "quelle": "https://beverwijk.bestuurlijkeinformatie.nl/Document/View/8636f1fe-8be1-4490-931c-6f05f52768b0", "geprueft": true}
+   ],
+   "wirkung": {
+    "text": {"de": "Ein ausgewachsener Baum wirft etwa 42,5 m² Schatten; im Schatten ist es gefühlt 10–15 °C kühler. Volle Wirkung erst, wenn die Krone gewachsen ist.", "en": "A mature tree casts about 42.5 m² of shade; in its shade it feels 10–15 °C cooler. Full effect only once the crown has grown.", "nl": "Een volgroeide boom geeft circa 42,5 m² schaduw; daaronder voelt het 10–15 °C koeler. Volledig effect pas als de kroon is uitgegroeid."},
+    "quelle": "https://www.tweedekamer.nl/downloads/document?id=2026D03769"
+   }
+  },
+  {
+   "id": "wadi",
+   "titel": {"de": "Wadi statt Parkplätze – Schwammstraße", "en": "Swale instead of parking – sponge street", "nl": "Wadi in plaats van parkeren – sponsstraat"},
+   "kosten": {
+    "einheit": {"de": "€ je m² Mulde", "en": "€ per m² of swale", "nl": "€ per m² wadi"},
+    "lo": 25,
+    "hi": 80,
+    "quelle": "https://publicwiki.deltares.nl/spaces/AST/pages/160236837/Tabellen+aanleg-+en+beheerkosten",
+    "hinweis": {
+     "de": "Deltares-Mittelwert 75 €/m² (Preisstand etwa 2020). Marktspanne 25–80 €/m²: Sandboden günstiger, Lehm mit Drainage teurer (Marktquelle, ungeprüft). Unterhalt etwa 0,50 €/m² im Jahr.",
+     "en": "Deltares average €75/m² (price level about 2020). Market range €25–80/m²: sandy soil cheaper, clay with drainage dearer (market source, unverified). Maintenance about €0.50/m² per year.",
+     "nl": "Deltares-gemiddelde € 75/m² (prijspeil circa 2020). Marktbandbreedte € 25–80/m²: zandgrond goedkoper, klei met drainage duurder (marktbron, niet gecontroleerd). Beheer circa € 0,50/m² per jaar."
+    },
+    "geprueft": true
+   },
+   "normen": ["maatlat_wasser", "hemelwater", "dpra", "omgevingswet"],
+   "foerder": ["utr_groenblauw_vastgoed", "utr_schoolpleinen", "hdsr_bbi", "rijk_impuls", "eu_life_cca"],
+   "anreize": [
+    {"de": "Utrecht fördert Entsiegeln und Versickern bei Vereinen, Kirchen und Schulen mit 40 €/m².", "en": "Utrecht subsidises unsealing and infiltration at clubs, churches and schools with €40/m².", "nl": "Utrecht subsidieert ontharden en infiltreren bij verenigingen, kerken en scholen met € 40/m².", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729119", "geprueft": true},
+    {"de": "Maatlat-Leitbild: Regen bleibt, wo er fällt; Wadi und Gründach werden ausdrücklich empfohlen.", "en": "Maatlat principle: rain stays where it falls; swales and green roofs are explicitly recommended.", "nl": "Maatlat-uitgangspunt: regen blijft waar hij valt; wadi en groendak worden expliciet aanbevolen.", "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Grundwasser: Laut Maatlat bestimmen Grundwasserstand und Boden, welche Maßnahme passt; in nassen Lagen braucht die Mulde Drainage.", "en": "Groundwater: per the Maatlat, groundwater level and soil determine which measure fits; in wet spots the swale needs drainage.", "nl": "Grondwater: volgens de Maatlat zijn grondwaterstand en bodem sturend; op natte plekken heeft een wadi drainage nodig.", "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf", "geprueft": true},
+    {"de": "Laufender Unterhalt (Laub, Müll, Bepflanzung) etwa 0,50 €/m² im Jahr.", "en": "Ongoing maintenance (leaves, litter, planting) about €0.50/m² per year.", "nl": "Doorlopend beheer (blad, zwerfvuil, beplanting) circa € 0,50/m² per jaar.", "quelle": "https://publicwiki.deltares.nl/spaces/AST/pages/160236837/Tabellen+aanleg-+en+beheerkosten", "geprueft": true}
+   ],
+   "wirkung": {
+    "text": {"de": "Hält Regen im Straßenraum und entlastet den Kanal. Ziel der Maatlat: kein Schaden bis 70 mm Regen in einer Stunde (Klima 2050).", "en": "Keeps rain in the street and relieves the sewer. Maatlat target: no damage up to 70 mm of rain in one hour (2050 climate).", "nl": "Houdt regen in de straat en ontlast het riool. Maatlat-doel: geen schade tot 70 mm regen in één uur (klimaat 2050)."},
+    "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf"
+   }
+  },
+  {
+   "id": "narrow",
+   "titel": {"de": "Fahrbahn schmaler – Grün dazu", "en": "Narrower carriageway – add green", "nl": "Smallere rijbaan – groen erbij"},
+   "kosten": {
+    "einheit": {"de": "€ je m² entsiegelt und begrünt", "en": "€ per m² unsealed and greened", "nl": "€ per m² onthard en vergroend"},
+    "lo": 35,
+    "hi": 108,
+    "quelle": "https://www.tweedekamer.nl/downloads/document?id=2026D03769",
+    "hinweis": {
+     "de": "Arcadis für IenW (Mai 2025, Preisstand 2024): Begrünen 35–108 €/m², Unterhalt 0,2–0,3 €/m² im Jahr; aus dem PDF-Text gelesen. Ein kompletter Straßenumbau mit Bordsteinen und Kanal kostet deutlich mehr und lohnt sich vor allem zusammen mit geplanter Erneuerung.",
+     "en": "Arcadis for IenW (May 2025, 2024 prices): greening €35–108/m², maintenance €0.2–0.3/m² per year; read from the PDF text. A full street rebuild with kerbs and sewer costs much more and pays off mainly alongside planned renewal.",
+     "nl": "Arcadis voor IenW (mei 2025, prijspeil 2024): vergroenen € 35–108/m², beheer € 0,2–0,3/m² per jaar; uit de pdf-tekst gelezen. Een volledige herinrichting met banden en riool kost veel meer en loont vooral bij geplande vernieuwing."
+    },
+    "geprueft": false
+   },
+   "normen": ["utr_geluid", "utr_mobiliteitsplan", "maatlat_hitze", "nhv_art8"],
+   "foerder": ["prov_ggm", "eu_eui_ia", "eu_horizon_cca"],
+   "anreize": [
+    {"de": "Tempo 30 kommt 2026 auf vielen Utrechter Straßen; schmalere Fahrbahnen passen dazu und senken Lärm.", "en": "30 km/h comes to many Utrecht streets in 2026; narrower carriageways fit this and cut noise.", "nl": "In 2026 komt 30 km/uur op veel Utrechtse straten; smallere rijbanen passen daarbij en verlagen geluid.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1", "geprueft": true},
+    {"de": "Zeitfenster: Im MJIP stehen Straßenprojekte mit Planjahr, z. B. 40 für 2026, 32 für 2027 und 48 für 2030.", "en": "Windows of opportunity: the MJIP lists road projects with a plan year, e.g. 40 for 2026, 32 for 2027 and 48 for 2030.", "nl": "Kansen: in het MJIP staan wegprojecten met planjaar, bijv. 40 in 2026, 32 in 2027 en 48 in 2030.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer/14", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Busse, Rettungsdienste und Lieferverkehr: Mindestbreiten mit Feuerwehr und Verkehrsbetrieb klären (keine Zahl geprüft).", "en": "Buses, emergency services and deliveries: agree minimum widths with fire service and transport operator (no figure checked).", "nl": "Bussen, hulpdiensten en bevoorrading: minimale breedtes afstemmen met brandweer en vervoerder (geen getal gecontroleerd).", "quelle": null, "geprueft": false}
+   ],
+   "wirkung": {
+    "text": {"de": "Weniger Asphalt, Platz für eine Baumreihe; zusammen mit Tempo 30 leiser.", "en": "Less asphalt, room for a row of trees; quieter together with 30 km/h.", "nl": "Minder asfalt, ruimte voor een bomenrij; samen met 30 km/uur stiller."},
+    "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1"
+   }
+  },
+  {
+   "id": "light",
+   "titel": {"de": "Helle Beläge auf Wegen und Stellplätzen", "en": "Light paving on paths and parking", "nl": "Lichte verharding op paden en parkeerplekken"},
+   "kosten": {
+    "einheit": {"de": "€ je m² heller Belag oder Beschichtung (Mehrkosten)", "en": "€ per m² light paving or coating (extra cost)", "nl": "€ per m² lichte verharding of coating (meerkosten)"},
+    "lo": 12,
+    "hi": 15,
+    "quelle": "https://publicwiki.deltares.nl/spaces/AST/pages/160236837/Tabellen+aanleg-+en+beheerkosten",
+    "hinweis": {
+     "de": "Deltares (etwa 2020): 12–15 €/m² für helle, reflektierende Oberflächen (Material 3–6 €/m² plus Arbeit). Helles Asphalt ist laut Gemeente teurer als normales; Mehrpreis und Haltbarkeit unbekannt.",
+     "en": "Deltares (about 2020): €12–15/m² for light, reflective surfaces (material €3–6/m² plus labour). Light asphalt costs more than regular asphalt per the city; extra cost and durability unknown.",
+     "nl": "Deltares (circa 2020): € 12–15/m² voor lichte, reflecterende oppervlakken (materiaal € 3–6/m² plus arbeid). Licht asfalt is volgens de gemeente duurder dan gewoon asfalt; meerprijs en levensduur onbekend."
+    },
+    "geprueft": true
+   },
+   "normen": ["maatlat_hitze", "utr_hitte"],
+   "foerder": [],
+   "anreize": [
+    {"de": "Utrecht will helles Asphalt an Probestellen testen und die Wirkung messen.", "en": "Utrecht wants to test light asphalt at trial sites and measure the effect.", "nl": "Utrecht wil licht asfalt op proeflocaties testen en het effect meten.", "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Seit April 2025 ist die Richtlinie zu hitzeabweisenden Oberflächen aus der Landelijke Maatlat gestrichen.", "en": "Since April 2025 the guideline on heat-reflecting surfaces has been dropped from the national Maatlat.", "nl": "Sinds april 2025 is de richtlijn over warmtewerende oppervlakken uit de Landelijke Maatlat geschrapt.", "quelle": "https://klimaatadaptatienederland.nl/aan-de-slag/overheden/klimaatadaptief-bouwen/landelijke-maatlat/", "geprueft": true},
+    {"de": "Teurer als normales Asphalt, Haltbarkeit noch unbekannt.", "en": "More expensive than regular asphalt, durability still unknown.", "nl": "Duurder dan gewoon asfalt, levensduur nog onbekend.", "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-", "geprueft": true},
+    {"de": "Helle Flächen werfen Sonne auf Menschen zurück; ob die gefühlte Temperatur merkbar sinkt, ist fachlich umstritten.", "en": "Light surfaces reflect sunlight onto people; whether perceived temperature drops noticeably is disputed.", "nl": "Lichte vlakken kaatsen zonlicht terug op mensen; of de gevoelstemperatuur merkbaar daalt, is omstreden.", "quelle": "https://www.hva.nl/binaries/content/assets/subsites/kc-techniek/publicaties-klimaatbestendige-stad/klok-et-al_2022_het-is-heet.pdf", "geprueft": false}
+   ],
+   "wirkung": {
+    "text": {"de": "Senkt die Oberflächentemperatur am Tag, ersetzt aber keinen Schatten. Wirkung auf die gefühlte Temperatur unsicher.", "en": "Lowers surface temperature by day but does not replace shade. Effect on perceived temperature uncertain.", "nl": "Verlaagt overdag de oppervlaktetemperatuur, maar vervangt geen schaduw. Effect op gevoelstemperatuur onzeker."},
+    "quelle": "https://klimaatadaptatienederland.nl/aan-de-slag/overheden/klimaatadaptief-bouwen/landelijke-maatlat/"
+   }
+  },
+  {
+   "id": "walktrees",
+   "titel": {"de": "Bäume am breiten Gehweg", "en": "Trees on the wide pavement", "nl": "Bomen op de brede stoep"},
+   "kosten": {
+    "einheit": {"de": "€ je Baum in Verharding (Kauf und Pflanzung inkl. Pflanzgrube)", "en": "€ per tree in paving (purchase and planting incl. pit)", "nl": "€ per boom in verharding (aankoop en aanplant incl. groeiplaats)"},
+    "lo": 3500,
+    "hi": 7500,
+    "quelle": "https://beverwijk.bestuurlijkeinformatie.nl/Document/View/8636f1fe-8be1-4490-931c-6f05f52768b0",
+    "hinweis": {
+     "de": "Wie „Bäume statt Parkplätze“. Im Gehweg ist oft eine druckverteilende Konstruktion nötig, daher eher das obere Ende (7.500 €).",
+     "en": "As for 'Trees instead of parking'. In pavements a load-spreading structure is often needed, so rather the upper end (€7,500).",
+     "nl": "Zoals bij 'Bomen in plaats van parkeren'. In de stoep is vaak een drukspreidende constructie nodig, dus eerder de bovenkant (€ 7.500)."
+    },
+    "geprueft": true
+   },
+   "normen": ["maatlat_hitze", "utr_hitte", "nhv_art8", "stedin_afstand", "utr_bomen"],
+   "foerder": ["utr_initiatievenfonds", "prov_ggm"],
+   "anreize": [
+    {"de": "Breite Gehwege gibt es: 5.512 Abschnitte sind breiter als 3,10 m (Gehweg-Inventar der Gemeente 2025).", "en": "Wide pavements exist: 5,512 sections are wider than 3.10 m (municipal pavement inventory 2025).", "nl": "Brede stoepen zijn er: 5.512 stukken zijn breder dan 3,10 m (stoepinventarisatie gemeente 2025).", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Unter Gehwegen liegen oft Hausanschlüsse; das Stedin-Niederspannungsnetz umfasst in Utrecht 9.114 Abschnitte (MJIP).", "en": "House connections often run under pavements; Stedin's low-voltage network in Utrecht has 9,114 sections (MJIP).", "nl": "Onder stoepen liggen vaak huisaansluitingen; het laagspanningsnet van Stedin telt in Utrecht 9.114 delen (MJIP).", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer/34", "geprueft": true},
+    {"de": "Hindernisse im Gehweg: Das Inventar zählt 20.117 Laternen und 3.537 Bäume; der Durchgang muss frei bleiben.", "en": "Obstacles on pavements: the inventory counts 20,117 lamp posts and 3,537 trees; the walkway must stay clear.", "nl": "Obstakels op de stoep: de inventarisatie telt 20.117 lichtmasten en 3.537 bomen; de doorgang moet vrij blijven.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer", "geprueft": true}
+   ],
+   "wirkung": {
+    "text": {"de": "Schatten direkt auf dem Fußweg, also genau dort, wo die Maatlat 40 % fordert.", "en": "Shade right on the footway, exactly where the Maatlat asks for 40 %.", "nl": "Schaduw direct op de looproute, precies waar de Maatlat 40 % vraagt."},
+    "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf"
+   }
+  },
+  {
+   "id": "gevel",
+   "titel": {"de": "Fassadengärten (Geveltuinen)", "en": "Façade gardens (geveltuinen)", "nl": "Geveltuinen"},
+   "kosten": {
+    "einheit": {"de": "€ je Fassadengarten", "en": "€ per façade garden", "nl": "€ per geveltuin"},
+    "lo": null,
+    "hi": null,
+    "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin",
+    "hinweis": {
+     "de": "Die Gemeente stellt Erde und Randsteine und verleiht Werkzeug. Für die Pflanzenkosten gibt es keine belastbare Quelle.",
+     "en": "The city provides soil and edging and lends tools. There is no reliable source for plant costs.",
+     "nl": "De gemeente levert potgrond en opsluitbanden en leent gereedschap uit. Voor de plantkosten is geen betrouwbare bron."
+    },
+    "geprueft": true
+   },
+   "normen": ["utr_geveltuin", "hemelwater"],
+   "foerder": ["utr_geveltuin_pakket", "utr_initiatievenfonds", "hdsr_bbi"],
+   "anreize": [
+    {"de": "Keine Genehmigung nötig; die Gemeente verleiht Lastenrad oder Anhänger und gibt Erde und Randsteine.", "en": "No permit needed; the city lends a cargo bike or trailer and provides soil and edging.", "nl": "Geen vergunning nodig; de gemeente leent een bakfiets of aanhanger uit en levert potgrond en opsluitbanden.", "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin", "geprueft": true},
+    {"de": "Utrecht erlaubt bis 60 cm Tiefe bei 1,20 m freiem Gehweg – mehr Fläche, als das Labor heute ansetzt (30 cm, 1,5 m).", "en": "Utrecht allows up to 60 cm depth with 1.20 m of clear pavement – more area than the lab currently assumes (30 cm, 1.5 m).", "nl": "Utrecht staat tot 60 cm diepte toe bij 1,20 m vrije stoep – meer dan het lab nu aanneemt (30 cm, 1,5 m).", "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Mieter:innen brauchen das Okay der Eigentümer:in; 0,9 m Abstand zu Laternen.", "en": "Tenants need the owner's consent; 0.9 m distance from lamp posts.", "nl": "Huurders hebben akkoord van de eigenaar nodig; 0,9 m afstand tot lantaarnpalen.", "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin", "geprueft": true},
+    {"de": "Schmale Gehwege: 1.875 Abschnitte sind schmaler als 1,30 m – dort passt kaum ein Fassadengarten.", "en": "Narrow pavements: 1,875 sections are narrower than 1.30 m – hardly room for a façade garden there.", "nl": "Smalle stoepen: 1.875 stukken zijn smaller dan 1,30 m – daar past nauwelijks een geveltuin.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer/17", "geprueft": true}
+   ],
+   "wirkung": {
+    "text": {"de": "Kleine Fläche, kleine Wirkung: Regen versickert an der Fassade, etwas Kühlung, mehr Insekten (qualitativ). Vor allem ein sichtbarer erster Schritt, den Nachbar:innen selbst machen.", "en": "Small area, small effect: rain soaks in at the façade, some cooling, more insects (qualitative). Above all a visible first step residents take themselves.", "nl": "Klein oppervlak, klein effect: regen zakt weg langs de gevel, wat verkoeling, meer insecten (kwalitatief). Vooral een zichtbare eerste stap die bewoners zelf zetten."},
+    "quelle": "https://www.utrecht.nl/wonen-en-leven/duurzame-stad/groen-en-water/hitte"
+   }
+  },
+  {
+   "id": "gruendach",
+   "titel": {"de": "Grün-blaues Dach", "en": "Green-blue roof", "nl": "Groenblauw dak"},
+   "kosten": {
+    "einheit": {"de": "€ je m² extensives Gründach inkl. Einbau", "en": "€ per m² extensive green roof incl. installation", "nl": "€ per m² extensief groendak incl. aanleg"},
+    "lo": 40,
+    "hi": 150,
+    "quelle": "https://publicwiki.deltares.nl/spaces/AST/pages/160236837/Tabellen+aanleg-+en+beheerkosten",
+    "hinweis": {
+     "de": "Deltares (etwa 2020, nach Milieu Centraal und Dakdokters): 100–150 €/m², Mittel 120. Aktuelle Marktportale nennen 40–100 €/m² für Sedum (ungeprüft). Utrecht fördert 30–70 €/m².",
+     "en": "Deltares (about 2020, after Milieu Centraal and Dakdokters): €100–150/m², average 120. Current market portals quote €40–100/m² for sedum (unverified). Utrecht subsidises €30–70/m².",
+     "nl": "Deltares (circa 2020, naar Milieu Centraal en Dakdokters): € 100–150/m², gemiddeld 120. Actuele marktportalen noemen € 40–100/m² voor sedum (niet gecontroleerd). Utrecht subsidieert € 30–70/m²."
+    },
+    "geprueft": true
+   },
+   "normen": ["maatlat_wasser", "hemelwater", "maatlat_gruen"],
+   "foerder": ["utr_groenblauwe_daken", "rijk_mia_vamil", "hdsr_bbi", "prov_groene_steden"],
+   "anreize": [
+    {"de": "Utrecht zahlt 30–70 €/m² (höchstens 50 %), mit U-Pas 60–140 €/m² (bis 100 %).", "en": "Utrecht pays €30–70/m² (max. 50 %), with a U-pas €60–140/m² (up to 100 %).", "nl": "Utrecht betaalt € 30–70/m² (maximaal 50 %), met U-pas € 60–140/m² (tot 100 %).", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852", "geprueft": true},
+    {"de": "Unternehmen: 45 % MIA plus 75 % Vamil (Code F 5300, 2026).", "en": "Businesses: 45 % MIA plus 75 % Vamil (code F 5300, 2026).", "nl": "Ondernemers: 45 % MIA plus 75 % Vamil (code F 5300, 2026).", "quelle": "https://www.rvo.nl/milieu-en-energielijst-2026/5300", "geprueft": true},
+    {"de": "Großes Potenzial: Etwa 2,4 Mio. m² Dachfläche gelten als geeignet für blau-grüne Dächer, erst 1.083 Dächer sind grün (Dakenkansenkaart 2022).", "en": "Big potential: about 2.4 million m² of roof is rated suitable for blue-green roofs, only 1,083 roofs are green (roof opportunity map 2022).", "nl": "Groot potentieel: circa 2,4 mln m² dak geschikt voor blauwgroene daken, pas 1.083 daken zijn groen (Dakenkansenkaart 2022).", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Dakenkansenkaart/FeatureServer/0", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Tragfähigkeit prüfen (die Förderung zahlt bis 250 € für eine Bauexpert:in); 5 Jahre Pflegepflicht.", "en": "Check load capacity (the subsidy pays up to €250 for a structural expert); 5-year maintenance duty.", "nl": "Draagkracht laten controleren (subsidie betaalt tot € 250 voor een bouwkundig expert); 5 jaar onderhoudsplicht.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852", "geprueft": true},
+    {"de": "Konkurrenz mit Solar: 12.824 Dächer tragen schon Solarmodule (2022); Kombination ist planbar, aber nicht automatisch.", "en": "Competition with solar: 12,824 roofs already carry panels (2022); combining is possible but needs planning.", "nl": "Concurrentie met zon: 12.824 daken hebben al zonnepanelen (2022); combineren kan, maar vraagt planning.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Dakenkansenkaart/FeatureServer/0", "geprueft": true}
+   ],
+   "wirkung": {
+    "text": {"de": "Hält je nach Aufbau 20–70 Liter Regen pro m² zurück. Für die Hitze auf der Straße kaum Wirkung, für den Kanal schon.", "en": "Holds 20–70 litres of rain per m² depending on build-up. Little effect on street-level heat, but relieves the sewer.", "nl": "Houdt afhankelijk van de opbouw 20–70 liter regen per m² vast. Weinig effect op hitte op straat, wel op het riool."},
+    "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852"
+   }
+  },
+  {
+   "id": "schulhof",
+   "titel": {"de": "Grüner, schattiger Schulhof", "en": "Green, shaded schoolyard", "nl": "Groen, schaduwrijk schoolplein"},
+   "kosten": {
+    "einheit": {"de": "€ je Schulhof (Entwurf und Bau)", "en": "€ per schoolyard (design and build)", "nl": "€ per schoolplein (ontwerp en aanleg)"},
+    "lo": 36000,
+    "hi": 50000,
+    "quelle": "https://www.utrechtseschoolpleinen.nl/financien-en-subsidies",
+    "hinweis": {
+     "de": "Utrechtse Schoolpleinen: meist „rund 50.000 €“. Ratsvorlage Koggenland: 36.000 € für einen Hof. Die Utrechter Förderung (bis 55.000 € fest plus bis 50.000 € je m²) zeigt, dass große Höfe deutlich mehr kosten können.",
+     "en": "Utrechtse Schoolpleinen: usually 'around €50,000'. Koggenland council proposal: €36,000 for one yard. Utrecht's subsidy (up to €55,000 fixed plus up to €50,000 per m²) shows large yards can cost much more.",
+     "nl": "Utrechtse Schoolpleinen: meestal 'rond € 50.000'. Raadsvoorstel Koggenland: € 36.000 voor één plein. De Utrechtse subsidie (tot € 55.000 vast plus tot € 50.000 per m²) laat zien dat grote pleinen veel meer kunnen kosten."
+    },
+    "geprueft": true
+   },
+   "normen": ["maatlat_hitze", "utr_hitte", "nhv_art8", "hemelwater"],
+   "foerder": ["utr_schoolpleinen", "hdsr_bbi", "prov_groene_steden"],
+   "anreize": [
+    {"de": "Utrecht: fester Zuschuss bis 55.000 € in Vierteln mit niedrigem sozioökonomischem Status (sonst 22.000 €) plus bis 50.000 € fürs Entsiegeln und Abkoppeln.", "en": "Utrecht: fixed grant up to €55,000 in low-SES neighbourhoods (otherwise €22,000) plus up to €50,000 for unsealing and disconnecting.", "nl": "Utrecht: vaste bijdrage tot € 55.000 in lage-SES-buurten (anders € 22.000) plus tot € 50.000 voor ontharden en afkoppelen.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114", "geprueft": true},
+    {"de": "Provinz-Voucher 15.000/20.000 €: Budget 2026 erschöpft, neue Runde ab 04.01.2027.", "en": "Provincial voucher €15,000/20,000: 2026 budget used up, new round from 4 Jan 2027.", "nl": "Provinciale voucher € 15.000/20.000: budget 2026 op, nieuwe ronde vanaf 4-1-2027.", "quelle": "https://www.utrechtseschoolpleinen.nl/financien-en-subsidies", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Auflage: Der Hof ist nach Schulschluss von 08 bis 20 Uhr öffentlich zugänglich (Ausnahme bei belegtem Vandalismus).", "en": "Condition: the yard must be publicly accessible from 08:00 to 20:00 outside school hours (exception for documented vandalism).", "nl": "Voorwaarde: het plein is buiten schooltijd van 08:00 tot 20:00 openbaar toegankelijk (uitzondering bij aantoonbaar vandalisme).", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114", "geprueft": true},
+    {"de": "Umsetzung binnen 24 Monaten; laut Regel viel Personal- und Finanzaufwand für die Schule.", "en": "Completion within 24 months; per the scheme a heavy staff and financial burden for the school.", "nl": "Uitvoering binnen 24 maanden; volgens de regeling veel personele en financiële inzet van de school.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114", "geprueft": true}
+   ],
+   "wirkung": {
+    "text": {"de": "Schattige, grüne Pausen und ein kühler Ort fürs Viertel nach Schulschluss (08–20 Uhr).", "en": "Shaded, green breaks and a cool place for the neighbourhood after school (08:00–20:00).", "nl": "Schaduwrijke, groene pauzes en een koele plek voor de buurt na schooltijd (08:00–20:00)."},
+    "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114"
+   }
+  },
+  {
+   "id": "afkoppelen",
+   "titel": {"de": "Regenrohr abkoppeln", "en": "Disconnect downpipes", "nl": "Afkoppelen"},
+   "kosten": {
+    "einheit": {"de": "€ je m³ Speicher (Infiltrationskiste)", "en": "€ per m³ of storage (infiltration crate)", "nl": "€ per m³ berging (infiltratiekrat)"},
+    "lo": 350,
+    "hi": 600,
+    "quelle": "https://publicwiki.deltares.nl/spaces/AST/pages/160236837/Tabellen+aanleg-+en+beheerkosten",
+    "hinweis": {
+     "de": "Deltares (etwa 2020, TAUW): 350–600 €/m³ inkl. Aushub; Regentonne 200–500 €/m³. Kosten je m² abgekoppelter Fläche hat RIONED nur für Mitglieder. Die Utrechter Fördersätze (20–40 €/m²) sind keine Kosten.",
+     "en": "Deltares (about 2020, TAUW): €350–600/m³ incl. digging; rain barrel €200–500/m³. Costs per m² disconnected are only available to RIONED members. Utrecht's subsidy rates (€20–40/m²) are not costs.",
+     "nl": "Deltares (circa 2020, TAUW): € 350–600/m³ incl. graven; regenton € 200–500/m³. Kosten per m² afgekoppeld zijn alleen voor RIONED-leden. De Utrechtse subsidiebedragen (€ 20–40/m²) zijn geen kosten."
+    },
+    "geprueft": true
+   },
+   "normen": ["hemelwater", "maatlat_wasser", "dpra", "omgevingswet"],
+   "foerder": ["utr_groenblauw_vastgoed", "utr_schoolpleinen", "hdsr_bbi", "rijk_impuls"],
+   "anreize": [
+    {"de": "Großes Potenzial: 86.636 Utrechter Gebäude (56 %) leiten Regen noch in den Mischkanal (Afkoppelkaart vom 18.11.2025).", "en": "Big potential: 86,636 Utrecht buildings (56 %) still drain rain into the combined sewer (disconnection map of 18 Nov 2025).", "nl": "Groot potentieel: 86.636 Utrechtse panden (56 %) lozen regen nog op het gemengde riool (afkoppelkaart 18-11-2025).", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/PandAfkoppelstatusAfkoppelkaart20251118/FeatureServer/0", "geprueft": true},
+    {"de": "Förderung 20–40 €/m² für Vereine, Schulen und Kirchen.", "en": "Subsidy €20–40/m² for clubs, schools and churches.", "nl": "Subsidie € 20–40/m² voor verenigingen, scholen en kerken.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729119", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Eigentümer:innen sind zuerst selbst verantwortlich; auf Privatgrund geht nichts ohne sie.", "en": "Owners are responsible first; nothing happens on private land without them.", "nl": "Eigenaren zijn eerst zelf verantwoordelijk; op privaat terrein gebeurt niets zonder hen.", "quelle": "https://iplo.nl/thema/water/stedelijk-afvalwater/stedelijk-waterbeheer/hemelwatertaak-gemeente/", "geprueft": true},
+    {"de": "Öffentliche Kostenkennzahlen sind dünn: RIONED-Werte nur für Mitglieder.", "en": "Public cost benchmarks are thin: RIONED figures are members-only.", "nl": "Openbare kostenkengetallen zijn schaars: RIONED-cijfers alleen voor leden.", "quelle": "https://www.riool.net/kennisbank/organiseren-en-afwegen/kostenkengetallen/kostenkengetallen-per-rioleringsobject/wadi", "geprueft": true}
+   ],
+   "wirkung": {
+    "text": {"de": "Weniger Regen im Mischkanal bei Starkregen, mehr Wasser im Boden.", "en": "Less rain in the combined sewer during cloudbursts, more water in the soil.", "nl": "Minder regen in het gemengde riool bij hoosbuien, meer water in de bodem."},
+    "quelle": "https://iplo.nl/thema/water/stedelijk-afvalwater/stedelijk-waterbeheer/hemelwatertaak-gemeente/"
+   }
+  },
+  {
+   "id": "schatten_segel",
+   "titel": {"de": "Sonnensegel und Pergola", "en": "Shade sails and pergolas", "nl": "Schaduwdoek en pergola"},
+   "kosten": {
+    "einheit": {"de": "€ je m² Sonnensegel oder Pergola", "en": "€ per m² shade sail or pergola", "nl": "€ per m² schaduwdoek of pergola"},
+    "lo": 31,
+    "hi": 301,
+    "quelle": "https://publicwiki.deltares.nl/spaces/AST/pages/160236837/Tabellen+aanleg-+en+beheerkosten",
+    "hinweis": {
+     "de": "Deltares (etwa 2020, Webshops): Mittel 166 €/m²; große Spanne zwischen Schirm und fest montiertem Segel. Reinigung einmal im Jahr.",
+     "en": "Deltares (about 2020, web shops): average €166/m²; wide range between parasol and fixed sail. Cleaning once a year.",
+     "nl": "Deltares (circa 2020, webwinkels): gemiddeld € 166/m²; grote spreiding tussen parasol en vast doek. Eén keer per jaar reinigen."
+    },
+    "geprueft": true
+   },
+   "normen": ["maatlat_hitze", "utr_hitte"],
+   "foerder": ["utr_initiatievenfonds"],
+   "anreize": [
+    {"de": "Schatten sofort; die IenW-Kostenstudie rechnet Pergolen dort ein, wo Bäume allein nicht reichen (1 m² Pergola ≈ 1,7 m² Schatten).", "en": "Instant shade; the IenW cost study counts pergolas where trees alone are not enough (1 m² of pergola ≈ 1.7 m² of shade).", "nl": "Direct schaduw; de IenW-kostenstudie rekent pergola's waar bomen alleen niet volstaan (1 m² pergola ≈ 1,7 m² schaduw).", "quelle": "https://www.tweedekamer.nl/downloads/document?id=2026D03769", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Keine Verdunstungskühlung wie bei Bäumen, kein Beitrag zu Grün oder Biodiversität (qualitativ).", "en": "No evaporative cooling like trees, no contribution to green or biodiversity (qualitative).", "nl": "Geen verdampingskoeling zoals bij bomen, geen bijdrage aan groen of biodiversiteit (kwalitatief).", "quelle": null, "geprueft": false}
+   ],
+   "wirkung": {
+    "text": {"de": "Schatten an Haltestellen, Plätzen und Schulhöfen, wo Leitungen oder Platz keine Bäume zulassen.", "en": "Shade at stops, squares and schoolyards where cables or space rule out trees.", "nl": "Schaduw bij haltes, pleinen en schoolpleinen waar kabels of ruimte geen bomen toelaten."},
+    "quelle": "https://www.tweedekamer.nl/downloads/document?id=2026D03769"
+   }
+  },
+  {
+   "id": "trinkwasser",
+   "titel": {"de": "Trinkwasser-Zapfstelle", "en": "Drinking water tap", "nl": "Watertappunt"},
+   "kosten": {
+    "einheit": {"de": "€ je Zapfstelle (einmaliger Gemeindebeitrag)", "en": "€ per tap (one-off municipal contribution)", "nl": "€ per tappunt (eenmalige gemeentelijke bijdrage)"},
+    "lo": 3500,
+    "hi": 3500,
+    "quelle": "https://kaagenbraassem.bestuurlijkeinformatie.nl/Document/View/d1c37302-f6fb-4da4-bef1-665b903e9e2c",
+    "hinweis": {
+     "de": "Kaag en Braassem 2024 mit dem Wasserbetrieb Oasen. Für Utrecht und Vitens kein Preis gefunden; Betrieb und Unterhalt nicht enthalten.",
+     "en": "Kaag en Braassem 2024 with the water company Oasen. No price found for Utrecht and Vitens; operation and maintenance not included.",
+     "nl": "Kaag en Braassem 2024 met waterbedrijf Oasen. Voor Utrecht en Vitens geen prijs gevonden; exploitatie en onderhoud niet inbegrepen."
+    },
+    "geprueft": true
+   },
+   "normen": ["utr_hitte"],
+   "foerder": [],
+   "anreize": [
+    {"de": "Teil des Utrechter Hitteplans: Die Verkoelingskaart zeigt Wasserzapfstellen, Planschbecken und Sonnencreme-Spender.", "en": "Part of Utrecht's heat plan: the cooling map shows water taps, paddling pools and sunscreen dispensers.", "nl": "Onderdeel van het Utrechtse hitteplan: de verkoelingskaart toont watertappunten, spetterbadjes en zonnebrandpalen.", "quelle": "https://www.utrecht.nl/nieuws/nieuwsbericht-gemeente-utrecht/gemeentelijk-hitteplan-van-kracht-vanwege-extreme-hitte", "geprueft": true}
+   ],
+   "hemmnisse": [
+    {"de": "Laufende Kosten und Hygiene; die Kostenteilung mit Vitens ist für Utrecht nicht belegt.", "en": "Running costs and hygiene; cost sharing with Vitens is not documented for Utrecht.", "nl": "Doorlopende kosten en hygiëne; kostenverdeling met Vitens is voor Utrecht niet gedocumenteerd.", "quelle": null, "geprueft": false}
+   ],
+   "wirkung": {
+    "text": {"de": "Wasser unterwegs an Hitzetagen – wichtig für Ältere, Kinder und Menschen ohne kühle Wohnung.", "en": "Water on the go on hot days – important for older people, children and people without a cool home.", "nl": "Water onderweg op hete dagen – belangrijk voor ouderen, kinderen en mensen zonder koele woning."},
+    "quelle": "https://www.utrecht.nl/nieuws/nieuwsbericht-gemeente-utrecht/gemeentelijk-hitteplan-van-kracht-vanwege-extreme-hitte"
+   }
+  }
+ ],
+ "planquellen": [
+  {
+   "id": "mpr2024",
+   "titel": "Gemeente Utrecht – Ruimtelijke projecten / Meerjarenperspectief Ruimte 2024 (Projektliste)",
+   "url": "https://2024.ruimtelijkeprojectenutrecht.nl/assets/js/projects.26823797.js",
+   "felder": ["id", "area", "name", "developer", "description", "status", "financing", "type", "phase", "amountSocial", "amountHousings", "start", "end", "lat", "lng", "website", "coordinates"],
+   "anzahl": 269,
+   "cors": false,
+   "lizenz": "CC0 (laut data.overheid.nl, Ausgabe 2023)",
+   "stand": "2024-05",
+   "nutzen": {
+    "de": "Alle großen Projekte mit Wohnungszahl (zusammen ≈ 36.100, davon ≈ 12.700 Sozialwohnungen), Phase und Start/Ende als Punkte: 170 Neubau, 51 öffentlicher Raum, 18 Umnutzung, 13 Grünprogramm. JS-Datei ohne CORS, Dateiname wechselt: nur per tools/-Skript lokal einbauen. Neuere Ausgaben 2025/2026 nicht erreichbar.",
+    "en": "All major projects with housing numbers (≈ 36,100 in total, ≈ 12,700 social), phase and start/end as points: 170 new build, 51 public space, 18 conversion, 13 green programme. JS file without CORS and a changing file name: bundle locally via a tools/ script. Newer 2025/2026 editions unreachable.",
+    "nl": "Alle grote projecten met aantal woningen (≈ 36.100, waarvan ≈ 12.700 sociaal), fase en start/eind als punten: 170 nieuwbouw, 51 openbare ruimte, 18 transformatie, 13 groenprogramma. JS-bestand zonder CORS en met wisselende naam: lokaal inbouwen via een tools/-script. Edities 2025/2026 niet bereikbaar."
+   }
+  },
+  {
+   "id": "planregistratie",
+   "titel": "Provincie Utrecht – Planregistratie openbaar (Wohnungsbaupläne)",
+   "url": "https://services.geodata-utrecht.nl/geoserver/r01_1_volkshuisvesting/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=Planregistratie_openbaar&outputFormat=application/json&srsName=EPSG:4326",
+   "felder": ["PLANNAAM", "GEMEENTE", "STATUS_PLANOLOGISCH", "STATUS_PLANOLOGISCH_GROEP_ABF", "PLANTYPE", "TOTAAL", "TOTAAL_SLOOP", "SOCIALE_HUUR", "MIDDENHUUR", "DURE_HUUR", "BETAALBARE_KOOP", "DURE_KOOP", "EENGEZINS", "MEERGEZINS", "F_2030_T_M_2034", "F_2035_T_M_2039", "F_2040_T_M_2044", "F_2045_EN_VERDER"],
+   "anzahl": 248,
+   "cors": true,
+   "lizenz": "Public Domain Mark 1.0",
+   "stand": "2026-06",
+   "nutzen": {
+    "de": "Flächen mit Wohnungszahl und Planstatus (136 unanfechtbar, 28 beschlossen, 68 in Vorbereitung, 16 Vision oder Idee) und Zeitfenstern ab 2030; 964 Pläne in der Provinz. Summe Utrecht ≈ 97.300 Wohnungen inkl. „Sammelplänen Potenzial“. Achtung: keine Spalte für 2025–2029 (≈ 22.000 Wohnungen nur in der Summe), Struktur ändert sich jährlich.",
+    "en": "Polygons with housing numbers and plan status (136 final, 28 adopted, 68 in preparation, 16 vision or idea) and time windows from 2030; 964 plans province-wide. Utrecht total ≈ 97,300 homes incl. 'potential' umbrella plans. Caution: no column for 2025–2029 (≈ 22,000 homes only in the total); structure changes yearly.",
+    "nl": "Vlakken met aantal woningen en planstatus (136 onherroepelijk, 28 vastgesteld, 68 in voorbereiding, 16 visie of idee) en perioden vanaf 2030; 964 plannen in de provincie. Totaal Utrecht ≈ 97.300 woningen incl. 'verzamelplannen potentieel'. Let op: geen kolom 2025–2029 (≈ 22.000 woningen alleen in het totaal); structuur wijzigt jaarlijks."
+   }
+  },
+  {
+   "id": "plu_maatvoering",
+   "titel": "PDOK – Ruimtelijke plannen (Bestemmingsplannen): maximale Bauhöhe, Baufenster, Nutzung",
+   "url": "https://service.pdok.nl/kadaster/plu/wms/v1_0?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=maatvoering,bouwvlak,enkelbestemming&QUERY_LAYERS=maatvoering,bouwvlak,enkelbestemming&INFO_FORMAT=application/json&CRS=EPSG:28992&FEATURE_COUNT=5",
+   "felder": ["maatvoering (z. B. maximum bouwhoogte (m))", "naam", "bestemmingshoofdgroep", "bestemmingsvlak", "planstatus", "dossierstatus", "datum", "plangebied", "typeplan", "historisch"],
+   "anzahl": null,
+   "cors": true,
+   "lizenz": "CC0",
+   "stand": "2026-10",
+   "nutzen": {
+    "de": "Pro Punkt die erlaubte Höchsthöhe und das Baufenster (Test Hoog Catharijne: 40 m). Kein WFS (404), also keine Massenabfrage im Browser; ganze Pläne nur per ATOM-Download. Zeigt nur den vorläufigen Teil des Omgevingsplans; Änderungen seit 2024 liegen im DSO. Mehrere Pläne können sich überlagern (Planstatus beachten).",
+    "en": "Per point the permitted maximum height and building envelope (test Hoog Catharijne: 40 m). No WFS (404), so no bulk queries in the browser; whole plans only via ATOM download. Shows only the temporary part of the omgevingsplan; changes since 2024 sit in the DSO. Plans can overlap (check plan status).",
+    "nl": "Per punt de toegestane maximale bouwhoogte en het bouwvlak (test Hoog Catharijne: 40 m). Geen WFS (404), dus geen bulkbevraging in de browser; hele plannen alleen via ATOM-download. Toont alleen het tijdelijk deel van het omgevingsplan; wijzigingen sinds 2024 staan in het DSO. Plannen kunnen overlappen (planstatus controleren)."
+   }
+  },
+  {
+   "id": "dso_omgevingsplan",
+   "titel": "DSO – Omgevingsplan (Omgevingsdocumenten-API)",
+   "url": "https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/presenteren/v8/regelingen",
+   "felder": [],
+   "anzahl": null,
+   "cors": false,
+   "lizenz": "API-Schlüssel nötig (401 ohne Schlüssel)",
+   "stand": "2026-10",
+   "nutzen": {
+    "de": "Die aktuellen Omgevingsplan-Regeln seit 2024. Ohne Schlüssel nicht abrufbar; für die Browser-App ungeeignet, höchstens serverseitig oder als Link „Regels op de kaart“.",
+    "en": "The current omgevingsplan rules since 2024. Not accessible without a key; unsuitable for the browser app, at most server-side or as a 'Regels op de kaart' link.",
+    "nl": "De actuele omgevingsplanregels sinds 2024. Zonder sleutel niet op te vragen; ongeschikt voor de browserapp, hooguit server-side of als link naar 'Regels op de kaart'."
+   }
+  },
+  {
+   "id": "bag_status",
+   "titel": "PDOK – BAG Panden mit Bau-Status",
+   "url": "https://api.pdok.nl/kadaster/bag/ogc/v2/collections/pand/items?f=json&limit=1000&bbox=4.95,52.02,5.21,52.15&status=Bouw%20gestart",
+   "felder": ["identificatie", "status", "bouwjaar", "documentdatum", "documentnummer", "gebruiksdoel", "aantal_verblijfsobjecten", "geometry"],
+   "anzahl": 1612,
+   "cors": true,
+   "lizenz": "CC0",
+   "stand": "2026-10",
+   "nutzen": {
+    "de": "Echte Grundrisse dessen, was genehmigt oder im Bau ist – die sicherste nahe Zukunft (1–3 Jahre): mindestens 871 mit Baugenehmigung (nur 1. Seite), 276 Bau gestartet, 132 Abrissgenehmigung, 333 Umbau (nur IDs 0344). Höhe fehlt, 3D BAG kennt nur den Bestand. Blättern mit Statusfilter war am 16.10.2026 langsam (2. Seite Timeout). In tools/fetch_buurten_utr.cjs vorbereitet, bouw_utr.json fehlt aber noch im Repo.",
+    "en": "Real footprints of what is permitted or under construction – the most certain near future (1–3 years): at least 871 with a building permit (first page only), 276 construction started, 132 demolition permits, 333 renovations (IDs 0344 only). No height; 3D BAG only knows existing stock. Paging with a status filter was slow on 16 Oct 2026 (page 2 timed out). Prepared in tools/fetch_buurten_utr.cjs, but bouw_utr.json is not in the repo yet.",
+    "nl": "Echte footprints van wat vergund of in aanbouw is – de zekerste nabije toekomst (1–3 jaar): minstens 871 met bouwvergunning (alleen 1e pagina), 276 bouw gestart, 132 sloopvergunning, 333 verbouwing (alleen ID's 0344). Hoogte ontbreekt; 3D BAG kent alleen bestaande bouw. Pagineren met statusfilter was op 16-10-2026 traag (pagina 2 time-out). Voorbereid in tools/fetch_buurten_utr.cjs, maar bouw_utr.json staat nog niet in de repo."
+   }
+  },
+  {
+   "id": "merwede",
+   "titel": "Gemeente Utrecht – Bouwen aan Merwede (Baufelder mit Bauträger und Baustart)",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/website_bouwen_aan_merwede/FeatureServer/9/query?where=1%3D1&outFields=*&outSR=4326&f=geojson",
+   "felder": ["ID", "Naam", "Ontwikkelaar", "Start_bouw", "Start_verkoop", "Start_verhuur", "Legenda", "In_gebruik"],
+   "anzahl": 26,
+   "cors": true,
+   "lizenz": "nicht angegeben (ArcGIS Online der Gemeente)",
+   "stand": "2025-09",
+   "nutzen": {
+    "de": "Baufelder der Merwedekanaalzone mit Bauträger, Baustart und Fertigstellung (z. B. „Q3 2027“, „Q4 2028“) – ideal für eine Zeitleiste in einem Pilotgebiet.",
+    "en": "Merwedekanaalzone building plots with developer, construction start and completion (e.g. 'Q3 2027', 'Q4 2028') – ideal for a timeline in one pilot area.",
+    "nl": "Bouwvelden Merwedekanaalzone met ontwikkelaar, start bouw en oplevering (bijv. 'Q3 2027', 'Q4 2028') – ideaal voor een tijdlijn in één pilotgebied."
+   }
+  },
+  {
+   "id": "mjip",
+   "titel": "Gemeente Utrecht – MJIP Meerjahres-Investitionsplanung öffentlicher Raum (BOR)",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer",
+   "felder": ["Naam", "Locatie_om", "Vakgebied", "Type_proje", "Type_onder", "Planjaar", "Eindjaar"],
+   "anzahl": 1273,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2025-12",
+   "nutzen": {
+    "de": "Wann welche Straße (218), Grünfläche (38), welcher Spielplatz (535, bis 2039), welche Brücke (49) und welcher Kanal (433 + 500 flexibel) angefasst wird. Beste Quelle für Mitbau-Fenster und neuer als Rioolvervanging2024 (Planjaar dort teils als Text, z. B. „2036-2040“). Enthält auch Stedin-Netz und Eneco-Wärmenetz. Achtung: Stedin-Projektlayer (1.344, zuletzt 2023 bearbeitet) enthält Namen, E-Mails und Telefonnummern – diese Felder nie laden oder zeigen.",
+    "en": "When which street (218), green space (38), playground (535, up to 2039), bridge (49) and sewer (433 + 500 flexible) will be worked on. Best source for build-along windows and newer than Rioolvervanging2024 (plan year partly text, e.g. '2036-2040'). Also contains the Stedin grid and Eneco heat network. Caution: the Stedin projects layer (1,344, last edited 2023) contains names, e-mails and phone numbers – never load or show those fields.",
+    "nl": "Wanneer welke straat (218), groenvlak (38), speelplek (535, tot 2039), brug (49) en riool (433 + 500 flexibel) wordt aangepakt. Beste bron voor meekoppelkansen en nieuwer dan Rioolvervanging2024 (planjaar deels tekst, bijv. '2036-2040'). Bevat ook het Stedin-net en het Eneco-warmtenet. Let op: de Stedin-projectlaag (1.344, laatst bewerkt 2023) bevat namen, e-mails en telefoonnummers – die velden nooit laden of tonen."
+   }
+  },
+  {
+   "id": "eneco_warmte",
+   "titel": "Gemeente Utrecht – Planung Eneco-Wärmenetz (Februar 2026)",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/260209_Planning_Eneco/FeatureServer",
+   "felder": ["id", "naam", "jaar", "gemeente", "afgerond", "opmerking", "type"],
+   "anzahl": 257,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2026-02",
+   "nutzen": {
+    "de": "257 Plangebiete und 9.019 Leitungsabschnitte mit Jahr: Wo die Straße für Wärmeleitungen ohnehin aufgegraben wird – Chance für Bäume und Entsiegelung, aber auch Konkurrenz um Platz im Untergrund. Freitext-Feld „opmerking“ nicht anzeigen.",
+    "en": "257 plan areas and 9,019 pipe sections with year: where the street will be dug up for heat pipes anyway – a chance for trees and unsealing, but also competition for space underground. Do not show the free-text 'opmerking' field.",
+    "nl": "257 plangebieden en 9.019 leidingdelen met jaar: waar de straat toch opengaat voor warmteleidingen – kans voor bomen en ontharding, maar ook concurrentie om ondergrondse ruimte. Het vrije-tekstveld 'opmerking' niet tonen."
+   }
+  },
+  {
+   "id": "fiets2040",
+   "titel": "Gemeente Utrecht – Fietsprogramma 2040 (geplante Radmaßnahmen)",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/fiets_programma_2040_20231208/FeatureServer/9",
+   "felder": ["ID_fiets", "Projectnaam", "Traject", "Korte_toelichting", "Type_route", "Complexiteit_maatregel", "termijn"],
+   "anzahl": 156,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2024-01",
+   "nutzen": {
+    "de": "Geplante Radumbauten mit Kurzbeschreibung (z. B. „Stadtboulevard“, „mehr Platz für Fußgänger“) und Fristklasse – zeigt, wo sich Straßenquerschnitte ändern.",
+    "en": "Planned cycling redesigns with a short description (e.g. 'city boulevard', 'more space for pedestrians') and term class – shows where street cross-sections will change.",
+    "nl": "Geplande fietsingrepen met korte toelichting (bijv. 'stadsboulevard', 'meer ruimte voor voetgangers') en termijn – laat zien waar profielen veranderen."
+   }
+  },
+  {
+   "id": "mob_fiets_voet",
+   "titel": "Gemeente Utrecht – Investitionsprojekte Rad und Fuß (Kontrolldatei)",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/gu_mobiliteit_fiets_en_voetganger/FeatureServer/0",
+   "felder": ["GU_ID", "thema", "subthema", "status", "budget_toegevoegd", "concreet_of_beleidsreservering", "periode", "oplevering", "naam_investeringsproject", "projectomschrijving", "bron"],
+   "anzahl": 192,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2025-02",
+   "nutzen": {
+    "de": "Trennt „Ambition oder Wunsch“ von budgetierten Projekten – wichtig, damit die Zukunftsstadt Wunsch und Beschluss nicht vermischt.",
+    "en": "Separates 'ambition or wish' from budgeted projects – important so the future city does not mix wishes with decisions.",
+    "nl": "Scheidt 'ambitie of beleidswens' van begrote projecten – belangrijk zodat de toekomststad wens en besluit niet door elkaar haalt."
+   }
+  },
+  {
+   "id": "kansen_groen",
+   "titel": "Gemeente Utrecht – Kansen Vergroening030 und Grün-Ambitionen",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Kansen_Vergroening030/FeatureServer/0",
+   "felder": ["id", "Toelichtin"],
+   "anzahl": 42,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2024-09",
+   "nutzen": {
+    "de": "42 benannte Begrünungschancen (z. B. EcoWall an Schulen). Ergänzend: groen_rods_ambitie_ingericht (104 Ambitions- und 140 umgesetzte Flächen) und Ecologische_samenhang „te ontwikkelen“ (55). Als „Chance“, nicht als „geplant“ zeigen.",
+    "en": "42 named greening opportunities (e.g. EcoWall at schools). Also: groen_rods_ambitie_ingericht (104 ambition and 140 completed areas) and Ecologische_samenhang 'to be developed' (55). Show as 'opportunity', not 'planned'.",
+    "nl": "42 benoemde vergroeningskansen (bijv. EcoWall bij scholen). Aanvullend: groen_rods_ambitie_ingericht (104 ambitie- en 140 gerealiseerde vlakken) en Ecologische_samenhang 'te ontwikkelen' (55). Tonen als 'kans', niet als 'gepland'."
+   }
+  },
+  {
+   "id": "kapkaart",
+   "titel": "Gemeente Utrecht – Kapkaart (zu fällende Bäume)",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Kapkaart/FeatureServer",
+   "felder": ["Boomsoort", "Nederlandse_naam", "Boomnummer", "Reden_aanvraag", "Technische_gebreken", "Status_vergunningprocedure", "Actuele_staat_werkzaamheden", "Status_boom"],
+   "anzahl": 1560,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2024-03",
+   "nutzen": {
+    "de": "Zeigt Verluste – ohne sie wäre die Zukunftsstadt zu grün. 1.560 noch zu fällen, 940 Stümpfe. Stand März 2024, veraltet; nur mit Datum zeigen.",
+    "en": "Shows losses – without them the future city would look too green. 1,560 still to be felled, 940 stumps. March 2024, outdated; show only with its date.",
+    "nl": "Toont verlies – zonder dat oogt de toekomststad te groen. 1.560 nog te rooien, 940 stobben. Stand maart 2024, verouderd; alleen met datum tonen."
+   }
+  },
+  {
+   "id": "ppww",
+   "titel": "Provincie Utrecht – PPWW-Standorte (Wohnen und Arbeiten)",
+   "url": "https://services.geodata-utrecht.nl/geoserver/r01_4_ro_algemeen/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPWW_locaties_openbaar&outputFormat=application/json&srsName=EPSG:4326",
+   "felder": ["NAAM", "GEMEENTE", "TYPE", "FASERING", "WONINGEN", "HA_BEDRIJVEN", "LEGENDA", "PPWW21", "PPWW23", "PRS_PRV"],
+   "anzahl": 51,
+   "cors": true,
+   "lizenz": "Public Domain Mark 1.0",
+   "stand": "2023-03",
+   "nutzen": {
+    "de": "Erweiterungsstandorte der Provinz; nur 3 mit Bezug zu Utrecht. Für die Stadt kaum relevant.",
+    "en": "Provincial expansion sites; only 3 relate to Utrecht. Hardly relevant for the city.",
+    "nl": "Provinciale uitbreidingslocaties; slechts 3 met betrekking tot Utrecht. Voor de stad nauwelijks relevant."
+   }
+  }
+ ],
+ "frameworkquellen": [
+  {
+   "id": "breedte_stoepen",
+   "titel": "Gemeente Utrecht – Gehwegbreiten und Hindernisse",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer",
+   "felder": ["Breedte", "Lengte", "Oppervl", "Wijk", "Objectsoor"],
+   "anzahl": 21464,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2025-09",
+   "nutzen": {
+    "de": "Gehwegabschnitte nach Breite (1.875 unter 1,30 m; 6.836 1,30–2,20; 7.241 2,20–3,10; 4.370 3,10–5,00; 1.142 über 5 m) plus Hindernisse (20.117 Laternen, 3.537 Bäume, 1.258 Abfallkörbe). Zeigt, wo Fassadengärten (1,20 m frei) und Baumscheiben passen; Grundlage für Barrierefreiheit.",
+    "en": "Pavement sections by width (1,875 under 1.30 m; 6,836 1.30–2.20; 7,241 2.20–3.10; 4,370 3.10–5.00; 1,142 over 5 m) plus obstacles (20,117 lamp posts, 3,537 trees, 1,258 bins). Shows where façade gardens (1.20 m clear) and tree pits fit; basis for accessibility.",
+    "nl": "Stoepdelen naar breedte (1.875 onder 1,30 m; 6.836 1,30–2,20; 7.241 2,20–3,10; 4.370 3,10–5,00; 1.142 boven 5 m) plus obstakels (20.117 lichtmasten, 3.537 bomen, 1.258 afvalbakken). Laat zien waar geveltuinen (1,20 m vrij) en boomspiegels passen; basis voor toegankelijkheid."
+   }
+  },
+  {
+   "id": "afkoppelkaart",
+   "titel": "Gemeente Utrecht – Afkoppelkaart (Status je Gebäude)",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/PandAfkoppelstatusAfkoppelkaart20251118/FeatureServer/0",
+   "felder": ["IMGEO_KLAS", "Afkoppel_s", "Afkoppelde", "Afkoppelvi"],
+   "anzahl": 154197,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2025-11",
+   "nutzen": {
+    "de": "86.636 Gebäude (56 %) hängen noch am Mischkanal, 67.561 sind abgekoppelt – direkte Karte für die Mission Starkregen. Dazu gleichnamige Layer für versiegelte Flächen (Stand 18./19.11.2025).",
+    "en": "86,636 buildings (56 %) are still on the combined sewer, 67,561 are disconnected – a direct map for the heavy-rain mission. Matching layers exist for paved areas (18/19 Nov 2025).",
+    "nl": "86.636 panden (56 %) zitten nog op het gemengde riool, 67.561 zijn afgekoppeld – directe kaart voor de missie hoosbuien. Bijbehorende lagen voor verhard oppervlak (18/19-11-2025)."
+   }
+  },
+  {
+   "id": "dakenkansen",
+   "titel": "Gemeente Utrecht – Dakenkansenkaart",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Dakenkansenkaart/FeatureServer/0",
+   "felder": ["pand_id", "straatnaam", "wijknaam", "subbuurt", "gebruik", "bouwjaar", "oppervlak", "hoogte", "type_dak", "Type_dakV2", "Al_Zon", "Al_Groen"],
+   "anzahl": 144044,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2022-06",
+   "nutzen": {
+    "de": "Dachpotenzial je Gebäude: ≈ 2,4 Mio. m² für blau-grüne, 0,63 Mio. m² für biodiverse Dächer; erst 1.083 Dächer grün, 12.824 mit Solar. Stand 2022 – nur mit Datum zeigen.",
+    "en": "Roof potential per building: ≈ 2.4 million m² for blue-green, 0.63 million m² for biodiverse roofs; only 1,083 roofs green, 12,824 with solar. 2022 data – show only with its date.",
+    "nl": "Dakpotentieel per pand: ≈ 2,4 mln m² voor blauwgroene, 0,63 mln m² voor biodiverse daken; pas 1.083 daken groen, 12.824 met zon. Stand 2022 – alleen met datum tonen."
+   }
+  },
+  {
+   "id": "schulen",
+   "titel": "Gemeente Utrecht – Schulgebäude",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Schoolgebouwen_20240304/FeatureServer/0",
+   "felder": ["type", "school", "schoolbestuur", "straat", "huisnummer", "postcode", "wijk", "stadsdeel", "BVO_gebouw", "bouwjaar"],
+   "anzahl": 248,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2026-01",
+   "nutzen": {
+    "de": "Grundlage für die Mission Hitzesichere Schulen (Gebäude, Baujahr, Schulträger). Laut Beschreibung eine Testebene – vor Nutzung gegen DUO-Schullisten prüfen.",
+    "en": "Basis for the heat-safe schools mission (building, year built, school board). Described as a test layer – check against DUO school lists before use.",
+    "nl": "Basis voor de missie hittebestendige scholen (gebouw, bouwjaar, schoolbestuur). Volgens de beschrijving een testlaag – vóór gebruik controleren met DUO-schoollijsten."
+   }
+  },
+  {
+   "id": "coolspots",
+   "titel": "Gemeente Utrecht – Coolspot-Analysen und Spielplätze außerhalb kühler Orte",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Coolspotanalyses/FeatureServer/4",
+   "felder": ["SCORE_Schaduwgrootte", "SCORE_10mdik", "SCORE_Ver_genoeg_van_weg", "SCORE_Zitgelegenheid", "SCORE_Boomschaduw", "SCORE_TOTAAL", "Oppervlak_m_"],
+   "anzahl": 1690,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2023-05",
+   "nutzen": {
+    "de": "1.690 bewertete Schattenorte; dazu coolspot_speelplekken (172 Spielplätze außerhalb des Einzugsbereichs kühler Orte). Prüft das Utrechter 200-m-Ziel und hilft bei Schulhof- und Spielplatz-Prioritäten.",
+    "en": "1,690 scored shade spots; plus coolspot_speelplekken (172 playgrounds outside the catchment of cool places). Tests Utrecht's 200 m target and helps prioritise schoolyards and playgrounds.",
+    "nl": "1.690 gescoorde schaduwplekken; plus coolspot_speelplekken (172 speeltuinen buiten het bereik van koele plekken). Toetst het Utrechtse 200-m-doel en helpt schoolpleinen en speelplekken te prioriteren."
+   }
+  },
+  {
+   "id": "eco_struktur",
+   "titel": "Gemeente Utrecht – Grün-blaue und ökologische Verbindungen",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Scheggen_en_groenblauwe_verbindingen/FeatureServer/0",
+   "felder": ["ID", "sb_groen_percentage", "sb_water_percentage", "sb_verharding_percentage", "groen_maaivled_percentage", "boomkronen_percentage", "area_buffer"],
+   "anzahl": 287,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2024-12",
+   "nutzen": {
+    "de": "287 Verbindungen mit Grün-, Wasser-, Versiegelungs- und Kronenanteil (20/40/80-m-Puffer). Ergänzend: Ecologische_samenhang_WFL1 (Kerngebiete, „te ontwikkelen“) und wenselijke_verbindingen (188, Stand Januar 2026). Grundlage für eine Habitat-Bewertung ohne GBIF-Verzerrung.",
+    "en": "287 connections with green, water, sealed and canopy shares (20/40/80 m buffers). Also: Ecologische_samenhang_WFL1 (core areas, 'to be developed') and wenselijke_verbindingen (188, January 2026). Basis for a habitat assessment without GBIF bias.",
+    "nl": "287 verbindingen met aandeel groen, water, verharding en boomkronen (buffers 20/40/80 m). Aanvullend: Ecologische_samenhang_WFL1 (kerngebieden, 'te ontwikkelen') en wenselijke_verbindingen (188, januari 2026). Basis voor een habitatbeoordeling zonder GBIF-vertekening."
+   }
+  },
+  {
+   "id": "bomenbalans",
+   "titel": "Gemeente Utrecht – Bomenbalans 2026",
+   "url": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Bomenbalans/FeatureServer",
+   "felder": ["Subwijk", "Aantal_bom", "PercInheem", "PercDracht", "Inheemse_b", "Drachtbome", "ha_bosplan", "Leeftijd", "Boomsoort"],
+   "anzahl": 131761,
+   "cors": true,
+   "lizenz": "nicht angegeben",
+   "stand": "2026-03",
+   "nutzen": {
+    "de": "Park- und Straßenbäume mit Anteil heimischer und Trachtbäume je Teilwijk (34) – Biodiversitäts-Kennzahl aus dem Register statt aus Zufallsbeobachtungen.",
+    "en": "Park and street trees with shares of native and nectar trees per sub-district (34) – a biodiversity indicator from the register instead of chance observations.",
+    "nl": "Park- en straatbomen met aandeel inheemse en drachtbomen per subwijk (34) – biodiversiteitsindicator uit het register in plaats van toevallige waarnemingen."
+   }
+  },
+  {
+   "id": "nnn",
+   "titel": "Provincie Utrecht – Natuurnetwerk Nederland (WFS)",
+   "url": "https://services.geodata-utrecht.nl/geoserver/n01_2_2_natuur_beleid/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=Natuurnetwerk_Nederland&outputFormat=application/json&srsName=EPSG:4326",
+   "felder": ["GLOBALID", "OMSCHRIJVING", "PRIMAKOPNR", "PRIMAID", "OBJECTID"],
+   "anzahl": 390,
+   "cors": true,
+   "lizenz": "Public Domain Mark 1.0",
+   "stand": "2025-09",
+   "nutzen": {
+    "de": "Geschützte Naturflächen der Provinz – Kontext für Stadtränder und Landgüter.",
+    "en": "Protected provincial nature areas – context for the urban fringe and estates.",
+    "nl": "Beschermde provinciale natuur – context voor stadsranden en landgoederen."
+   }
+  },
+  {
+   "id": "gbif",
+   "titel": "GBIF – Artnachweise",
+   "url": "https://api.gbif.org/v1/occurrence/search?geometry=POLYGON((5.0%2052.03,5.2%2052.03,5.2%2052.14,5.0%2052.14,5.0%2052.03))&year=2020,2026&limit=0",
+   "felder": ["species", "eventDate", "decimalLatitude", "decimalLongitude", "basisOfRecord", "license"],
+   "anzahl": 1345228,
+   "cors": true,
+   "lizenz": "je Datensatz CC0, CC BY oder CC BY-NC",
+   "stand": "2026-10",
+   "nutzen": {
+    "de": "1,35 Mio. Nachweise 2020–2026 im Stadtgebiet-Rechteck (schon in tools/fetch_gbif.cjs). Stark vom Beobachtungsaufwand verzerrt (Parks, Bürgerwissenschaft) – nie als „Artenvielfalt“ ohne Hinweis zeigen; CC BY-NC nicht kommerziell nutzen.",
+    "en": "1.35 million records 2020–2026 in the city bounding box (already in tools/fetch_gbif.cjs). Strongly biased by observer effort (parks, citizen science) – never show as 'biodiversity' without a caveat; do not use CC BY-NC commercially.",
+    "nl": "1,35 mln waarnemingen 2020–2026 in de stadsbox (al in tools/fetch_gbif.cjs). Sterk vertekend door waarneeminspanning (parken, burgerwetenschap) – nooit zonder kanttekening als 'biodiversiteit' tonen; CC BY-NC niet commercieel gebruiken."
+   }
+  },
+  {
+   "id": "rivm_laerm",
+   "titel": "RIVM – Lärm Lden Straßenverkehr und Lärmbelästigung (ALO-WMS)",
+   "url": "https://data.rivm.nl/geo/alo/wms",
+   "felder": ["GRAY_INDEX (dB)", "b_gel_weg", "b_sv_weg"],
+   "anzahl": null,
+   "cors": true,
+   "lizenz": "Public Domain Mark 1.0",
+   "stand": "2025-12",
+   "nutzen": {
+    "de": "Bereits genutzt (Lden 2022, Belästigung 2024). Für die Utrechter Schwelle 63 dB und den WHO-Wert 53 dB direkt vergleichbar.",
+    "en": "Already in use (Lden 2022, annoyance 2024). Directly comparable with Utrecht's 63 dB threshold and the WHO value of 53 dB.",
+    "nl": "Al in gebruik (Lden 2022, hinder 2024). Direct te vergelijken met de Utrechtse drempel van 63 dB en de WHO-waarde van 53 dB."
+   }
+  },
+  {
+   "id": "rivm_luft",
+   "titel": "RIVM – GCN-Luftkonzentrationen 2024 (NO₂, PM10, PM2,5)",
+   "url": "https://data.rivm.nl/geo/alo/wms?request=GetCapabilities&service=WMS",
+   "felder": ["rivm_nsl_20260401_gm_NO22024", "rivm_nsl_20260401_gm_PM102024", "rivm_nsl_20260401_gm_PM252024"],
+   "anzahl": null,
+   "cors": true,
+   "lizenz": "Public Domain Mark 1.0",
+   "stand": "2026-04",
+   "nutzen": {
+    "de": "Jahresmittel 2024 auf 1-km-Raster; vergleichbar mit EU 2030 (NO₂ 20, PM2,5 10 µg/m³) und WHO 2021 (NO₂ 10, PM2,5 5 µg/m³).",
+    "en": "2024 annual means on a 1 km grid; comparable with EU 2030 (NO₂ 20, PM2.5 10 µg/m³) and WHO 2021 (NO₂ 10, PM2.5 5 µg/m³).",
+    "nl": "Jaargemiddelden 2024 op 1-km-grid; vergelijkbaar met EU 2030 (NO₂ 20, PM2,5 10 µg/m³) en WHO 2021 (NO₂ 10, PM2,5 5 µg/m³)."
+   }
+  },
+  {
+   "id": "ndw_fiets",
+   "titel": "NDW – Fiets-API und Dexter (Radzählungen)",
+   "url": "https://docs.ndw.nu/data-uitwisseling/interface-beschrijvingen/fiets-api/",
+   "felder": ["Stundenwerte je Messort"],
+   "anzahl": null,
+   "cors": false,
+   "lizenz": "ungeklärt; OAuth-Token (Servicekonto) nötig",
+   "stand": "2026-10",
+   "nutzen": {
+    "de": "Einzige laufende Radzählquelle mit landesweiter Abdeckung, aber nur serverseitig mit Servicekonto. Abdeckung in Utrecht und Lizenz ungeprüft.",
+    "en": "The only ongoing cycle-count source with national coverage, but server-side only with a service account. Utrecht coverage and licence unverified.",
+    "nl": "Enige lopende fietstelbron met landelijke dekking, maar alleen server-side met een serviceaccount. Dekking in Utrecht en licentie niet gecontroleerd."
+   }
+  },
+  {
+   "id": "utr_fietstellingen",
+   "titel": "Gemeente Utrecht – Fietstellingen 2015/2016",
+   "url": "https://data.overheid.nl/dataset/utrecht-fietstellingen",
+   "felder": ["Zählstelle", "Datum", "Fahrräder", "Mofas"],
+   "anzahl": 17,
+   "cors": false,
+   "lizenz": "CC0",
+   "stand": "2016-11",
+   "nutzen": {
+    "de": "Nur historisch: 17 Dauerzählstellen 2015/2016. Das Portal open.utrecht.nl antwortete am 16.10.2026 mit 403. Keine Live-Daten und keine offenen Fußgängerzählungen gefunden.",
+    "en": "Historical only: 17 permanent counters 2015/2016. The open.utrecht.nl portal returned 403 on 16 Oct 2026. No live data and no open pedestrian counts found.",
+    "nl": "Alleen historisch: 17 vaste telpunten 2015/2016. Portal open.utrecht.nl gaf op 16-10-2026 een 403. Geen live data en geen open voetgangerstellingen gevonden."
+   }
+  },
+  {
+   "id": "telraam",
+   "titel": "Telraam – Zählgeräte von Bürger:innen",
+   "url": "https://telraam-api.net/v1",
+   "felder": ["Rad", "Fuß", "Auto", "Schwerverkehr je Stunde und Straßenabschnitt"],
+   "anzahl": null,
+   "cors": false,
+   "lizenz": "API-Schlüssel nötig (403 ohne); Lizenz ungeprüft",
+   "stand": "2026-10",
+   "nutzen": {
+    "de": "Bürger:innen zählen am eigenen Fenster Rad, Fuß und Auto – passt zur Mitwirk-Idee. Schlüssel, Lizenz und Abdeckung in Utrecht vorher klären.",
+    "en": "Residents count bikes, pedestrians and cars from their own window – fits the participation idea. Clarify key, licence and Utrecht coverage first.",
+    "nl": "Bewoners tellen vanuit hun eigen raam fiets, voetganger en auto – past bij het meedoen-idee. Eerst sleutel, licentie en dekking in Utrecht uitzoeken."
+   }
+  }
+ ]
+}
