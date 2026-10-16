@@ -23,20 +23,21 @@ function centroid(z){let x=0,y=0;const n=z.length/2-1;for(let i=0;i<n;i++){x+=z[
 const area2=z=>Math.abs(A.signed(z))/2;
 
 // ── Steckbrief ──
-async function compute(){
+async function compute(src){                                   // src = {B,S}: Gebietsdaten statt der Ansichtslisten
   const r=ring();if(!r){AR.stats=null;return;}
   AR.busy=true;A.rerender();
-  await Promise.all([A.ensure('b'),A.ensure('s'),A.ensureTrees().then(A.measureTrees)]);
+  if(!src)await Promise.all([A.ensure('b'),A.ensure('s'),A.ensureTrees().then(A.measureTrees)]);
+  const BL=src?src.B:A.B.list,SL=src?src.S:A.S.list;
   const z=zOf(r),m=A.m20(),m2=m*m,[x0,y0,x1,y1]=bbox(z),Am=area2(z)*m2;
-  const blds=A.B.list.filter(b=>{const c=centroid(b.z);return c[0]>=x0&&c[0]<=x1&&c[1]>=y0&&c[1]<=y1&&A.inPoly(c[0],c[1],z);});
+  const blds=BL.filter(b=>{const c=centroid(b.z);return c[0]>=x0&&c[0]<=x1&&c[1]>=y0&&c[1]<=y1&&A.inPoly(c[0],c[1],z);});
   let foot=0,vol=0,gfa=0,hsum=0,hmax=0,meas=0;
   for(const b of blds){const a=area2(b.z)*m2;foot+=a;if(b.h!=null){meas++;vol+=a*b.h;gfa+=a*Math.max(1,Math.round(b.h/3.2));hsum+=a*b.h;hmax=Math.max(hmax,b.h);}}
   // Flächenanteile per Rasterung (≤ 600 px Kante)
   const res=Math.max(.5,Math.max(x1-x0,y1-y0)*m/600),W=Math.max(8,Math.ceil((x1-x0)*m/res)),H=Math.max(8,Math.ceil((y1-y0)*m/res)),X={k:m/res,ox:x0*m/res,oy:y0*m/res,sc:1};
   const g=A.offscreen(W,H,true);
   const by={sealed:'#ff0000',unpaved:'#ffff00',green:'#00ff00',water:'#0000ff'},cls=['sealed','unpaved','green','water'];
-  for(const k of cls)A.chunked(g,A.S.list.filter(o=>cls[o.c]===k),16,o=>A.poly(g,o.z,X),by[k]);
-  A.chunked(g,A.B.list,16,b=>A.poly(g,b.z,X),'#ff00ff');
+  for(const k of cls)A.chunked(g,SL.filter(o=>cls[o.c]===k),16,o=>A.poly(g,o.z,X),by[k]);
+  A.chunked(g,BL,16,b=>A.poly(g,b.z,X),'#ff00ff');
   const d1=g.getImageData(0,0,W,H).data;
   g.clearRect(0,0,W,H);g.fillStyle='#fff';g.beginPath();A.poly(g,z,X);g.fill();const mk=g.getImageData(0,0,W,H).data;
   g.clearRect(0,0,W,H);const trees=A.treesIn(.05,L.latLngBounds(r)).filter(t=>A.inPoly(t[4],t[5],z));
@@ -135,12 +136,13 @@ function outline(g,X,dark){
 }
 
 // ── Export ──
-function exportSet(){
+function exportSet(src){
+  const BL=src?src.B:A.B.list,SL=src?src.S:A.S.list;
   const r=AR.type==='draw'&&!AR.done?null:ring()||null,z=r?zOf(r):null,[x0,y0,x1,y1]=z?bbox(z):(()=>{const b=A.map.getBounds(),a=A.w20(b.getNorth(),b.getWest()),c=A.w20(b.getSouth(),b.getEast());return [a[0],a[1],c[0],c[1]];})();
   const inB=(x,y)=>x>=x0&&x<=x1&&y>=y0&&y<=y1;
   const rd=(x,y)=>{const ll=A.map.unproject([x,y],20);return A.toRD(ll.lat,ll.lng);};
-  const blds=A.B.list.filter(b=>{const c=centroid(b.z);return inB(c[0],c[1])&&(!z||A.inPoly(c[0],c[1],z));});
-  const surfs=A.S.list.map(o=>({o,z:clip(o.z,x0,y0,x1,y1)})).filter(s=>s.z&&s.z.length>=6);
+  const blds=BL.filter(b=>{const c=centroid(b.z);return inB(c[0],c[1])&&(!z||A.inPoly(c[0],c[1],z));});
+  const surfs=SL.map(o=>({o,z:clip(o.z,x0,y0,x1,y1)})).filter(s=>s.z&&s.z.length>=6);
   const trees=(A.TREES||[]).filter(t=>inB(t[4],t[5])&&(!z||A.inPoly(t[4],t[5],z)));
   const all=[[x0,y0],[x1,y1]].map(([x,y])=>rd(x,y)),ox=Math.floor(Math.min(all[0][0],all[1][0])/10)*10,oy=Math.floor(Math.min(all[0][1],all[1][1])/10)*10;
   const gmin=Math.min(...blds.map(b=>b.g).filter(v=>v!=null),Infinity);
@@ -217,7 +219,7 @@ function svg(E,opts){
   const P=(x,y)=>{const p=E.loc(x,y);return [(pad+p[0]*scl).toFixed(1),(pad+(Hm-p[1])*scl).toFixed(1)];};
   const path=z=>{let s='';for(let i=0;i<z.length-2;i+=2){const [x,y]=P(z[i],z[i+1]);s+=(i?'L':'M')+x+' '+y;}return s+'Z';};
   const col=o=>{const t=LAB.street?LAB.street.typeOf(o):'';return (LAB.street&&LAB.street.TY[t]?LAB.street.TY[t].col:(o.c===2?'#7a8c3a':o.c===3?'#5c88b2':'#cfc6b6'));};
-  let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Archivo, Helvetica, Arial, sans-serif"><!-- ${header(E,'SVG').join(' | ')} --><rect width="${W}" height="${H}" fill="#f1ede5"/>`;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="DM Sans, Helvetica, Arial, sans-serif"><!-- ${header(E,'SVG').join(' | ')} --><rect width="${W}" height="${H}" fill="#f1ede5"/>`;
   s+=`<defs><clipPath id="fr"><rect x="${pad}" y="${pad}" width="${(Wm*scl).toFixed(1)}" height="${(Hm*scl).toFixed(1)}"/></clipPath></defs><g clip-path="url(#fr)">`;
   if(opts.surf)s+=`<g id="flaechen">${E.surfs.map(x=>`<path d="${path(x.z)}" fill="${col(x.o)}"/>`).join('')}</g>`;
   if(opts.shadow){const sun=A.sunNow();if(sun.alt>0.02){const dx=Math.sin(sun.az),dy=Math.cos(sun.az),t=Math.tan(sun.alt),m=A.m20();let g='';

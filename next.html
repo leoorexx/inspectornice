@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#f1ede5">
-<title>Inspector Nice — Stadt-Signatur</title>
+<title>Inspector Nice — Klimarisiken in Utrecht</title>
 <meta name="description" content="Jeder Ort hat eine Signatur aus Klima, Umwelt und sozialer Lage — ein Bild statt 35 Ebenen.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:opsz,wght,WONK@9..144,400..700,0&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..600&family=Syne:wght@400..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -18,7 +18,7 @@
   --sh:0 1px 1px rgba(23,21,28,.04),0 6px 20px rgba(23,21,28,.08);
   --sh2:0 2px 4px rgba(23,21,28,.06),0 22px 56px rgba(23,21,28,.16);
   --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
-  --serif:'Fraunces',Georgia,serif;--sans:'Archivo',system-ui,-apple-system,sans-serif;
+  --serif:'Syne','DM Sans',system-ui,sans-serif;--sans:'DM Sans',system-ui,-apple-system,sans-serif;
   --tap:44px;
 }
 :root[data-theme="dark"]{
@@ -256,7 +256,7 @@ body.lab-on .legend,body.lab-on .lenses{display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 details.lab-how{margin-top:8px;padding-top:0}
 .lab-wind{position:absolute;left:0;top:0;z-index:451;pointer-events:none;display:none}
-.lab-tools{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:0 -4px 12px;padding:4px;background:var(--soft);border-radius:18px}
+.lab-tools{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;margin:0 -4px 12px;padding:4px;background:var(--soft);border-radius:18px}
 .lab-tools button{border:none;background:none;border-radius:13px;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:700 10.5px var(--sans);color:var(--ink2);padding:0 2px;transition:background .25s var(--ease),color .2s;white-space:nowrap}
 .lab-tools button:hover{color:var(--ink);background:var(--card)}
 .lab-tools button.on{background:var(--chrome);color:#f3efe7;box-shadow:var(--sh)}
@@ -370,6 +370,68 @@ details.lab-how{margin-top:8px;padding-top:0}
 .ar-ins{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .ar-ins p{font:400 14px/1.45 var(--serif);color:var(--ink);padding-left:12px;border-left:3px solid var(--accent)}
 .ar-act{display:flex;flex-direction:column}
+.ex-fmt button.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+/* 3D-Ansicht */
+.lab-3dbtn{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;margin-top:10px;padding:0 14px;border-radius:16px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font:700 13px var(--sans);text-align:left}
+.lab-3dbtn svg{color:var(--accent);flex:none}
+.lab-3dbtn.on{background:var(--card);color:var(--ink)}.lab-3dbtn.on svg{color:var(--ink)}
+.v3d{position:absolute;inset:0;z-index:760;background:#d6e4ef;touch-action:none}
+.v3d canvas{display:block;width:100%;height:100%;cursor:grab}.v3d canvas:active{cursor:grabbing}
+.v3-bar{position:absolute;right:14px;top:78px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 430px)}
+.v3-bar button{min-height:var(--tap);padding:0 14px;border-radius:22px;border:0;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font:700 12.5px var(--sans);color:var(--ink);box-shadow:var(--sh)}
+.v3-bar button.on{background:var(--chrome);color:var(--accent)}
+.v3-bar .v3-x{background:var(--chrome);color:#f3efe7}
+.v3-year{position:absolute;right:24px;bottom:70px;text-align:right;opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s;pointer-events:none;color:#17151c}
+.v3-year.on{opacity:1;transform:none}
+.v3-year b{display:block;font:700 76px/1 var(--serif);letter-spacing:-.04em}
+.v3-year span{font:600 13px var(--sans)}
+.v3-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:600 11.5px var(--sans);color:#46424f;background:rgba(250,248,243,.8);padding:6px 12px;border-radius:14px;white-space:nowrap}
+body.v3d-on .leaflet-control-zoom,body.v3d-on #labHint,body.v3d-on .ptsbtn{display:none}
+@media (max-width:760px){.v3-bar{top:70px;right:8px;max-width:calc(100% - 16px)}.v3-year b{font-size:54px}.v3-year{bottom:46vh}.v3-hint{display:none}}
+/* Studio */
+.st-step{display:flex;align-items:center;gap:8px;margin:16px 0 4px;font:700 11.5px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.st-step i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:0}
+.st-step small{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600}
+.st-dias{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px}
+.st-dias button{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border:1px solid var(--line2);border-radius:14px;background:var(--card);font:700 12.5px var(--sans);color:var(--ink);text-align:left}
+.st-dias button svg{flex:none;opacity:.8}
+.st-dias button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.st-kpi{margin-top:12px;padding:14px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
+.st-big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.st-big b{font:500 44px/1 var(--serif);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.st-big span{font:700 13px var(--sans);color:var(--ink2)}
+.st-bar{position:relative;height:10px;border-radius:5px;background:color-mix(in srgb,var(--ink) 9%,transparent);margin:12px 0 6px}
+.st-bar u{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.st-bar s{position:absolute;top:-4px;bottom:-4px;border-left:2px solid var(--ink)}
+.st-tg{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mute);font-weight:600}
+.st-sub{font-size:12.5px;line-height:1.5;color:var(--ink2);margin-top:8px}
+.st-leg em{font-style:normal;color:var(--mute);font-weight:700}
+.st-goal{font:400 13.5px/1.45 var(--serif);color:var(--ink);margin-top:10px;padding-left:10px;border-left:3px solid var(--accent)}
+.st-wl{display:block;max-width:100%;margin-top:8px;border-radius:8px;background:#fff;padding:4px}
+.st-ets{display:flex;flex-direction:column;gap:2px;margin-top:10px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,#c8553d 12%,transparent)}
+.st-ets b{font:600 20px var(--serif)}
+.st-ets span{font-size:12px;line-height:1.5;color:var(--ink2)}
+.st-stys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.st-stys button{display:flex;flex-direction:column;align-items:center;gap:5px;min-height:56px;padding:6px 4px;border:1px solid var(--line2);border-radius:14px;background:var(--card);font:700 11.5px var(--sans);color:var(--ink)}
+.st-stys button i{width:30px;height:22px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--line2)}
+.st-stys button.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.st-lz{margin-top:10px;padding:12px;border-radius:18px;border:1px dashed var(--line2)}
+.st-lbl{font:700 11.5px var(--sans);color:var(--mute);margin-top:8px}
+.st-lbl:first-child{margin-top:0}
+.st-ch button{flex:1 1 0}
+.st-lz .cta{margin-top:10px}
+.st-lg{margin-top:10px}
+.st-prev{margin-top:10px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 1px var(--line2);overflow:hidden}
+.st-prev svg{display:block;width:100%;height:auto}
+.st-fix{margin-left:6px;border:1px solid currentColor;border-radius:12px;background:none;padding:2px 8px;font:700 12px var(--sans);color:inherit;min-height:28px}
+.st-ov{position:fixed;inset:0;z-index:2000;background:rgba(18,16,22,.72);backdrop-filter:blur(6px);display:flex;flex-direction:column;padding:16px;outline:none;animation:rise .35s var(--ease)}
+.st-ovh{display:flex;align-items:center;gap:10px;color:#f3efe7;margin-bottom:10px}
+.st-ovh b{font:500 22px var(--serif);margin-right:auto}
+.st-ovh .cta{width:auto;margin:0}
+.st-x{color:#f3efe7;background:rgba(255,255,255,.12);border:0;border-radius:50%;width:var(--tap);height:var(--tap);font-size:22px}
+.st-ovb{flex:1;overflow:auto;border-radius:18px;background:#fff}
+.st-ovb svg{display:block;width:100%;height:auto;min-width:720px}
+@media (max-width:760px){.st-ov{padding:8px}.st-ovb svg{min-width:640px}}
 /* Export */
 .ex-cks{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
 .ex-ck{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink2);min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer}
@@ -392,6 +454,84 @@ details.lab-how{margin-top:8px;padding-top:0}
 .labhint.on:active{transform:translate(-50%,0) scale(.97)}
 body.panel-on .labhint{left:calc(50% - 230px)}
 body.lab-on .labhint{display:none}
+
+/* ── Risiken für Menschen (Quartiere) ── */
+.lgrps{display:flex;gap:2px;flex:none;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:22px;padding:3px;box-shadow:var(--sh)}
+.lgrp{border:none;background:none;border-radius:18px;min-height:38px;padding:0 14px;font:800 12.5px var(--sans);color:var(--ink2);white-space:nowrap}
+.lgrp.on{background:var(--ink);color:var(--paper)}
+.sevbar{display:flex;gap:3px;height:44px;margin:4px 0 6px}
+.sevbar button{border:none;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:26px;transition:transform .2s var(--spring),box-shadow .2s}
+.sevbar button b{font:600 15px var(--serif);color:#17151c;line-height:1}
+.sevbar button small{font:700 10px var(--sans);color:rgba(23,21,28,.7)}
+.sevbar .lt{color:#fff!important}
+.sevbar button.on,.sevbar button:hover{box-shadow:0 0 0 2.5px var(--ink);transform:translateY(-2px)}
+.legend .big{display:flex;gap:12px;align-items:baseline;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.legend .big b{font:500 34px/1 var(--serif);letter-spacing:-.02em;color:var(--ink);flex:none}
+.legend .big span{font-size:12.5px;line-height:1.4;color:var(--ink2);font-weight:600}
+.qramp{height:12px;border-radius:7px;margin:4px 0 6px}
+.hov .hsev{width:44px;height:44px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;font:600 22px var(--serif);color:#17151c}
+.hov span+span{margin-top:1px}
+.vbox{display:flex;gap:16px;align-items:center;margin:12px 0 4px;padding:14px 16px;border-radius:20px;background:color-mix(in srgb,var(--c) 22%,var(--card));border:1px solid color-mix(in srgb,var(--c) 55%,transparent)}
+.vnum{flex:none;width:76px;height:76px;border-radius:50%;background:var(--c);display:flex;align-items:baseline;justify-content:center;padding-top:14px;color:#fff;box-shadow:inset 0 0 0 4px rgba(255,255,255,.25)}
+.vnum b{font:500 44px/1 var(--serif)}
+.vnum span{font:700 13px var(--sans);opacity:.8}
+.vtxt{font:600 20px/1.15 var(--serif);display:block;letter-spacing:-.01em}
+.vbox p{font-size:13px;line-height:1.45;color:var(--ink2);margin-top:4px}
+.pbar{position:relative;display:flex;height:14px;border-radius:7px;overflow:visible;background:color-mix(in srgb,var(--ink) 8%,transparent);margin:10px 0 6px}
+.pbar i{height:100%}.pbar i:first-child{border-radius:7px 0 0 7px}
+.pbar s{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dotted var(--ink)}
+.pbl{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--ink2);margin-bottom:6px}
+.pbl span{display:inline-flex;align-items:center;gap:5px}.pbl i{width:9px;height:9px;border-radius:2px;display:inline-block}.pbl b{color:var(--ink);font-variant-numeric:tabular-nums}.pbl .m{opacity:.8}
+.rcl .pts{margin-left:auto;font:600 15px var(--sans);font-style:normal;font-variant-numeric:tabular-nums}.rcl .pts small{font-weight:500;opacity:.6;font-size:11px}
+.chip2.city{background:color-mix(in srgb,#2f6fa8 16%,transparent);color:#2f6fa8}
+.legend .wcity{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.pg{margin-top:12px}
+.pgg{display:flex;flex-wrap:wrap;gap:3px}
+.pgg i{width:9px;height:9px;border-radius:50%;background:var(--line2)}
+.pgg i.o{background:#d0783c}.pgg i.k{background:#e3b500}
+.pgl{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:7px;font-size:11.5px;font-weight:600;color:var(--mute)}
+.pgl i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--line2);margin-right:5px;vertical-align:-1px}
+.pgl i.o{background:#d0783c}.pgl i.k{background:#e3b500}
+.rcs{display:flex;flex-direction:column;gap:8px}
+.rc{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:18px;padding:12px 14px 10px;transition:border-color .2s,box-shadow .2s}
+.rc:hover{border-color:var(--line2);box-shadow:var(--sh)}
+.rc.bad{border-color:rgba(208,88,60,.45);background:linear-gradient(180deg,rgba(208,88,60,.07),transparent 60%),var(--card)}
+.rch{display:flex;align-items:center;gap:10px}
+.rci{flex:none;display:flex}
+.rct{font-size:13.5px;font-weight:800;color:var(--ink)}
+.rcv{margin-left:auto;font:500 26px/1 var(--serif);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.meter{position:relative;height:9px;border-radius:5px;background:var(--soft);margin:10px 0 7px}
+.meter u{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.meter s{position:absolute;top:-4px;bottom:-4px;width:2.5px;border-radius:2px;background:var(--ink)}
+.dots5{display:flex;gap:5px;margin:10px 0 7px}
+.dots5 i{flex:1;height:9px;border-radius:5px;background:var(--soft)}
+.dots5 i.lim{box-shadow:inset 3px 0 0 var(--ink)}
+.rcl{display:flex;align-items:center;gap:8px}
+.rcl small{font-size:11px;color:var(--mute);font-weight:600}
+.chip2{font-size:11px;font-weight:800;border-radius:12px;padding:3px 9px}
+.chip2.bad{background:rgba(208,88,60,.16);color:#a3283a}
+.chip2.ok{background:rgba(95,127,46,.16);color:#3d6a2a}
+.rc p{font-size:13px;line-height:1.5;color:var(--ink2);margin-top:8px}
+.rc .src{display:block;font-size:10.5px;color:var(--mute);margin-top:6px;font-weight:600}
+.fut2 .lead2{font-size:12.5px;color:var(--ink2);font-weight:600;margin-bottom:8px}
+.cal{display:grid;grid-template-columns:44px 1fr 46px;align-items:center;gap:8px;margin-top:5px}
+.cal span{font-size:12px;font-weight:800;color:var(--ink2)}
+.cal div{display:grid;grid-template-columns:repeat(20,1fr);gap:2px}
+.cal i{aspect-ratio:1;border-radius:2px;background:var(--soft)}
+.cal i.on{background:#d0583c}.cal i.mb{background:rgba(208,88,60,.35)}
+.cal b{font:600 15px var(--serif);text-align:right;font-variant-numeric:tabular-nums}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.facts div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.facts b{font:500 22px/1.05 var(--serif);display:block;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.facts span{font-size:11.5px;color:var(--mute);font-weight:600;line-height:1.35;display:block;margin-top:3px}
+.facts small{font-weight:800;opacity:.75}
+.pts-canvas{position:absolute;left:0;top:0;z-index:420;pointer-events:none}
+.ptsbtn{position:fixed;right:14px;bottom:130px;z-index:998;display:none;align-items:center;gap:8px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:22px;min-height:44px;padding:0 14px;font:700 12.5px var(--sans);color:var(--ink2);box-shadow:var(--sh)}
+.ptsbtn.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+body.pts-on .ptsbtn,body:not(.lab-on) .ptsbtn{display:inline-flex}
+body.lab-on .ptsbtn{display:none}
+body.panel-on .ptsbtn{right:494px}
+.introbig{font:500 64px/1 var(--serif);letter-spacing:-.03em;color:#d0583c;margin-bottom:6px}
 
 /* ── Mobil: Kopf kompakt, Linsen oben, Orts-Karte als ziehbares Sheet ── */
 @media (max-width:760px){
@@ -442,19 +582,23 @@ body.lab-on .labhint{display:none}
   .lab-seg button{min-height:50px}
   .lab-dial{width:74px;height:74px}
   .labhint{bottom:auto;top:172px}
+  .lgrps{order:-1}
+  .ptsbtn{bottom:auto;top:172px;right:10px}
+  body.panel-on .ptsbtn{display:none}
+  .vnum{width:64px;height:64px;padding-top:11px}.vnum b{font-size:36px}
   body.panel-on .labhint{left:50%;opacity:0;pointer-events:none}
 }
 </style>
 </head>
 <body>
-<div class="loading" id="loading"><div><span class="dots"><i style="background:#d0583c"></i><i style="background:#c49a2b"></i><i style="background:#4c4ea8"></i></span><span id="ldTxt">Stadt-Signatur wird geladen</span></div></div>
+<div class="loading" id="loading"><div><span class="dots"><i style="background:#d0583c"></i><i style="background:#c49a2b"></i><i style="background:#4c4ea8"></i></span><span id="ldTxt">Utrechts Quartiere werden geladen</span></div></div>
 <div id="map" role="application" aria-label="Karte"></div>
 <div class="hov" id="hov" aria-hidden="true"></div>
 
 <header class="top">
-  <a class="brand" href="index.html" title="Inspector Nice">
+  <a class="brand" href="next.html" title="Inspector Nice">
     <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g transform="translate(13 13)"><path d="M0-2.4 4.2-10.6A11 11 0 0 1 10.6-4.2Z" fill="#d0583c"/><path d="M2.4 0 10.6 4.2A11 11 0 0 1 4.2 10.6Z" fill="#c49a2b"/><path d="M0 2.4-4.2 10.6A11 11 0 0 1-10.6 4.2Z" fill="#4c4ea8"/><path d="M-2.4 0-10.6-4.2A11 11 0 0 1-4.2-10.6Z" fill="#7a8c3a"/><circle r="2.1" fill="#FFD600"/></g></svg>
-    <span class="wm"><b>Inspector Nice</b><small id="cityLbl">Utrecht · Stadt-Signatur</small></span>
+    <span class="wm"><b>Inspector Nice</b><small id="cityLbl">Utrecht · Klimarisiken</small></span>
   </a>
   <div class="search">
     <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -464,7 +608,7 @@ body.lab-on .labhint{display:none}
   <div class="tools">
     <div class="lang" role="group" aria-label="Sprache"><button data-l="de">DE</button><button data-l="en">EN</button><button data-l="nl">NL</button></div>
     <button class="tbtn" id="themeBtn" aria-label="Hell/Dunkel"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
-    <a class="tbtn classicbtn" href="index.html" id="classicBtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M3 10h6"/></svg><span id="classicTxt">Klassische Ansicht</span></a>
+    <a class="tbtn classicbtn" href="index.html?classic" id="classicBtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M3 10h6"/></svg><span id="classicTxt">Klassische Ansicht</span></a>
   </div>
 </header>
 
@@ -488,12 +632,15 @@ body.lab-on .labhint{display:none}
 <script src="js/lab-water.js"></script>
 <script src="js/lab-wind.js"></script>
 <script src="js/lab-area.js"></script>
+<script src="js/lab-studio.js"></script>
+<script src="js/lab-3d.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════════
-// Inspector Nice — Stadt-Signatur
-// Jeder 200-m-Ort ist ein Punkt: Farbe = Umweltlast × soziale Lage
-// (fließend), Größe = Gesamtlast. Jeder Ort hat eine Rosette aus
-// 8 Merkmalen (Nightingale-Prinzip: Fläche ∝ Wert).
+// Inspector Nice — Risiken für Menschen, Quartier für Quartier
+// Utrecht in 111 Buurten. Je Quartier: Hitze, Lärm, Wasser, fehlendes Grün
+// und Schatten — gemessen an Richtwerten (WHO, 3-30-300, Maatlat) und in
+// Menschen ausgedrückt. Dazu soziale Lage, Zukunft (KNMI'23), was hilft,
+// und wo schon gebaut wird. Straßenlabor: js/lab*.js
 // ══════════════════════════════════════════════════════════════
 let lang=(()=>{try{return localStorage.getItem('ul_lang')}catch(e){return null}})()||((navigator.language||'').startsWith('nl')?'nl':(navigator.language||'').startsWith('de')?'de':'en');
 const T=(de,en,nl)=>lang==='en'?en:lang==='nl'?nl:de;
@@ -501,277 +648,296 @@ const STORE={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 const MM=q=>window.matchMedia?matchMedia(q):{matches:false,addEventListener(){}};
 const REDUCED=MM('(prefers-reduced-motion: reduce)').matches;
 const MOBILE=()=>innerWidth<=760;
-
-// Merkmale: höher = mehr Belastung (Wasser: neutrale Eigenschaft)
-const DIM=[
- {k:'heat',  col:'#d0583c', de:'Hitze',        en:'Heat',          nl:'Hitte',          why:['Oberflächentemperatur der Gebäude (Satellit)','surface temperature of buildings (satellite)','oppervlaktetemperatuur gebouwen (satelliet)']},
- {k:'green', col:'#7a8c3a', de:'Grünmangel',   en:'Lack of green', nl:'Groentekort',    why:['Weg zur nächsten Grünfläche ab 0,5 ha, plus Kronendach aus dem Baumregister','distance to green space ≥ 0.5 ha, plus canopy from the tree register','afstand tot groen ≥ 0,5 ha, plus kronendak uit het bomenregister']},
- {k:'dens',  col:'#4a4855', de:'Dichte',       en:'Density',       nl:'Dichtheid',      why:['überbauter Anteil der Fläche','built-up share of the area','bebouwd aandeel van het oppervlak']},
- {k:'noise', col:'#a05a9a', de:'Verkehrslärm', en:'Traffic noise', nl:'Verkeerslawaai', why:['Nähe zu Hauptstraßen, nach Straßenklasse','proximity to main roads, by road class','nabijheid hoofdwegen, per wegklasse']},
- {k:'access',col:'#2a8a9f', de:'Weite Wege',   en:'Long trips',    nl:'Lange afstanden',why:['Weg zu Laden, Schule und Arzt','distance to shop, school and doctor','afstand tot winkel, school en huisarts']},
- {k:'co2',   col:'#c49a2b', de:'Gebäude-CO₂',  en:'Building CO₂',  nl:'Gebouw-CO₂',     why:['Wärmebedarf nach echtem Baujahr (BAG)','heat demand by real construction year (BAG)','warmtevraag naar echt bouwjaar (BAG)']},
- {k:'social',col:'#4c4ea8', de:'Soziale Lage', en:'Social strain', nl:'Sociale druk',   why:['Bijstand, Armut und Einkommen (CBS 2024, je Wijk)','social assistance, poverty and income (CBS 2024, per wijk)','bijstand, armoede en inkomen (CBS 2024, per wijk)']},
- {k:'water', col:'#6aa4cf', de:'Wassernähe',   en:'Near water',    nl:'Nabij water',    why:['Anteil gewässernaher Gebäude (Näherung)','share of buildings near water (approx.)','aandeel gebouwen nabij water (benadering)'], neutral:true},
-];
-// Umwelt × Sozial: fließender Farbraum zwischen vier Ecken (rot ↔ indigo, wie klassische bivariate Karten)
-const CORN={o:[235,230,221],e:[208,88,60],s:[76,78,168],x:[46,29,61]};
+const nf=(v,d)=>v==null?'—':(+v).toFixed(d).replace('.',lang==='en'?'.':',');
+const fmt=v=>v==null?'—':Math.round(v).toLocaleString(lang==='en'?'en-GB':'de-DE');
+const rnd=v=>v==null?null:v<100?Math.round(v/10)*10:v<1000?Math.round(v/50)*50:Math.round(v/100)*100;   // Personen-Schätzungen sichtbar gerundet
 const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
-const rgb=a=>'#'+a.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
-// Dunkel: der unbelastete Ausgangspunkt wird dunkel statt papierhell — Belastung bleibt das Auffälligste
+const rgb=a=>'#'+a.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const isDark=()=>document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&MM('(prefers-color-scheme: dark)').matches);
-const LOW=()=>isDark()?[58,53,66]:[235,230,221];
-const bivRGB=(e,s)=>{const o=LOW(),x=isDark()?[236,210,226]:CORN.x;return mix(mix(o,CORN.e,e),mix(CORN.s,x,e),s);};
-const tint=(hex,t)=>{const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));return rgb(mix(isDark()?[52,48,60]:[238,233,224],c,t));};
-const TYPE_COL=['#b5402e','#d0783c','#c49a2b','#7a8c3a','#3f6f5a','#3f6f9a'];
+const LOW=()=>isDark()?[58,53,66]:[238,233,224];
+const tint=(h,t)=>rgb(mix(LOW(),hex(h),t));
+const SEV=['#e9e2d3','#f0c98a','#e8964a','#d0583c','#a3283a','#6e1530'];                 // 0 … 5 überschrittene Richtwerte
 const I={
- all:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="9" r="5"/><circle cx="16" cy="9" r="5"/><circle cx="12" cy="16" r="5"/></svg>',
- similar:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="5" cy="12" r="2.6"/><circle cx="19" cy="5" r="2.6"/><circle cx="19" cy="19" r="2.6"/><path d="M7.5 11c3-4 6-5 9-5.6M7.5 13c3 4 6 5 9 5.6"/></svg>',
- warn:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b3550" stroke-width="2" stroke-linecap="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg>',
  info:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
  pin:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
  area:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7l8-4 8 4v10l-8 4-8-4Z"/></svg>',
  lab:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="17" cy="6" r="3"/><path d="M17 1.5v1M21.5 6h-1M20.2 2.8l-.7.7"/><path d="M3 21V11h6v10M9 21h12l-6-7H9" stroke-linejoin="round"/></svg>',
+ heat:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0Z"/><path d="M12 10v6"/></svg>',
+ noise:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
+ water:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 9c1.7-1.6 3.3-1.6 5 0s3.3 1.6 5 0 3.3-1.6 5 0 3.3 1.6 5 0"/><path d="M2 15c1.7-1.6 3.3-1.6 5 0s3.3 1.6 5 0 3.3-1.6 5 0 3.3 1.6 5 0"/></svg>',
+ tree:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="9" r="6"/><path d="M12 15v6"/></svg>',
+ shade:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18"/><path d="M6 20c0-5 3-9 6-11 3 2 6 6 6 11"/><path d="M12 9V4"/></svg>',
 };
-const LENSES=[{id:'all'},{id:'types'},...DIM.filter(d=>!d.neutral).map(d=>({id:d.k}))];
 
-let F=null,MU=[],map,dotLayer,arcLayer,selRing=null,lens=STORE.get('nx_lens')||'all',sel=null,simSet=null,typeFilter=null,bivFilter=null,dblOnly=false;
+// ── Die fünf Risiken, je mit Richtwert und Quelle ──
+const RISKS=[
+ {id:'hitze',ic:'heat',col:'#d0583c',v:b=>b.v.uhi,over:v=>v>=1.5,pt:v=>(v-.5)/2,full:'+2,5 °C',f:v=>'+'+nf(v,1)+' °C',lim:'+1,5 °C',limv:1.5,min:0,max:2.6,
+   de:'Hitze',en:'Heat',nl:'Hitte',
+   rule:()=>T('starke Wärmeinsel ab +1,5 °C im Sommermittel (obere Klassen der RIVM-Karte)','strong heat island from +1.5 °C summer average (upper classes of the RIVM map)','sterk hitte-eiland vanaf +1,5 °C zomergemiddelde (hoogste klassen RIVM-kaart)'),
+   src:'RIVM 2022 · GGD-Gezondheidsmonitor 2024'},
+ {id:'laerm',ic:'noise',col:'#a05a9a',v:b=>b.v.lden,over:v=>v>53,pt:v=>(v-53)/10,full:'63 dB',f:v=>nf(v,0)+' dB',lim:'53 dB',limv:53,min:40,max:70,
+   de:'Verkehrslärm',en:'Traffic noise',nl:'Verkeerslawaai',
+   rule:()=>T('WHO-Richtwert Straßenverkehr: 53 dB L<sub>den</sub>','WHO guideline for road traffic: 53 dB L<sub>den</sub>','WHO-richtwaarde wegverkeer: 53 dB L<sub>den</sub>'),src:'RIVM 2022 · GGD-Gezondheidsmonitor 2024'},
+ {id:'gruen',ic:'tree',col:'#5f7f2e',v:b=>b.v.blatt!=null?b.v.blatt:b.v.krone,over:v=>v<30,pt:v=>(30-v)/25,full:'5 %',f:v=>nf(v,0)+' %',lim:'30 %',limv:30,min:0,max:50,inv:true,
+   de:'Kronendach',en:'Tree canopy',nl:'Kronendak',
+   rule:()=>T('Ziel 30 % Kronendach je Quartier (3-30-300-Regel)','target 30 % canopy per neighbourhood (3-30-300 rule)','doel 30 % kronendak per buurt (3-30-300-regel)'),src:'Gemeente Utrecht (Luftbild 2022)'},
+ {id:'schatten',ic:'shade',col:'#3f6f5a',v:b=>b.v.wegschatten,over:v=>v<40,pt:v=>(40-v)/30,full:'10 %',f:v=>nf(v,0)+' %',lim:'40 %',limv:40,min:0,max:60,inv:true,
+   de:'Schatten auf Wegen',en:'Shade on paths',nl:'Schaduw op routes',
+   rule:()=>T('Richtwert 40 % Schatten auf Fuß- und Radwegen (Landelijke Maatlat); Werte der Gemeente 2023','guideline 40 % shade on footpaths and cycle paths (national Maatlat); municipal values 2023','richtwaarde 40 % schaduw op loop- en fietsroutes (Landelijke Maatlat); gemeentewaarden 2023'),src:'Gemeente Utrecht (Schaduw wegdelen 2023)'},
+ {id:'wasser',ic:'water',col:'#2f6fa8',v:b=>b.v.flut,over:v=>v>=3,city:true,f:v=>FLUT(v),lim:T('„klein"','"small"','„klein"'),limv:3,min:0,max:5,cls:true,
+   de:'Überflutung',en:'Flooding',nl:'Overstroming',
+   rule:()=>T('ab Klasse „klein": mehr als 20 cm Wasser öfter als 1× in 3.000 Jahren, an mindestens einer Stelle','from class "small": more than 20 cm of water more often than once in 3,000 years, somewhere in the area','vanaf klasse „klein": meer dan 20 cm water vaker dan 1× per 3.000 jaar, ergens in de buurt'),src:'LIWO, Rijkswaterstaat'},
+];
+const FLUT=v=>v==null?'—':v<1?T('nicht erfasst','not mapped','niet in kaart'):[T('extrem klein','extremely small','extreem klein'),T('sehr klein','very small','zeer klein'),T('klein','small','klein'),T('mittel','medium','middelgroot'),T('groß','large','groot')][Math.round(v)-1];
+// Weitere Kartenthemen (Menschen & Wandel)
+const MORE=[
+ {id:'niedrig',g:'menschen',col:'#4c4ea8',v:b=>b.v.niedrig,f:v=>nf(v,0)+' %',de:'Niedriges Einkommen',en:'Low income',nl:'Laag inkomen',def:()=>T('Haushalte in den unteren 40 % der Einkommen in NL (CBS 2023)','households in the bottom 40 % of incomes in NL (CBS 2023)','huishoudens in de laagste 40 % van de inkomens (CBS 2023)')},
+ {id:'senioren',g:'menschen',col:'#9a6a3a',v:b=>b.v.senioren,f:v=>nf(v,0)+' %',de:'65 Jahre und älter',en:'Aged 65+',nl:'65 jaar en ouder',def:()=>T('Anteil der Einwohner ab 65 (CBS 2024) — bei Hitze besonders gefährdet','share of residents aged 65+ (CBS 2024) — particularly at risk in heat','aandeel inwoners van 65+ (CBS 2024) — extra kwetsbaar bij hitte')},
+ {id:'einsam',g:'menschen',col:'#7a6a8a',v:b=>b.v.einsam,f:v=>nf(v,0)+' %',de:'Stark einsam',en:'Severely lonely',nl:'Sterk eenzaam',def:()=>T('Erwachsene, die sich stark einsam fühlen (GGD-Monitor 2024, Modell) — bei Hitzewellen ein Risiko','adults who feel severely lonely (GGD monitor 2024, model) — a risk in heatwaves','volwassenen die zich sterk eenzaam voelen (GGD-monitor 2024, model) — een risico bij hittegolven')},
+ {id:'kuehl',g:'menschen',col:'#2a8a9f',v:b=>b.v.kuehlinnen,f:v=>nf(v,0)+' %',de:'Kühlt zu Hause gut ab',en:'Can cool down at home',nl:'Kan thuis goed afkoelen',def:()=>T('Erwachsene, die nach eigener Angabe bei Hitze in der Wohnung gut Abkühlung finden (GGD-Monitor 2024, Modell)','adults who say they can find good cooling at home in heat (GGD monitor 2024, model)','volwassenen die volgens zichzelf bij hitte thuis goed verkoeling vinden (GGD-monitor 2024, model)')},
+ {id:'baenke',g:'wandel',col:'#8a6a3a',v:b=>b.v.baenke1000,f:v=>nf(v,1),de:'Bänke je 1.000 Einw.',en:'Benches per 1,000',nl:'Banken per 1.000',def:()=>T('öffentliche Bänke laut Register der Gemeente je 1.000 Einwohner','public benches from the municipal register per 1,000 residents','openbare banken uit het gemeenteregister per 1.000 inwoners')},
+ {id:'solar',g:'wandel',col:'#c49a2b',v:b=>b.v.solar,f:v=>nf(v,0)+' %',de:'Solarstrom',en:'Solar power',nl:'Zonnestroom',def:()=>T('Wohnungen mit Solaranlage (CBS)','homes with solar panels (CBS)','woningen met zonnepanelen (CBS)')},
+ {id:'bau',g:'wandel',col:'#17151c',v:b=>b.bau?b.bau[0]+b.bau[1]:null,f:v=>fmt(v),de:'Baustellen & Genehmigungen',en:'Construction & permits',nl:'Bouw & vergunningen',def:()=>T('Gebäude mit Status „Bau begonnen" oder „Baugenehmigung erteilt" im amtlichen Gebäuderegister (BAG)','buildings with status "construction started" or "permit granted" in the national building register (BAG)','panden met status „bouw gestart" of „bouwvergunning verleend" in de BAG')},
+];
+const GROUPS=[['risiko',()=>T('Risiken','Risks','Risico\'s')],['menschen',()=>T('Menschen','People','Mensen')],['wandel',()=>T('Wandel','Change','Verandering')]];
+const tname=t=>T(t.de,t.en,t.nl);
+const ALL=()=>[...RISKS.map(r=>({...r,g:'risiko'})),...MORE];
+let BU=null,MU=[],KN=null,map,buLayer=null,selLayer=null,theme=STORE.get('nx_theme_r')||'alle',sel=null,sevFilter=null;
+let PTS={on:STORE.get('nx_pts')!=='0',trees:null,furn:null,bouw:null,cv:null};
 
-// ── Rosette (Nightingale): Blattfläche ∝ Wert; gestrichelter Ring = Stadtmitte (50) ──
-function rose(v,size,opt){
-  opt=opt||{};const c=size/2,r0=size*.07,R=size*.47,n=DIM.length,step=2*Math.PI/n,gap=opt.gap!=null?opt.gap:.05;
-  const pt=(r,a)=>[(c+r*Math.sin(a)).toFixed(2),(c-r*Math.cos(a)).toFixed(2)];
-  let s=`<svg class="rose${opt.grow&&!REDUCED?' grow':''}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">`;
-  const r50=r0+(R-r0)*Math.sqrt(.5);
-  s+=`<circle cx="${c}" cy="${c}" r="${R}" fill="none" stroke="var(--line)" stroke-width="1"/><circle cx="${c}" cy="${c}" r="${r50.toFixed(2)}" fill="none" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 3"/>`;
-  DIM.forEach((d,i)=>{
-    const r=r0+(R-r0)*Math.sqrt(Math.max(.02,v[i]/100)),a0=i*step+gap,a1=(i+1)*step-gap;
-    const [x0,y0]=pt(r0,a0),[x1,y1]=pt(r,a0),[x2,y2]=pt(r,a1),[x3,y3]=pt(r0,a1);
-    s+=`<path class="w" d="M${x0} ${y0}L${x1} ${y1}A${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${x2} ${y2}L${x3} ${y3}A${r0} ${r0} 0 0 0 ${x0} ${y0}Z" fill="${d.col}" fill-opacity="${d.neutral?.45:.92}" style="animation-delay:${opt.grow?i*45:0}ms"><title>${T(d.de,d.en,d.nl)}: ${v[i]}</title></path>`;
-  });
-  s+=`<circle cx="${c}" cy="${c}" r="${(r0*.75).toFixed(2)}" fill="var(--card)"/></svg>`;
-  return s;
+// ── Kennzahlen je Quartier ──
+const over=b=>RISKS.filter(r=>{const v=r.v(b);return v!=null&&r.over(v);});
+// Klimabelastung 0–100: je örtlichem Risiko bis 25 Punkte — 0 bei eingehaltenem Richtwert, voll bei deutlicher Überschreitung.
+// Überflutung zählt nicht mit: fast ganz Utrecht liegt in derselben LIWO-Klasse (Stadt-, kein Quartiersunterschied).
+const cl01=x=>Math.max(0,Math.min(1,x));
+const parts=b=>RISKS.filter(r=>r.pt).map(r=>{const v=r.v(b);return {r,v,p:v==null?null:25*cl01(r.pt(v))};});
+const score=b=>{const a=parts(b).filter(x=>x.p!=null);return a.length>=3?a.reduce((s,x)=>s+x.p,0)*4/a.length:null;};
+const GR=[[15,'A',['gering','low','laag'],['geringe Klimabelastung','low climate burden','lage klimaatbelasting']],[30,'B',['mäßig','moderate','matig'],['mäßige Klimabelastung','moderate climate burden','matige klimaatbelasting']],[45,'C',['erhöht','elevated','verhoogd'],['erhöhte Klimabelastung','elevated climate burden','verhoogde klimaatbelasting']],[60,'D',['hoch','high','hoog'],['hohe Klimabelastung','high climate burden','hoge klimaatbelasting']],[101,'E',['sehr hoch','very high','zeer hoog'],['sehr hohe Klimabelastung','very high climate burden','zeer hoge klimaatbelasting']]];
+const grade=s=>s==null?null:GR.findIndex(g=>s<g[0]);
+const gname=i=>T(...GR[i][2]);
+const scol=s=>{const t=cl01(s/75)*5,i=Math.min(4,Math.floor(t));return rgb(mix(hex(SEV[i]),hex(SEV[i+1]),t-i));};
+const gcol=i=>scol([7.5,22.5,37.5,52.5,67.5][i]);
+const sev=score;
+function people(b){
+  const v=b.v,inw=v.inw||0,erw=inw*(1-((v.kinder||0)+.3*(v.jung||0))/100);   // Erwachsene ≈ Einwohner ohne Kinder und jüngste Jugendliche
+  return {inw,erw,ue65:v.senioren!=null?inw*v.senioren/100:null,ue80:v.ue80!=null?inw*v.ue80/100:null,kinder:v.kinder!=null?inw*v.kinder/100:null,
+    belaestigt:v.laermhinder!=null?erw*v.laermhinder/100:null,schlaf:v.schlaf!=null?erw*v.schlaf/100:null,einsam:v.einsam!=null?erw*v.einsam/100:null};
 }
+function ranks(){for(const t of ALL()){const vals=BU.map(b=>t.v(b)).filter(v=>v!=null).sort((a,b)=>a-b);
+  for(const b of BU){b.r=b.r||{};const v=t.v(b);if(v==null||vals.length<2){b.r[t.id]=null;continue;}let lo=0,hi=0;for(const x of vals){if(x<v)lo++;if(x<=v)hi++;}b.r[t.id]=((lo+hi)/2-.5)/(vals.length-1);}}}
+function fillOf(b){
+  if(theme==='alle'){const s=score(b);return s==null?null:scol(s);}
+  const t=ALL().find(x=>x.id===theme),v=t&&t.v(b);if(v==null)return null;
+  if(t.over){const bad=t.over(v),span=Math.max(.1,t.inv?t.limv-t.min:t.max-t.limv),d=Math.min(1,Math.abs(v-t.limv)/span);return bad?tint(t.col,.55+.45*d):tint(t.col,.14+.25*(1-d));}
+  return tint(t.col,.1+.9*(b.r[t.id]||0));
+}
+const shown=b=>sevFilter==null||theme!=='alle'||grade(score(b))===sevFilter;
 
 // ── Karte ──
 map=L.map('map',{zoomControl:false,zoomSnap:.25,zoomDelta:.5,preferCanvas:true,minZoom:11}).setView([52.0907,5.1214],MOBILE()?12.25:13);
 L.control.zoom({position:'bottomright'}).addTo(map);
-const BASE={map:L.tileLayer('https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/grijs/EPSG:3857/{z}/{x}/{y}.png',{maxZoom:21,maxNativeZoom:19,attribution:'© <a href="https://www.pdok.nl" target="_blank" rel="noopener">Kadaster / PDOK</a> · BAG · OSM · CBS'}).addTo(map)};
+const BASE={map:L.tileLayer('https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/grijs/EPSG:3857/{z}/{x}/{y}.png',{maxZoom:21,maxNativeZoom:19,attribution:'© <a href="https://www.pdok.nl" target="_blank" rel="noopener">Kadaster / PDOK</a> · CBS · RIVM · GGD · LIWO · Gemeente Utrecht'}).addTo(map)};
 const BASE_MAKE={photo:()=>L.tileLayer('https://service.pdok.nl/hwh/luchtfotorgb/wmts/v1_0/Actueel_orthoHR/EPSG:3857/{z}/{x}/{y}.jpeg',{maxZoom:21,maxNativeZoom:21,attribution:'Luchtfoto © Beeldmateriaal Nederland / PDOK (CC BY 4.0)'}),
   osm:()=>L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:21,maxNativeZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende'})};
 let baseKey='map';
 function setBase(k){if(k===baseKey)return;map.removeLayer(BASE[baseKey]);BASE[k]=BASE[k]||BASE_MAKE[k]();BASE[k].addTo(map);BASE[k].bringToBack();baseKey=k;document.body.dataset.base=k;}
-const rend=L.canvas({padding:.5,tolerance:4}),svgR=L.svg({padding:.5});
+const rend=L.canvas({padding:.3,tolerance:2}),svgR=L.svg({padding:.5});
+const ll=g=>g.map(p=>p.map(r=>r.map(([x,y])=>[y,x])));
+const opa=()=>map.getZoom()>=15?.25:map.getZoom()>=14?.45:.7;
+function styleOf(b){const f=fillOf(b),on=shown(b);
+  return {fillColor:f||'#9b96a3',fillOpacity:f?(on?opa():.05):.1,color:isDark()?'#f3efe7':'#17151c',opacity:on?.55:.12,weight:b===sel?0:.8,dashArray:f?null:'3 3'};}
+function drawBuurten(){
+  if(buLayer)map.removeLayer(buLayer);buLayer=L.layerGroup();
+  for(const b of BU){const m=L.polygon(ll(b.geom),{renderer:rend,...styleOf(b)});
+    m.on('click',()=>openBuurt(b));m.on('mouseover',e=>hover(b,e.originalEvent));m.on('mousemove',e=>moveHov(e.originalEvent));m.on('mouseout',()=>hover(null));
+    b._m=m;buLayer.addLayer(m);}
+  buLayer.addTo(map);
+}
+function restyle(){BU.forEach(b=>b._m&&b._m.setStyle(styleOf(b)));}
+map.on('zoomend',()=>{if(BU)restyle();drawPts();});
+const center=b=>L.latLngBounds(ll(b.geom).flat(2)).getCenter();
 
-const load=c=>(c.e+c.v[6])/200;                                   // Gesamtlast 0–1
-const baseR=c=>58+52*load(c);                                       // Radius in Metern (Zelle = 200 m)
-function fillOf(c){
-  if(lens==='all')return rgb(bivRGB(c.e/100,c.v[6]/100));
-  if(lens==='types')return TYPE_COL[c.t];
-  const i=DIM.findIndex(d=>d.k===lens);return tint(DIM[i].col,.08+.92*(c.v[i]/100));
+// ── Bäume, Bänke, Baustellen als Punkte (ab Zoom 15) ──
+function loadPts(){
+  if(!PTS.trees)PTS.trees=fetch('data/official/trees_utr.json').then(r=>r.json()).then(j=>{const Y=new Date().getFullYear();return j.t.map(t=>[t[0],t[1],Math.min(6,(1+0.35*((t[2]>1800&&t[2]<=Y)?Y-t[2]:25))/2)]);}).catch(()=>[]);
+  if(!PTS.furn)PTS.furn=fetch('data/official/furniture_utr.json').then(r=>r.json()).catch(()=>null);
+  if(!PTS.bouw)PTS.bouw=fetch('data/official/bouw_utr.json').then(r=>r.ok?r.json():null).catch(()=>null);
+  return Promise.all([PTS.trees,PTS.furn,PTS.bouw]);
 }
-function visible(c){
-  if(typeFilter!=null&&lens==='types'&&c.t!==typeFilter)return false;
-  if(bivFilter!=null&&lens==='all'&&c.b!==bivFilter)return false;
-  if(dblOnly&&!(c.e>=66&&c.v[6]>=66))return false;
-  if(simSet&&!simSet.has(c)&&c!==sel)return false;
-  return true;
-}
-function styleOf(c){return {fillColor:c._fill||fillOf(c),fillOpacity:visible(c)?(c===sel?1:.9):.1,stroke:false};}
-function drawDots(){
-  if(dotLayer)map.removeLayer(dotLayer);
-  dotLayer=L.layerGroup();
-  F.cells.forEach(c=>{
-    c._fill=fillOf(c);
-    const m=L.circle(c.c,{renderer:rend,radius:REDUCED?baseR(c):1,...styleOf(c)});
-    m.on('click',()=>openPlace(c));
-    m.on('mouseover',e=>hover(c,e.originalEvent));m.on('mousemove',e=>moveHov(e.originalEvent));m.on('mouseout',()=>hover(null));
-    c._m=m;dotLayer.addLayer(m);
+function drawPts(){
+  if(!PTS.cv){PTS.cv=document.createElement('canvas');PTS.cv.className='pts-canvas';map.getContainer().appendChild(PTS.cv);}
+  const c=PTS.cv,sz=map.getSize(),dpr=Math.min(2,devicePixelRatio||1),g=c.getContext('2d');
+  if(c.width!==Math.round(sz.x*dpr)||c.height!==Math.round(sz.y*dpr)){c.width=Math.round(sz.x*dpr);c.height=Math.round(sz.y*dpr);c.style.width=sz.x+'px';c.style.height=sz.y+'px';}
+  if(!g||typeof g.clearRect!=='function')return;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,c.width,c.height);
+  const on=PTS.on&&map.getZoom()>=15&&!(window.LAB&&LAB.on);document.body.classList.toggle('pts-on',on);if(!on)return;
+  loadPts().then(([trees,furn,bouw])=>{if(!PTS.on||map.getZoom()<15||(window.LAB&&LAB.on))return;
+    g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,sz.x,sz.y);const bb=map.getBounds().pad(.05),s=bb.getSouth(),n=bb.getNorth(),w=bb.getWest(),e=bb.getEast();
+    const mpp=40075016.686*Math.cos(map.getCenter().lat*Math.PI/180)/(256*Math.pow(2,map.getZoom())),dark=isDark();
+    g.fillStyle=dark?'rgba(120,180,110,.55)':'rgba(79,122,58,.42)';g.strokeStyle=dark?'rgba(160,220,150,.6)':'rgba(47,79,34,.55)';g.lineWidth=.7;
+    let k=0;g.beginPath();for(const t of trees){if(t[0]<s||t[0]>n||t[1]<w||t[1]>e)continue;const p=map.latLngToContainerPoint([t[0],t[1]]),r=Math.max(1.6,t[2]/mpp);g.moveTo(p.x+r,p.y);g.arc(p.x,p.y,r,0,2*Math.PI);if(++k%60===0){g.fill();g.stroke();g.beginPath();}}g.fill();g.stroke();
+    if(furn){const sq=(arr,col,z)=>{g.fillStyle=col;for(const [la,lo] of arr){if(la<s||la>n||lo<w||lo>e)continue;const p=map.latLngToContainerPoint([la,lo]);g.fillRect(p.x-z/2,p.y-z/2,z,z);}};
+      sq(furn.bank,dark?'#f3efe7':'#17151c',4);sq(furn.picknicktafel,'#8a6a3a',4.5);sq(furn.speelvoorziening,'#e3b500',4);}
+    if(bouw)for(const p of bouw.p){if(p[0]<s||p[0]>n||p[1]<w||p[1]>e||p[2]>1)continue;const q=map.latLngToContainerPoint([p[0],p[1]]);   // Baustelle: gelb-schwarze Raute
+      g.save();g.translate(q.x,q.y);g.rotate(Math.PI/4);g.fillStyle='#FFD600';g.strokeStyle='#17151c';g.lineWidth=1.4;g.fillRect(-4.5,-4.5,9,9);g.strokeRect(-4.5,-4.5,9,9);g.restore();}
   });
-  dotLayer.addTo(map);
-  if(!REDUCED)reveal();
 }
-// Eröffnung: Punkte wachsen von der Mitte nach außen
-function reveal(){
-  const ctr=map.getCenter(),t0=performance.now();
-  const dly=F.cells.map(c=>Math.hypot(c.c[0]-ctr.lat,(c.c[1]-ctr.lng)*.62)*9000);
-  (function f(now){now=now||performance.now();let busy=false;
-    F.cells.forEach((c,i)=>{const t=Math.min(1,Math.max(0,(now-t0-dly[i])/520));if(t<1)busy=true;const k=1-Math.pow(1-t,3);c._m.setRadius(Math.max(1,baseR(c)*k*(1+.12*Math.sin(Math.PI*t))));});
-    if(busy)requestAnimationFrame(f);})(t0);
-}
-// Linsenwechsel: Farben gleiten in 450 ms ineinander
-function recolor(){
-  const from=F.cells.map(c=>c._fill),to=F.cells.map(fillOf);
-  const P=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
-  if(REDUCED){F.cells.forEach((c,i)=>{c._fill=to[i];c._m.setStyle(styleOf(c));});return;}
-  const A=from.map(P),B=to.map(P),t0=performance.now();
-  (function f(now){now=now||performance.now();const t=Math.min(1,(now-t0)/450),k=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-    F.cells.forEach((c,i)=>{c._fill=rgb(mix(A[i],B[i],k));c._m.setStyle(styleOf(c));});
-    if(t<1)requestAnimationFrame(f);})(t0);
-}
-function restyle(){F.cells.forEach(c=>c._m&&c._m.setStyle(styleOf(c)));}
+map.on('moveend zoomend resize',drawPts);map.on('movestart zoomstart',()=>{if(PTS.cv){const g=PTS.cv.getContext('2d');g&&g.clearRect&&g.clearRect(0,0,PTS.cv.width,PTS.cv.height);}});
 
-// ── Vorschau beim Überfahren (Desktop) ──
+// ── Vorschau beim Überfahren ──
 const hov=document.getElementById('hov');
-const typeName=t=>F.clusters[t].name[lang]||F.clusters[t].name.de;
-function hover(c,ev){
-  if(!c||MOBILE()){hov.classList.remove('on');return;}
-  hov.innerHTML=rose(c.v,64,{gap:.07})+`<div><b>${c.w}</b><span>${typeName(c.t)}</span></div>`;
-  hov.classList.add('on');moveHov(ev);
-  if(c._m&&!REDUCED)c._m.setRadius(baseR(c)*1.25);
-  hov._c&&hov._c!==c&&hov._c._m&&hov._c._m.setRadius(baseR(hov._c));hov._c=c;
-  map.getContainer().style.cursor='pointer';
+function hover(b,ev){
+  if(!b||MOBILE()){hov.classList.remove('on');if(hov._b&&hov._b._m)hov._b._m.setStyle(styleOf(hov._b));hov._b=null;return;}
+  const s=score(b),g=grade(s),top=parts(b).filter(x=>x.p>0).sort((x,y)=>y.p-x.p).slice(0,2);
+  hov.innerHTML=`<div class="hsev" style="background:${s==null?'#ccc':scol(s)}">${s==null?'–':GR[g][1]}</div><div><b>${b.name}</b><span>${s==null?T('keine Angabe','no data','geen gegevens'):`${T('Klimabelastung','Climate burden','Klimaatbelasting')} ${Math.round(s)}/100 · ${gname(g)}`}${top.length?' · '+top.map(x=>tname(x.r)).join(', '):''}</span><span>${fmt(b.v.inw)} ${T('Menschen','people','mensen')}</span></div>`;
+  hov.classList.add('on');moveHov(ev);if(hov._b&&hov._b!==b&&hov._b._m)hov._b._m.setStyle(styleOf(hov._b));hov._b=b;
+  if(b._m&&b!==sel)b._m.setStyle({weight:2.4,opacity:.95});map.getContainer().style.cursor='pointer';
 }
 function moveHov(ev){if(!ev)return;const x=Math.min(ev.clientX+16,innerWidth-hov.offsetWidth-10),y=Math.min(ev.clientY+16,innerHeight-hov.offsetHeight-10);hov.style.left=x+'px';hov.style.top=y+'px';}
-map.on('mouseout',()=>{hover(null);if(hov._c&&hov._c._m)hov._c._m.setRadius(baseR(hov._c));map.getContainer().style.cursor='';});
-document.addEventListener('mousemove',e=>{if(hov.classList.contains('on')&&!e.target.closest('.leaflet-container')){hover(null);}});
+map.on('mouseout',()=>{hover(null);map.getContainer().style.cursor='';});
 
-// ── Linsen ──
-function lensMeta(id){const d=DIM.find(x=>x.k===id);
-  if(d)return {name:T(d.de,d.en,d.nl),sw:`background:${d.col}`};
-  if(id==='types')return {name:T('Stadttypen','City types','Stadstypen'),sw:'background:conic-gradient('+TYPE_COL.map((c,i)=>`${c} ${i*60}deg ${(i+1)*60}deg`).join(',')+')'};
-  return {name:T('Gesamtbild','Full picture','Totaalbeeld'),sw:`background:linear-gradient(135deg,${rgb(CORN.e)},${rgb(CORN.x)} 55%,${rgb(CORN.s)})`};}
+// ── Themen ──
 function renderLenses(){
-  document.getElementById('lenses').innerHTML=`<button class="lens labchip" id="labChip">${I.lab}${T('Straßenlabor','Street lab','Straatlab')}</button>`+LENSES.map(l=>{const m=lensMeta(l.id);return `<button class="lens${lens===l.id?' on':''}" data-id="${l.id}" aria-pressed="${lens===l.id}"><span class="sw" style="${m.sw}"></span>${m.name}</button>`;}).join('');
-  document.querySelectorAll('.lens[data-id]').forEach(b=>b.onclick=()=>setLens(b.dataset.id));
-  document.getElementById('labChip').onclick=()=>openLab(sel?sel.c:null);
+  const t=ALL().find(x=>x.id===theme),g=theme==='alle'?'risiko':t?t.g:'risiko';
+  const groups=GROUPS.map(([id,l])=>`<button class="lgrp${id===g?' on':''}" data-g="${id}">${l()}</button>`).join('');
+  const chips=(g==='risiko'?[{id:'alle',col:'#d0583c',de:'Alle Risiken',en:'All risks',nl:'Alle risico\'s'}]:[]).concat(ALL().filter(x=>x.g===g)).map(x=>`<button class="lens${theme===x.id?' on':''}" data-id="${x.id}" aria-pressed="${theme===x.id}"><span class="sw" style="background:${x.id==='alle'?`conic-gradient(${SEV.slice(1).join(',')})`:x.col}"></span>${tname(x)}</button>`).join('');
+  document.getElementById('lenses').innerHTML=`<button class="lens labchip" id="labChip">${I.lab}${T('Straßenlabor','Street lab','Straatlab')}</button><div class="lgrps" role="tablist">${groups}</div>${chips}`;
+  document.querySelectorAll('.lens[data-id]').forEach(b=>b.onclick=()=>setTheme(b.dataset.id));
+  document.querySelectorAll('.lgrp').forEach(b=>b.onclick=()=>setTheme(b.dataset.g==='risiko'?'alle':ALL().find(x=>x.g===b.dataset.g).id));
+  document.getElementById('labChip').onclick=()=>openLab(sel?center(sel):null);
 }
-function setLens(id){
-  if(id===lens)return;lens=id;STORE.set('nx_lens',lens);typeFilter=null;bivFilter=null;
-  renderLenses();renderLegend();recolor();if(sel)markDims();
-  const on=document.querySelector('.lens.on');if(on&&on.scrollIntoView)on.scrollIntoView({behavior:REDUCED?'auto':'smooth',inline:'nearest',block:'nearest'});
-}
+function setTheme(id){if(id===theme)return;theme=id;STORE.set('nx_theme_r',id);sevFilter=null;renderLenses();renderLegend();restyle();}
 
-// ── Legende: interaktiv ──
+// ── Legende ──
 function renderLegend(){
-  const el=document.getElementById('legend');el.className='legend'+(lens==='all'?' l-all':'');
-  const nDbl=F.cells.filter(c=>c.e>=66&&c.v[6]>=66).length;
-  if(lens==='all'){
-    const cnt=Array(9).fill(0);F.cells.forEach(c=>cnt[c.b]++);
-    let g='';for(let e=2;e>=0;e--)for(let s=0;s<3;s++){const b=e*3+s,col=bivRGB(e/2,s/2);g+=`<button data-b="${b}" class="${(e+s<2&&!isDark())||(e===2&&s===2&&isDark())?'light':''}${bivFilter===b?' on':''}" style="background:${rgb(col)}" aria-label="${cnt[b]}">${cnt[b]}</button>`;}
-    el.innerHTML=`<h4>${T('Gesamtbild','Full picture','Totaalbeeld')}</h4><p class="lead">${T('Farbe = Klima-/Umweltlast und soziale Lage zugleich. Größe = wie viel zusammenkommt.','Colour = climate/environmental load and social strain at once. Size = how much adds up.','Kleur = klimaat-/milieudruk én sociale druk. Grootte = hoeveel er samenkomt.')}</p>
-      <div class="bivw"><div class="biv">${g}</div><div class="bivl"><span>↑ ${T('Klima & Umwelt','Climate & environment','Klimaat & milieu')}</span><em>${T('Feld antippen = nur diese Orte','tap a square = only those places','tik een vak = alleen die plekken')}</em></div></div>
-      <div class="xa">${T('soziale Lage','social strain','sociale druk')} →</div>
-      <div class="stat"><button id="dblBtn" class="${dblOnly?'on':''}"><b>${nDbl}</b><span>${T('Orte mit doppelter Belastung','places with a double burden','plekken met dubbele last')}</span></button><button id="allBtn"><b>${F.cells.length}</b><span>${T('Orte à 200 m','places of 200 m','plekken van 200 m')}</span></button></div>`;
-    el.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const v=+b.dataset.b;bivFilter=bivFilter===v?null:v;dblOnly=false;renderLegend();restyle();});
-    el.querySelector('#dblBtn').onclick=()=>{dblOnly=!dblOnly;bivFilter=null;renderLegend();restyle();};
-    el.querySelector('#allBtn').onclick=()=>{dblOnly=false;bivFilter=null;renderLegend();restyle();};
-  } else if(lens==='types'){
-    el.innerHTML=`<h4>${T('Stadttypen','City types','Stadstypen')}</h4><p class="lead">${T('Orte mit ähnlicher Signatur, automatisch gruppiert. Antippen filtert.','Places with a similar signature, grouped automatically. Tap to filter.','Plekken met een vergelijkbare signatuur, automatisch gegroepeerd. Tik filtert.')}</p><div class="types">${F.clusters.map(c=>`<button data-t="${c.id}" class="${typeFilter!=null&&typeFilter!==c.id?'dim':''}">${rose(c.c,40,{gap:.08})}<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${TYPE_COL[c.id]};margin-right:6px"></span>${c.name[lang]||c.name.de}</span><em>${c.n}</em></button>`).join('')}</div>`;
-    el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{const t=+b.dataset.t;typeFilter=typeFilter===t?null:t;renderLegend();restyle();});
-  } else {
-    const i=DIM.findIndex(x=>x.k===lens),d=DIM[i],bins=Array(20).fill(0);
-    F.cells.forEach(c=>bins[Math.min(19,Math.floor(c.v[i]/5))]++);const mx=Math.max(...bins);
-    el.innerHTML=`<h4>${T(d.de,d.en,d.nl)}</h4><p class="lead">${T(...d.why)} — ${T('so verteilt sich Utrecht.','this is how Utrecht spreads out.','zo verdeelt Utrecht zich.')}</p>
-      <div class="hist-wrap"><div class="hist">${bins.map((n,k)=>`<i style="height:${Math.round(n/mx*100)}%;background:${tint(d.col,.15+.85*(k/19))}"></i>`).join('')}</div>${sel?`<span class="marker" data-v="${sel.v[i]}" style="left:calc(${sel.v[i]}% - 1px)"></span>`:''}</div>
-      <div class="rlab"><span>${T('wenig','low','weinig')}</span><span>${T('Stadtmitte','city median','stadsmediaan')}</span><span>${T('viel','high','veel')}</span></div>`;
-  }
+  const el=document.getElementById('legend');el.className='legend';
+  if(theme==='alle'){
+    const cnt=[0,0,0,0,0],ppl=[0,0,0,0,0];BU.forEach(b=>{const g=grade(score(b));if(g!=null){cnt[g]++;ppl[g]+=b.v.inw||0;}});
+    const hi=ppl[3]+ppl[4],W=RISKS.find(r=>r.city),wv=BU.map(b=>b.v.flut).filter(v=>v!=null&&v>=1),wm=wv.filter(v=>v===4).length,w50=BU.map(b=>b.v.flut2050).filter(v=>v!=null&&v>=1);
+    const mode=a=>{const c={};a.forEach(v=>c[v]=(c[v]||0)+1);return +Object.entries(c).sort((x,y)=>y[1]-x[1])[0][0];};
+    el.innerHTML=`<h4>${T('Klimabelastung je Quartier','Climate burden per neighbourhood','Klimaatbelasting per buurt')}</h4>
+      <p class="lead">${T('0–100 Punkte. Hitze, Verkehrslärm, Kronendach und Schatten auf Wegen geben je bis zu 25: null Punkte, solange der Richtwert eingehalten ist, volle Punkte bei deutlicher Überschreitung.','0–100 points. Heat, traffic noise, canopy and shade on paths give up to 25 each: zero while the guideline is met, full points when it is clearly exceeded.','0–100 punten. Hitte, verkeerslawaai, kronendak en schaduw op routes geven elk tot 25: nul zolang de richtwaarde gehaald wordt, volle punten bij duidelijke overschrijding.')}</p>
+      <div class="sevbar">${cnt.map((n,g)=>`<button data-s="${g}" class="${sevFilter===g?'on':''}" style="background:${gcol(g)};flex:${Math.max(n,4)}" title="${gname(g)} · ${n} ${T('Quartiere','neighbourhoods','buurten')} · ${fmt(rnd(ppl[g]))} ${T('Menschen','people','mensen')}"><b class="${g>=3?'lt':''}">${GR[g][1]}</b><small class="${g>=3?'lt':''}">${n}</small></button>`).join('')}</div>
+      <div class="rlab"><span>A ${gname(0)} &lt; 15</span><span>E ${gname(4)} ≥ 60</span></div>
+      <div class="big"><b>${fmt(rnd(hi))}</b><span>${T('Menschen leben in Quartieren mit hoher oder sehr hoher Klimabelastung (D, E)','people live in neighbourhoods with a high or very high climate burden (D, E)','mensen wonen in buurten met een hoge of zeer hoge klimaatbelasting (D, E)')}</span></div>
+      ${wv.length?`<p class="lead wcity"><b style="color:${W.col}">${tname(W)}</b> ${T(`trifft fast die ganze Stadt gleich: ${wm} von ${wv.length} Quartieren liegen heute in der Klasse „${FLUT(mode(wv))}"${w50.length?`, 2050 — wenn alle Deiche die Norm erfüllen — „${FLUT(mode(w50))}"`:''}. Darum steht sie in jedem Profil, zählt aber nicht in die Punkte.`,`affects almost the whole city alike: ${wm} of ${wv.length} neighbourhoods are in class "${FLUT(mode(wv))}" today${w50.length?`, in 2050 — if all dikes meet the standard — "${FLUT(mode(w50))}"`:''}. So it is shown in every profile but not counted in the points.`,`raakt bijna de hele stad gelijk: ${wm} van ${wv.length} buurten liggen nu in klasse „${FLUT(mode(wv))}"${w50.length?`, in 2050 — als alle dijken aan de norm voldoen — „${FLUT(mode(w50))}"`:''}. Daarom staat het in elk profiel, maar telt het niet mee in de punten.`)}</p>`:''}`;
+    el.querySelectorAll('[data-s]').forEach(x=>x.onclick=()=>{const s=+x.dataset.s;sevFilter=sevFilter===s?null:s;renderLegend();restyle();});
+    return;}
+  const t=ALL().find(x=>x.id===theme),vals=BU.map(b=>t.v(b)).filter(v=>v!=null).sort((a,b)=>a-b),miss=BU.length-vals.length;
+  if(t.over){
+    const n=BU.filter(b=>{const v=t.v(b);return v!=null&&t.over(v);}),pp=n.reduce((s,b)=>s+(b.v.inw||0),0);
+    el.innerHTML=`<h4>${tname(t)}</h4><p class="lead">${t.rule()}</p>
+      <div class="big"><b>${n.length}</b><span>${T('von','of','van')} ${vals.length} ${T('Quartieren über dem Richtwert','neighbourhoods above the guideline','buurten boven de richtwaarde')} — ${fmt(rnd(pp))} ${T('Menschen leben dort','people live there','mensen wonen er')}</span></div>
+      <div class="rlab"><span>${t.f(vals[0])}</span><span>${T('Richtwert','guideline','richtwaarde')} ${t.lim}</span><span>${t.f(vals[vals.length-1])}</span></div>
+      <p class="lead" style="margin:6px 0 0">${T('Quelle','Source','Bron')}: ${t.src}${miss?` · ${miss} ${T('ohne Angabe','without data','zonder gegevens')}`:''}</p>`;
+    return;}
+  const q=p=>vals[Math.min(vals.length-1,Math.round(p*(vals.length-1)))];
+  el.innerHTML=`<h4>${tname(t)}</h4><p class="lead">${t.def()}</p>
+    <div class="qramp" style="background:linear-gradient(90deg,${[0,.5,1].map(p=>tint(t.col,.1+.9*p)+' '+(p*100)+'%').join(',')})"></div>
+    <div class="rlab"><span>${t.f(q(0))}</span><span>${T('Mitte','median','mediaan')} ${t.f(q(.5))}</span><span>${t.f(q(1))}</span></div>
+    ${miss?`<p class="lead" style="margin:8px 0 0">${miss} ${T('Quartiere ohne Angabe (gestrichelt) — CBS hält Werte kleiner Gruppen geheim.','neighbourhoods without data (dashed) — CBS withholds values for small groups.','buurten zonder gegevens (gestreept) — CBS houdt waarden van kleine groepen geheim.')}</p>`:''}`;
 }
 
-// ── Orts-Karte ──
-function say(c){
-  const top=DIM.map((d,i)=>({d,v:c.v[i]})).filter(x=>!x.d.neutral&&x.d.k!=='social');
-  const burdens=top.filter(x=>x.v>=66).sort((a,b)=>b.v-a.v).slice(0,2);
-  const strengths=top.filter(x=>x.v<=30).sort((a,b)=>a.v-b.v).slice(0,2);
-  const phr={heat:T('heißer','hotter','heter'),green:T('grünärmer','greener-starved','groenarmer'),dens:T('dichter bebaut','more built-up','dichter bebouwd'),noise:T('lauter','noisier','lawaaiiger'),access:T('weiter weg von Laden, Schule und Arzt','further from shop, school and doctor','verder van winkel, school en arts'),co2:T('energieintensiver gebaut','more energy-intensive','energie-intensiever gebouwd')};
-  if(lang==='en')phr.green='shorter on green';
-  const good={heat:T('kühl','cool','koel'),green:T('viel Grün in Reichweite','plenty of green nearby','veel groen dichtbij'),dens:T('offen bebaut','openly built','open bebouwd'),noise:T('ruhig','quiet','rustig'),access:T('kurze Wege zum Alltag','short trips to daily needs','korte afstanden'),co2:T('energieeffizient gebaut','energy-efficient','energiezuinig')};
-  let s='';
-  if(burdens.length)s+=T('Dieser Ort ist ','This place is ','Deze plek is ')+burdens.map(x=>`<b>${phr[x.d.k]}</b> ${T('als','than','dan')} ${x.v} %`).join(T(' und ',' and ',' en '))+T(' der Stadt.',' of the city.',' van de stad.');
-  else s+=T('Bei Klima und Umwelt liegt dieser Ort <b>im Mittelfeld</b> Utrechts.','For climate and environment this place is <b>mid-range</b> in Utrecht.','Qua klimaat en milieu zit deze plek <b>in de middenmoot</b> van Utrecht.');
-  if(strengths.length)s+=' '+T('Dafür: ','On the plus side: ','Wel: ')+strengths.map(x=>good[x.d.k]).join(T(' und ',' and ',' en '))+'.';
-  return s;
+// ── Risiko-Profil eines Quartiers ──
+function meter(r,v){                                                       // Wert gegen Richtwert, als Balken mit Richtwert-Strich
+  const pct=x=>Math.max(0,Math.min(100,100*(x-r.min)/(r.max-r.min)));
+  if(r.cls)return `<div class="dots5">${[1,2,3,4,5].map(k=>`<i class="${v!=null&&v>=k?'on':''}${k===3?' lim':''}" style="${v!=null&&v>=k?`background:${tint(r.col,.35+.13*k)}`:''}"></i>`).join('')}</div>`;
+  return `<div class="meter"><u style="width:${pct(v)}%;background:${r.over(v)?r.col:tint(r.col,.45)}"></u><s style="left:${pct(r.limv)}%"></s></div>`;
 }
-function matchMuster(c){
-  const v=Object.fromEntries(DIM.map((d,i)=>[d.k,c.v[i]]));
-  return [
-    {id:'M3',s:Math.max(v.heat,v.green),why:T('heiß, wenig Grün','hot, little green','heet, weinig groen')},
-    {id:'M4',s:(v.dens+v.heat)/2,why:T('dicht und heiß','dense and hot','dicht en heet')},
-    {id:'M7',s:(v.social+v.heat)/2,why:T('sozial belastet und heiß — Kinder zuerst','socially strained and hot — children first','sociaal kwetsbaar en heet — kinderen eerst')},
-    {id:'M5',s:v.noise,why:T('laut — weniger Autoverkehr hilft','noisy — less car traffic helps','lawaaiig — minder autoverkeer helpt')},
-    {id:'M1',s:v.access,why:T('weite Wege — gute Fußwege zählen','long trips — good footpaths matter','lange afstanden — goede voetpaden tellen')},
-  ].filter(x=>x.s>=60).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>({...x,m:MU.find(m=>m.id===x.id)})).filter(x=>x.m);
+function riskCard(r,b,P){
+  const v=r.v(b);if(v==null)return '';
+  const bad=r.over(v),v2=b.v;let line='';
+  if(r.id==='hitze')line=[P.ue65!=null?T(`≈ <b>${fmt(rnd(P.ue65))}</b> Menschen über 65`,`≈ <b>${fmt(rnd(P.ue65))}</b> people over 65`,`≈ <b>${fmt(rnd(P.ue65))}</b> mensen boven 65`)+(P.ue80!=null?T(`, davon ≈ ${fmt(rnd(P.ue80))} über 80`,`, ≈ ${fmt(rnd(P.ue80))} of them over 80`,`, waarvan ≈ ${fmt(rnd(P.ue80))} boven 80`):''):null,
+    v2.kuehlinnen!=null?T(`nur <b>${nf(v2.kuehlinnen,0)} %</b> der Erwachsenen können bei Hitze zu Hause gut abkühlen`,`only <b>${nf(v2.kuehlinnen,0)} %</b> of adults can cool down well at home in heat`,`slechts <b>${nf(v2.kuehlinnen,0)} %</b> van de volwassenen kan bij hitte thuis goed afkoelen`):null].filter(Boolean).join(' · ');
+  if(r.id==='laerm')line=[P.belaestigt!=null?T(`≈ <b>${fmt(rnd(P.belaestigt))}</b> Erwachsene stark belästigt`,`≈ <b>${fmt(rnd(P.belaestigt))}</b> adults severely annoyed`,`≈ <b>${fmt(rnd(P.belaestigt))}</b> volwassenen ernstig gehinderd`):null,
+    P.schlaf!=null?T(`≈ <b>${fmt(rnd(P.schlaf))}</b> schlafen schlecht`,`≈ <b>${fmt(rnd(P.schlaf))}</b> sleep badly`,`≈ <b>${fmt(rnd(P.schlaf))}</b> slapen slecht`):null].filter(Boolean).join(' · ');
+  if(r.id==='gruen')line=v2.gruenluecke>0?T(`bis 40 % Grün fehlen ≈ <b>${nf(v2.gruenluecke,1)} ha</b> — etwa ${fmt(Math.max(1,Math.round(v2.gruenluecke*1.4)))} Fußballfelder`,`≈ <b>${nf(v2.gruenluecke,1)} ha</b> short of 40 % green — about ${fmt(Math.max(1,Math.round(v2.gruenluecke*1.4)))} football pitches`,`≈ <b>${nf(v2.gruenluecke,1)} ha</b> tekort tot 40 % groen — ongeveer ${fmt(Math.max(1,Math.round(v2.gruenluecke*1.4)))} voetbalvelden`):(v2.baeume?T(`${fmt(v2.baeume)} Bäume im Register`,`${fmt(v2.baeume)} trees in the register`,`${fmt(v2.baeume)} bomen in het register`):'');
+  if(r.id==='schatten')line=T(`von jedem Meter Fuß- und Radweg liegen <b>${nf(v,0)} cm</b> im Schatten`,`of every metre of footpath and cycle path, <b>${nf(v,0)} cm</b> are shaded`,`van elke meter loop- en fietspad ligt <b>${nf(v,0)} cm</b> in de schaduw`);
+  if(r.id==='wasser')line=v2.flut2050!=null?T(`2050, wenn alle Deiche die Norm erfüllen: „${FLUT(v2.flut2050)}"`,`2050, if all dikes meet the standard: "${FLUT(v2.flut2050)}"`,`2050, als alle dijken aan de norm voldoen: „${FLUT(v2.flut2050)}"`):'';
+  return `<button class="rc${bad?' bad':''}" data-t="${r.id}"><div class="rch"><span class="rci" style="color:${r.col}">${I[r.ic]}</span><span class="rct">${tname(r)}</span><span class="rcv">${r.f(v)}</span></div>
+    ${meter(r,v)}<div class="rcl">${r.city?`<span class="chip2 city">${T('stadtweit','city-wide','stadsbreed')}</span>`:`<span class="chip2 ${bad?'bad':'ok'}">${bad?T('über Richtwert','above guideline','boven richtwaarde'):T('im Rahmen','within guideline','binnen richtwaarde')}</span>`}<small>${T('Richtwert','guideline','richtwaarde')} ${r.lim}</small>${r.pt?`<em class="pts">${Math.round(25*cl01(r.pt(v)))}<small>/25</small></em>`:''}</div>
+    ${line?`<p>${line}</p>`:''}<small class="src">${r.src}</small></button>`;
 }
-function openPlace(c){
-  sel=c;simSet=null;clearArcs();hover(null);
-  restyle();ring(c);renderPanel(c);
-  const P=document.getElementById('panel');P.classList.add('on');document.body.classList.add('panel-on');
-  if(MOBILE())sheet('half');
-  focusPlace(c);
-  try{const u=new URL(location.href);u.searchParams.set('at',c.c.join(','));history.replaceState(null,'',u);}catch(e){}
-  if(lens!=='all'&&lens!=='types')renderLegend();
+function peopleGrid(b,P){
+  const unit=P.inw>8000?200:100,n=Math.max(1,Math.round(P.inw/unit)),k65=Math.round((P.ue65||0)/unit),kk=Math.round((P.kinder||0)/unit);
+  let s='';for(let i=0;i<n;i++){const c=i<k65?'o':i<k65+kk?'k':'';s+=`<i class="${c}"></i>`;}
+  return `<div class="pg"><div class="pgg">${s}</div><div class="pgl"><span><i></i>${T(`1 Punkt = ${unit} Menschen`,`1 dot = ${unit} people`,`1 punt = ${unit} mensen`)}</span><span><i class="o"></i>65+ (${nf(b.v.senioren,0)} %)</span><span><i class="k"></i>${T('Kinder','children','kinderen')} (${nf(b.v.kinder,0)} %)</span></div></div>`;
 }
-// Ort in die Mitte der freien Fläche rücken (neben der Orts-Karte bzw. über dem Sheet)
-function focusPlace(c){
-  const p=flyPad(),sz=map.getSize(),z=Math.max(map.getZoom(),MOBILE()?13.75:13.5);
-  const fx=(p.paddingTopLeft[0]+sz.x-p.paddingBottomRight[0])/2,fy=(p.paddingTopLeft[1]+sz.y-p.paddingBottomRight[1])/2;
-  const pt=map.latLngToContainerPoint(c.c),inside=pt.x>p.paddingTopLeft[0]&&pt.x<sz.x-p.paddingBottomRight[0]&&pt.y>p.paddingTopLeft[1]&&pt.y<sz.y-p.paddingBottomRight[1];
-  if(inside&&z===map.getZoom())return;
-  if(!sz.x||!sz.y){map.setView(c.c,z,{animate:false});return;}                // Karte ohne Größe (verborgen): flyTo rechnet sonst mit NaN
-  const target=map.project(c.c,z).subtract(L.point(fx-sz.x/2,fy-sz.y/2));
-  map.flyTo(map.unproject(target,z),z,{duration:REDUCED?0:.7});
+function futureBlock(b){
+  if(!KN)return '';const t=KN.ind.tropisch,n=KN.ind.nachten,r50=Object.values(t.y[2050]),r00=Object.values(t.y[2100]);
+  const row=(lbl,nmin,nmax)=>{let s='';for(let i=0;i<40;i++)s+=`<i class="${i<Math.round(nmin)?'on':i<Math.round(nmax)?'mb':''}"></i>`;return `<div class="cal"><span>${lbl}</span><div>${s}</div><b>${nmin===nmax?nf(nmin,0):`${nf(nmin,0)}–${nf(nmax,0)}`}</b></div>`;};
+  return `<div class="fut2"><p class="lead2">${T('Tropentage (über 30 °C) pro Jahr — jedes Kästchen ein Tag','Tropical days (over 30 °C) per year — each box is one day','Tropische dagen (boven 30 °C) per jaar — elk vakje is één dag')}</p>
+    ${row(T('heute','today','nu'),t.ref,t.ref)}${row('2050',Math.min(...r50),Math.max(...r50))}${row('2100',Math.min(...r00),Math.max(...r00))}
+    <p class="note">${T(`KNMI'23, Station De Bilt, Spanne über alle sechs Szenarien (helle Kästchen = je nach Szenario). Tropennächte heute ${nf(n.ref,1)}, 2050 bis ${nf(Math.max(...Object.values(n.y[2050])),1)}. In der Stadt kommt die Wärmeinsel dazu${b.v.uhi!=null?` — hier +${nf(b.v.uhi,1)} °C`:''}.`,`KNMI'23, De Bilt station, range across all six scenarios (light boxes = depends on scenario). Tropical nights now ${nf(n.ref,1)}, 2050 up to ${nf(Math.max(...Object.values(n.y[2050])),1)}. The urban heat island comes on top${b.v.uhi!=null?` — here +${nf(b.v.uhi,1)} °C`:''}.`,`KNMI'23, station De Bilt, bandbreedte over alle zes scenario's (lichte vakjes = afhankelijk van scenario). Tropische nachten nu ${nf(n.ref,1)}, 2050 tot ${nf(Math.max(...Object.values(n.y[2050])),1)}. In de stad komt het hitte-eiland erbij${b.v.uhi!=null?` — hier +${nf(b.v.uhi,1)} °C`:''}.`)}</p></div>`;
 }
-function ring(c){
-  if(selRing)map.removeLayer(selRing);
-  selRing=L.layerGroup([L.circle(c.c,{renderer:svgR,radius:baseR(c)+26,fill:false,color:document.documentElement.dataset.theme==='dark'?'#f3efe7':'#17151c',weight:2.5,interactive:false}),
-    L.circle(c.c,{renderer:svgR,radius:baseR(c)+52,fill:false,color:'#FFD600',weight:2,opacity:.9,dashArray:'3 6',interactive:false})]).addTo(map);
+function umbau(b){
+  const v=b.v,out=[],ov=new Set(over(b).map(r=>r.id));
+  if(ov.has('hitze')||ov.has('gruen')||ov.has('schatten'))out.push({m:'M3',s:(ov.has('hitze')?1:0)+(ov.has('gruen')?1:0)+(ov.has('schatten')?1:0),why:[ov.has('hitze')?T('Hitze','heat','hitte'):null,ov.has('gruen')?T('wenig Kronendach','little canopy','weinig kronendak'):null,ov.has('schatten')?T('wenig Schatten auf Wegen','little shade on paths','weinig schaduw op routes'):null].filter(Boolean).join(', ')});
+  if(v.senioren!=null&&v.senioren>=15&&(ov.has('hitze')||ov.has('schatten')))out.push({m:'M4',s:1.5+v.senioren/50,why:T(`${nf(v.senioren,0)} % sind 65+ — schattige Sitzplätze in Laufweite`,`${nf(v.senioren,0)} % are 65+ — shaded seating within walking distance`,`${nf(v.senioren,0)} % is 65+ — schaduwrijke zitplekken op loopafstand`)});
+  if(v.kinder!=null&&v.kinder>=15&&(ov.has('hitze')||ov.has('gruen')))out.push({m:'M7',s:1.4,why:T(`${nf(v.kinder,0)} % Kinder — Schul- und Spielhöfe kühlen`,`${nf(v.kinder,0)} % children — cool schoolyards and playgrounds`,`${nf(v.kinder,0)} % kinderen — koele schoolpleinen en speelplekken`)});
+  if(ov.has('laerm'))out.push({m:'M5',s:1.2+(v.lden-53)/10,why:T(`${nf(v.lden,0)} dB — weniger Autoverkehr, mehr Rad`,`${nf(v.lden,0)} dB — less car traffic, more cycling`,`${nf(v.lden,0)} dB — minder autoverkeer, meer fiets`)});
+  if(ov.has('wasser'))out.push({m:'M3',s:1.1,why:T('Überflutungsrisiko — Regenwasser vor Ort halten','flood risk — keep rainwater local','overstromingsrisico — regenwater vasthouden')});
+  const seen=new Set();return out.sort((a,b)=>b.s-a.s).filter(x=>{if(seen.has(x.m))return false;seen.add(x.m);return true;}).slice(0,3).map(x=>({...x,mu:MU.find(m=>m.id===x.m)})).filter(x=>x.mu);
 }
-function renderPanel(c){
-  const dbl=c.e>=66&&c.v[6]>=66;
-  document.getElementById('pKick').textContent=T('Ort in ','Place in ','Plek in ')+c.w+' · 200 m';
-  document.getElementById('pTitle').textContent=c.w;
-  document.getElementById('pType').innerHTML=`<i style="background:${TYPE_COL[c.t]}"></i>${typeName(c.t)}`;
-  const mus=matchMuster(c);
+function openBuurt(b,fly){
+  sel=b;hover(null);restyle();
+  if(selLayer)map.removeLayer(selLayer);
+  selLayer=L.layerGroup([L.polygon(ll(b.geom),{renderer:svgR,fill:false,color:isDark()?'#f3efe7':'#17151c',weight:3,interactive:false}),L.polygon(ll(b.geom),{renderer:svgR,fill:false,color:'#FFD600',weight:2,dashArray:'4 6',interactive:false})]).addTo(map);
+  renderPanel(b);
+  const P=document.getElementById('panel');P.classList.add('on');document.body.classList.add('panel-on');if(MOBILE())sheet('half');
+  if(fly!==false)focusBuurt(b);
+  try{const u=new URL(location.href);u.searchParams.set('b',b.code);u.searchParams.delete('at');history.replaceState(null,'',u);}catch(e){}
+}
+function focusBuurt(b){
+  const bb=L.latLngBounds(ll(b.geom).flat(2)),sz=map.getSize();if(!sz.x||!sz.y){map.fitBounds(bb,{animate:false});return;}
+  if(map.getBounds().contains(bb)&&map.getZoom()>=13)return;map.flyToBounds(bb.pad(.15),{...flyPad(),duration:REDUCED?0:.7,maxZoom:15});
+}
+function renderPanel(b){
+  const wijk=(BU._wijk&&BU._wijk[b.wijk])||'',P=people(b),s=score(b),g=grade(s),ov=over(b).filter(r=>!r.city),pa=parts(b);
+  document.getElementById('pKick').textContent=T('Quartier','Neighbourhood','Buurt')+(wijk?' · '+wijk:'');
+  document.getElementById('pTitle').textContent=b.name;
+  document.getElementById('pType').innerHTML=`<i style="background:${s==null?'#ccc':scol(s)}"></i>${s==null?T('keine Angabe','no data','geen gegevens'):`${T('Klimabelastung','Climate burden','Klimaatbelasting')} ${GR[g][1]} · ${gname(g)}`}`;
+  const v=b.v,um=umbau(b),bau=b.bau||null;
+  const med=BU._med,top=pa.filter(x=>x.p>=5).sort((x,y)=>y.p-x.p);
   document.getElementById('pBody').innerHTML=`
-    <div class="hero">${rose(c.v,148,{grow:true})}<p class="say">${say(c)}</p></div>
-    ${dbl?`<div class="flag">${I.warn}<span><b>${T('Doppelte Belastung','Double burden','Dubbele last')}.</b> ${T('Hohe Klima- und Umweltlast trifft auf eine sozial belastete Nachbarschaft. Hier wirkt jede Maßnahme doppelt.','High climate and environmental load meets a socially strained neighbourhood. Every measure pays off twice here.','Hoge klimaat- en milieudruk in een sociaal kwetsbare buurt. Hier werkt elke maatregel dubbel.')}</span></div>`:''}
-    <div class="h">${T('Signatur · antippen = auf der Karte zeigen','Signature · tap = show on map','Signatuur · tik = op de kaart')}</div>
-    <div class="dims">${DIM.map((d,i)=>`<button class="dt" data-k="${d.k}" ${d.neutral?'disabled':''} title="${T(...d.why)}"><span class="t"><i style="background:${d.col}"></i>${T(d.de,d.en,d.nl)}<b>${c.v[i]}</b></span><span class="m"><u data-w="${c.v[i]}" style="background:${d.col}"></u></span></button>`).join('')}</div>
-    <p class="note">${T('0–100 = Rang innerhalb Utrechts, Strich = Stadtmitte. Soziale Lage gilt für den ganzen Wijk.','0–100 = rank within Utrecht, tick = city median. Social strain applies to the whole wijk.','0–100 = rang binnen Utrecht, streep = stadsmediaan. Sociale druk geldt voor de hele wijk.')}</p>
-    <button class="cta" id="simBtn">${I.similar}${T('Ähnliche Orte finden','Find similar places','Vergelijkbare plekken')}</button>
-    <div class="sim" id="simBox"></div>
-    <button class="cta ghost" id="labBtn">${I.lab}${T('Schatten & Hitze hier — Straßenlabor','Shade & heat here — street lab','Schaduw & hitte hier — straatlab')}</button>
-    ${mus.length?`<div class="h">${T('Was hier hilft','What helps here','Wat hier helpt')}</div><div class="carousel">${mus.map(x=>`<article class="mu">${x.m.svg}<div><em>${T('Passt, weil','Fits because','Past, want')} ${x.why}</em><b>${x.m.n[lang]||x.m.n.de}</b><p>${x.m.wirkung[lang]||x.m.wirkung.de}</p></div></article>`).join('')}</div>`:''}
+    <div class="vbox" style="--c:${s==null?'#ccc':scol(s)}"><div class="vnum"><b>${s==null?'–':Math.round(s)}</b><span>/100</span></div><div><b class="vtxt">${s==null?T('keine Angabe','no data','geen gegevens'):`${GR[g][1]} · ${T(...GR[g][3])}`}</b><p>${fmt(P.inw)} ${T('Menschen leben hier','people live here','mensen wonen hier')}${top.length?` — ${T('am stärksten','strongest','het sterkst')}: ${top.map(x=>tname(x.r)).join(', ')}`:''}.</p></div></div>
+    ${s==null?'':`<div class="pbar" role="img" aria-label="${pa.map(x=>tname(x.r)+' '+Math.round(x.p||0)).join(', ')}">${pa.map(x=>`<i style="flex:0 0 ${x.p||0}%;background:${x.r.col}" title="${tname(x.r)}: ${Math.round(x.p||0)}/25"></i>`).join('')}${med!=null?`<s style="left:${med}%" title="${T('Mitte Utrecht','Utrecht median','mediaan Utrecht')}"></s>`:''}</div>
+    <div class="pbl">${pa.map(x=>`<span><i style="background:${x.r.col}"></i>${tname(x.r)} <b>${x.p==null?'–':Math.round(x.p)}</b></span>`).join('')}${med!=null?`<span class="m">┆ ${T('Mitte Utrecht','Utrecht median','mediaan Utrecht')} ${Math.round(med)}</span>`:''}</div>`}
+    ${peopleGrid(b,P)}
+    <div class="h">${T('Risiken für die Menschen hier','Risks for the people here','Risico\'s voor de mensen hier')}</div>
+    <div class="rcs">${RISKS.map(r=>riskCard(r,b,P)).join('')}</div>
+    <div class="h">${T('Zukunft: Hitzetage','Future: heat days','Toekomst: hittedagen')}</div>${futureBlock(b)}
+    <div class="h">${T('Wer hier lebt','Who lives here','Wie hier woont')}</div>
+    <div class="facts">
+      ${v.niedrig!=null?`<div><b>${nf(v.niedrig,0)} %</b><span>${T('Haushalte mit niedrigem Einkommen','low-income households','huishoudens met laag inkomen')} <small>2023</small></span></div>`:''}
+      ${v.vermoegen!=null?`<div><b>${fmt(v.vermoegen*1000)} €</b><span>${T('Vermögen je Haushalt (Median)','wealth per household (median)','vermogen per huishouden (mediaan)')} <small>2023</small></span></div>`:''}
+      ${v.einsam!=null?`<div><b>${nf(v.einsam,0)} %</b><span>${T('fühlen sich stark einsam','feel severely lonely','voelen zich sterk eenzaam')} <small>GGD 2024</small></span></div>`:''}
+      ${v.allein!=null?`<div><b>${nf(v.allein,0)} %</b><span>${T('Haushalte mit einer Person','one-person households','eenpersoonshuishoudens')}</span></div>`:''}
+      ${v.bijstand!=null?`<div><b>${nf(v.bijstand,1)} %</b><span>${T('beziehen Bijstand','receive social assistance','ontvangen bijstand')}</span></div>`:''}
+      ${v.sozialmiete!=null?`<div><b>${nf(v.sozialmiete,0)} %</b><span>${T('Sozialwohnungen','social housing','corporatiewoningen')}</span></div>`:''}
+    </div>
+    <p class="note">${T('Ein Median-Einkommen veröffentlicht CBS je Quartier nicht; gezeigt wird das Median-Vermögen. Wer wenig Geld hat, kann sich schlechter vor Hitze schützen.','CBS publishes no median income per neighbourhood; median wealth is shown. People with little money find it harder to protect themselves from heat.','CBS publiceert geen mediaan inkomen per buurt; getoond wordt het mediaan vermogen. Wie weinig geld heeft, kan zich slechter tegen hitte beschermen.')}</p>
+    ${um.length?`<div class="h">${T('Wo umbauen — was hier hilft','Where to redesign — what helps here','Waar herinrichten — wat hier helpt')}</div><div class="carousel">${um.map(x=>`<article class="mu">${x.mu.svg}<div><em>${x.why}</em><b>${x.mu.n[lang]||x.mu.n.de}</b><p>${x.mu.wirkung[lang]||x.mu.wirkung.de}</p></div></article>`).join('')}</div>`:''}
+    <div class="h">${T('Hier wird schon gebaut','Already being built here','Hier wordt al gebouwd')}</div>
+    <div class="facts">
+      ${bau?`<div><b>${fmt(bau[1])}</b><span>${T('Gebäude im Bau','buildings under construction','panden in aanbouw')} <small>BAG</small></span></div><div><b>${fmt(bau[0])}</b><span>${T('Baugenehmigungen erteilt','building permits granted','bouwvergunningen verleend')} <small>BAG</small></span></div><div><b>${fmt(bau[2])}</b><span>${T('Gebäude im Umbau','buildings being renovated','panden in verbouwing')} <small>BAG</small></span></div>`:''}
+      ${v.neubau!=null?`<div><b>${fmt(v.neubau)}</b><span>${T('neue Wohnungen','new homes','nieuwe woningen')} <small>CBS ${b.y.neubau||''}</small></span></div>`:''}
+    </div>
+    ${bau&&bau[0]+bau[1]>0?`<p class="note">${T('Wo ohnehin gebaut wird, lassen sich Bäume, Schatten und Entsiegelung am leichtesten mitplanen. Die BAG zeigt Gebäude, nicht den Straßenraum.','Where building is happening anyway, trees, shade and unsealing are easiest to plan in. The BAG shows buildings, not the street space.','Waar toch al gebouwd wordt, zijn bomen, schaduw en ontharding het makkelijkst mee te nemen. De BAG toont gebouwen, niet de straatruimte.')}</p>`:''}
+    <button class="cta" id="labBtn">${I.lab}${T('Schatten, Hitze & Straßen sehen — Straßenlabor','See shade, heat & streets — street lab','Bekijk schaduw, hitte & straten — straatlab')}</button>
     <details><summary>${I.info}${T('Woher kommen die Werte?','Where do the values come from?','Waar komen de waarden vandaan?')}</summary>
-      <p>${T('Jeder Punkt bündelt alle Gebäude in seinem 200-m-Feld (PDOK BAG: Oberflächentemperatur, Baujahr → CO₂, Gewässernähe), alle 162.653 Bäume des amtlichen Baumregisters der Gemeente (Kronengröße aus dem Pflanzjahr geschätzt; private Bäume fehlen), Grünflächen und Alltagsorte (OpenStreetMap) sowie die Sozialdaten des Wijks (CBS Kerncijfers 2024: Bijstand, Armut, Einkommen). Alle Werte sind Ränge innerhalb Utrechts — sie zeigen, wo ein Ort im Stadtvergleich steht, keine absoluten Grenzwerte. Gewässernähe ist eine Abstands-Näherung, kein Überflutungsmodell.','Each dot combines all buildings in its 200 m field (PDOK BAG: surface temperature, construction year → CO₂, proximity to water), all 162,653 trees of the municipal tree register (crown size estimated from planting year; private trees missing), green spaces and everyday places (OpenStreetMap) and the wijk\'s social data (CBS 2024: assistance, poverty, income). All values are ranks within Utrecht — relative position, not absolute thresholds. Proximity to water is a distance approximation, not a flood model.','Elke stip bundelt de gebouwen in zijn veld van 200 m (PDOK BAG: oppervlaktetemperatuur, bouwjaar → CO₂, nabijheid water), alle 162.653 bomen uit het gemeentelijke bomenregister (kroongrootte geschat uit plantjaar; particuliere bomen ontbreken), groen en voorzieningen (OpenStreetMap) en de sociale data van de wijk (CBS 2024: bijstand, armoede, inkomen). Alle waarden zijn rangen binnen Utrecht. Nabijheid water is een afstandsbenadering, geen overstromingsmodel.')}</p></details>
-    <a class="classic" href="index.html?district=${encodeURIComponent(c.w)}">${T('Alle Details zu','Full details for','Alle details over')} ${c.w} ${T('in der klassischen Ansicht','in the classic view','in de klassieke weergave')} →</a>`;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.dt .m u').forEach(b=>b.style.width=b.dataset.w+'%')));
-  document.querySelectorAll('.dt[data-k]:not([disabled])').forEach(b=>b.onclick=()=>setLens(b.dataset.k));
-  markDims();
-  document.getElementById('simBtn').onclick=()=>findSimilar(c);
-  document.getElementById('labBtn').onclick=()=>openLab(c.c);
-}
-function markDims(){document.querySelectorAll('.dt').forEach(b=>b.classList.toggle('on',b.dataset.k===lens));}
-
-// ── Ähnliche Orte: Kosinus der zentrierten Signaturen, verbunden durch Bögen ──
-function clearArcs(){if(arcLayer){map.removeLayer(arcLayer);arcLayer=null;}}
-function arc(a,b){
-  const [y1,x1]=a,[y2,x2]=b,mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,k=.22;
-  const cx=mx-dy*k*1.6,cy=my+dx*k;const pts=[];
-  for(let t=0;t<=1.0001;t+=1/28)pts.push([(1-t)**2*y1+2*(1-t)*t*cy+t*t*y2,(1-t)**2*x1+2*(1-t)*t*cx+t*t*x2]);
-  return pts;
-}
-function findSimilar(c){
-  const z=v=>v.map(x=>x-50),a=z(c.v),na=Math.hypot(...a)||1;
-  const scored=F.cells.filter(x=>x!==c).map(x=>{const b=z(x.v),nb=Math.hypot(...b)||1;return {x,s:a.reduce((t,ai,i)=>t+ai*b[i],0)/(na*nb)};}).sort((p,q)=>q.s-p.s);
-  const top=scored.filter(o=>o.s>=.85).slice(0,Math.max(12,Math.round(F.cells.length*.04)));
-  simSet=new Set(top.map(o=>o.x));restyle();clearArcs();
-  arcLayer=L.layerGroup().addTo(map);
-  top.forEach((o,k)=>{const l=L.polyline(arc(c.c,o.x.c),{renderer:svgR,className:'arc',color:'#17151c',weight:1.6,opacity:.55,interactive:false}).addTo(arcLayer);
-    if(l._path){l._path.setAttribute('pathLength','1');l._path.style.animationDelay=(REDUCED?0:k*45)+'ms';}});
-  const byW={};top.forEach(o=>byW[o.x.w]=(byW[o.x.w]||0)+1);
-  const box=document.getElementById('simBox');box.classList.add('on');
-  box.innerHTML=top.length?`<b>${top.length} ${T('Orte mit sehr ähnlicher Signatur','places with a very similar signature','plekken met een zeer vergelijkbare signatuur')}</b> ${T('in','in','in')} ${Object.keys(byW).length} ${T('Wijken. Was hier hilft, hilft vermutlich auch dort.','wijken. What helps here likely helps there too.','wijken. Wat hier helpt, helpt daar waarschijnlijk ook.')}<div class="chips">${Object.entries(byW).sort((p,q)=>q[1]-p[1]).map(([w,n])=>`<button class="chip" data-w="${w}">${w} · ${n}</button>`).join('')}</div><button class="cta ghost" id="simOff" style="margin-top:12px">${T('Ähnlichkeit ausblenden','Hide similarity','Verberg overeenkomst')}</button>`
-    :T('Keine Orte mit sehr ähnlicher Signatur — dieser Ort ist in Utrecht ziemlich einzigartig.','No places with a very similar signature — this place is fairly unique in Utrecht.','Geen plekken met een zeer vergelijkbare signatuur — deze plek is vrij uniek in Utrecht.');
-  box.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{const pts=top.filter(o=>o.x.w===b.dataset.w).map(o=>o.x.c);map.flyToBounds(L.latLngBounds(pts).pad(.3),{...flyPad(),duration:.8,maxZoom:15});});
-  const off=document.getElementById('simOff');if(off)off.onclick=()=>{simSet=null;clearArcs();restyle();box.classList.remove('on');};
-  if(top.length)map.flyToBounds(L.latLngBounds(top.map(o=>o.x.c).concat([c.c])).pad(.08),{...flyPad(),duration:.9,maxZoom:14.5});
-  if(MOBILE())sheet('peek');
+      <p>${T('Hitze: RIVM-Modell 2022 (Sommer-Mittel Stadt gegen Umland). Lärm: RIVM-Lärmkarte Straßenverkehr 2022 (L<sub>den</sub>, Mittel aus bis zu fünf Punkten); Belästigung und Schlafstörung: GGD-Gezondheidsmonitor 2024, Modellschätzung je Quartier. Kronendach: Luftbildanalyse der Gemeente 2022. Schatten auf Wegen: Gemeente Utrecht 2023. Überflutung: LIWO, Rijkswaterstaat (höchste Klasse an bis zu fünf Punkten). Menschen: CBS 2024 (65+), CBS 2026 (80+); „≈ Menschen" = Anteil × Einwohner, gerundet. Einkommen und Vermögen: CBS 2023. Bauen: Gebäuderegister BAG. Zukunft: KNMI\'23. Eine Hitze-Sterblichkeit je Quartier veröffentlicht niemand; landesweit zählte CBS in der Hitzewelle 2019 rund 400 zusätzliche Todesfälle, vor allem über 80 — ob die Hitze die Ursache war, ist nicht sicher belegt.','Heat: RIVM model 2022 (summer average, city vs countryside). Noise: RIVM road-traffic noise map 2022 (L<sub>den</sub>, mean of up to five points); annoyance and sleep disturbance: GGD health monitor 2024, model estimate per neighbourhood. Canopy: municipal aerial analysis 2022. Shade on paths: Gemeente Utrecht 2023. Flooding: LIWO, Rijkswaterstaat (highest class at up to five points). People: CBS 2024 (65+), CBS 2026 (80+); "≈ people" = share × residents, rounded. Income and wealth: CBS 2023. Building: BAG register. Future: KNMI\'23. Nobody publishes heat mortality per neighbourhood; nationally CBS counted about 400 extra deaths in the 2019 heatwave, mostly over 80 — whether heat was the cause is not proven.','Hitte: RIVM-model 2022 (zomergemiddelde stad t.o.v. buitengebied). Geluid: RIVM-geluidkaart wegverkeer 2022 (L<sub>den</sub>, gemiddelde van tot vijf punten); hinder en slaapverstoring: GGD-Gezondheidsmonitor 2024, modelschatting per buurt. Kronendak: luchtfoto-analyse gemeente 2022. Schaduw op routes: gemeente Utrecht 2023. Overstroming: LIWO, Rijkswaterstaat. Mensen: CBS 2024 (65+), CBS 2026 (80+); „≈ mensen" = aandeel × inwoners, afgerond. Inkomen en vermogen: CBS 2023. Bouwen: BAG. Toekomst: KNMI\'23. Hittesterfte per buurt publiceert niemand; landelijk telde CBS in de hittegolf van 2019 zo\'n 400 extra sterfgevallen, vooral boven 80 — of hitte de oorzaak was, is niet zeker.')}</p></details>`;
+  document.querySelectorAll('.rc[data-t]').forEach(x=>x.onclick=()=>setTheme(x.dataset.t));
+  document.getElementById('labBtn').onclick=()=>openLab(center(b));
 }
 const flyPad=()=>MOBILE()?{paddingTopLeft:[16,180],paddingBottomRight:[16,Math.round(innerHeight*(SHEET==='peek'?.3:.55))]}:{paddingTopLeft:[24,140],paddingBottomRight:[document.body.classList.contains('panel-on')?480:24,40]};
-function closePanel(){document.getElementById('panel').classList.remove('on');document.body.classList.remove('panel-on');sel=null;simSet=null;clearArcs();if(selRing){map.removeLayer(selRing);selRing=null;}restyle();if(lens!=='all'&&lens!=='types')renderLegend();try{const u=new URL(location.href);u.searchParams.delete('at');history.replaceState(null,'',u);}catch(e){}}
+function closePanel(){document.getElementById('panel').classList.remove('on');document.body.classList.remove('panel-on');sel=null;if(selLayer){map.removeLayer(selLayer);selLayer=null;}if(BU)restyle();try{const u=new URL(location.href);u.searchParams.delete('b');u.searchParams.delete('at');history.replaceState(null,'',u);}catch(e){}}
 document.getElementById('pClose').onclick=closePanel;
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(window.LAB&&LAB.on)LAB.close();else closePanel();});
-const cellAt=(lat,lon)=>F.cells.reduce((b,c)=>{const d=(c.c[0]-lat)**2+((c.c[1]-lon)*.62)**2;return d<b.d?{c,d}:b;},{c:null,d:1e9});
+function buurtAt(lat,lon){
+  const inR=(x,y,r)=>{let ins=false;for(let i=0,j=r.length-1;i<r.length;j=i++){const [xi,yi]=r[i],[xj,yj]=r[j];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))ins=!ins;}return ins;};
+  return BU&&BU.find(b=>b.geom.some(p=>inR(lon,lat,p[0])&&!p.slice(1).some(h=>inR(lon,lat,h))))||null;
+}
 
 // ── Mobil: ziehbares Sheet mit drei Höhen ──
 let SHEET='half';
@@ -787,7 +953,7 @@ function sheet(s){SHEET=s;const P=document.getElementById('panel');if(!MOBILE())
   H.addEventListener('pointerdown',down);H.addEventListener('pointermove',move);H.addEventListener('pointerup',up);H.addEventListener('pointercancel',up);
   addEventListener('resize',()=>sheet(SHEET));})();
 
-// ── Suche: Wijken lokal + Adressen/Buurten über PDOK Locatieserver (amtlich, ohne Schlüssel) ──
+// ── Suche ──
 const q=document.getElementById('q'),sg=document.getElementById('sugg');let qT=null,qAbort=null;
 q.addEventListener('input',()=>{clearTimeout(qT);qT=setTimeout(search,200);});
 q.addEventListener('keydown',e=>{const bs=[...sg.querySelectorAll('button')];let i=bs.findIndex(b=>b.classList.contains('act'));
@@ -796,13 +962,13 @@ q.addEventListener('keydown',e=>{const bs=[...sg.querySelectorAll('button')];let
   if(e.key==='Escape'){sg.classList.remove('on');}});
 document.addEventListener('click',e=>{if(!e.target.closest('.search'))sg.classList.remove('on');});
 function search(){
-  const s=q.value.trim();if(s.length<2){sg.classList.remove('on');return;}
-  const wj=[...new Set(F.cells.map(c=>c.w))].filter(w=>w.toLowerCase().includes(s.toLowerCase())).map(w=>({label:w,kind:'Wijk',ic:I.area,go:()=>{const cs=F.cells.filter(c=>c.w===w);map.flyToBounds(L.latLngBounds(cs.map(c=>c.c)).pad(.05),{...flyPad(),duration:.8});}}));
-  show(wj);
+  const s=q.value.trim();if(s.length<2||!BU){sg.classList.remove('on');return;}
+  const loc=BU.filter(b=>b.name.toLowerCase().includes(s.toLowerCase())).slice(0,5).map(b=>({label:b.name,kind:T('Quartier','Buurt','Buurt'),ic:I.area,go:()=>openBuurt(b)}));
+  show(loc);
   if(qAbort)qAbort.abort();qAbort=new AbortController();
-  fetch(`https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${encodeURIComponent(s)}&fq=gemeentenaam:Utrecht&rows=6&fl=weergavenaam,centroide_ll,type`,{signal:qAbort.signal})
+  fetch(`https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${encodeURIComponent(s)}&fq=gemeentenaam:Utrecht&fq=type:adres&rows=5&fl=weergavenaam,centroide_ll,type`,{signal:qAbort.signal})
     .then(r=>r.json()).then(j=>{const docs=(j.response&&j.response.docs)||[];
-      show(wj.concat(docs.map(d=>{const m=/POINT\(([\d.]+) ([\d.]+)\)/.exec(d.centroide_ll||'');return m?{label:d.weergavenaam.replace(/, Utrecht$| Utrecht$/,''),kind:d.type,ic:I.pin,go:()=>{const lat=+m[2],lon=+m[1];const h=cellAt(lat,lon);if(h.c&&h.d<.00002)openPlace(h.c);else map.flyTo([lat,lon],16,{duration:.9});}}:null;}).filter(Boolean)).slice(0,8));
+      show(loc.concat(docs.map(d=>{const m=/POINT\(([\d.]+) ([\d.]+)\)/.exec(d.centroide_ll||'');return m?{label:d.weergavenaam.replace(/, Utrecht$| Utrecht$/,''),kind:T('Adresse','Address','Adres'),ic:I.pin,go:()=>{const lat=+m[2],lon=+m[1],b=buurtAt(lat,lon);if(b)openBuurt(b,false);map.flyTo([lat,lon],16,{duration:REDUCED?0:.9});}}:null;}).filter(Boolean)).slice(0,8));
     }).catch(()=>{});
 }
 function show(items){
@@ -812,68 +978,68 @@ function show(items){
   sg.classList.add('on');
 }
 
-// ── Straßenlabor: Schatten, Sonnenstunden, Oberflächen und Hitze auf Straßenebene (js/lab.js) ──
-const LAB_ATTR='3D BAG (TU Delft / 3DGI) · BGT · AHN · LIWO · Bomenkaart';
-function openLab(at,toolId){
-  if(!window.LAB)return;
-  if(document.getElementById('panel').classList.contains('on'))closePanel();
-  LAB.open(at?L.latLng(at):null,toolId);
-}
-if(window.LAB)LAB.init(map,{T,lang:()=>lang,dark:isDark,treesUrl:'data/official/trees_utr.json',knmiUrl:'data/official/knmi23_debilt.json',setBase,muster:()=>MU,onTool:()=>labUrl(),
-  onOpen(){if(dotLayer)map.removeLayer(dotLayer);clearArcs();if(selRing){map.removeLayer(selRing);selRing=null;}hover(null);map.attributionControl.addAttribution(LAB_ATTR);
-    labUrl();},
-  onClose(){if(dotLayer&&F)dotLayer.addTo(map);map.attributionControl.removeAttribution(LAB_ATTR);hintLab();
+// ── Straßenlabor (js/lab*.js) ──
+const LAB_ATTR='3D BAG (TU Delft / 3DGI) · BGT · AHN · LIWO · RIVM · Bomenkaart';
+function openLab(at,toolId){if(!window.LAB)return;if(document.getElementById('panel').classList.contains('on'))closePanel();LAB.open(at?L.latLng(at):null,toolId);}
+if(window.LAB)LAB.init(map,{T,lang:()=>lang,dark:isDark,buurtAt:(la,lo)=>buurtAt(la,lo),treesUrl:'data/official/trees_utr.json',knmiUrl:'data/official/knmi23_debilt.json',setBase,muster:()=>MU,onTool:()=>labUrl(),
+  onOpen(){if(buLayer)map.removeLayer(buLayer);if(selLayer){map.removeLayer(selLayer);selLayer=null;}hover(null);drawPts();map.attributionControl.addAttribution(LAB_ATTR);labUrl();},
+  onClose(){if(buLayer&&BU)buLayer.addTo(map);drawPts();map.attributionControl.removeAttribution(LAB_ATTR);hintLab();
     try{const u=new URL(location.href);u.searchParams.delete('lab');u.searchParams.delete('tool');history.replaceState(null,'',u);}catch(e){}}});
 const labHint=document.getElementById('labHint');
-function hintLab(){
-  labHint.innerHTML=`${I.lab}${T('Schatten & Hitze hier ansehen','See shade & heat here','Bekijk schaduw & hitte hier')}`;
-  labHint.classList.toggle('on',!!F&&!!window.LAB&&!LAB.on&&map.getZoom()>=15.5);
-}
+function hintLab(){labHint.innerHTML=`${I.lab}${T('Schatten & Hitze hier ansehen','See shade & heat here','Bekijk schaduw & hitte hier')}`;labHint.classList.toggle('on',!!BU&&!!window.LAB&&!LAB.on&&map.getZoom()>=14);}
 labHint.onclick=()=>openLab(null);
 map.on('zoomend',hintLab);
-function labUrl(){try{const u=new URL(location.href),c=map.getCenter();u.searchParams.set('lab',c.lat.toFixed(5)+','+c.lng.toFixed(5));u.searchParams.delete('at');if(LAB.tool&&LAB.tool!=='sun')u.searchParams.set('tool',LAB.tool);else u.searchParams.delete('tool');history.replaceState(null,'',u);}catch(e){}}
+function labUrl(){try{const u=new URL(location.href),c=map.getCenter();u.searchParams.set('lab',c.lat.toFixed(5)+','+c.lng.toFixed(5));u.searchParams.delete('at');u.searchParams.delete('b');if(LAB.tool&&LAB.tool!=='sun')u.searchParams.set('tool',LAB.tool);else u.searchParams.delete('tool');history.replaceState(null,'',u);}catch(e){}}
 map.on('moveend',()=>{if(window.LAB&&LAB.on)labUrl();});
 
 // ── Sprache, Theme, Erstbesuch ──
+const ptsLbl=()=>`${I.tree.replace('width="22" height="22"','width="16" height="16"')}<span>${T('Bäume, Bänke, Baustellen','Trees, benches, sites','Bomen, banken, bouw')}</span>`;
 function applyLang(){
   document.documentElement.lang=lang;STORE.set('ul_lang',lang);
   document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===lang));
-  q.placeholder=T('Adresse, Buurt oder Wijk in Utrecht','Address, neighbourhood or wijk in Utrecht','Adres, buurt of wijk in Utrecht');
+  q.placeholder=T('Adresse oder Quartier in Utrecht','Address or neighbourhood in Utrecht','Adres of buurt in Utrecht');
   document.getElementById('classicTxt').textContent=T('Klassische Ansicht','Classic view','Klassieke weergave');
-  document.getElementById('cityLbl').textContent='Utrecht · '+T('Stadt-Signatur','City signature','Stadssignatuur');
-  document.getElementById('ldTxt').textContent=T('Stadt-Signatur wird geladen','Loading city signature','Stadssignatuur laden');
-  if(F){renderLenses();renderLegend();if(sel){renderPanel(sel);}}
+  document.getElementById('cityLbl').textContent='Utrecht · '+T('Klimarisiken','Climate risks','Klimaatrisico\'s');
+  document.getElementById('ldTxt').textContent=T('Utrechts Quartiere werden geladen','Loading Utrecht\'s neighbourhoods','Utrechtse buurten laden');
+  const pt=document.getElementById('ptsBtn');if(pt)pt.innerHTML=ptsLbl();
+  if(BU){renderLenses();renderLegend();if(sel)renderPanel(sel);}
   hintLab();if(window.LAB)LAB.relang();
 }
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();});
-const theme=STORE.get('nx_theme');if(theme)document.documentElement.dataset.theme=theme;
-document.getElementById('themeBtn').onclick=()=>{const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&MM('(prefers-color-scheme: dark)').matches);const t=dark?'light':'dark';document.documentElement.dataset.theme=t;STORE.set('nx_theme',t);if(sel)ring(sel);if(F){recolor();renderLegend();}if(window.LAB)LAB.redraw();};
-MM('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(F&&!document.documentElement.dataset.theme){recolor();renderLegend();}});
+const themeSaved=STORE.get('nx_theme');if(themeSaved)document.documentElement.dataset.theme=themeSaved;
+document.getElementById('themeBtn').onclick=()=>{const t=isDark()?'light':'dark';document.documentElement.dataset.theme=t;STORE.set('nx_theme',t);if(BU){restyle();renderLegend();if(sel)openBuurt(sel,false);}drawPts();if(window.LAB)LAB.redraw();};
+MM('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(BU&&!document.documentElement.dataset.theme){restyle();renderLegend();}});
+(()=>{const b=document.createElement('button');b.id='ptsBtn';b.className='ptsbtn'+(PTS.on?' on':'');b.setAttribute('aria-pressed',PTS.on);b.innerHTML=ptsLbl();
+  b.onclick=()=>{PTS.on=!PTS.on;STORE.set('nx_pts',PTS.on?'1':'0');b.classList.toggle('on',PTS.on);b.setAttribute('aria-pressed',PTS.on);drawPts();};document.body.appendChild(b);})();
 function showIntro(){
-  if(STORE.get('nx_hint'))return;
-  const sample=F.cells.slice().sort((a,b)=>(b.e+b.v[6])-(a.e+a.v[6]))[Math.floor(F.cells.length*.1)];
+  if(STORE.get('nx_hint_r'))return;
+  const hi=BU.filter(b=>(grade(score(b))??-1)>=3),pp=hi.reduce((s,b)=>s+(b.v.inw||0),0),all=BU.reduce((s,b)=>s+(b.v.inw||0),0);
   const d=document.createElement('div');d.className='intro';d.id='hint';
-  d.innerHTML=`<div class="box">${rose(sample.v,112,{grow:true})}<h3>${T('Jeder Punkt ist <i>ein Ort</i>.','Every dot is <i>a place</i>.','Elke stip is <i>een plek</i>.')}</h3><p>${T('Farbe und Größe zeigen, wie Klima, Umwelt und soziale Lage dort zusammenwirken. Jeder Ort hat eine eigene Rosette aus acht Merkmalen — tippe einen an.','Colour and size show how climate, environment and social strain add up there. Every place has its own rosette of eight traits — tap one.','Kleur en grootte tonen hoe klimaat, milieu en sociale druk daar samenkomen. Elke plek heeft een eigen rozet van acht kenmerken — tik er een aan.')}</p><div class="row"><button class="go" id="hintOk">${T('Los geht\'s','Let\'s go','Aan de slag')}</button><button class="go2" id="hintDbl">${T('Doppelte Belastung zeigen','Show double burden','Toon dubbele last')}</button></div></div>`;
+  d.innerHTML=`<div class="box"><div class="introbig">${fmt(rnd(pp))}</div><h3>${T(`Menschen in Utrecht — jeder ${Math.max(2,Math.round(all/Math.max(1,pp)))}. — leben in Quartieren mit <i>hoher oder sehr hoher</i> Klimabelastung.`,`people in Utrecht — one in ${Math.max(2,Math.round(all/Math.max(1,pp)))} — live in neighbourhoods with a <i>high or very high</i> climate burden.`,`mensen in Utrecht — één op de ${Math.max(2,Math.round(all/Math.max(1,pp)))} — wonen in buurten met een <i>hoge of zeer hoge</i> klimaatbelasting.`)}</h3><p>${T('Hitze, Verkehrslärm, fehlende Bäume, fehlender Schatten — jedes Quartier gemessen an Richtwerten, in Menschen gerechnet. Tippe ein Quartier an.','Heat, traffic noise, missing trees, missing shade — every neighbourhood measured against guidelines, counted in people. Tap a neighbourhood.','Hitte, verkeerslawaai, te weinig bomen, te weinig schaduw — elke buurt gemeten aan richtwaarden, uitgedrukt in mensen. Tik een buurt aan.')}</p><div class="row"><button class="go" id="hintOk">${T('Karte ansehen','See the map','Bekijk de kaart')}</button><button class="go2" id="hintLab">${T('Straßenlabor','Street lab','Straatlab')}</button></div></div>`;
   document.body.appendChild(d);
   document.getElementById('hintOk').onclick=hideHint;
-  document.getElementById('hintDbl').onclick=()=>{hideHint();if(lens!=='all')setLens('all');dblOnly=true;renderLegend();restyle();};
+  document.getElementById('hintLab').onclick=()=>{hideHint();openLab([52.0907,5.1214]);};
 }
-function hideHint(){const h=document.getElementById('hint');if(h){h.remove();STORE.set('nx_hint','1');}}
+function hideHint(){const h=document.getElementById('hint');if(h){h.remove();STORE.set('nx_hint_r','1');}}
 
 // ── Laden ──
 applyLang();
-Promise.all([fetch('data/layers/fusion_utr.json').then(r=>r.json()),fetch('data/muster.json').then(r=>r.json()).catch(()=>[])]).then(([f,mu])=>{
-  F=f;MU=mu;
-  const QS=new URLSearchParams(location.search),labQ=QS.get('lab'),at=QS.get('at');
-  if(!at&&!labQ&&map.getSize().x>0)map.fitBounds(L.latLngBounds(F.cells.map(c=>c.c)),MOBILE()?{paddingTopLeft:[8,170],paddingBottomRight:[8,150]}:{paddingTopLeft:[330,130],paddingBottomRight:[40,30]});
-  drawDots();renderLenses();renderLegend();
+Promise.all([fetch('data/official/buurten_utr.json').then(r=>r.json()),fetch('data/muster.json').then(r=>r.json()).catch(()=>[]),fetch('data/official/knmi23_debilt.json').then(r=>r.json()).catch(()=>null)]).then(([bu,mu,kn])=>{
+  BU=bu.buurten;BU._meta=bu.meta;MU=mu;KN=kn;
+  BU._wijk={WK034401:'West',WK034402:'Noordwest',WK034403:'Overvecht',WK034404:'Noordoost',WK034405:'Oost',WK034406:'Binnenstad',WK034407:'Zuid',WK034408:'Zuidwest',WK034409:'Leidsche Rijn',WK034410:'Vleuten-De Meern'};
+  ranks();{const a=BU.map(score).filter(v=>v!=null).sort((x,y)=>x-y);BU._med=a.length?a[a.length>>1]:null;}
+  const QS=new URLSearchParams(location.search),labQ=QS.get('lab'),at=QS.get('at'),bq=QS.get('b');
+  if(!at&&!labQ&&!bq&&map.getSize().x>0)map.fitBounds(L.latLngBounds(BU.flatMap(b=>ll(b.geom).flat(2))),MOBILE()?{paddingTopLeft:[8,180],paddingBottomRight:[8,150]}:{paddingTopLeft:[330,130],paddingBottomRight:[40,30]});
+  drawBuurten();renderLenses();renderLegend();
   document.getElementById('loading').classList.add('off');
-  if(labQ){const ll=labQ.split(',').map(Number);if(ll.length===2&&ll.every(isFinite))map.setView(ll,17,{animate:false});else if(at)map.setView(at.split(',').map(Number),17,{animate:false});openLab(null,QS.get('tool'));}
-  else if(at){const [la,lo]=at.split(',').map(Number);const h=cellAt(la,lo);if(h.c){map.setView(h.c.c,15);openPlace(h.c);}}
+  if(labQ){const p=labQ.split(',').map(Number);if(p.length===2&&p.every(isFinite))map.setView(p,15,{animate:false});openLab(null,QS.get('tool'));}
+  else if(bq){const b=BU.find(x=>x.code===bq);if(b){map.fitBounds(L.latLngBounds(ll(b.geom).flat(2)).pad(.2),{animate:false});openBuurt(b,false);}}
+  else if(at){const [la,lo]=at.split(',').map(Number),b=buurtAt(la,lo);if(b){map.setView([la,lo],14,{animate:false});openBuurt(b,false);}}
   else showIntro();
-  hintLab();
+  hintLab();drawPts();
 }).catch(()=>{document.getElementById('ldTxt').textContent=T('Daten konnten nicht geladen werden.','Data could not be loaded.','Data kon niet worden geladen.');});
-window.__NX={openLab,hintLab,get F(){return F},get MU(){return MU},openPlace,findSimilar,matchMuster,say,rose,setLens,get lens(){return lens},get simSet(){return simSet},get dblOnly(){return dblOnly}};
+window.__NX={openLab,hintLab,openBuurt,setTheme,umbau,people,sev,score,grade,parts,over,buurtAt,RISKS,get BU(){return BU},get MU(){return MU},get theme(){return theme},get sel(){return sel},PTS};
+
 </script>
 </body>
 </html>
