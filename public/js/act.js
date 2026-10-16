@@ -42,7 +42,7 @@ async function loadWege(){
     if(v.uhi!=null)why.push(['+'+N(v.uhi,1)+' °C',T('Wärmeinsel im Quartier (Sommermittel)','heat island in the neighbourhood (summer average)','hitte-eiland in de buurt (zomergemiddelde)')]);
     if(v.dichte!=null)why.push([F(v.dichte),T('Einwohner je km² im Quartier','residents per km² in the neighbourhood','inwoners per km² in de buurt')]);
     if(s.y)why.push([String(s.y),T(`angelegt — ${new Date().getFullYear()-s.y>25?'reif für Erneuerung, dann Bäume gleich mitplanen':'noch jung'}`,`laid out — ${new Date().getFullYear()-s.y>25?'due for renewal; plan trees in at the same time':'still recent'}`,`aangelegd — ${new Date().getFullYear()-s.y>25?'toe aan vernieuwing; bomen meteen meenemen':'nog jong'}`)]);
-    out.push({key:'wege:'+s.n+'|'+s.p,name:s.n+(s.p&&s.p!=='Utrecht'?' ('+s.p+')':''),lat:s.c[0],lon:s.c[1],b,raw:.35*def+.25*heat+.2*pp+.2*sz,why,src:'Gemeente Utrecht (Schaduw wegdelen 2023) · RIVM · CBS',main:s.sh});}
+    out.push({key:'wege:'+s.n+'|'+s.p,name:s.n+(s.p&&s.p!=='Utrecht'?' ('+s.p+')':''),street:s.n,lat:s.c[0],lon:s.c[1],b,raw:.35*def+.25*heat+.2*pp+.2*sz,why,src:'Gemeente Utrecht (Schaduw wegdelen 2023) · RIVM · CBS',main:s.sh});}
   return out;
 }
 async function loadSchulen(){
@@ -147,12 +147,22 @@ function openCase(c){
   P.querySelector('#actPdf').onclick=()=>brief(c,m);
   render();
 }
-function labFor(c,m){
-  const nx=NX();nx.openLab([c.lat,c.lon],m.tool==='studio'?'studio':m.tool==='water'?'water':'street');
+// Punkt genau auf der Fallstraße: Mittellinie mit diesem Namen im amtlichen Wegenetz (NWB), nahe am Schwerpunkt
+async function onStreet(c){
+  if(!c.street)return [c.lat,c.lon];
+  try{const d=.004,j=await fetch(`https://api.pdok.nl/rws/nationaal-wegenbestand-wegen/ogc/v1/collections/wegvakken/items?bbox=${c.lon-d*1.6},${c.lat-d},${c.lon+d*1.6},${c.lat+d}&limit=1000&f=json`).then(r=>r.json());
+    let best=null,bd=Infinity;for(const f of j.features||[]){const p=f.properties||{};if(p.stt_naam!==c.street||!f.geometry)continue;const l=f.geometry.type==='LineString'?f.geometry.coordinates:f.geometry.coordinates[0];if(!l||l.length<2)continue;
+      const mid=l[Math.floor(l.length/2)],a=l[Math.floor(l.length/2)-(l.length%2?0:1)],m=l.length%2?mid:[(a[0]+mid[0])/2,(a[1]+mid[1])/2],dd=Math.hypot((m[1]-c.lat)*111320,(m[0]-c.lon)*68500);if(dd<bd){bd=dd;best=[m[1],m[0]];}}
+    if(best)return best;}catch(e){}
+  return [c.lat,c.lon];
+}
+async function labFor(c,m){
+  const nx=NX();if(m.tool==='street'){const p=await onStreet(c);c.cut=p;}
+  const at=c.cut||[c.lat,c.lon];nx.openLab(at,m.tool==='studio'?'studio':m.tool==='water'?'water':'street');
   const LAB=window.LAB;if(!LAB)return;
   if(m.tool==='studio'&&LAB.area){LAB.area.AR.type='circle';LAB.area.AR.r=100;LAB.area.AR.center=L.latLng(c.lat,c.lon);}
-  if(m.tool==='street'){const map=nx.map,go=()=>map.fire('click',{latlng:L.latLng(c.lat,c.lon),containerPoint:map.latLngToContainerPoint([c.lat,c.lon])});   // Schnitt am Fall, sobald die Karte nah genug ist
-    let n=0;const wait=()=>{if(map.getZoom()>=16.5)setTimeout(go,250);else if(n++<30)setTimeout(wait,150);else{map.setView([c.lat,c.lon],17,{animate:false});setTimeout(go,300);}};wait();}
+  if(m.tool==='street'){const map=nx.map,go=()=>map.fire('click',{latlng:L.latLng(at[0],at[1]),containerPoint:map.latLngToContainerPoint(at)});   // Schnitt am Fall, sobald die Karte nah genug ist
+    let n=0;const wait=()=>{if(map.getZoom()>=16.5)setTimeout(go,250);else if(n++<30)setTimeout(wait,150);else{map.setView(at,17,{animate:false});setTimeout(go,300);}};wait();}
 }
 
 // ── Entscheidungs-Brief (PDF) ──
