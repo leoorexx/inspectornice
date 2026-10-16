@@ -70,10 +70,21 @@ async function section(ll){
   const trees=A.treesIn(.15).map(t=>{const dx=(t[4]-px)*m,dy=(t[5]-py)*m,s=dx*ux+dy*uy,d=Math.abs(dx*uy-dy*ux);return {s,d,r:t[2],H:t[3],g:A.GENERA[t[6]]||'',m:!!t[8]};}).filter(t=>t.d<=5&&t.s>=-L1&&t.s<=L2);
   const P=(d)=>{const [x2,y2]=at(ux,uy,d);const q=A.map.unproject([x2,y2],20);return [q.lat,q.lng];};
   const sec={ll,ux,uy,L1,L2,STUB,segs,trees,hl:lb&&lb.h,hr:rb&&rb.h,open:[L1>=45,L2>=45],ends:[P(-L1),P(L2)],name:null,px,py};
-  sec.name=await streetName(ll).catch(()=>null);
+  sec.name=await streetName(ll,ux,uy).catch(()=>null);
   return sec;
 }
-async function streetName(ll){
+// Straßenname: amtliches Wegenetz (NWB) — die Mittellinie, die dem Punkt am nächsten liegt und quer zur Schnittlinie verläuft;
+// Rückfall: nächstes Namensschild der BGT (kann zur Nachbarstraße gehören)
+async function streetName(ll,ux,uy){
+  try{const d=.0005,[px,py]=A.toRD(ll.lat,ll.lng);
+    const j=await fetch(`https://api.pdok.nl/rws/nationaal-wegenbestand-wegen/ogc/v1/collections/wegvakken/items?bbox=${ll.lng-d*1.6},${ll.lat-d},${ll.lng+d*1.6},${ll.lat+d}&limit=200&f=json`).then(r=>{if(!r.ok)throw 0;return r.json();});
+    let best=null,bs=Infinity;const sx=ux!=null?ux:0,sy=uy!=null?-uy:0;   // Schnittrichtung in RD (Nord oben)
+    for(const f of j.features||[]){const n=f.properties&&f.properties.stt_naam;if(!n||!f.geometry)continue;
+      const ls=f.geometry.type==='LineString'?[f.geometry.coordinates]:f.geometry.type==='MultiLineString'?f.geometry.coordinates:[];
+      for(const l of ls)for(let i=1;i<l.length;i++){const a=A.toRD(l[i-1][1],l[i-1][0]),b=A.toRD(l[i][1],l[i][0]),dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;if(!L2)continue;
+        const t=Math.max(0,Math.min(1,((px-a[0])*dx+(py-a[1])*dy)/L2)),dist=Math.hypot(a[0]+t*dx-px,a[1]+t*dy-py),par=ux!=null?Math.abs((dx*sx+dy*sy)/Math.sqrt(L2)):0;
+        const sc=dist+18*par;if(sc<bs&&dist<45){bs=sc;best=n;}}}   // parallel zur Schnittlinie = Querstraße → Strafpunkte
+    if(best)return best;}catch(e){}
   const d=.0006,best={d:1e9,n:null};
   await A.bgtItems('openbareruimtelabel',ll.lng-d,ll.lat-d,ll.lng+d,ll.lat+d,f=>{const c=f.geometry&&f.geometry.coordinates,p=f.properties;if(!c||!p.openbareruimtenaam)return;
     const dd=(c[1]-ll.lat)**2+((c[0]-ll.lng)*.62)**2;if(dd<best.d){best.d=dd;best.n=p.openbareruimtenaam;}});
