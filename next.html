@@ -681,6 +681,13 @@ body.panel-on .ptsbtn{right:494px}
   .vnum{width:64px;height:64px;padding-top:11px}.vnum b{font-size:36px}
   body.panel-on .labhint{left:50%;opacity:0;pointer-events:none}
 }
+/* iPhone: Sicherheitsabstände (Notch, Home-Leiste) — HIG layout.md › Guides and safe areas; viewport-fit=cover ist gesetzt */
+.top,.lenses,.lab-dock,.act{margin-top:env(safe-area-inset-top,0px)}
+.top,.lenses,.legend,.lab-dock,.act{margin-left:env(safe-area-inset-left,0px)}
+.top,.ptsbtn{margin-right:env(safe-area-inset-right,0px)}
+.legend,.labhint,.ptsbtn,.leaflet-bottom,.v3-play{margin-bottom:env(safe-area-inset-bottom,0px)}
+.leaflet-right{margin-right:env(safe-area-inset-right,0px)}
+.panel .pb{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
