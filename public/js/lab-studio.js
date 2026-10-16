@@ -73,7 +73,88 @@ const DIA=[
     goal:()=>T('Mögliche Wassertiefe bei Deichbruch, ≈ 1× in 1.000 Jahren (LIWO, Rijkswaterstaat) — ein Szenario, keine Vorhersage','Possible water depth after a dike breach, ≈ once in 1,000 years (LIWO, Rijkswaterstaat) — a scenario, not a forecast','Mogelijke waterdiepte bij een dijkdoorbraak, ≈ 1× per 1.000 jaar (LIWO, Rijkswaterstaat) — een scenario, geen voorspelling'),
     wms:{url:'https://basisinformatie-overstromingen.nl/geoserver/ows',layer:'LIWO_Basis:MaximaleWaterdiepteNederland_Kaart3',style:'LIWO_Basis_Waterdiepte'},bld:()=>sty().bld}
 ];
+// ── Frameworks wie im Architekturbüro: Himmelssicht, Gehen, Lebensraum ──
+const EXT={sky:null,walk:null,hab:null,busy:null};
+const GEN_COL=['#3f7f6a','#c49a2b','#7a4ea8','#d0583c','#2f6fa8','#8a6a3a','#9a3a6a'],WCOL=['#3f7f6a','#c49a2b','#d0583c'];
+const SKY_RAMP=[[0,[34,28,72]],[.3,[96,64,150]],[.5,[170,120,190]],[.7,[226,200,226]],[1,[250,246,236]]];
+DIA.push(
+  {id:'sky',n:()=>T('Himmelssicht','Sky view','Hemelzicht'),ic:IC('<path d="M3 18a9 9 0 0 1 18 0"/><path d="M12 9V5M7 11 5 9M17 11l2-2"/>'),ext:'sky',bld:()=>sty().bld,
+    goal:()=>T('Anteil des Himmels, den man am Boden sieht (Sky View Factor 0–1, aus dem AHN). Wenig Himmel heißt wenig Tageslicht — und nachts kaum Abkühlung, weil die Wärme zwischen den Häusern bleibt.','Share of the sky visible from the ground (sky view factor 0–1, from AHN). Little sky means little daylight — and little cooling at night, because heat stays between the buildings.','Aandeel van de hemel dat je op de grond ziet (sky view factor 0–1, uit AHN). Weinig hemel betekent weinig daglicht — en \'s nachts weinig afkoeling, omdat de warmte tussen de gebouwen blijft.'),
+    legend:()=>[[`rgb(${SKY_RAMP[1][1].join(',')})`,T('wenig Himmel (< 0,4)','little sky (< 0.4)','weinig hemel (< 0,4)')],[`rgb(${SKY_RAMP[2][1].join(',')})`,'0,4–0,6'],[`rgb(${SKY_RAMP[3][1].join(',')})`,T('viel Himmel (> 0,6)','open sky (> 0.6)','veel hemel (> 0,6)')]]},
+  {id:'walk',n:()=>T('Gehen','Walking','Lopen'),ic:IC('<circle cx="13" cy="4" r="2"/><path d="M9 21l2-7 3 3v5M9 10l3-2 3 4 3 1M11 14l-2-4"/>'),ext:'walk',bld:()=>sty().mute,
+    goal:()=>T('Wie weit man in 5, 10 und 15 Minuten zu Fuß kommt (4,8 km/h) — auf dem amtlichen Wegenetz (NWB) ab der Mitte des Gebiets; dazu Bänke und Spielplätze aus dem Register der Gemeente.','How far you get in 5, 10 and 15 minutes on foot (4.8 km/h) — on the official road network (NWB) from the centre of the area; plus benches and playgrounds from the municipal register.','Hoe ver je in 5, 10 en 15 minuten lopend komt (4,8 km/u) — over het officiële wegennet (NWB) vanaf het midden van het gebied; plus banken en speelplekken uit het gemeenteregister.'),
+    legend:()=>[[WCOL[0],T('bis 5 Minuten','up to 5 minutes','tot 5 minuten')],[WCOL[1],T('5–10 Minuten','5–10 minutes','5–10 minuten')],[WCOL[2],T('10–15 Minuten','10–15 minutes','10–15 minuten')]]},
+  {id:'habitat',n:()=>T('Lebensraum','Habitat','Leefgebied'),ic:IC('<path d="M5 19c4-1 6-5 6-10 3 3 4 7 3 10"/><path d="M14 9c2-3 5-4 7-4-1 4-3 6-6 7"/>'),ext:'hab',trees:true,treeCol:true,bld:()=>sty().mute,
+    surf:o=>o.c===2?sty().green:o.c===3?sty().water:null,
+    goal:()=>T('Vielfalt der Stadtbäume nach der 10-20-30-Regel (höchstens 20 % einer Gattung, Santamour) und beobachtete Arten seit 2015 (GBIF). Vielfalt macht das Grün robuster gegen Hitze, Dürre und Schädlinge.','Urban tree diversity by the 10-20-30 rule (at most 20 % of one genus, Santamour) and species observed since 2015 (GBIF). Diversity makes green more robust against heat, drought and pests.','Diversiteit van stadsbomen volgens de 10-20-30-regel (hoogstens 20 % van één geslacht, Santamour) en waargenomen soorten sinds 2015 (GBIF). Diversiteit maakt groen robuuster tegen hitte, droogte en plagen.'),
+    legend:()=>EXT.hab&&EXT.hab.top?EXT.hab.top.map(([g,n],i)=>[GEN_COL[i],`${g} · ${A.nf(100*n/EXT.hab.n,0)} %`]).concat([[sty().tree,T('andere Gattungen','other genera','overige geslachten')]]):[]}
+);
 const dia=()=>DIA.find(d=>d.id===ST.dia)||DIA[0];
+const extKey=()=>JSON.stringify([AR.type,AR.r,AR.center&&[+AR.center.lat.toFixed(5),+AR.center.lng.toFixed(5)],AR.pts&&AR.pts.length]);
+async function ensureExt(){
+  const d=dia();if(!d.ext||!AREA.ring())return;const key=extKey();if(EXT[d.ext]&&EXT[d.ext].key===key)return;
+  EXT.busy=d.ext;A.rerender();
+  try{EXT[d.ext]=await ({sky:skyCalc,walk:walkCalc,hab:habCalc})[d.ext]();EXT[d.ext].key=key;}catch(e){EXT[d.ext]={err:true,key};}
+  EXT.busy=null;A.rerender();A.req();
+}
+const rdBox=(E,pad)=>{const P=pts(E.z,E),xs=P.map(p=>p[0]+E.ox),ys=P.map(p=>p[1]+E.oy);return [Math.floor(Math.min(...xs)-pad),Math.floor(Math.min(...ys)-pad),Math.ceil(Math.max(...xs)+pad),Math.ceil(Math.max(...ys)+pad)];};
+const wOfRD=(x,y)=>{const ll=A.fromRD(x,y);return A.w20(ll[0],ll[1]);};
+async function wcs(id,x0,y0,x1,y1,w,h){const G=await A.geotiff(),r=await fetch(`https://service.pdok.nl/rws/ahn/wcs/v1_0?SERVICE=WCS&VERSION=2.0.1&REQUEST=GetCoverage&COVERAGEID=${id}&FORMAT=image/tiff&SUBSET=x(${x0},${x1})&SUBSET=y(${y0},${y1})&SCALESIZE=x(${w}),y(${h})`);if(!r.ok)throw new Error('AHN');
+  const im=await (await G.fromArrayBuffer(await r.arrayBuffer())).getImage();return {z:(await im.readRasters())[0],w:im.getWidth(),h:im.getHeight()};}
+async function skyCalc(){   // Sky View Factor am Boden: 16 Richtungen, Horizont bis 60 m im Oberflächenmodell
+  const E=AREA.exportSet(src()),[x0,y0,x1,y1]=rdBox(E,60),res=Math.max(1,Math.max(x1-x0,y1-y0)/420),W=Math.round((x1-x0)/res),H=Math.round((y1-y0)/res);
+  const [S,G]=await Promise.all([wcs('dsm_05m',x0,y0,x1,y1,W,H),wcs('dtm_05m',x0,y0,x1,y1,W,H)]);
+  const w=S.w,h=S.h,rx=(x1-x0)/w,ry=(y1-y0)/h,ok=v=>v>-50&&v<400,D=[1.5,3,5,8,12,17,23,30,40,50,60],svf=new Float32Array(w*h).fill(-1);
+  const P=pts(E.z,E).map(p=>[p[0]+E.ox,p[1]+E.oy]);let sum=0,n=0,low=0;
+  for(let j=0;j<h;j++){if(j%30===0)await A.yieldNow();for(let i=0;i<w;i++){const k=j*w+i,g=G.z[k],sv=S.z[k];if(!ok(g)||!ok(sv)||sv-g>1.5)continue;
+    let acc=0;for(let d=0;d<16;d++){const a=d*Math.PI/8,dx=Math.cos(a),dy=Math.sin(a);let mt=0;
+      for(const s of D){const ii=Math.round(i+dx*s/rx),jj=Math.round(j-dy*s/ry);if(ii<0||jj<0||ii>=w||jj>=h)break;const v=S.z[jj*w+ii];if(ok(v)){const t=(v-g)/s;if(t>mt)mt=t;}}
+      acc+=mt*mt/(1+mt*mt);}
+    const f=1-acc/16;svf[k]=f;const X=x0+(i+.5)*rx,Y=y1-(j+.5)*ry;if(pIn(X,Y,P)){sum+=f;n++;if(f<.5)low++;}}}
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;const g2=cv.getContext('2d');
+  if(g2&&typeof g2.createImageData==='function'){const id=g2.createImageData(w,h);for(let k=0;k<w*h;k++){const f=svf[k];if(f<0)continue;const c=A.ramp(SKY_RAMP,f);id.data[4*k]=c[0];id.data[4*k+1]=c[1];id.data[4*k+2]=c[2];id.data[4*k+3]=225;}g2.putImageData(id,0,0);}
+  const nw=wOfRD(x0,y1),se=wOfRD(x1,y0);
+  return {img:cv,b:[nw[0],nw[1],se[0],se[1]],mean:n?sum/n:null,low:n?100*low/n:null,n};
+}
+const WALK_OK=new Set(['','RB','FP','VP','VZ']);
+let FURN=null;
+async function walkCalc(){   // Gehminuten (Dijkstra) auf dem NWB ab der Gebietsmitte
+  const c=AR.center||A.map.getCenter(),R=1250,dLat=R/111320,dLon=R/(111320*Math.cos(c.lat*A.SR));
+  let url=`https://api.pdok.nl/rws/nationaal-wegenbestand-wegen/ogc/v1/collections/wegvakken/items?bbox=${c.lng-dLon},${c.lat-dLat},${c.lng+dLon},${c.lat+dLat}&limit=1000&f=json`;
+  const nodes=new Map(),edges=[];
+  for(let k=0;k<10&&url;k++){const j=await fetch(url).then(r=>{if(!r.ok)throw new Error('NWB');return r.json();});
+    for(const f of j.features||[]){const pr=f.properties||{};if(!WALK_OK.has(pr.bst_code||'')||!f.geometry||pr.jte_id_beg==null)continue;
+      const ls=f.geometry.type==='LineString'?[f.geometry.coordinates]:f.geometry.type==='MultiLineString'?f.geometry.coordinates:[];
+      for(const l of ls){if(l.length<2)continue;let len=0;for(let i=1;i<l.length;i++){const a=A.toRD(l[i-1][1],l[i-1][0]),b=A.toRD(l[i][1],l[i][0]);len+=Math.hypot(b[0]-a[0],b[1]-a[1]);}
+        const z=new Float64Array(l.length*2);l.forEach((p,i)=>{const q=A.w20(p[1],p[0]);z[2*i]=q[0];z[2*i+1]=q[1];});
+        const e={a:pr.jte_id_beg,b:pr.jte_id_end,len,z};edges.push(e);for(const [id,i] of [[e.a,0],[e.b,l.length-1]]){if(!nodes.has(id))nodes.set(id,{x:z[2*i],y:z[2*i+1],e:[],t:Infinity});nodes.get(id).e.push(e);}}}
+    const nx=(j.links||[]).find(l=>l.rel==='next');url=nx?nx.href:null;}
+  if(!edges.length)throw new Error('leer');
+  const [cx,cy]=A.w20(c.lat,c.lng),m=A.m20();let start=null,bd=Infinity;for(const [id,nd] of nodes){const d=Math.hypot(nd.x-cx,nd.y-cy);if(d<bd){bd=d;start=id;}}
+  const V=1.333,heap=[];const push=(t,id)=>{heap.push([t,id]);let i=heap.length-1;while(i>0){const p=(i-1)>>1;if(heap[p][0]<=heap[i][0])break;[heap[p],heap[i]]=[heap[i],heap[p]];i=p;}};
+  const pop=()=>{const r=heap[0],l=heap.pop();if(heap.length){heap[0]=l;let i=0;for(;;){let a=2*i+1;if(a>=heap.length)break;if(a+1<heap.length&&heap[a+1][0]<heap[a][0])a++;if(heap[a][0]>=heap[i][0])break;[heap[a],heap[i]]=[heap[i],heap[a]];i=a;}}return r;};
+  nodes.get(start).t=bd*m/V;push(nodes.get(start).t,start);
+  while(heap.length){const [t,id]=pop(),nd=nodes.get(id);if(t>nd.t||t>900)continue;for(const e of nd.e){const o=e.a===id?e.b:e.a,on=nodes.get(o),tt=t+e.len/V;if(tt<on.t){on.t=tt;push(tt,o);}}}
+  const segs=[[],[],[]];for(const e of edges){const t=Math.min(nodes.get(e.a).t,nodes.get(e.b).t);if(t>900)continue;segs[t<=300?0:t<=600?1:2].push(e.z);}
+  // Bänke und Spielplätze (Register): erreichbar über den nächsten Knoten im Umkreis von 60 m
+  if(!FURN)FURN=await fetch('data/official/furniture_utr.json').then(r=>r.ok?r.json():null).catch(()=>null);
+  const cell=60/m,grid=new Map();for(const [,nd] of nodes){if(!isFinite(nd.t))continue;const k=Math.floor(nd.x/cell)+','+Math.floor(nd.y/cell);if(!grid.has(k))grid.set(k,[]);grid.get(k).push(nd);}
+  const reach=(lat,lon)=>{const [x,y]=A.w20(lat,lon),gx=Math.floor(x/cell),gy=Math.floor(y/cell);let best=Infinity;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)for(const nd of grid.get((gx+a)+','+(gy+b))||[]){const d=Math.hypot(nd.x-x,nd.y-y)*m;if(d<=60)best=Math.min(best,nd.t+d/V);}return best;};
+  let b5=0,b10=0;const play=[];
+  if(FURN){for(const [la,lo] of FURN.bank||[]){if(Math.abs(la-c.lat)>dLat||Math.abs(lo-c.lng)>dLon)continue;const t=reach(la,lo);if(t<=300)b5++;if(t<=600)b10++;}
+    for(const [la,lo] of FURN.speelvoorziening||[]){if(Math.abs(la-c.lat)>dLat||Math.abs(lo-c.lng)>dLon)continue;const t=reach(la,lo);if(t<=600&&!play.some(p=>Math.hypot((p[0]-la)*111320,(p[1]-lo)*68500)<40))play.push([la,lo,t]);}}
+  const km=k=>segs.slice(0,k+1).flat().reduce((s,z)=>{let l=0;for(let i=2;i<z.length;i+=2)l+=Math.hypot(z[i]-z[i-2],z[i+1]-z[i-1]);return s+l*m;},0)/1000;
+  return {segs,origin:[cx,cy],b5,b10,p5:play.filter(p=>p[2]<=300).length,p10:play.length,km5:km(0),km10:km(1)};
+}
+async function habCalc(){   // Baumgattungen (Register) + beobachtete Arten (GBIF)
+  const E=AREA.exportSet(src()),gen=new Map();for(const t of E.trees){const g=A.GENERA[t[6]]||'?';gen.set(g,(gen.get(g)||0)+1);}
+  const n=E.trees.length,top=[...gen.entries()].sort((a,b)=>b[1]-a[1]),H=-top.reduce((s,[,c])=>s+(c/n)*Math.log(c/n),0);
+  let gb=null;try{const r=AREA.ring();let ll=r.map(([la,lo])=>[lo,la]);let a=0;for(let i=0;i<ll.length;i++){const p=ll[i],q=ll[(i+1)%ll.length];a+=p[0]*q[1]-q[0]*p[1];}if(a<0)ll.reverse();
+    const wkt=`POLYGON((${ll.concat([ll[0]]).map(p=>p[0].toFixed(5)+' '+p[1].toFixed(5)).join(',')}))`;
+    const j=await fetch(`https://api.gbif.org/v1/occurrence/search?geometry=${encodeURIComponent(wkt)}&year=2015,${new Date().getFullYear()}&limit=0&facet=speciesKey&facetLimit=3000`).then(r=>r.json());
+    gb={count:j.count||0,species:j.facets&&j.facets[0]?j.facets[0].counts.length:0};}catch(e){}
+  return {n,top:top.slice(0,7),genera:top.length,shannon:n?H:null,maxShare:n?100*top[0][1]/n:null,maxGen:n?top[0][0]:null,gbif:gb};
+}
 
 // ── Gebiet in lokalen Metern ──
 const area2=z=>Math.abs(A.signed(z))/2;
@@ -107,7 +188,7 @@ async function compute(){
     if(al[p+3]>127&&al[p+1]>127){open++;const a=al[p]/500;alb+=a;if(a<.12)dark++;}}
   ST.stats={Am,n:E.blds.length,foot,gfa:s0.gfa,hmean:s0.hmean,hmax:s0.hmax,byH,byY,yKnown,flat,slant,nFlat,share:s0.share,canopy:s0.canopy,trees:s0.trees,
     pathShade:pin?100*pSh/pin:null,pathM2:pin*res*res,albedo:open?alb/open:null,dark:open?100*dark/open:null,sunAlt:sun.alt,place:placeName()};
-  ST.busy=false;A.rerender();A.req();
+  ST.busy=false;A.rerender();A.req();ensureExt();
 }
 function placeName(){const c=AR.center||A.map.getCenter(),b=A.opt().buurtAt?A.opt().buurtAt(c.lat,c.lng):null;return b?b.name:'';}
 const pct=v=>v==null?'—':A.nf(v,0)+' %';
@@ -124,6 +205,10 @@ function kpi(){
     shade:{big:s.pathShade!=null?A.nf(s.pathShade,0):'—',unit:T('% der Wege im Schatten','% of paths in shade','% van de paden in schaduw'),target:40,v:s.pathShade,better:'high',sub:T(`${F(s.pathM2)} m² Fuß- und Radwege · 21. Juni, 15 Uhr`,`${F(s.pathM2)} m² of footpaths and cycle paths · 21 June, 3 pm`,`${F(s.pathM2)} m² loop- en fietspad · 21 juni, 15 uur`)},
     heat:{big:s.dark!=null?A.nf(s.dark,0):'—',unit:T('% dunkle Flächen','% dark surfaces','% donkere vlakken'),sub:`${T('Ø Albedo der Freiflächen','avg. albedo of open space','gem. albedo buitenruimte')} ${s.albedo!=null?A.nf(s.albedo,2):'—'}`},
     noise:{big:'53',unit:T('dB WHO-Richtwert','dB WHO guideline','dB WHO-richtwaarde'),sub:T('Farben: amtliche RIVM-Klassen; Wert an jedem Punkt im Werkzeug „Sonne" antippen','colours: official RIVM classes','kleuren: officiële RIVM-klassen')},
+    sky:EXT.sky&&EXT.sky.mean!=null?{big:A.nf(EXT.sky.mean,2),unit:T('Ø Himmelssicht am Boden','avg. sky view at ground level','gem. hemelzicht op de grond'),sub:T(`${A.nf(EXT.sky.low,0)} % der Freiflächen sehen weniger als die Hälfte des Himmels`,`${A.nf(EXT.sky.low,0)} % of open ground sees less than half the sky`,`${A.nf(EXT.sky.low,0)} % van de buitenruimte ziet minder dan de helft van de hemel`)}:null,
+    walk:EXT.walk&&!EXT.walk.err?{big:A.fmt(EXT.walk.b5),unit:T('Bänke in 5 Minuten zu Fuß','benches within a 5-minute walk','banken binnen 5 minuten lopen'),sub:T(`${EXT.walk.p5} Spielplätze in 5, ${EXT.walk.p10} in 10 Minuten · ${A.nf(EXT.walk.km10,1)} km Wege in 10 Minuten`,`${EXT.walk.p5} playgrounds within 5, ${EXT.walk.p10} within 10 minutes · ${A.nf(EXT.walk.km10,1)} km of paths within 10 minutes`,`${EXT.walk.p5} speelplekken binnen 5, ${EXT.walk.p10} binnen 10 minuten · ${A.nf(EXT.walk.km10,1)} km paden binnen 10 minuten`)}:null,
+    habitat:EXT.hab&&EXT.hab.n?{big:A.nf(EXT.hab.maxShare,0),unit:T(`% ${EXT.hab.maxGen} — größte Gattung`,`% ${EXT.hab.maxGen} — largest genus`,`% ${EXT.hab.maxGen} — grootste geslacht`),target:20,v:EXT.hab.maxShare,better:'low',
+      sub:`${A.fmt(EXT.hab.n)} ${T('Bäume','trees','bomen')}, ${EXT.hab.genera} ${T('Gattungen','genera','geslachten')} · Shannon ${A.nf(EXT.hab.shannon,2)}${EXT.hab.gbif?` · GBIF: ${A.fmt(EXT.hab.gbif.species)} ${T('Arten seit 2015','species since 2015','soorten sinds 2015')} (${A.fmt(EXT.hab.gbif.count)} ${T('Beobachtungen','observations','waarnemingen')})`:''}`}:null,
     flood:{big:'1/1.000',unit:T('Jahre — Szenario','years — scenario','jaar — scenario'),sub:T('Farben: Wassertiefe nach LIWO; Deiche verhindern das in aller Regel','colours: water depth from LIWO; dikes normally prevent this','kleuren: waterdiepte volgens LIWO; dijken voorkomen dit normaal gesproken')}
   }[d.id];
   return k;
@@ -157,10 +242,16 @@ function drawDia(g,X){
   if(d.surf){const by=new Map();for(const o of SL()){const c=d.surf(o);if(!c)continue;if(!by.has(c))by.set(c,[]);by.get(c).push(o);}for(const [c,os] of by)A.chunked(g,os,16,o=>A.poly(g,o.z,X),c);}
   else{const by=new Map([[S.water,SL().filter(o=>o.c===3)]]);for(const [c,os] of by)A.chunked(g,os,16,o=>A.poly(g,o.z,X),c);}
   if(d.wms&&ST.wms&&ST.wms.ok&&ST.wms.id===d.id){const b=ST.wms.b;g.globalAlpha=.85;g.drawImage(ST.wms.img,b[0]*X.k-X.ox,b[1]*X.k-X.oy,(b[2]-b[0])*X.k,(b[3]-b[1])*X.k);g.globalAlpha=1;}
+  if(d.ext==='sky'&&EXT.sky&&EXT.sky.img){const b=EXT.sky.b;g.globalAlpha=.92;g.imageSmoothingEnabled=true;g.drawImage(EXT.sky.img,b[0]*X.k-X.ox,b[1]*X.k-X.oy,(b[2]-b[0])*X.k,(b[3]-b[1])*X.k);g.globalAlpha=1;}
   if(d.shadow){const sun=refSun();if(sun.alt>.02)A.castShadows(g,sun,X,A.treesIn(.05),S.shadow,S.shadow,4,BL());}
-  if(d.trees){const m=A.mpp()/X.sc;A.chunked(g,A.treesIn(.05),48,t=>{const x=t[4]*X.k-X.ox,y=t[5]*X.k-X.oy,r=Math.max(1.2*X.sc,t[2]/m);g.moveTo(x+r,y);g.arc(x,y,r,0,2*Math.PI);},S.tree,S.treeL,.6*X.sc);}
+  if(d.trees){const m=A.mpp()/X.sc,ts=A.treesIn(.05),cOf=t=>{if(!d.treeCol||!EXT.hab||!EXT.hab.top)return S.tree;const i=EXT.hab.top.findIndex(([gn])=>gn===(A.GENERA[t[6]]||'?'));return i>=0?GEN_COL[i]:S.tree;};
+    const byC=new Map();for(const t of ts){const c=cOf(t);if(!byC.has(c))byC.set(c,[]);byC.get(c).push(t);}
+    for(const [c,arr] of byC)A.chunked(g,arr,48,t=>{const x=t[4]*X.k-X.ox,y=t[5]*X.k-X.oy,r=Math.max(1.2*X.sc,t[2]/m);g.moveTo(x+r,y);g.arc(x,y,r,0,2*Math.PI);},c,S.treeL,.6*X.sc);}
   const by=new Map();for(const b of BL()){const c=d.bld(b);if(!by.has(c))by.set(c,[]);by.get(c).push(b);}
   for(const [c,bs] of by)A.chunked(g,bs,16,b=>A.poly(g,b.z,X),c,d.id==='ground'?null:S.bg,.5*X.sc);
+  if(d.ext==='walk'&&EXT.walk&&EXT.walk.segs){g.lineCap='round';g.lineJoin='round';for(let k=2;k>=0;k--){g.strokeStyle=WCOL[k];g.lineWidth=(k===0?4:3)*X.sc;g.beginPath();
+      for(const zz of EXT.walk.segs[k]){g.moveTo(zz[0]*X.k-X.ox,zz[1]*X.k-X.oy);for(let i=2;i<zz.length;i+=2)g.lineTo(zz[i]*X.k-X.ox,zz[i+1]*X.k-X.oy);}g.stroke();}
+    const o=EXT.walk.origin;g.fillStyle='#FFD600';g.strokeStyle=S.ink;g.lineWidth=2*X.sc;g.beginPath();g.arc(o[0]*X.k-X.ox,o[1]*X.k-X.oy,7*X.sc,0,2*Math.PI);g.fill();g.stroke();}
   if(z){g.fillStyle=S.bg;g.globalAlpha=.72;g.beginPath();g.rect(0,0,Wc,Hc);A.poly(g,z,X);g.fill('evenodd');g.globalAlpha=1;
     g.strokeStyle=S.ink;g.lineWidth=1.6*X.sc;g.beginPath();A.poly(g,z,X);g.stroke();}
   g.restore();
@@ -189,9 +280,13 @@ async function diagramSvg(){
       for(let i=0;i<n;i++){const a=Q[i],c=Q[(i+1)%n];gsh+=`<path d="M${P(...a)}L${P(...c)}L${P(c[0]+dx*L,c[1]+dy*L)}L${P(a[0]+dx*L,a[1]+dy*L)}Z"/>`;}
       gsh+=`<path d="M${Q.map(p=>P(p[0]+dx*L,p[1]+dy*L).join(' ')).join('L')}Z"/>`;}
     s+=`<g fill="${S.shadow}" style="mix-blend-mode:multiply">${gsh}</g>`;}}
-  if(d.trees)s+=`<g fill="${S.tree}" stroke="${S.treeL}" stroke-width=".6">${E.trees.map(t=>{const p=E.loc(t[4],t[5]),[x,y]=P(p[0],p[1]);return `<circle cx="${x}" cy="${y}" r="${Math.max(1.5,t[2]*sc).toFixed(1)}"/>`;}).join('')}</g>`;
+  if(d.ext==='sky'&&EXT.sky&&EXT.sky.img&&EXT.sky.img.toDataURL){const b=EXT.sky.b,a=E.loc(b[0],b[1]),c=E.loc(b[2],b[3]),[x0,y0]=P(a[0],a[1]),[x1,y1]=P(c[0],c[1]);
+    s+=`<image href="${EXT.sky.img.toDataURL('image/png')}" x="${x0}" y="${y0}" width="${(x1-x0).toFixed(1)}" height="${(y1-y0).toFixed(1)}" opacity=".92" preserveAspectRatio="none"/>`;}
+  if(d.trees){const cOf=t=>{if(!d.treeCol||!EXT.hab||!EXT.hab.top)return S.tree;const i=EXT.hab.top.findIndex(([gn])=>gn===(A.GENERA[t[6]]||'?'));return i>=0?GEN_COL[i]:S.tree;};
+    s+=`<g stroke="${S.treeL}" stroke-width=".6">${E.trees.map(t=>{const p=E.loc(t[4],t[5]),[x,y]=P(p[0],p[1]);return `<circle cx="${x}" cy="${y}" r="${Math.max(1.5,t[2]*sc).toFixed(1)}" fill="${cOf(t)}"/>`;}).join('')}</g>`;}
   const by=new Map();for(const b of N.blds){const c=d.bld(b);if(!by.has(c))by.set(c,[]);by.get(c).push(b);}
   for(const [c,bs] of by)s+=`<g fill="${c}" ${d.id==='ground'?'':`stroke="${S.bg}" stroke-width=".6"`}>${bs.map(b=>`<path d="${path(b.z)}"/>`).join('')}</g>`;
+  if(d.ext==='walk'&&EXT.walk&&EXT.walk.segs)for(let k=2;k>=0;k--)s+=`<g fill="none" stroke="${WCOL[k]}" stroke-width="${k===0?3.2:2.4}" stroke-linecap="round" stroke-linejoin="round">${EXT.walk.segs[k].map(zz=>{let dd='';for(let i=0;i<zz.length;i+=2){const p=E.loc(zz[i],zz[i+1]),[x,y]=P(p[0],p[1]);dd+=(i?'L':'M')+x+' '+y;}return `<path d="${dd}"/>`;}).join('')}</g>`;
   s+=`</g><path d="${path(E.z)}" fill="none" stroke="${S.ink}" stroke-width="1.6"/>`;
   // Seitenleiste: Titel, Kennzahl, Legende, Quellen
   const X0=Wd+10;let y=pad+8;
@@ -208,7 +303,7 @@ async function diagramSvg(){
   s+=`<text x="${pad}" y="${Hd-20}" font-size="11" fill="${S.mute}">${esc(srcLine(d))} · RD ${E.ox} / ${E.oy} · ${new Date().toISOString().slice(0,10)}</text>`;
   return s+'</svg>';
 }
-const srcLine=d=>({noise:'RIVM Geluidkaart wegverkeer 2022',flood:'LIWO, Rijkswaterstaat',green:'Bomenkaart Gemeente Utrecht · BGT',seal:'BGT (Kadaster / PDOK)',shade:'3D BAG · Bomenkaart Utrecht · BGT',heat:'BGT · Albedo-Literaturwerte'}[d.id]||'3D BAG (TU Delft / 3DGI, CC BY 4.0)')+' · Inspector Nice';
+const srcLine=d=>({sky:'AHN (dsm/dtm 0,5 m, PDOK) · Sky View Factor',walk:'NWB (Rijkswaterstaat, PDOK) · Straatmeubilair Gemeente Utrecht',habitat:'Bomenkaart Gemeente Utrecht · GBIF.org',noise:'RIVM Geluidkaart wegverkeer 2022',flood:'LIWO, Rijkswaterstaat',green:'Bomenkaart Gemeente Utrecht · BGT',seal:'BGT (Kadaster / PDOK)',shade:'3D BAG · Bomenkaart Utrecht · BGT',heat:'BGT · Albedo-Literaturwerte'}[d.id]||'3D BAG (TU Delft / 3DGI, CC BY 4.0)')+' · Inspector Nice';
 const lines=(t,w,fs)=>Math.max(1,Math.ceil(t.length*fs*.52/w));
 function wrap(t,x,y,w,fs,col){const per=Math.max(10,Math.floor(w/(fs*.52))),words=t.split(' '),out=[];let cur='';for(const wd of words){if((cur+' '+wd).trim().length>per){out.push(cur.trim());cur=wd;}else cur+=' '+wd;}if(cur.trim())out.push(cur.trim());
   return out.map((l,i)=>`<text x="${x}" y="${y+i*fs*1.32}" font-size="${fs}" fill="${col}">${esc(l)}</text>`).join('');}
@@ -494,7 +589,8 @@ LAB.addTool({id:'studio',order:8,usesSurfaces:true,gate:false,
       <div class="wt-chips">${[100,200,400].map(r=>`<button data-r="${r}" class="${AR.type==='circle'&&AR.r===r?'on':''}">r = ${r} m</button>`).join('')}<button data-draw>${T('Zeichnen','Draw','Tekenen')}</button></div>
       <div class="st-step"><i>2</i>${T('Thema','Theme','Thema')}</div>
       <div class="st-dias">${DIA.map(x=>`<button data-d="${x.id}" class="${x.id===d.id?'on':''}" aria-pressed="${x.id===d.id}">${x.ic}<span>${x.n()}</span></button>`).join('')}</div>`;
-    if(ST.busy)h+=`<p class="lab-hint"><span class="lab-spin" aria-hidden="true"></span> ${T('Gebiet wird ausgewertet …','Analysing area …','Gebied wordt geanalyseerd …')}</p>`;
+    if(ST.busy||EXT.busy===d.ext&&d.ext)h+=`<p class="lab-hint"><span class="lab-spin" aria-hidden="true"></span> ${d.ext==='sky'?T('Himmelssicht wird aus dem Oberflächenmodell berechnet …','Computing sky view from the surface model …','Hemelzicht wordt berekend uit het oppervlaktemodel …'):d.ext==='walk'?T('Gehminuten werden auf dem Wegenetz berechnet …','Computing walking minutes on the road network …','Loopminuten worden berekend op het wegennet …'):d.ext==='hab'?T('Baumgattungen und Artbeobachtungen werden gezählt …','Counting tree genera and species observations …','Boomgeslachten en waarnemingen worden geteld …'):T('Gebiet wird ausgewertet …','Analysing area …','Gebied wordt geanalyseerd …')}</p>`;
+    else if(d.ext&&EXT[d.ext]&&EXT[d.ext].err)h+=`<p class="wt-warn">${T('Die Daten für dieses Framework sind gerade nicht erreichbar.','The data for this framework is currently unreachable.','De data voor dit framework zijn nu niet bereikbaar.')}</p>`;
     else if(k){h+=`<div class="st-kpi"><div class="st-big"><b>${k.big}</b><span>${k.unit}</span></div>`;
       if(k.target!=null&&k.v!=null){const ok=k.better==='high'?k.v>=k.target:k.v<=k.target;h+=`<div class="st-bar"><u style="width:${Math.min(100,k.v)}%;background:${ok?'#3f7f6a':'#c8553d'}"></u><s style="left:${k.target}%"></s></div><div class="st-tg"><span class="chip2 ${ok?'ok':'bad'}">${ok?T('Ziel erreicht','target met','doel gehaald'):T(`${A.nf(Math.abs(k.target-k.v),0)} Punkte unter dem Ziel`,`${A.nf(Math.abs(k.target-k.v),0)} points below target`,`${A.nf(Math.abs(k.target-k.v),0)} punten onder het doel`)}</span><small>${T('Ziel','target','doel')} ${k.target} %</small></div>`;}
       h+=`<p class="st-sub">${k.sub}</p>`;
@@ -513,7 +609,7 @@ LAB.addTool({id:'studio',order:8,usesSurfaces:true,gate:false,
   bind(root){
     root.querySelectorAll('[data-r]').forEach(el=>el.onclick=()=>{AR.type='circle';AR.r=+el.dataset.r;AR.center=AR.center||A.map.getCenter();ST.laser.res=null;fitA();compute().then(loadWms);});
     const dr=root.querySelector('[data-draw]');if(dr)dr.onclick=()=>{AR.type='draw';AR.pts=[];AR.done=false;A.setTool('area');};
-    root.querySelectorAll('[data-d]').forEach(el=>el.onclick=()=>{ST.dia=el.dataset.d;loadWms();A.rerender();A.req();});
+    root.querySelectorAll('[data-d]').forEach(el=>el.onclick=()=>{ST.dia=el.dataset.d;loadWms();A.rerender();A.req();ensureExt();});
     root.querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>{ST.sty=el.dataset.s;A.rerender();A.req();});
     root.querySelectorAll('[data-x]').forEach(el=>el.onclick=async()=>{const x=el.dataset.x;
       if(x==='laser'){ST.laser.open=!ST.laser.open;A.rerender();return;}
@@ -539,5 +635,5 @@ async function runLaser(){const O=ST.laser;if(O.busy)return;O.busy=true;A.rerend
   try{if(!src())await snapshot();O.res=await buildLaser();
     if(O.res.over.includes(O.res.parts[0])&&!O.touched){O.scale=fitScale(O.res);O.res=await buildLaser();O.auto=true;}else O.auto=false;}catch(e){O.res=null;}O.busy=false;A.rerender();}
 function fitA(){const r=AREA.ring();if(!r)return;const b=L.latLngBounds(r);if(!A.map.getBounds().contains(b)&&A.map.getSize().x)A.map.fitBounds(b.pad(.15),{maxZoom:18});}
-LAB.studio={SN,snapshot,ST,DIA,STY,compute,kpi,diagramSvg,axoSvg,buildLaser,laserFiles,unionRings,piecesOf,strokeText,zip,crc32,sheetSvg,sheetDxf,refSun};
+LAB.studio={SN,snapshot,ST,EXT,ensureExt,skyCalc,walkCalc,habCalc,DIA,STY,compute,kpi,diagramSvg,axoSvg,buildLaser,laserFiles,unionRings,piecesOf,strokeText,zip,crc32,sheetSvg,sheetDxf,refSun};
 })();
