@@ -399,16 +399,16 @@ const GL={ok:null};
 const VS='attribute vec2 a;varying vec2 v;void main(){v=vec2(a.x,1.0-a.y);gl_Position=vec4(a*2.0-1.0,0.0,1.0);}';
 // Schatten wie aus einem Guss: zwei Strahlen leicht versetzt (Sonnenscheibe → weiche Kante), Relief aus der
 // Oberflächen-Normalen (Dächer, Fassaden), Verschattung enger Straßenräume (Umgebungsverdeckung), warmes Licht auf Sonnenseiten.
-const FS='precision highp float;uniform sampler2D t;uniform vec2 da,db,px,r;uniform float k,s,e,dk;uniform vec3 ld;varying vec2 v;'+
+const FS='precision highp float;uniform sampler2D t;uniform vec2 da,db,px,r;uniform float k,s,e,dk,ns;uniform vec3 ld;varying vec2 v;'+
   'float H(vec2 u){vec4 q=texture2D(t,u);return (q.r*65280.0+q.g*255.0)/50.0;}'+
-  'float ray(vec2 d,float h0){for(int i=1;i<=150;i++){float m=float(i)*s;vec2 u=v+d*m;if(u.x<0.0||u.y<0.0||u.x>1.0||u.y>1.0)return 0.0;if(H(u)>h0+m*k+e)return 1.0;}return 0.0;}'+
-  'void main(){float h0=H(v),sh=0.5*(ray(da,h0)+ray(db,h0));'+
-  'float gx=(H(v+vec2(px.x,0.0))-H(v-vec2(px.x,0.0)))/(2.0*r.x),gy=(H(v+vec2(0.0,px.y))-H(v-vec2(0.0,px.y)))/(2.0*r.y);'+
-  'vec3 n=normalize(vec3(-gx,-gy,1.0));float lam=max(dot(n,ld),0.0)/max(ld.z,0.05);'+
-  'float oc=0.0;for(int j=0;j<8;j++){float a=float(j)*0.785398;vec2 o=vec2(cos(a)*px.x,sin(a)*px.y);'+
-  'oc+=clamp((H(v+o*3.0/r.x)-h0-0.5)/3.0,0.0,1.5)+clamp((H(v+o*9.0/r.x)-h0-0.5)/9.0,0.0,1.0);}float ao=clamp(oc/9.0,0.0,1.0);'+
-  'float dark=clamp(0.56*sh+0.3*clamp(1.0-lam,0.0,1.0)*(1.0-sh)+0.24*ao,0.0,0.76);'+
-  'float warm=(1.0-sh)*clamp((lam-1.0)*0.5,0.0,0.24);'+
+  'float Hb(vec2 u){vec2 g=u/px-0.5,f=fract(g),b=(floor(g)+0.5)*px;return mix(mix(H(b),H(b+vec2(px.x,0.0)),f.x),mix(H(b+vec2(0.0,px.y)),H(b+px),f.x),f.y);}'+
+  'float Hs(vec2 u){return (2.0*Hb(u)+Hb(u+vec2(px.x,0.0))+Hb(u-vec2(px.x,0.0))+Hb(u+vec2(0.0,px.y))+Hb(u-vec2(0.0,px.y)))/6.0;}'+
+  'void main(){float h0=H(v),sh=0.0;for(int i=1;i<=120;i++){float fi=float(i);if(fi>ns)break;float m=fi*s;vec2 u=v+da*m;if(u.x<0.0||u.y<0.0||u.x>1.0||u.y>1.0)break;if(H(u)>h0+m*k+e){sh=1.0;break;}}'+
+  'float gx=(Hs(v+vec2(2.0*px.x,0.0))-Hs(v-vec2(2.0*px.x,0.0)))/(4.0*r.x),gy=(Hs(v+vec2(0.0,2.0*px.y))-Hs(v-vec2(0.0,2.0*px.y)))/(4.0*r.y);'+
+  'vec3 n=normalize(vec3(-gx,-gy,1.0));float lam=max(dot(n,ld),0.0)/max(ld.z,0.05);lam=mix(1.0,lam,smoothstep(0.3,1.0,length(vec2(gx,gy))));'+
+  'float oc=0.0;for(int j=0;j<4;j++){float a=float(j)*1.5708+0.785;vec2 o=vec2(cos(a)*px.x,sin(a)*px.y)*6.0/r.x;oc+=clamp((Hs(v+o)-h0-1.0)/6.0,0.0,1.0);}float ao=clamp(oc/2.5,0.0,1.0);'+
+  'float dark=clamp(0.55*sh+0.28*clamp(1.0-lam,0.0,1.0)*(1.0-sh)+0.2*ao,0.0,0.74);'+
+  'float warm=(1.0-sh)*clamp((lam-1.0)*0.45,0.0,0.2);'+
   'vec3 sc=mix(vec3(0.15,0.16,0.37),vec3(0.01,0.01,0.07),dk);'+
   'gl_FragColor=dark>=warm?vec4(sc,dark):vec4(1.0,0.82,0.52,warm);}';
 function glInit(){
@@ -423,7 +423,7 @@ function glInit(){
     const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);
     for(const [k,v] of [[gl.TEXTURE_MIN_FILTER,gl.NEAREST],[gl.TEXTURE_MAG_FILTER,gl.NEAREST],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]])gl.texParameteri(gl.TEXTURE_2D,k,v);
     const U=n=>gl.getUniformLocation(p,n);
-    Object.assign(GL,{ok:true,cv:cv2,gl,p,tex,u:{da:U('da'),db:U('db'),px:U('px'),r:U('r'),k:U('k'),s:U('s'),e:U('e'),dk:U('dk'),ld:U('ld')},texId:-1,key:''});
+    Object.assign(GL,{ok:true,cv:cv2,gl,p,tex,u:{da:U('da'),db:U('db'),px:U('px'),r:U('r'),k:U('k'),s:U('s'),e:U('e'),dk:U('dk'),ld:U('ld'),ns:U('ns')},texId:-1,key:'',moved:0,timer:0});
   }catch(err){GL.ok=false;}
   return GL.ok;
 }
@@ -432,7 +432,7 @@ function viewRD(pad){const b=map.getBounds().pad(pad||0),C=[toRD(b.getSouth(),b.
 async function loadDsm(){
   if(map.getZoom()<14||!glInit())return null;
   const v=viewRD(0),pad=map.getZoom()<15?.12:.25,[x0,y0,x1,y1]=viewRD(pad).map((n,i)=>i<2?Math.floor(n/10)*10:Math.ceil(n/10)*10);
-  const res=Math.max(.5,Math.max(x1-x0,y1-y0)/1600),D=DSM.data;
+  const res=Math.max(.5,Math.max(x1-x0,y1-y0)/1400),D=DSM.data;
   if(D&&v[0]>=D.x0&&v[1]>=D.y0&&v[2]<=D.x1&&v[3]<=D.y1&&D.res<=res*1.6)return D;
   if(DSM.busy)return DSM.busy;
   DSM.busy=(async()=>{
@@ -449,22 +449,25 @@ async function loadDsm(){
   })();
   return DSM.busy;
 }
+// Während Bewegung (Abspielen, Regler) halbe Auflösung und weniger Schritte — danach automatisch scharf nachrechnen
 function renderShadow(sun){
   const D=DSM.data;if(!D||!glInit())return null;
-  const dk=isDark()?1:0,key=D.id+'|'+sun.az.toFixed(4)+'|'+sun.alt.toFixed(4)+'|'+dk;if(GL.key===key)return GL.cv;
-  const gl=GL.gl;if(GL.cv.width!==D.w||GL.cv.height!==D.h){GL.cv.width=D.w;GL.cv.height=D.h;}
-  gl.viewport(0,0,D.w,D.h);
+  const dk=isDark()?1:0,sk=D.id+'|'+sun.az.toFixed(4)+'|'+sun.alt.toFixed(4)+'|'+dk,now=performance.now();
+  if(GL.sk!==sk){GL.sk=sk;GL.moved=now;clearTimeout(GL.timer);GL.timer=setTimeout(()=>{if(LAB.on)req();},280);}
+  const sharp=Math.max(1,Math.min(1.75,D.rx/mpp())),fast=now-GL.moved<260||LAB.playing,q=fast?.5:sharp,key=sk+'|'+q.toFixed(2);if(GL.key===key)return GL.cv;   // scharf: feiner als das Raster, wenn hineingezoomt
+  const gl=GL.gl,w=Math.max(1,Math.round(D.w*q)),h=Math.max(1,Math.round(D.h*q));if(GL.cv.width!==w||GL.cv.height!==h){GL.cv.width=w;GL.cv.height=h;}
+  gl.viewport(0,0,w,h);
   if(GL.texId!==D.id){gl.bindTexture(gl.TEXTURE_2D,GL.tex);gl.pixelStorei(gl.UNPACK_ALIGNMENT,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,D.w,D.h,0,gl.RGBA,gl.UNSIGNED_BYTE,D.px);GL.texId=D.id;}
-  const b=sun.az+Math.PI,t=Math.tan(Math.max(sun.alt,.01)),maxLen=Math.min(600,(D.hi-D.lo+2)/t),step=Math.max(D.rx*.7,maxLen/150),W=D.w*D.rx,H=D.h*D.ry,J=.006;   // ±0,35°: Halbschatten der Sonnenscheibe
-  gl.uniform2f(GL.u.da,Math.sin(b-J)/W,-Math.cos(b-J)/H);gl.uniform2f(GL.u.db,Math.sin(b+J)/W,-Math.cos(b+J)/H);
-  gl.uniform2f(GL.u.px,1/D.w,1/D.h);gl.uniform2f(GL.u.r,D.rx,D.ry);gl.uniform1f(GL.u.k,t);gl.uniform1f(GL.u.s,step);gl.uniform1f(GL.u.e,.35);gl.uniform1f(GL.u.dk,dk);
-  const c=Math.cos(sun.alt);gl.uniform3f(GL.u.ld,Math.sin(b)*c,-Math.cos(b)*c,Math.sin(sun.alt));   // Licht (Ost, Süd = Bildzeile, oben)
+  const b=sun.az+Math.PI,t=Math.tan(Math.max(sun.alt,.01)),maxLen=Math.min(600,(D.hi-D.lo+2)/t),ns=fast?64:120,step=Math.max(D.rx*.8,maxLen/ns),W=D.w*D.rx,H=D.h*D.ry;
+  gl.uniform2f(GL.u.da,Math.sin(b)/W,-Math.cos(b)/H);gl.uniform2f(GL.u.db,Math.sin(b)/W,-Math.cos(b)/H);
+  gl.uniform2f(GL.u.px,1/D.w,1/D.h);gl.uniform2f(GL.u.r,D.rx,D.ry);gl.uniform1f(GL.u.k,t);gl.uniform1f(GL.u.s,step);gl.uniform1f(GL.u.ns,ns);gl.uniform1f(GL.u.e,.6);gl.uniform1f(GL.u.dk,dk);   // Toleranz 60 cm: kein Selbstschatten im Kronenrauschen
+  const c=Math.cos(sun.alt);gl.uniform3f(GL.u.ld,Math.sin(b)*c,-Math.cos(b)*c,Math.sin(sun.alt));
   gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);GL.key=key;return GL.cv;
 }
 function drawDsmShadow(g,X,sun,alpha){
   const D=DSM.data,c=D&&renderShadow(sun);if(!c)return false;
-  const P=(x,y)=>{const ll=fromRD(x,y),q=w20(ll[0],ll[1]);return [q[0]*X.k-X.ox,q[1]*X.k-X.oy];},tl=P(D.x0,D.y1),tr=P(D.x1,D.y1),bl=P(D.x0,D.y0);
-  g.save();g.globalAlpha=alpha;g.imageSmoothingEnabled=true;g.setTransform((tr[0]-tl[0])/D.w,(tr[1]-tl[1])/D.w,(bl[0]-tl[0])/D.h,(bl[1]-tl[1])/D.h,tl[0],tl[1]);g.drawImage(c,0,0);g.restore();return true;
+  const P=(x,y)=>{const ll=fromRD(x,y),q=w20(ll[0],ll[1]);return [q[0]*X.k-X.ox,q[1]*X.k-X.oy];},tl=P(D.x0,D.y1),tr=P(D.x1,D.y1),bl=P(D.x0,D.y0),cw=c.width,ch=c.height;
+  g.save();g.globalAlpha=alpha;g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';if('filter' in g)g.filter=`blur(${(.5*X.sc).toFixed(2)}px)`;g.setTransform((tr[0]-tl[0])/cw,(tr[1]-tl[1])/cw,(bl[0]-tl[0])/ch,(bl[1]-tl[1])/ch,tl[0],tl[1]);g.drawImage(c,0,0);g.restore();return true;
 }
 
 // 3D-Ansicht (js/lab-3d.js): echte Körper und Schattenwurf in Echtzeit, Zeitregler bleibt hier
@@ -500,7 +503,7 @@ const SUN_TOOL={id:'sun',order:1,icon:IC.sun,gate:false,keepStatus:true,
           castShadows(og,sun,xf(1),treesIn(.3),dark?'rgb(30,30,44)':'rgb(150,154,180)',dark||photo()?'rgb(0,0,8)':'rgb(24,22,44)',4);   // Baumschatten heller = lichtdurchlässig
           g.globalAlpha=dark?.78:photo()?.5:.44;g.imageSmoothingEnabled=true;g.drawImage(off,0,0,cv.width,cv.height);g.globalAlpha=1;}
       }else{g.fillStyle=dark?'rgba(6,6,16,.5)':'rgba(24,22,44,.34)';g.fillRect(0,0,cv.width,cv.height);}
-      if(!tooFar()){drawBuildings(g,X,DSM.data?(dark?'rgba(59,54,68,.55)':'rgba(251,249,244,.5)'):(dark?'#3b3644':'#fbf9f4'),dark?'rgba(255,255,255,.15)':'rgba(23,21,28,.3)');
+      if(!tooFar()){drawBuildings(g,X,DSM.data?(dark?'rgba(59,54,68,.88)':'rgba(251,249,244,.88)'):(dark?'#3b3644':'#fbf9f4'),dark?'rgba(255,255,255,.18)':'rgba(23,21,28,.32)');   // Dächer ruhig: Schatten zählen am Boden
         drawCrowns(g,X,DSM.data?null:(dark?'rgba(110,170,110,.38)':'rgba(72,140,84,.36)'),dark?'rgba(150,210,150,.35)':'rgba(31,90,43,.45)');}
     }else{
       if(tooFar())return drawSunCalc(g,X);

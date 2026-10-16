@@ -387,6 +387,20 @@ details.lab-how{margin-top:8px;padding-top:0}
 .v3-bar button{min-height:var(--tap);padding:0 14px;border-radius:22px;border:0;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font:700 12.5px var(--sans);color:var(--ink);box-shadow:var(--sh)}
 .v3-bar button.on{background:var(--chrome);color:var(--accent)}
 .v3-bar .v3-x{background:var(--chrome);color:#f3efe7}
+.v3-play{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:min(560px,calc(100% - 430px));background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:22px;box-shadow:var(--sh);padding:8px 10px 10px;color:var(--ink)}
+.v3-modes{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--soft);border-radius:16px;padding:3px}
+.v3-modes button{min-height:40px;border:0;border-radius:13px;background:none;font:700 12.5px var(--sans);color:var(--ink2)}
+.v3-modes button.on{background:var(--chrome);color:var(--accent)}
+.v3-pane{padding:8px 4px 0;font-size:12.5px;line-height:1.45;color:var(--ink2)}
+.v3-pane p{margin-top:6px}.v3-pane b{color:var(--ink)}
+.v3-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.v3-row button{min-height:38px;padding:0 13px;border-radius:19px;border:1px solid var(--line2);background:var(--card);font:700 12px var(--sans);color:var(--ink)}
+.v3-row button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.v3-lvl{display:flex;align-items:center;gap:10px;margin-top:8px}.v3-lvl input{flex:1;height:var(--tap);accent-color:#2f6fa8}.v3-lvl b{font:700 15px var(--serif);min-width:92px;text-align:right}
+.v3-hud{display:flex;gap:16px;margin-top:4px}.v3-hud span{font-size:12px}.v3-hud b{font:700 26px/1 var(--serif);color:var(--ink);margin-right:4px}
+.v3-err{color:#a3283a!important}
+.v3-bar button.on{background:var(--chrome);color:var(--accent)}
+@media (max-width:760px){.v3-play{width:calc(100% - 16px);bottom:auto;top:118px}}
 .v3-year{position:absolute;right:24px;bottom:70px;text-align:right;opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s;pointer-events:none;color:#17151c}
 .v3-year.on{opacity:1;transform:none}
 .v3-year b{display:block;font:700 76px/1 var(--serif);letter-spacing:-.04em}
