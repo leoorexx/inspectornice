@@ -26,7 +26,7 @@ const ICON={flag:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
 const MISSIONS=[
   {id:'wege',pre:'WEG',col:'#c49a2b',n:()=>T('Kühle Wege','Cool routes','Koele routes'),
     sub:()=>T('Straßen mit weniger als 40 % Schatten auf Fuß- und Radwegen — Richtwert der Landelijke Maatlat','Streets with less than 40 % shade on footpaths and cycle paths — national Maatlat guideline','Straten met minder dan 40 % schaduw op loop- en fietspaden — richtwaarde Landelijke Maatlat'),
-    measures:['trees','walktrees','schatten_segel','light','narrow'],tool:'street',load:loadWege},
+    measures:['trees','walktrees','schatten_segel','narrow','light'],tool:'street',load:loadWege},
   {id:'schulen',pre:'SCH',col:'#d0583c',n:()=>T('Hitzesichere Schulen','Heat-safe schools','Hittebestendige scholen'),
     sub:()=>T('Schulen und Kitas, an denen Hitze, wenig Kronendach und niedrige Einkommen zusammenkommen','Schools and nurseries where heat, little canopy and low incomes coincide','Scholen en kinderopvang waar hitte, weinig kronendak en lage inkomens samenkomen'),
     measures:['schulhof','trees','schatten_segel','trinkwasser'],tool:'studio',load:loadSchulen},
@@ -112,19 +112,20 @@ async function show(){render();await ensure(mis());render();markers();}
 
 // ── Fall ──
 function rahmenHtml(m){
-  const R=ACT.rahmen,Lg=L_();if(!R||!R.massnahmen)return `<p class="act-hint">${T('Kosten, Förderung und Regelwerk je Maßnahme werden gerade recherchiert und erscheinen hier, sobald sie geprüft sind.','Costs, funding and rules per measure are being researched and will appear here once verified.','Kosten, subsidies en regels per maatregel worden onderzocht en verschijnen hier zodra ze gecontroleerd zijn.')}</p>`;
-  const tx=o=>o?(o[Lg]||o.de||o.en||''):'';
+  const R=ACT.rahmen,Lg=L_();if(!R||!R.massnahmen)return `<p class="act-hint">${T('Kosten, Förderung und Regelwerk werden geladen …','Loading costs, funding and rules …','Kosten, subsidies en regels laden …')}</p>`;
+  const tx=o=>o?(o[Lg]||o.de||o.en||''):'',SN={offen:T('offen','open','open'),laufend:T('läuft','running','lopend'),geschlossen:T('geschlossen','closed','gesloten'),ungeklaert:T('Status unklar','status unclear','status onduidelijk')},ORD={offen:0,laufend:1,ungeklaert:2,geschlossen:3};
+  const ug=x=>x&&x.geprueft===false?` <em class="ug">${T('ungeprüft','unverified','ongecontroleerd')}</em>`:'';
   return m.measures.map(id=>R.massnahmen.find(x=>x.id===id)).filter(Boolean).map(x=>{
-    const k=x.kosten,norms=(x.normen||[]).map(n=>R.normen.find(y=>y.id===n)).filter(Boolean),fo=(x.foerder||[]).map(n=>R.foerder.find(y=>y.id===n)).filter(Boolean);
-    return `<article class="act-ms"><b>${tx(x.titel)}</b>${k&&k.lo!=null?`<p class="act-cost">${F(k.lo)}–${F(k.hi)} € <small>${tx(k.einheit)}</small></p>`:''}
+    const k=x.kosten||{},norms=(x.normen||[]).map(n=>R.normen.find(y=>y.id===n)).filter(Boolean),fo=(x.foerder||[]).map(n=>R.foerder.find(y=>y.id===n)).filter(Boolean).sort((a,b)=>(ORD[a.status]??4)-(ORD[b.status]??4));
+    return `<article class="act-ms"><b>${tx(x.titel)}</b>${k.lo!=null?`<p class="act-cost">${F(k.lo)}${k.hi!==k.lo?'–'+F(k.hi):''} € <small>${tx(k.einheit).replace(/^\s*€\s*/,'')}${k.quelle?` · <a href="${k.quelle}" target="_blank" rel="noopener">${T('Quelle','source','bron')}</a>`:''}</small></p>`:''}
       ${x.wirkung&&x.wirkung.text?`<p>${tx(x.wirkung.text)}</p>`:''}
-      ${fo.length?`<p class="act-tag">${T('Förderung','Funding','Subsidie')}: ${fo.map(f=>`<a href="${f.quelle}" target="_blank" rel="noopener">${tx(f.titel)}</a>${f.status&&f.status!=='laufend'&&f.status!=='offen'?` <small>(${f.status})</small>`:''}`).join(' · ')}</p>`:''}
-      ${norms.length?`<p class="act-tag">${T('Regelwerk','Rules','Regelgeving')}: ${norms.map(n=>`<a href="${n.quelle}" target="_blank" rel="noopener">${tx(n.titel)}</a>${n.verbindlich==='ja'?` <small>(${T('verbindlich','binding','bindend')})</small>`:''}`).join(' · ')}</p>`:''}
+      ${fo.length?`<p class="act-fo">${fo.map(f=>`<a class="${f.status}" href="${f.quelle}" target="_blank" rel="noopener">${tx(f.titel)} <em>${SN[f.status]||f.status}</em>${ug(f)}</a>${f.status!=='offen'&&f.frist?`<small>${f.frist}</small>`:''}`).join('')}</p>`:''}
+      ${norms.length?`<p class="act-tag">${T('Regelwerk','Rules','Regelgeving')}: ${norms.map(n=>`<a href="${n.quelle}" target="_blank" rel="noopener">${tx(n.titel)}</a>${n.verbindlich==='ja'?` <small>(${T('verbindlich','binding','bindend')})</small>`:''}${ug(n)}`).join(' · ')}</p>`:''}
       ${(x.anreize||[]).length?`<p class="act-pro">+ ${(x.anreize||[]).map(tx).join(' · ')}</p>`:''}
-      ${(x.hemmnisse||[]).length?`<p class="act-con">− ${(x.hemmnisse||[]).map(tx).join(' · ')}</p>`:''}
-      ${k&&k.quelle?`<small class="act-src">${T('Kosten','Costs','Kosten')}: <a href="${k.quelle}" target="_blank" rel="noopener">${T('Quelle','source','bron')}</a></small>`:''}</article>`;}).join('');
+      ${(x.hemmnisse||[]).length?`<p class="act-con">− ${(x.hemmnisse||[]).map(tx).join(' · ')}</p>`:''}</article>`;}).join('')+`<p class="note">${tx(R.meta.hinweis)}</p>`;
 }
 function openCase(c){
+  if(!ACT.rahmen)fetch('data/rahmen_utr.json').then(r=>r.ok?r.json():null).then(j=>{if(j){ACT.rahmen=j;if(ACT.sel===c)openCase(c);}}).catch(()=>{});
   ACT.sel=c;const m=MISSIONS.find(x=>x.id===c.m),P=document.getElementById('panel'),st=stGet(c),nx=NX();
   document.getElementById('pKick').textContent=`${c.id} · ${m.n()}`;
   document.getElementById('pTitle').textContent=c.name;
@@ -150,7 +151,8 @@ function labFor(c,m){
   const nx=NX();nx.openLab([c.lat,c.lon],m.tool==='studio'?'studio':m.tool==='water'?'water':'street');
   const LAB=window.LAB;if(!LAB)return;
   if(m.tool==='studio'&&LAB.area){LAB.area.AR.type='circle';LAB.area.AR.r=100;LAB.area.AR.center=L.latLng(c.lat,c.lon);}
-  if(m.tool==='street')setTimeout(()=>{nx.map.fire('click',{latlng:L.latLng(c.lat,c.lon),containerPoint:nx.map.latLngToContainerPoint([c.lat,c.lon])});},1200);   // Schnitt am Fall
+  if(m.tool==='street'){const map=nx.map,go=()=>map.fire('click',{latlng:L.latLng(c.lat,c.lon),containerPoint:map.latLngToContainerPoint([c.lat,c.lon])});   // Schnitt am Fall, sobald die Karte nah genug ist
+    let n=0;const wait=()=>{if(map.getZoom()>=16.5)setTimeout(go,250);else if(n++<30)setTimeout(wait,150);else{map.setView([c.lat,c.lon],17,{animate:false});setTimeout(go,300);}};wait();}
 }
 
 // ── Entscheidungs-Brief (PDF) ──
