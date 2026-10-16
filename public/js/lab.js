@@ -63,7 +63,7 @@ function surf(coll,p){
 const LAB=window.LAB={on:false,tool:'sun',mode:'shadow',dateKey:'today',min:14*60,playing:false,base:'map'};
 let map,opt,cv,ctx,dock,info,raf=0,dpr=1,PIN=null;
 const TILE_LAT=0.004,TILE_LON=0.006;               // ≈ 445 × 410 m
-const MAX_TILES=24,KEEP_TILES=120,MIN_Z=16;         // höchstens ≈ 2 × 2 km laden (ab Zoom 16); Speicher begrenzen
+const MAX_TILES=24,MAX_AREA_TILES=30,KEEP_TILES=120,MIN_Z=16;         // höchstens ≈ 2 × 2 km laden (ab Zoom 16); Speicher begrenzen
 const B={tiles:new Map(),list:[],key:''};          // Gebäude (3D BAG)
 const S={tiles:new Map(),list:[],key:''};          // Oberflächen (BGT)
 let TREES=null,GENERA=[],treeLoad=null;             // [lat,lon,kronenradius,höhe,x20,y20,gattung,pflanzjahr,gemessen]
@@ -115,7 +115,7 @@ async function fetchBuildings(y,x){
   const s=y*TILE_LAT,w=x*TILE_LON,n=s+TILE_LAT,e=w+TILE_LON;
   const C=[toRD(s,w),toRD(s,e),toRD(n,w),toRD(n,e)],X=C.map(c=>c[0]),Y=C.map(c=>c[1]);
   const bbox=[Math.floor(Math.min(...X)),Math.floor(Math.min(...Y)),Math.ceil(Math.max(...X)),Math.ceil(Math.max(...Y))].join(',');
-  const base='https://data.3dbag.nl/api/BAG3D/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=BAG3D:lod12&SRSNAME=EPSG:4326&OUTPUTFORMAT=application/json&PROPERTYNAME=geom,b3_h_70p,b3_h_maaiveld&COUNT=2000';
+  const base='https://data.3dbag.nl/api/BAG3D/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=BAG3D:lod12&SRSNAME=EPSG:4326&OUTPUTFORMAT=application/json&PROPERTYNAME=geom,b3_h_70p,b3_h_maaiveld,oorspronkelijkbouwjaar,b3_dak_type,b3_opp_dak_plat,b3_opp_dak_schuin,b3_opp_grond&COUNT=2000';
   const out=[];
   for(let start=0;start<10000;start+=2000){
     const r=await fetch(`${base}&STARTINDEX=${start}&BBOX=${bbox},EPSG:28992`);
@@ -123,7 +123,8 @@ async function fetchBuildings(y,x){
     const j=await r.json(),fs=j.features||[];
     for(const f of fs){const p=f.properties||{};
       const h=(p.b3_h_70p!=null&&p.b3_h_maaiveld!=null)?Math.max(0,p.b3_h_70p-p.b3_h_maaiveld):null;
-      for(const ring of outerRings(f.geometry)){const z=pack(ring);out.push({z,h,g:p.b3_h_maaiveld!=null?p.b3_h_maaiveld:null,sg:signed(z)>0});}}
+      const yr=p.oorspronkelijkbouwjaar>1000&&p.oorspronkelijkbouwjaar<2100?p.oorspronkelijkbouwjaar:null,num=v=>v!=null&&isFinite(v)?+v:null;   // Baujahr, Dachform und Dachflächen für Studio-Diagramme
+      for(const ring of outerRings(f.geometry)){const z=pack(ring);out.push({z,h,g:p.b3_h_maaiveld!=null?p.b3_h_maaiveld:null,sg:signed(z)>0,yr,dt:p.b3_dak_type||null,fl:num(p.b3_opp_dak_plat),sl:num(p.b3_opp_dak_schuin),gr:num(p.b3_opp_grond)});}}
     if(fs.length<2000)break;
   }
   return out;
@@ -146,10 +147,11 @@ async function fetchSurfaces(y,x){
     await bgtItems(coll,w,s,e,n,f=>{const sf=surf(coll,f.properties||{});for(const ring of outerRings(f.geometry))out.push({z:pack(ring),...sf});});
   return out;
 }
-async function ensure(kind){
+// Mit `bounds` (Gebiet statt Ansicht): eigene Liste zurückgeben, die Ansichtsliste bleibt unberührt — so behält z. B. das Studio sein Gebiet auch beim Herauszoomen.
+async function ensure(kind,bounds){
   const st=kind==='b'?B:S,fn=kind==='b'?fetchBuildings:fetchSurfaces;
-  const want=tilesFor(map.getBounds().pad(kind==='b'?.2:.04));
-  if(want.length>MAX_TILES){st.list=[];st.key='';st.failed=0;return st.list;}
+  const want=tilesFor(bounds||map.getBounds().pad(kind==='b'?.2:.04));
+  if(want.length>(bounds?MAX_AREA_TILES:MAX_TILES)){if(bounds)return [];st.list=[];st.key='';st.failed=0;return st.list;}
   let loading=false;
   const ps=want.map(([y,x])=>{const k=y+'_'+x;let e=st.tiles.get(k);
     if(!e){loading=true;e={v:undefined};e.p=limited(()=>fn(y,x)).then(v=>{e.v=v;},()=>{e.v=null;setTimeout(()=>st.tiles.delete(k),15000);});st.tiles.set(k,e);}
@@ -157,6 +159,8 @@ async function ensure(kind){
     return e.p;});
   if(loading)status(kind==='b'?T('Gebäude und gemessene Höhen werden geladen …','Loading buildings and measured heights …','Gebouwen en gemeten hoogtes laden …'):T('Oberflächen (BGT) werden geladen …','Loading surfaces (BGT) …','Oppervlakken (BGT) laden …'),true);
   await Promise.all(ps);
+  if(bounds){if(loading)status('');const seen=new Set(),out=[];for(const [y,x] of want){const e=st.tiles.get(y+'_'+x),v=e&&e.v;if(!v)continue;
+    for(const o of v){const k=o.z[0].toFixed(1)+','+o.z[1].toFixed(1)+','+o.z.length;if(seen.has(k))continue;seen.add(k);out.push(o);}}return out;}
   const key=want.map(t=>t.join('_')).join('|');
   if(key!==st.key||loading){
     const seen=new Set();st.list=[];st.failed=0;
@@ -230,7 +234,7 @@ function hits(st,wx,wy){const I=index(st),c=I.cells.get(Math.floor(wx/I.C)+'_'+M
 // ── Zeichnen ──
 // Schatten: Prisma = verschobener Grundriss ∪ gefegte Kanten, gleich orientiert (nonzero ohne Löcher).
 // Wenige Gebäude je Füllung in deckender Farbe: ein einziger Riesenpfad braucht im Browser Sekunden.
-function castShadows(g,sun,X,trees,colTree,colBld,batch){
+function castShadows(g,sun,X,trees,colTree,colBld,batch,blds){
   batch=batch||1;let nb=0;
   const m=mpp()/X.sc,dx=Math.sin(sun.az),dy=Math.cos(sun.az),t=Math.tan(sun.alt);
   if(trees&&trees.length){g.fillStyle=colTree;
@@ -238,7 +242,7 @@ function castShadows(g,sun,X,trees,colTree,colBld,batch){
       for(let i=j;i<Math.min(trees.length,j+48);i++){const tr=trees[i],L=Math.min(250,tr[3]*0.65/t)/m,r=tr[2]/m,cx=tr[4]*X.k-X.ox+dx*L,cy=tr[5]*X.k-X.oy-dy*L;g.moveTo(cx+r,cy);g.arc(cx,cy,r,0,2*Math.PI);}
       g.fill();}}
   g.fillStyle=colBld;g.beginPath();
-  for(const b of B.list){
+  for(const b of (blds||B.list)){
     if(!(b.h>=1))continue;
     const L=Math.min(600,b.h/t)/m,ox=dx*L,oy=-dy*L,z=b.z,n=z.length/2;
     const P=new Array(n);for(let i=0;i<n;i++)P[i]=[z[2*i]*X.k-X.ox,z[2*i+1]*X.k-X.oy];
@@ -353,10 +357,10 @@ function drawSunCalc(g,X){
     g.strokeStyle=ink+'.75)';g.lineWidth=4*sc;const be=s.az+Math.PI;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx-sl*Math.sin(be),cy+sl*Math.cos(be));g.stroke();
     g.fillStyle='#FFD600';g.strokeStyle=ink+'.9)';g.lineWidth=1.5*sc;g.beginPath();g.arc(sp[0],sp[1],7*sc,0,2*Math.PI);g.fill();g.stroke();}
   g.fillStyle=ink+'.95)';g.beginPath();g.arc(cx,cy,4*sc,0,2*Math.PI);g.fill();
-  g.font=`800 ${10*sc}px Archivo,system-ui,sans-serif`;g.textAlign='center';g.fillStyle=ink+'.6)';g.fillText('N',cx,cy-R-4*sc);
+  g.font=`800 ${10*sc}px DM Sans,system-ui,sans-serif`;g.textAlign='center';g.fillStyle=ink+'.6)';g.fillText('N',cx,cy-R-4*sc);
   g.restore();
 }
-function label(g,txt,x,y,sc,col){g.save();g.font=`700 ${11*sc}px Archivo,system-ui,sans-serif`;g.textAlign='center';g.textBaseline='middle';
+function label(g,txt,x,y,sc,col){g.save();g.font=`700 ${11*sc}px DM Sans,system-ui,sans-serif`;g.textAlign='center';g.textBaseline='middle';
   const w=g.measureText(txt).width+12*sc;g.fillStyle=isDark()?'rgba(28,25,34,.92)':'rgba(255,253,248,.95)';
   g.beginPath();if(g.roundRect)g.roundRect(x-w/2,y-10*sc,w,20*sc,10*sc);else g.rect(x-w/2,y-10*sc,w,20*sc);g.fill();
   g.strokeStyle=col;g.lineWidth=1.5*sc;g.stroke();g.fillStyle=isDark()?'#f3efe7':'#17151c';g.fillText(txt,x,y+.5*sc);g.restore();}
@@ -388,17 +392,102 @@ function bindTime(root,onTick){
   const pl=root.querySelector('.lab-play');if(pl)pl.onclick=()=>{LAB.playing=!LAB.playing;syncPlay();if(LAB.playing)play(onTick);};
 }
 
+// ── Schatten wie Shademap: AHN-Oberflächenmodell (Gebäude + Bäume, gemessen) auf der Grafikkarte ──
+// Jeder Bildpunkt schaut entlang der Sonnenrichtung, ob irgendwo etwas höher ist als der Sonnenstrahl.
+const DSM={data:null,busy:null,seq:0};
+const GL={ok:null};
+const VS='attribute vec2 a;varying vec2 v;void main(){v=vec2(a.x,1.0-a.y);gl_Position=vec4(a*2.0-1.0,0.0,1.0);}';
+// Schatten wie aus einem Guss: zwei Strahlen leicht versetzt (Sonnenscheibe → weiche Kante), Relief aus der
+// Oberflächen-Normalen (Dächer, Fassaden), Verschattung enger Straßenräume (Umgebungsverdeckung), warmes Licht auf Sonnenseiten.
+const FS='precision highp float;uniform sampler2D t;uniform vec2 da,db,px,r;uniform float k,s,e,dk;uniform vec3 ld;varying vec2 v;'+
+  'float H(vec2 u){vec4 q=texture2D(t,u);return (q.r*65280.0+q.g*255.0)/50.0;}'+
+  'float ray(vec2 d,float h0){for(int i=1;i<=150;i++){float m=float(i)*s;vec2 u=v+d*m;if(u.x<0.0||u.y<0.0||u.x>1.0||u.y>1.0)return 0.0;if(H(u)>h0+m*k+e)return 1.0;}return 0.0;}'+
+  'void main(){float h0=H(v),sh=0.5*(ray(da,h0)+ray(db,h0));'+
+  'float gx=(H(v+vec2(px.x,0.0))-H(v-vec2(px.x,0.0)))/(2.0*r.x),gy=(H(v+vec2(0.0,px.y))-H(v-vec2(0.0,px.y)))/(2.0*r.y);'+
+  'vec3 n=normalize(vec3(-gx,-gy,1.0));float lam=max(dot(n,ld),0.0)/max(ld.z,0.05);'+
+  'float oc=0.0;for(int j=0;j<8;j++){float a=float(j)*0.785398;vec2 o=vec2(cos(a)*px.x,sin(a)*px.y);'+
+  'oc+=clamp((H(v+o*3.0/r.x)-h0-0.5)/3.0,0.0,1.5)+clamp((H(v+o*9.0/r.x)-h0-0.5)/9.0,0.0,1.0);}float ao=clamp(oc/9.0,0.0,1.0);'+
+  'float dark=clamp(0.56*sh+0.3*clamp(1.0-lam,0.0,1.0)*(1.0-sh)+0.24*ao,0.0,0.76);'+
+  'float warm=(1.0-sh)*clamp((lam-1.0)*0.5,0.0,0.24);'+
+  'vec3 sc=mix(vec3(0.15,0.16,0.37),vec3(0.01,0.01,0.07),dk);'+
+  'gl_FragColor=dark>=warm?vec4(sc,dark):vec4(1.0,0.82,0.52,warm);}';
+function glInit(){
+  if(GL.ok!==null)return GL.ok;GL.ok=false;
+  try{const cv2=document.createElement('canvas'),gl=cv2.getContext('webgl',{premultipliedAlpha:false,preserveDrawingBuffer:true,antialias:false});
+    if(!gl||typeof gl.createShader!=='function')return false;
+    const mk=(type,src)=>{const sh=gl.createShader(type);if(!sh)return null;gl.shaderSource(sh,src);gl.compileShader(sh);return gl.getShaderParameter(sh,gl.COMPILE_STATUS)?sh:null;};
+    const vs=mk(gl.VERTEX_SHADER,VS),fs=mk(gl.FRAGMENT_SHADER,FS);if(!vs||!fs)return false;
+    const p=gl.createProgram();gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))return false;
+    gl.useProgram(p);const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,1,1]),gl.STATIC_DRAW);
+    const loc=gl.getAttribLocation(p,'a');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+    const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);
+    for(const [k,v] of [[gl.TEXTURE_MIN_FILTER,gl.NEAREST],[gl.TEXTURE_MAG_FILTER,gl.NEAREST],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]])gl.texParameteri(gl.TEXTURE_2D,k,v);
+    const U=n=>gl.getUniformLocation(p,n);
+    Object.assign(GL,{ok:true,cv:cv2,gl,p,tex,u:{da:U('da'),db:U('db'),px:U('px'),r:U('r'),k:U('k'),s:U('s'),e:U('e'),dk:U('dk'),ld:U('ld')},texId:-1,key:''});
+  }catch(err){GL.ok=false;}
+  return GL.ok;
+}
+function viewRD(pad){const b=map.getBounds().pad(pad||0),C=[toRD(b.getSouth(),b.getWest()),toRD(b.getSouth(),b.getEast()),toRD(b.getNorth(),b.getWest()),toRD(b.getNorth(),b.getEast())];
+  return [Math.min(...C.map(c=>c[0])),Math.min(...C.map(c=>c[1])),Math.max(...C.map(c=>c[0])),Math.max(...C.map(c=>c[1]))];}
+async function loadDsm(){
+  if(map.getZoom()<14||!glInit())return null;
+  const v=viewRD(0),pad=map.getZoom()<15?.12:.25,[x0,y0,x1,y1]=viewRD(pad).map((n,i)=>i<2?Math.floor(n/10)*10:Math.ceil(n/10)*10);
+  const res=Math.max(.5,Math.max(x1-x0,y1-y0)/1600),D=DSM.data;
+  if(D&&v[0]>=D.x0&&v[1]>=D.y0&&v[2]<=D.x1&&v[3]<=D.y1&&D.res<=res*1.6)return D;
+  if(DSM.busy)return DSM.busy;
+  DSM.busy=(async()=>{
+    status(T('Oberflächenmodell (AHN) für Schatten wird geladen …','Loading surface model (AHN) for shadows …','Oppervlaktemodel (AHN) voor schaduw laden …'),true);
+    try{const W=Math.round((x1-x0)/res),H=Math.round((y1-y0)/res),r=await ahn('dsm_05m',x0,y0,x1,y1,W,H),z=r.z;
+      let lo=Infinity,hi=-Infinity;for(let i=0;i<z.length;i++){const q=z[i];if(q>-50&&q<400){if(q<lo)lo=q;if(q>hi)hi=q;}}
+      if(!isFinite(lo))throw new Error('leer');
+      const px=new Uint8Array(r.w*r.h*4);
+      for(let i=0;i<z.length;i++){const q=z[i]>-50&&z[i]<400?z[i]:lo,n=Math.max(0,Math.min(65535,Math.round((q-lo)*50)));px[4*i]=n>>8;px[4*i+1]=n&255;px[4*i+3]=255;}
+      DSM.data={id:++DSM.seq,x0,y0,x1,y1,w:r.w,h:r.h,rx:(x1-x0)/r.w,ry:(y1-y0)/r.h,res,lo,hi,px};
+      status('');return DSM.data;
+    }catch(err){status(T('Oberflächenmodell gerade nicht erreichbar — Schatten nur aus Gebäudedaten (ab Zoom 16).','Surface model currently unavailable — shadows from building data only (zoom 16+).','Oppervlaktemodel momenteel niet bereikbaar — schaduw alleen uit gebouwdata (vanaf zoom 16).'));return null;}
+    finally{DSM.busy=null;}
+  })();
+  return DSM.busy;
+}
+function renderShadow(sun){
+  const D=DSM.data;if(!D||!glInit())return null;
+  const dk=isDark()?1:0,key=D.id+'|'+sun.az.toFixed(4)+'|'+sun.alt.toFixed(4)+'|'+dk;if(GL.key===key)return GL.cv;
+  const gl=GL.gl;if(GL.cv.width!==D.w||GL.cv.height!==D.h){GL.cv.width=D.w;GL.cv.height=D.h;}
+  gl.viewport(0,0,D.w,D.h);
+  if(GL.texId!==D.id){gl.bindTexture(gl.TEXTURE_2D,GL.tex);gl.pixelStorei(gl.UNPACK_ALIGNMENT,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,D.w,D.h,0,gl.RGBA,gl.UNSIGNED_BYTE,D.px);GL.texId=D.id;}
+  const b=sun.az+Math.PI,t=Math.tan(Math.max(sun.alt,.01)),maxLen=Math.min(600,(D.hi-D.lo+2)/t),step=Math.max(D.rx*.7,maxLen/150),W=D.w*D.rx,H=D.h*D.ry,J=.006;   // ±0,35°: Halbschatten der Sonnenscheibe
+  gl.uniform2f(GL.u.da,Math.sin(b-J)/W,-Math.cos(b-J)/H);gl.uniform2f(GL.u.db,Math.sin(b+J)/W,-Math.cos(b+J)/H);
+  gl.uniform2f(GL.u.px,1/D.w,1/D.h);gl.uniform2f(GL.u.r,D.rx,D.ry);gl.uniform1f(GL.u.k,t);gl.uniform1f(GL.u.s,step);gl.uniform1f(GL.u.e,.35);gl.uniform1f(GL.u.dk,dk);
+  const c=Math.cos(sun.alt);gl.uniform3f(GL.u.ld,Math.sin(b)*c,-Math.cos(b)*c,Math.sin(sun.alt));   // Licht (Ost, Süd = Bildzeile, oben)
+  gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);GL.key=key;return GL.cv;
+}
+function drawDsmShadow(g,X,sun,alpha){
+  const D=DSM.data,c=D&&renderShadow(sun);if(!c)return false;
+  const P=(x,y)=>{const ll=fromRD(x,y),q=w20(ll[0],ll[1]);return [q[0]*X.k-X.ox,q[1]*X.k-X.oy];},tl=P(D.x0,D.y1),tr=P(D.x1,D.y1),bl=P(D.x0,D.y0);
+  g.save();g.globalAlpha=alpha;g.imageSmoothingEnabled=true;g.setTransform((tr[0]-tl[0])/D.w,(tr[1]-tl[1])/D.w,(bl[0]-tl[0])/D.h,(bl[1]-tl[1])/D.h,tl[0],tl[1]);g.drawImage(c,0,0);g.restore();return true;
+}
+
+// 3D-Ansicht (js/lab-3d.js): echte Körper und Schattenwurf in Echtzeit, Zeitregler bleibt hier
+const v3dBtn=()=>{const V=LAB.v3d;if(!V)return '';return `<button class="lab-3dbtn${V.on?' on':''}" id="v3dBtn" ${V.busy?'disabled':''}>${V.busy?'<span class="lab-spin" aria-hidden="true"></span>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>'}<span>${V.on?T('Zurück zur Karte','Back to the map','Terug naar de kaart'):T('In 3D ansehen — Schatten in Echtzeit','View in 3D — real-time shadows','Bekijk in 3D — schaduw in realtime')}</span></button>${V.err?`<p class="wt-warn">${V.err}</p>`:''}`;};
 // ── Werkzeug „Sonne": Schatten, Sonnenstunden, Sonnenbahn am Punkt ──
-const SUN_TOOL={id:'sun',order:1,icon:IC.sun,
+const SUN_TOOL={id:'sun',order:1,icon:IC.sun,gate:false,keepStatus:true,
   label:()=>T('Sonne','Sun','Zon'),
   sub:()=>T('Schatten, Sonnenstunden und Sonnenbahn','Shadows, sun hours and sun path','Schaduw, zonuren en zonnebaan'),
   enter(){if(LAB.mode!=='shadow'&&LAB.mode!=='sunhours')LAB.mode='shadow';if(!PIN)PIN=map.getCenter();},
   render(){const timed=LAB.mode==='shadow';
     return seg([['shadow',T('Schatten','Shadows','Schaduw')],['sunhours',T('Sonnenstunden','Sun hours','Zonuren')]],LAB.mode)+dates()+
-      (timed?timeRow()+`<div class="lab-sun"><div class="lab-dialw">${dial()}</div><p class="lab-suntxt">${sunText()}</p></div>`:'')+
+      (timed?timeRow()+v3dBtn()+`<div class="lab-sun"><div class="lab-dialw">${dial()}</div><p class="lab-suntxt">${sunText()}</p></div>`:'')+
       `<div class="lab-legw">${legend()}</div><p class="lab-hint">${T('Tippe auf die Karte: Sonnenbahn, Auf- und Untergangsrichtung für diesen Punkt.','Tap the map: sun path, sunrise and sunset direction for that spot.','Tik op de kaart: zonnebaan, op- en ondergangsrichting voor dat punt.')}</p>`;},
-  bind(root){bindTime(root);},
-  async load(){if(LAB.mode==='shadow')await Promise.all([ensure('b'),ensureTrees().then(measureTrees)]);else{req();await computeSunHours();}},
+  bind(root){bindTime(root);const b=root.querySelector('#v3dBtn');if(b)b.onclick=()=>LAB.v3d.toggle();},
+  async load(){
+    if(LAB.mode==='shadow'){
+      if(map.getZoom()<14){status(T('Für Schatten näher heranzoomen (ab Zoom 14).','Zoom in further for shadows (level 14+).','Zoom verder in voor schaduw (vanaf niveau 14).'));return;}
+      const near=!tooFar();await Promise.all([loadDsm(),near?ensure('b'):null,near?ensureTrees().then(measureTrees):null]);
+      if(!DSM.data&&!near)status(T('Für Schatten näher heranzoomen.','Zoom in further for shadows.','Zoom verder in voor schaduw.'));
+      else if(near&&B.failed)status(T('Ein Teil der Daten konnte nicht geladen werden — Ränder können fehlen.','Some data could not be loaded — edges may be missing.','Een deel van de data kon niet worden geladen — randen kunnen ontbreken.'));
+      return;}
+    if(tooFar()){status(T('Sonnenstunden ab Zoom 16 — bitte näher heranzoomen.','Sun hours from zoom 16 — please zoom in.','Zonuren vanaf zoom 16 — zoom verder in.'));return;}
+    req();await computeSunHours();status('');},
   draw(g,X){
     const dark=isDark();
     if(LAB.mode==='shadow'){
@@ -406,13 +495,15 @@ const SUN_TOOL={id:'sun',order:1,icon:IC.sun,
       if(sun.alt>0.004){
         const low=sun.alt<15*SR;                                  // tiefe Sonne: wärmeres Licht
         if(!photo()){g.fillStyle=low?(dark?'rgba(255,150,70,.16)':'rgba(255,150,60,.13)'):(dark?'rgba(255,206,120,.11)':'rgba(255,214,120,.10)');g.fillRect(0,0,cv.width,cv.height);}
-        const sz=map.getSize(),og=offscreen(sz.x,sz.y);           // Schatten in CSS-Auflösung (weich), Gebäude scharf in voller Auflösung
-        castShadows(og,sun,xf(1),treesIn(.3),dark?'rgb(30,30,44)':'rgb(150,154,180)',dark||photo()?'rgb(0,0,8)':'rgb(24,22,44)',4);   // Baumschatten heller = lichtdurchlässig
-        g.globalAlpha=dark?.78:photo()?.5:.44;g.imageSmoothingEnabled=true;g.drawImage(off,0,0,cv.width,cv.height);g.globalAlpha=1;
+        if(!drawDsmShadow(g,X,sun,photo()?.8:1)&&!tooFar()){                // Rückfall ohne WebGL/AHN: Prismen aus 3D BAG
+          const sz=map.getSize(),og=offscreen(sz.x,sz.y);           // Schatten in CSS-Auflösung (weich), Gebäude scharf in voller Auflösung
+          castShadows(og,sun,xf(1),treesIn(.3),dark?'rgb(30,30,44)':'rgb(150,154,180)',dark||photo()?'rgb(0,0,8)':'rgb(24,22,44)',4);   // Baumschatten heller = lichtdurchlässig
+          g.globalAlpha=dark?.78:photo()?.5:.44;g.imageSmoothingEnabled=true;g.drawImage(off,0,0,cv.width,cv.height);g.globalAlpha=1;}
       }else{g.fillStyle=dark?'rgba(6,6,16,.5)':'rgba(24,22,44,.34)';g.fillRect(0,0,cv.width,cv.height);}
-      drawBuildings(g,X,dark?'#3b3644':'#fbf9f4',dark?'rgba(255,255,255,.15)':'rgba(23,21,28,.3)');
-      drawCrowns(g,X,dark?'rgba(110,170,110,.38)':'rgba(72,140,84,.36)',dark?'rgba(150,210,150,.35)':'rgba(31,90,43,.45)');
+      if(!tooFar()){drawBuildings(g,X,DSM.data?(dark?'rgba(59,54,68,.55)':'rgba(251,249,244,.5)'):(dark?'#3b3644':'#fbf9f4'),dark?'rgba(255,255,255,.15)':'rgba(23,21,28,.3)');
+        drawCrowns(g,X,DSM.data?null:(dark?'rgba(110,170,110,.38)':'rgba(72,140,84,.36)'),dark?'rgba(150,210,150,.35)':'rgba(31,90,43,.45)');}
     }else{
+      if(tooFar())return drawSunCalc(g,X);
       const img=SUNH&&SUNH.img;
       if(img&&SUNH.date===dateTag()){g.imageSmoothingEnabled=true;g.drawImage(img,SUNH.wx*X.k-X.ox,SUNH.wy*X.k-X.oy,SUNH.ww*X.k,SUNH.wh*X.k);}
       drawBuildings(g,X,dark?'rgba(42,38,49,.94)':'rgba(251,249,244,.95)',dark?'rgba(255,255,255,.16)':'rgba(23,21,28,.28)');
@@ -513,7 +604,7 @@ LAB.addTool=function(def){TOOLS.push(def);TOOLS.sort((a,b)=>a.order-b.order);if(
 const tool=()=>TOOLS.find(t=>t.id===LAB.tool)||TOOLS[0];
 function setTool(id){
   const cur=tool();if(cur.id===id){return;}
-  LAB.playing=false;cur.leave&&cur.leave(api);LAB.tool=id;hideInfo();
+  LAB.playing=false;cur.leave&&cur.leave(api);if(LAB.v3d&&LAB.v3d.on&&id!=='sun')LAB.v3d.close();LAB.tool=id;hideInfo();
   const t=tool();t.enter&&t.enter(api);renderDock();refresh();opt.onTool&&opt.onTool(id);
 }
 const BASES=[['map',()=>T('Karte','Map','Kaart')],['photo',()=>T('Luftbild','Aerial','Luchtfoto')],['osm',()=>'OSM']];
@@ -539,13 +630,14 @@ function tick(){
   if(sl&&document.activeElement!==sl)sl.value=LAB.min;if(cl)cl.textContent=hhmm(LAB.min);if(dw)dw.innerHTML=dial();if(tx)tx.innerHTML=sunText();
   const t=tool();t.tick&&t.tick(api);
 }
-function play(onTick){
+function play(onTick,once){
   const [a,b]=dayRange();if(a==null){LAB.playing=false;syncPlay();return;}
   if(LAB.min>=b-5)LAB.min=a;
-  let last=0;const t0=tool();
+  let last=0,wrapped=false;const t0=tool(),stopAt=LAB.min;
   (function f(now){if(!LAB.playing||!LAB.on||tool()!==t0)return;now=now||performance.now();
     if(last)LAB.min+=Math.min(100,now-last)/1000*75;last=now;              // 75 Minuten pro Sekunde
-    if(LAB.min>b){LAB.min=a;}
+    if(LAB.min>b){LAB.min=a;wrapped=true;}
+    if(once&&wrapped&&LAB.min>=stopAt){LAB.min=stopAt;LAB.playing=false;syncPlay();tick();draw();return;}   // einmal durch den Tag, zurück zur echten Uhrzeit
     tick();onTick&&onTick();draw();requestAnimationFrame(f);})();
 }
 async function setMode(m){
@@ -610,16 +702,19 @@ LAB.open=function(latlng,toolId){
   if(!map)return;LAB.on=true;document.body.classList.add('lab-on');
   if(toolId&&TOOLS.some(t=>t.id===toolId))LAB.tool=toolId;
   const now=new Date();LAB.min=now.getHours()*60+now.getMinutes();
-  if(latlng||map.getZoom()<16.5){const z=Math.max(map.getZoom(),17),c=latlng||map.getCenter();if(map.getSize().x)map.flyTo(c,z,{duration:.9});else map.setView(c,z);}
+  const zt=LAB.tool==='sun'||LAB.tool==='water'||LAB.tool==='wind'?15:17;                      // Sonne: erst den Stadtteil zeigen, wie Shademap
+  if(latlng||map.getZoom()<zt-.5){const z=Math.max(map.getZoom(),zt),c=latlng||map.getCenter();if(map.getSize().x)map.flyTo(c,z,{duration:.9});else map.setView(c,z);}
   PIN=latlng||map.getCenter();LAB.min=clampMin();
   const t=tool();t.enter&&t.enter(api);
   renderDock();opt.onOpen&&opt.onOpen();refresh();
+  const calm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(LAB.tool==='sun'&&LAB.mode==='shadow'&&!calm&&!LAB.autoplayed){LAB.autoplayed=true;setTimeout(()=>{if(!LAB.on||LAB.playing||LAB.tool!=='sun')return;LAB.playing=true;syncPlay();play(null,true);},1600);}   // einmal den Tagesverlauf zeigen
 };
-LAB.close=function(){if(!LAB.on)return;const t=tool();t.leave&&t.leave(api);LAB.on=false;LAB.playing=false;document.body.classList.remove('lab-on');ctx&&ctx.clearRect(0,0,cv.width,cv.height);hideInfo();
+LAB.close=function(){if(!LAB.on)return;if(LAB.v3d&&LAB.v3d.on)LAB.v3d.close();const t=tool();t.leave&&t.leave(api);LAB.on=false;LAB.playing=false;document.body.classList.remove('lab-on');ctx&&ctx.clearRect(0,0,cv.width,cv.height);hideInfo();
   if(LAB.base!=='map'){LAB.base='map';opt.setBase&&opt.setBase('map');}opt.onClose&&opt.onClose();};
 LAB.relang=function(){if(LAB.on)renderDock();};
 LAB.redraw=req;
 LAB.setTool=setTool;
 LAB._t={sunText,legend,NOTE:{heat:()=>{const m=LAB.mode,t=LAB.tool;LAB.mode='heat';LAB.tool='surface';const r=SURF_TOOL.note();LAB.mode=m;LAB.tool=t;return r;}},pointInfo,sunPos,toRD,fromRD,surf,ALB,dayRange,castShadows,signed,inPoly,atMin,
-  get B(){return B},get S(){return S},get SUNH(){return SUNH},get TREES(){return TREES},measureTrees,get TH(){return TH},computeSunHours,computeHeat,ensure,ensureTrees,refresh,draw,setTool,get TOOLS(){return TOOLS}};
+  get B(){return B},get S(){return S},get SUNH(){return SUNH},get TREES(){return TREES},measureTrees,get TH(){return TH},computeSunHours,get DSM(){return DSM},get GL(){return GL},loadDsm,renderShadow,glInit,computeHeat,ensure,ensureTrees,refresh,draw,setTool,get TOOLS(){return TOOLS}};
 })();
