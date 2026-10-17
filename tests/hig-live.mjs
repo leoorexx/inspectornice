@@ -67,12 +67,12 @@ export async function run({modes=['light','dark'],spot=[52.0907,5.1214],lab=true
     if(document.documentElement.scrollWidth>innerWidth+1)add([{area:tag('Stadt'),k:'ueberstand',msg:`Seite scrollt quer (${document.documentElement.scrollWidth} > ${innerWidth})`}]);
     step(tag('Menü'));const mb=document.getElementById('moreBtn');mb.click();await wait(350);add(audit(document.getElementById('moreMenu'),tag('Mehr-Menü')));
     esc();await wait(80);if(!document.getElementById('moreMenu').hidden){add([{area:tag('Mehr-Menü'),k:'escape',msg:'schließt nicht mit Escape'}]);mb.click();}
-    step(tag('Quartier'));const B=NX.BU.filter(b=>NX.score(b)!=null).sort((a,b)=>NX.score(b)-NX.score(a))[0];NX.openBuurt(B,false);await wait(500);
+    step(tag('Quartier'));const B=NX.BU.filter(b=>NX.score(b)!=null).sort((a,b)=>NX.score(b)-NX.score(a))[0];NX.openBuurt(B,false);await wait(500);await until(()=>document.querySelector('#pBody .nxl'),8000);{const nl=document.querySelector('#pBody .nxl');if(nl)nl.open=true;}await wait(100);
     add(audit(document.getElementById('panel')||document.querySelector('.panel'),tag('Quartiersprofil')));
     const g=document.querySelector('#pBody .gl');if(g){g.click();await wait(120);add(audit(document.querySelector('.glpop'),tag('Begriff')));document.body.click();}
     NX.closePanel();await wait(200);
     step(tag('Fenster'));
-    for(const [nm,open,sub] of [['Alle Quartiere',()=>M.dashboard('list'),['rank','cmp']],['Methodik',()=>M.methodik()],['Utrecht jetzt',()=>M.now()],['Befehle',()=>M.palette('')]]){
+    for(const [nm,open,sub] of [['Alle Quartiere',()=>M.dashboard('list'),['rank','cmp']],['Methodik',()=>M.methodik()],['Regeln',()=>M.normen()],['Utrecht jetzt',()=>M.now()],['Befehle',()=>M.palette('')]]){
       await open();await wait(450);const sh=sheet()||document.querySelector('.nxk,.nx-pal,[role="dialog"]');add(audit(sh,tag(nm)));
       if(sh&&!sh.matches('[role="dialog"],[role="listbox"]')&&!sh.querySelector('[role="dialog"]'))add([{area:tag(nm),k:'name',msg:'Fenster ohne role="dialog"'}]);
       for(const t of sub||[]){const b=sh&&sh.querySelector(`[data-tab="${t}"]`);if(b){b.click();await wait(250);add(audit(sheet(),tag(nm+' '+t)));}}

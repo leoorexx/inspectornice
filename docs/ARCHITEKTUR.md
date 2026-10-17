@@ -66,6 +66,12 @@ Daten fürs Gebiet immer mit `api.ensure(kind,bounds)` laden (eigene Liste, leer
 - **STL:** binär, wasserdicht (geprüft in `qa_cad`), Sockel ≥ 3 mm, Wasser als ebene Rinne, Gebäude 1 m eingelassen, Relief wählbar überhöht.
 - **Gebäude:** 3D BAG (`identificatie`, `b3_h_max`, `b3_h_nok`, `b3_bouwlagen`, `b3_opp_buitenmuur`, `b3_opp_scheidingsmuur`, `b3_volume_lod22`), BAG-Einheiten über die **interne Kennung (UUID)** des Gebäudes (`pand.href`), Denkmalregister (RCE, PDOK `ps-ch`) liefert **RD-Koordinaten**.
 
+## Regeln und Richtwerte (data/rahmen_utr.json)
+
+- Jede Regel: `id`, `titel`/`kern` (DE/EN/NL), `ebene`, `verbindlich`, **`stufe`** (`pflicht` · `teils` · `ziel` · `empfehlung` · `faustregel`), `zahl`, `quelle`, `stand`, `geprueft`.
+- **`bezug`** verknüpft eine Regel mit einem Risiko im Quartiersprofil: entweder `{r, op:'<='|'>=', wert, gilt}` (vergleichbar) oder `{r, nv}` (ehrlicher Grund, warum nicht direkt vergleichbar). `NOTE` in nx-more.js nennt die Regel, deren Wert die Note benutzt; fehlt sie, erscheint „Einteilung der App" als eigene Zeile.
+- Neubau-Werte (z. B. Bkl 53 dB) gelten nicht für den Bestand — das steht in `gilt`.
+
 ## Prüfen
 
 - `npm test` — jsdom, ohne Netz. Die Prüfungen setzen die Module per Regex in die Seite ein: `<script src="js/(lab…|act|nx-…).js">`. Ein neues Modul muss in dieses Muster passen.

@@ -135,7 +135,7 @@ setTimeout(async()=>{const d=w.document,NX=w.__NX,M=w.NXM;
   const hb=d.getElementById('nxHeat');
   ok('Bei 32 °C Vorhersage: Hitze-Knopf in der Kopfzeile',!!hb&&/32°/.test(hb.textContent)&&hb.classList.contains('l2'));
   hb.click();const hp=d.getElementById('nxHeatPop');
-  ok('Details: 7 Tage, Tropennacht, Hitzeplan-Schwelle (4 Tage ≥ 27 °C, 3 davon ≥ 30 °C), keine amtliche Warnung',!!hp&&hp.querySelectorAll('.nxhp-d > div').length===7&&!!hp.querySelector('.nxhp-d em')&&/Nationalen Hitzeplans/.test(hp.textContent)&&/keine amtliche Warnung/.test(hp.textContent));
+  ok('Details: 7 Tage, Tropennacht, KNMI-Hitzewelle (5 Tage ≥ 25 °C, 3 davon ≥ 30 °C), Hitzeplan entscheidet das RIVM ohne feste Gradzahl, keine amtliche Warnung',!!hp&&hp.querySelectorAll('.nxhp-d > div').length===7&&!!hp.querySelector('.nxhp-d em')&&/KNMI-Definition einer Hitzewelle/.test(hp.textContent)&&/entscheidet das RIVM/.test(hp.textContent)&&!/Schwelle des Nationalen Hitzeplans/.test(hp.textContent)&&/keine amtliche Warnung/.test(hp.textContent));
   hp.querySelector('[data-h="hide"]').click();
   ok('„Heute ausblenden" merkt sich den Tag',!d.getElementById('nxHeat')&&!!w.localStorage.getItem('nx_hw'));
   await M.heat({daily:{time:['a','b','c','d','e','f','g'],temperature_2m_max:[18,17,19,20,16,15,14],temperature_2m_min:[8,8,9,9,8,7,6]}});

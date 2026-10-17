@@ -9,6 +9,7 @@ Stand 17. Oktober 2026. Jede Zeile nennt die Datenquelle und die Prüfung (`test
 | Klimabelastung 0–100 und Noten A–E je Quartier (Hitze, Lärm, Kronendach, Schatten auf Wegen) | RIVM, GGD-Monitor, Gemeente Utrecht | qa_next |
 | Themen Risiken · Menschen · Wandel, Legende mit Richtwert und Quelle | CBS, GGD, BAG, Leefbaarometer | qa_next, qa_more |
 | Quartiersprofil: Risiken in Menschen, Zukunft (Tropentage), wer hier lebt, was hilft, was gebaut wird | CBS, KNMI'23, BAG, Muster-Katalog | qa_next |
+| „Was gilt hier?": je Risiko alle passenden Regeln nach Verbindlichkeit (Pflicht · Teils Pflicht · Ziel · Empfehlung · Faustregel), Soll gegen Ist, „nicht direkt vergleichbar" mit Grund, Einteilung der App getrennt ausgewiesen | data/rahmen_utr.json (28 Regeln mit Quelle) | qa_norms |
 | Aktionen im Profil: Merken, Vergleichen, PDF-Bericht, Melden | — | qa_more |
 | Handeln: Missionen Kühle Wege, Hitzesichere Schulen, Starkregen; Fälle mit ID, Status, Brief | Gemeente (Schaduw wegdelen, Knelpunte), POIs, Rahmenwerk | qa_act |
 | Suche: Adressen und Quartiere | PDOK Locatieserver | qa_next |
@@ -20,9 +21,10 @@ Stand 17. Oktober 2026. Jede Zeile nennt die Datenquelle und die Prüfung (`test
 | Alle Quartiere: Tabelle (sortieren, filtern, Merkliste, CSV), Ranglisten, Vergleich bis 3 | wie oben | qa_more |
 | Utrecht jetzt: Wetter, Regen 2 h, Luft an 3 RIVM-Stationen mit WHO-Vergleich | Open-Meteo, Luchtmeetnet | qa_more |
 | Methodik und Quellen, Begriffe | Metadaten der Daten | qa_more |
+| Regeln und Richtwerte: alle Regeln nach Stufe, Filter nach Thema, Quelle und Stand, „ungeprüft" markiert | data/rahmen_utr.json | qa_norms |
 | Befehle (⌘K / Strg K) | — | qa_more |
 | Etwas melden (7 Arten, ohne Freitext) | Supabase, sonst Gerät | qa_more |
-| Hitze-Hinweis ab 27 °C, Schwelle Nationaler Hitzeplan | Open-Meteo | qa_more |
+| Hitze-Hinweis ab 27 °C; meldet eine Hitzewelle nach KNMI-Definition (5 Tage ≥ 25 °C, 3 ≥ 30 °C). Den Nationalen Hitzeplan aktiviert das RIVM ohne feste Gradzahl | Open-Meteo | qa_more |
 | Sprache DE · EN · NL, Darstellung System · Hell · Dunkel, Klassische Ansicht | — | qa_next |
 
 ## Straße (Straßenlabor)
