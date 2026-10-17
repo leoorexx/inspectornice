@@ -75,6 +75,7 @@ const fmt=v=>Math.round(v).toLocaleString(opt.lang()==='en'?'en-GB':'de-DE');
 // ── Datum & Uhrzeit ──
 function dayDate(){
   const now=new Date(),key=(LAB.mode==='heat'||LAB.mode==='gaps')&&LAB.tool==='surface'?'jun':LAB.dateKey;
+  if(key==='doy')return new Date(now.getFullYear(),0,Math.max(1,Math.min(366,LAB.doy||1)));   // frei gewählter Tag (3D-Datumsregler)
   const m={today:[now.getMonth(),now.getDate()],jun:[5,21],sep:[8,21],dec:[11,21]}[key];
   return new Date(now.getFullYear(),m[0],m[1]);
 }
