@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bausteine — Inspector Nice</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..600&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+<style>
+/* Seitenrahmen der Übersicht. Alle Bausteine selbst kommen aus next.html (eine Quelle, keine Kopie). */
+body{margin:0;background:#e9e4da;color:#17151c;font:400 15px/1.5 'DM Sans',system-ui,sans-serif}
+.bs-wrap{max-width:1180px;margin:0 auto;padding:28px 16px 80px}
+.bs-wrap>header h1{font:700 2.4rem/1.05 'Syne',sans-serif;margin:0 0 8px;letter-spacing:-.01em}
+.bs-wrap>header p{max-width:760px;margin:0 0 6px;color:#46424f}
+.bs-nums{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 8px}
+.bs-nums div{background:#fbfaf6;border:1px solid rgba(23,21,28,.12);border-radius:14px;padding:10px 14px;min-width:150px}
+.bs-nums b{display:block;font:700 1.6rem 'Syne',sans-serif}.bs-nums span{font-size:.8rem;color:#46424f}
+.bs-wrap h2{font:700 1.35rem 'Syne',sans-serif;margin:44px 0 6px}
+.bs-wrap h2+p{margin:0 0 14px;color:#46424f;max-width:780px}
+.bs-rule{font-size:.82rem;color:#46424f;margin:6px 0 0}.bs-rule code{font-size:.78rem;background:rgba(23,21,28,.06);padding:1px 5px;border-radius:5px}
+.bs-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.bs-pair{grid-template-columns:1fr}}
+.bs-pane{border-radius:18px;padding:16px;background:var(--card);color:var(--ink);border:1px solid var(--line2);display:grid;gap:14px;align-content:start}
+.bs-pane>h3{margin:0;font:800 .7rem var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.bs-old{background:#fbfaf6;border:1px dashed rgba(23,21,28,.25);border-radius:18px;padding:16px;display:grid;gap:12px}
+.bs-old>h3{margin:0;font:800 .7rem 'DM Sans';letter-spacing:.08em;text-transform:uppercase;color:#67626f}
+.bs-old .bs-lbl,.bs-pane .bs-lbl{font-size:.72rem;color:var(--mute,#67626f);margin-bottom:-8px}
+.bs-t{width:100%;border-collapse:collapse;font-size:.88rem;background:#fbfaf6;border-radius:14px;overflow:hidden}
+.bs-t th,.bs-t td{text-align:left;padding:9px 12px;border-bottom:1px solid rgba(23,21,28,.08);vertical-align:top}
+.bs-t th{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#67626f;background:#f3efe6}
+.bs-t td code{font-size:.8rem}
+.bs-scales{display:grid;gap:14px}
+.bs-scale{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;background:#fbfaf6;border-radius:14px;padding:12px 14px}
+.bs-scale b{font-size:.9rem}.bs-scale small{display:block;color:#67626f;font-size:.75rem}
+.bs-scale .row{display:grid;gap:6px}.bs-scale .row div{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center;font-size:.75rem;color:#46424f}
+.bs-scale .bar{height:12px;border-radius:6px}
+.bs-load{padding:40px;text-align:center;color:#67626f}
+</style>
+</head>
+<body>
+<div class="bs-wrap" id="bs"><p class="bs-load">Bausteine werden geladen …</p></div>
+<script>
+// Holt das echte Stylesheet aus next.html und baut daraus zwei Bühnen: Hell und Dunkel nebeneinander.
+(async()=>{
+  const html=await fetch('next.html',{cache:'no-store'}).then(r=>r.text());
+  const css=html.slice(html.indexOf('<style>')+7,html.indexOf('</style>'));
+  const light=(css.match(/:root\{([\s\S]*?)\n\}/)||[])[1]||'',dark=(css.match(/:root\[data-theme="dark"\]\{([\s\S]*?)\n\}/)||[])[1]||'';
+  const st=document.createElement('style');
+  st.textContent=css.replace(/\bbody\{[^}]*\}/,'').replace(/html,body\{[^}]*\}/,'')+`\n.th-l{${light}}\n.th-d{${dark}}\n.th-l,.th-d{font-family:var(--sans)}`;
+  document.head.prepend(st);
+  document.documentElement.dataset.theme='light';
+  const pair=(title,body,old)=>`<div class="bs-pair"><div class="bs-pane th-l"><h3>Neu · Hell</h3>${body}</div><div class="bs-pane th-d"><h3>Neu · Dunkel</h3>${body}</div></div>${old?`<div class="bs-old th-l" style="margin-top:12px"><h3>Heute — ${title}</h3>${old}</div>`:''}`;
+  const seg=(xs,on=0)=>`<div class="ui-seg" role="group">${xs.map((x,i)=>`<button aria-pressed="${i===on}" class="${i===on?'on':''}">${x}</button>`).join('')}</div>`;
+  const old=(c,xs,wrap)=>`<div class="bs-lbl">.${c}</div>${wrap?wrap[0]:''}<div class="${c}">${xs.map((x,i)=>`<button class="${i===0?'on':''}">${x}</button>`).join('')}</div>${wrap?wrap[1]:''}`;
+  const play='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+  const x='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  const DAY='linear-gradient(90deg,#3a3470,#d0583c 22%,#f1c45a 50%,#d0583c 78%,#3a3470)';
+  const WATER='linear-gradient(90deg,#78b2e2,#3478c4 35%,#184896 65%,#0c2864)';
+  const HEAT='linear-gradient(90deg,#d6e2ce,#f0d6a0 35%,#e48c54 60%,#c04634 80%,#761624)';
+  const SUN='linear-gradient(90deg,#2c265c,#6c4696 25%,#ce604a 50%,#eca83a 75%,#ffec96)';
+  const WIND='linear-gradient(90deg,#7896be,#58aa8c 18%,#d6ba46 35%,#e88c46 53%,#d0583c 70%,#96285c)';
+  document.getElementById('bs').innerHTML=`
+  <header><h1>Bausteine</h1>
+    <p>Eine Form je Aufgabe — in der Stadtkarte, im Straßenlabor, in 3D und in den Fenstern. Grundlage sind Apples Human Interface Guidelines: <i>„Once you establish a behavior or appearance for an element, apply it throughout your design."</i> (design-principles › Keep visuals and interactions consistent)</p>
+    <p>Alle Beispiele unten benutzen das echte Stylesheet der App. Gemessen am 17.10.2026 im Live-Durchlauf aller Oberflächen:</p>
+    <div class="bs-nums"><div><b>17</b><span>Varianten für „eine Option wählen"</span></div><div><b>15</b><span>Knopf-Arten mit 25 Formen</span></div><div><b>7</b><span>Legenden-Stile</span></div><div><b>3</b><span>Regler-Arten für 9 Regler</span></div><div><b>3</b><span>Blautöne für dieselbe Wassertiefe</span></div></div>
+  </header>
+
+  <h2>Welcher Baustein wofür</h2><p>Erst die Aufgabe, dann die Form. Wer eine Aufgabe einmal gelernt hat, erkennt sie überall wieder.</p>
+  <table class="bs-t"><thead><tr><th>Aufgabe</th><th>Baustein</th><th>Regel</th><th>HIG</th></tr></thead><tbody>
+    <tr><td>Eine aus 2–5 verwandten Optionen (Modus, Datum, Radius, Jahr, Maßstab)</td><td><code>.ui-seg</code> Umschalter</td><td>gleich breit, nur Text, Nomen</td><td>segmented-controls › Best practices, Content</td></tr>
+    <tr><td>Mehr als 5 Optionen oder mehrere gleichzeitig (Themen, Filter)</td><td><code>.ui-chips</code></td><td>Anzahl klein dahinter</td><td>segmented-controls › Limit the number of segments</td></tr>
+    <tr><td>Wert in einem Bereich (Uhrzeit, Tag, Wasserstand, Jahr, Windrichtung)</td><td><code>.ui-sl</code> Regler</td><td>Bezeichnung links, Wert rechts, min links, max rechts; Schiene zeigt Bedeutung</td><td>sliders › Use familiar slider directions, Consider using a label</td></tr>
+    <tr><td>Die wahrscheinlichste Aktion (Berechnen, Herunterladen, In 3D ansehen)</td><td><code>.ui-btn.pri</code></td><td>höchstens einer je Bereich</td><td>buttons › Style: prominent style for the most likely action</td></tr>
+    <tr><td>Weitere Aktionen</td><td><code>.ui-btn</code> · <code>.ui-link</code></td><td>Stil statt Größe unterscheidet</td><td>buttons › Use style — not size</td></tr>
+    <tr><td>Schließen, Abspielen, Zentrieren</td><td><code>.ui-icon</code></td><td>rund, 44 px, immer gleiche Symbole</td><td>buttons › familiar actions, familiar icons</td></tr>
+    <tr><td>Farbe erklären</td><td><code>.ui-legend</code></td><td>Titel mit Einheit · Skala oder Felder · Endwerte · Quelle</td><td>charts › Write descriptions …, consistent visual hierarchy</td></tr>
+    <tr><td>Dieselbe Größe an mehreren Orten (2D, 3D, Legende, Stadtkarte)</td><td>eine Farbskala</td><td>gleiche Daten, gleiche Farben</td><td>charting-data › Maintain continuity; color › same color, same meaning</td></tr>
+  </tbody></table>
+
+  <h2>Umschalter</h2><p>Eine Schiene, die gewählte Option hebt sich hell ab — in Hell und Dunkel. Ersetzt Datums-Pillen, Szenario-Chips, Radius-Knöpfe, Modus-Reiter und Fenster-Reiter.</p>
+  ${pair('17 Varianten',`${seg(['Heute','21. Juni','21. Sept.','21. Dez.'])}${seg(['heute','2050','2100'],1)}${seg(['100 m','200 m','350 m'],1)}${seg(['Tabelle','Ranglisten','Vergleich'])}`,
+   old('lab-dates',['Heute','21. Juni','21. Sept.','21. Dez.'])+old('wt-chips',['heute','2050','2100'])+old('ex-r',['100 m','200 m','350 m'])+old('lab-seg',['Schatten','Sonnenstunden'])+old('v3-row',['Wolkenbruch','Deichbruch','Wasserstand'])+old('nxd-tabs',['Tabelle','Ranglisten','Vergleich'])+old('act-status',['offen','geprüft','erledigt'])+old('lab-base',['Karte','Luftbild','OSM']))}
+
+  <h2>Chips</h2><p>Nur wenn es mehr als fünf Optionen sind oder mehrere gleichzeitig gelten.</p>
+  ${pair('',`<div class="ui-chips"><button class="on" aria-pressed="true">Alle <small>28</small></button><button aria-pressed="false">Hitze <small>10</small></button><button aria-pressed="false">Grün <small>13</small></button><button aria-pressed="false">Wasser <small>8</small></button><button aria-pressed="false">Lärm <small>5</small></button><button aria-pressed="false">Luft <small>5</small></button><button aria-pressed="false">Mobilität <small>6</small></button></div>`)}
+
+  <h2>Regler</h2><p>Immer gleich gebaut: Bezeichnung und Wert darüber, Endwerte darunter, Abspielen davor. Die Schiene zeigt, was sich ändert — Tageslicht, Wassertiefe — oder bleibt neutral.</p>
+  ${pair('3 Arten',`<div class="ui-sl"><div class="ui-sl-h"><span>Uhrzeit</span><b>15:30</b></div><div class="ui-sl-r"><button class="ui-icon pri" aria-label="Tag abspielen">${play}</button><input type="range" class="ui-range" min="0" max="24" step=".25" value="15.5" style="--track:${DAY}" aria-label="Uhrzeit"></div><div class="ui-sl-t"><span>0:00</span><span>24:00</span></div></div>
+    <div class="ui-sl"><div class="ui-sl-h"><span>Wasserstand</span><b>+0,30 m</b></div><input type="range" class="ui-range" min="0" max="1" step=".05" value=".3" style="--track:${WATER}" aria-label="Wasserstand"><div class="ui-sl-t"><span>0 m</span><span>1 m</span></div></div>
+    <div class="ui-sl"><div class="ui-sl-h"><span>Jahr</span><b>2031</b></div><input type="range" class="ui-range" min="1100" max="2040" value="2031" aria-label="Jahr"><div class="ui-sl-t"><span>1100</span><span>2040</span></div></div>`,
+   `<div class="bs-lbl">.lab-slider (Sonne, Wind)</div><input type="range" class="lab-slider" value="60"><div class="bs-lbl">ohne Klasse (Wasser, alle fünf in 3D)</div><input type="range" value="40"><input type="range" value="70" style="accent-color:#e3a800">`)}
+
+  <h2>Knöpfe</h2><p>Drei Stufen und ein Rundknopf. Der Unterschied liegt im Stil, nicht in der Größe.</p>
+  ${pair('15 Arten',`<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><button class="ui-btn pri">DXF + SVG</button><button class="ui-btn">Neu zeichnen</button><button class="ui-link">Alle Regeln</button><button class="ui-icon pri" aria-label="Abspielen">${play}</button><button class="ui-icon" aria-label="Schließen">${x}</button></div>`,
+   `<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><button class="ex-go">DXF + SVG</button><button class="act-more">Mehr anzeigen</button><button class="lab-3dbtn">In 3D ansehen</button><button class="nxd-chip">Merkliste</button><button class="pact"><span>PDF</span></button><button class="glall">Alle Begriffe</button></div>`)}
+
+  <h2>Legende</h2><p>Ein Aufbau für jede Karte, jedes Werkzeug und 3D: was es ist (mit Einheit), die Farben, die Endwerte, woher es kommt.</p>
+  ${pair('7 Stile',`<div class="ui-legend"><b>Wassertiefe nach Starkregen</b><div class="ui-ramp" style="background:${WATER}"></div><div class="ui-ramp-l"><span>10 cm</span><span>30 cm</span><span>50 cm und mehr</span></div><small>AHN · Modell, kein Messwert</small></div>
+    <div class="ui-legend"><b>Oberflächen</b><div class="ui-sw"><span><i style="background:#2f6fa8"></i>Wasser</span><span><i style="background:#5f7f2e"></i>Grün</span><span><i style="background:#b9ad97"></i>Pflaster</span><span><i class="ln" style="background:#d0583c"></i>Route</span><span><i class="pt" style="background:var(--ink)"></i>Bank</span></div><small>BGT</small></div>`,
+   `<div class="bs-lbl">.lab-leg</div><div class="lab-leg"><span>Gebäudeschatten</span><span>Baumschatten</span></div><div class="bs-lbl">.wt-leg</div><div class="wt-leg"><span>10–20 cm</span><span>20–30 cm</span><span>&gt; 30 cm</span></div><div class="bs-lbl">.v3-leg</div><div class="v3-leg"><span>im Bau</span><span>genehmigt</span></div><div class="bs-lbl">.lab-ramp / .qramp</div><div class="lab-ramp" style="background:${HEAT}"></div><div class="qramp" style="background:${HEAT}"></div>`)}
+
+  <h2>Farbskalen je Größe</h2><p>Eine Größe, eine Skala — in 2D, in 3D, in der Legende und auf der Stadtkarte. Ausnahme: amtliche Karten (LIWO, RIVM) behalten ihre amtlichen Farben, die Legende zeigt dann genau diese.</p>
+  <div class="bs-scales">
+    <div class="bs-scale"><div><b>Wassertiefe</b><small>Starkregen, Deichbruch, 3D-Wasser, Stadtkarte</small></div><div class="row"><div>Straßenlabor 2D<span class="bar" style="background:${WATER}"></span></div><div>3D heute<span class="bar" style="background:#3f7fa8"></span></div><div>Stadtkarte heute<span class="bar" style="background:#2f6fa8"></span></div><div><b>Neu überall</b><span class="bar" style="background:${WATER}"></span></div></div></div>
+    <div class="bs-scale"><div><b>Hitze</b><small>Hitze-Index, Kühl-Lücken, Wärmeinsel</small></div><div class="row"><div><b>Neu überall</b><span class="bar" style="background:${HEAT}"></span></div></div></div>
+    <div class="bs-scale"><div><b>Sonne</b><small>Sonnenstunden, Tageslicht</small></div><div class="row"><div><b>Neu überall</b><span class="bar" style="background:${SUN}"></span></div><div>Tageszeit-Regler<span class="bar" style="background:${DAY}"></span></div></div></div>
+    <div class="bs-scale"><div><b>Wind</b><small>2D-Strömung, 3D-Wind</small></div><div class="row"><div><b>Neu überall</b><span class="bar" style="background:${WIND}"></span></div></div></div>
+  </div>
+  <p class="bs-rule">Technisch: Bausteine als <code>.ui-*</code>-Klassen in <code>next.html</code>, Farbskalen als <code>LAB.RAMPS</code> an einer Stelle; jedes Werkzeug nutzt nur diese. Der Apple-Regel-Check (<code>tests/hig-live.mjs</code>) zählt die Varianten und soll am Ende je Aufgabe genau eine finden.</p>`;
+})();
+</script>
+</body>
+</html>

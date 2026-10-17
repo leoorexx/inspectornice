@@ -16,7 +16,7 @@
 :root{
   --paper:#f1ede5;--ink:#17151c;--ink2:#46424f;--mute:#67626f;--line:rgba(23,21,28,.08);--line2:rgba(23,21,28,.15);
   --glass:rgba(250,248,243,.86);--sheet:rgba(250,248,243,.97);--card:#fbfaf6;--soft:#eee9df;--soft2:#e6e0d4;
-  --accent:#FFD600;--chrome:#17151c;--pos:#2f6a55;--neg:#8a2a3a;--warn:#7d5a10;
+  --accent:#FFD600;--chrome:#17151c;--pos:#2f6a55;--neg:#8a2a3a;--warn:#7d5a10;--raised:#fffdf8;
   --sh:0 1px 1px rgba(23,21,28,.04),0 6px 20px rgba(23,21,28,.08);
   --sh2:0 2px 4px rgba(23,21,28,.06),0 22px 56px rgba(23,21,28,.16);
   --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
@@ -26,12 +26,12 @@
 :root[data-theme="dark"]{color-scheme:dark;
   --paper:#121016;--ink:#f3efe7;--ink2:#cfc9d6;--mute:#938da0;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.15);
   --glass:rgba(27,24,32,.86);--sheet:rgba(27,24,32,.97);--card:#1c1922;--soft:#25212c;--soft2:#2e2936;
-  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);--pos:#8fd3b6;--neg:#f2a7b1;--warn:#e3b85c;
+  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);--pos:#8fd3b6;--neg:#f2a7b1;--warn:#e3b85c;--raised:#3b3544;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
   --paper:#121016;--ink:#f3efe7;--ink2:#cfc9d6;--mute:#938da0;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.15);
   --glass:rgba(27,24,32,.86);--sheet:rgba(27,24,32,.97);--card:#1c1922;--soft:#25212c;--soft2:#2e2936;
-  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);--pos:#8fd3b6;--neg:#f2a7b1;--warn:#e3b85c}}
+  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);--pos:#8fd3b6;--neg:#f2a7b1;--warn:#e3b85c;--raised:#3b3544}}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;overflow:hidden;font-size:0.875rem;-webkit-tap-highlight-color:transparent}
@@ -966,6 +966,47 @@ body.nx-picking .leaflet-container{cursor:crosshair}
 .nxl-x{font-size:0.75rem;color:var(--mute);padding:4px 14px 12px;line-height:1.45}
 .nxl-all{border:none;background:none;padding:0;font:700 0.75rem var(--sans);color:var(--ink);text-decoration:underline;text-underline-offset:2px;min-height:24px}
 @media (max-width:520px){.nxl li{grid-template-columns:1fr auto}.nxl-b{grid-column:1/-1}.nxl-t{grid-column:1/2}.nxl-s{grid-column:2/3;grid-row:2}.nxl li>.chip2{grid-column:1/-1;justify-self:start}}
+/* ══ Bausteine: eine Form je Aufgabe — Übersicht in public/bausteine.html ══
+   HIG design-principles › „Keep visuals and interactions consistent". Nur Tokens, keine Sonderfarben je Modus. */
+/* Umschalter: eine aus 2–5 verwandten Optionen (HIG segmented-controls: gleich breit, nur Text oder nur Symbol) */
+.ui-seg{display:flex;gap:2px;padding:3px;background:var(--soft);border-radius:14px}
+.ui-seg>button{flex:1 1 0;min-width:0;min-height:40px;padding:0 10px;border:none;background:none;border-radius:11px;font:700 0.8125rem var(--sans);color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .2s var(--ease),color .2s,box-shadow .2s}
+.ui-seg>button.on,.ui-seg>button[aria-pressed="true"],.ui-seg>button[aria-selected="true"]{background:var(--raised);color:var(--ink);box-shadow:0 1px 2px rgba(23,21,28,.14),0 0 0 1px var(--line)}
+.ui-seg>button:not(.on):hover{color:var(--ink)}
+/* Auswahl-Chips: mehr als 5 Optionen oder Mehrfachauswahl (Filter) */
+.ui-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ui-chips>button{min-height:36px;padding:0 13px;border:1px solid var(--line2);border-radius:999px;background:var(--card);font:700 0.8125rem var(--sans);color:var(--ink)}
+.ui-chips>button small{font-size:0.75rem;font-weight:600;color:var(--mute);margin-left:3px}
+.ui-chips>button.on,.ui-chips>button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.ui-chips>button.on small,.ui-chips>button[aria-pressed="true"] small{color:inherit;opacity:.8}
+/* Knöpfe: Stil statt Größe unterscheidet (HIG buttons) — höchstens ein hervorgehobener je Bereich */
+.ui-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border:1px solid var(--line2);border-radius:12px;background:var(--card);font:700 0.8125rem var(--sans);color:var(--ink);text-decoration:none}
+.ui-btn.pri{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.ui-btn:disabled{opacity:.5;cursor:default}
+.ui-btn svg{flex:none}
+.ui-link{border:none;background:none;padding:0;min-height:32px;font:700 0.8125rem var(--sans);color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line2)}
+.ui-icon{width:44px;height:44px;flex:none;display:inline-grid;place-items:center;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);padding:0}
+.ui-icon.pri{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+/* Regler: Bezeichnung links, Wert rechts, min links / max rechts (HIG sliders); die Schiene zeigt Bedeutung über --track */
+.ui-sl{display:grid;gap:2px}
+.ui-sl-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font:600 0.75rem var(--sans);color:var(--ink2)}
+.ui-sl-h b{font:700 0.875rem var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
+.ui-sl-r{display:flex;align-items:center;gap:10px}
+.ui-range{flex:1;min-width:0;width:100%;-webkit-appearance:none;appearance:none;height:44px;margin:0;background:transparent;cursor:pointer;--track:var(--soft2)}
+.ui-range::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--track)}
+.ui-range::-moz-range-track{height:8px;border-radius:4px;background:var(--track)}
+.ui-range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--raised);border:2.5px solid var(--ink);margin-top:-8px;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ui-range::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--raised);border:2.5px solid var(--ink)}
+.ui-range:focus-visible{outline:none}.ui-range:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--accent)}
+.ui-sl-t{display:flex;justify-content:space-between;font-size:0.6875rem;color:var(--mute);font-variant-numeric:tabular-nums}
+/* Legende: Titel mit Einheit · Farbskala oder Felder · Endwerte · Quelle (HIG charts: gleiche Daten, gleiche Farben) */
+.ui-legend{display:grid;gap:6px;font-size:0.75rem;color:var(--ink2)}
+.ui-legend>b{font:700 0.8125rem var(--sans);color:var(--ink)}
+.ui-ramp{height:10px;border-radius:5px}
+.ui-ramp-l{display:flex;justify-content:space-between;gap:8px;font-size:0.6875rem;color:var(--mute);font-variant-numeric:tabular-nums}
+.ui-sw{display:flex;flex-wrap:wrap;gap:6px 14px}.ui-sw>span{display:inline-flex;align-items:center;gap:6px}
+.ui-sw i{width:12px;height:12px;border-radius:3px;flex:none}.ui-sw i.ln{height:3px;border-radius:2px;width:16px}.ui-sw i.pt{border-radius:50%}
+.ui-legend small{font-size:0.6875rem;color:var(--mute)}
 /* Tippflächen am Handy: mindestens 44 px — steht bewusst am Ende, damit spätere Grundregeln (z. B. 40 px) sie nicht überschreiben */
 @media (max-width:760px){
   .nxd-tabs button,.lgrp,.nxd-open,.lab-base button,.lab-osm{min-height:44px}
@@ -976,6 +1017,7 @@ body.nx-picking .leaflet-container{cursor:crosshair}
   .lab-dock button,.lab-dock select,.lab-dock summary,.lab-dock .ex-ck,.v3d button,.act button,.chip,.glall{min-height:44px}
   .lab-dock input[type="range"],.v3d input[type="range"]{min-height:44px}
   .nxn-f button,.nxl-n,.nxl-all{min-height:44px}
+  .ui-seg>button,.ui-chips>button,.ui-btn,.ui-link{min-height:44px}
 }
 </style>
 </head>
