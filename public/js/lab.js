@@ -74,7 +74,7 @@ const fmt=v=>Math.round(v).toLocaleString(opt.lang()==='en'?'en-GB':'de-DE');
 
 // ── Datum & Uhrzeit ──
 function dayDate(){
-  const now=new Date(),key=LAB.mode==='heat'&&LAB.tool==='surface'?'jun':LAB.dateKey;
+  const now=new Date(),key=(LAB.mode==='heat'||LAB.mode==='gaps')&&LAB.tool==='surface'?'jun':LAB.dateKey;
   const m={today:[now.getMonth(),now.getDate()],jun:[5,21],sep:[8,21],dec:[11,21]}[key];
   return new Date(now.getFullYear(),m[0],m[1]);
 }
@@ -330,6 +330,25 @@ async function computeHeat(){
   for(let i=0,p=0;i<risk.length;i++,p+=4){const r=Math.min(1,risk[i]/RISK_MAX),col=ramp(HEAT_RAMP,r);id.data[p]=col[0];id.data[p+1]=col[1];id.data[p+2]=col[2];id.data[p+3]=r<0.08?70:205;}
   ig.putImageData(id,0,0);sh.heatImg=img;sh.risk=risk;
 }
+// ── Kühl-Lücken: heiß, sonnig, versiegelt, keine Fahrbahn, noch ohne Baumkrone — nur Teilflächen, zweistufig ──
+const GAP_FN=/^(parkeervlak|voetpad|voetgangersgebied|woonerf)$/,GAP_TH=[0.6,0.45];   // Hitze-Index (0–1): hoch | mittel — ganztägig besonnte Platten ≈ 0,85; so bleiben rund 15 % der Kandidaten
+const gapCand=o=>o.c===CLASS.sealed&&((o.k==='wegdeel'&&GAP_FN.test(o.f))||(o.k==='ondersteunendwegdeel'&&o.f==='verkeerseiland')||(o.k==='onbegroeidterreindeel'&&o.fy!=='erf'));
+const GAP_NM={parkeervlak:['Parkplatz','parking','parkeervlak'],voetpad:['Gehweg','footpath','voetpad'],voetgangersgebied:['Fußgängerbereich','pedestrian area','voetgangersgebied'],woonerf:['Wohnstraße (Spielstraße)','home zone','woonerf'],verkeerseiland:['Verkehrsinsel','traffic island','verkeerseiland']};
+async function computeGaps(){
+  await computeHeat();const sh=SUNH;if(!sh||!sh.risk)return;if(sh.gap)return sh.gap;
+  const {w,h,X}=sh,g=offscreen(w,h,true),m=mpp()/X.sc;
+  g.fillStyle='#000';g.fillRect(0,0,w,h);
+  chunked(g,S.list.filter(gapCand),16,o=>poly(g,o.z,X),'#fff');
+  chunked(g,treesIn(.05),48,t=>{const x=t[4]*X.k-X.ox,y=t[5]*X.k-X.oy,r=Math.max(1,t[2]/m);g.moveTo(x+r,y);g.arc(x,y,r,0,2*Math.PI);},'#000');
+  chunked(g,B.list,16,b=>poly(g,b.z,X),'#000');
+  const d=g.getImageData(0,0,w,h).data,lv=new Uint8Array(w*h);let nc=0,n1=0,n2=0;
+  for(let i=0,p=0;i<lv.length;i++,p+=4){if(d[p]<128)continue;nc++;const r=sh.risk[i]/RISK_MAX;if(r>=GAP_TH[0]){lv[i]=2;n2++;}else if(r>=GAP_TH[1]){lv[i]=1;n1++;}}
+  const img=document.createElement('canvas');img.width=w;img.height=h;const ig=img.getContext('2d'),id=ig.createImageData(w,h),C=[null,[143,211,182,200],[24,128,92,235]];
+  for(let i=0,p=0;i<lv.length;i++,p+=4){const c=C[lv[i]];if(!c)continue;id.data[p]=c[0];id.data[p+1]=c[1];id.data[p+2]=c[2];id.data[p+3]=c[3];}
+  ig.putImageData(id,0,0);const a=(mpp()/X.sc)**2;
+  sh.gap={img,lv,hi:n2*a,mid:n1*a,cand:nc*a};return sh.gap;
+}
+function gapAt(wx,wy){const sh=SUNH;if(!sh||!sh.gap)return 0;const ix=Math.floor((wx-sh.wx)*sh.X.k),iy=Math.floor((wy-sh.wy)*sh.X.k);if(ix<0||iy<0||ix>=sh.w||iy>=sh.h)return 0;return sh.gap.lv[iy*sh.w+ix];}
 function sunHoursAt(wx,wy){if(!SUNH||!SUNH.hrs||SUNH.date!==dateTag())return null;const ix=Math.floor((wx-SUNH.wx)*SUNH.X.k),iy=Math.floor((wy-SUNH.wy)*SUNH.X.k);
   if(ix<0||iy<0||ix>=SUNH.w||iy>=SUNH.h)return null;const i=iy*SUNH.w+ix;return {h:SUNH.hrs[i],risk:SUNH.risk?SUNH.risk[i]:null};}
 
@@ -367,6 +386,7 @@ function label(g,txt,x,y,sc,col){g.save();g.font=`700 ${11*sc}px DM Sans,system-
 
 // ── Bedienfeld ──
 const IC={
+  gaps:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="4.5"/><path d="M12 14.5V19M3 7V3h4M21 7V3h-4M3 17v4h4M21 17v4h-4"/></svg>',
   sun:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   surface:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0Z"/><path d="M12 10v6"/></svg>',
   shadow:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="8" width="7" height="12" rx="1"/><path d="M11 20h9l-5-6h-4" fill="currentColor" fill-opacity=".35"/></svg>',
@@ -556,11 +576,15 @@ function fillUhi(){const el=dock&&dock.querySelector('#fzUhi');if(!el)return;con
 const SURF_TOOL={id:'surface',order:2,icon:IC.surface,
   label:()=>T('Hitze','Heat','Hitte'),
   sub:()=>T('Oberflächen und Hitze-Index','Surfaces and heat index','Oppervlakken en hitte-index'),
-  enter(){if(LAB.mode!=='albedo'&&LAB.mode!=='heat')LAB.mode='heat';if(!KNMI)loadKnmi().then(()=>{if(LAB.tool==='surface')renderDock();});},
-  render(){return seg([['albedo',T('Oberflächen','Surfaces','Oppervlakken')],['heat',T('Hitze-Index','Heat index','Hitte-index')]],LAB.mode)+`<div class="lab-legw">${legend()}</div>`+future();},
+  enter(){if(LAB.mode!=='albedo'&&LAB.mode!=='heat'&&LAB.mode!=='gaps')LAB.mode='heat';if(!KNMI)loadKnmi().then(()=>{if(LAB.tool==='surface')renderDock();});},
+  render(){return seg([['albedo',T('Oberflächen','Surfaces','Oppervlakken')],['heat',T('Hitze-Index','Heat index','Hitte-index')],['gaps',T('Kühl-Lücken','Cooling gaps','Koelkansen')]],LAB.mode)+`<div class="lab-legw">${legend()}</div>`+future();},
   bind(){fillUhi();},
-  async load(){if(LAB.mode==='albedo')await Promise.all([ensure('s'),ensure('b'),ensureTrees()]);else{req();await computeHeat();}},
+  async load(){if(LAB.mode==='albedo')await Promise.all([ensure('s'),ensure('b'),ensureTrees()]);else if(LAB.mode==='gaps'){req();await computeGaps();}else{req();await computeHeat();}},
   draw(g,X){const dark=isDark();
+    if(LAB.mode==='gaps'){const G=SUNH&&SUNH.gap;
+      if(G){g.imageSmoothingEnabled=true;g.drawImage(G.img,SUNH.wx*X.k-X.ox,SUNH.wy*X.k-X.oy,SUNH.ww*X.k,SUNH.wh*X.k);}
+      drawBuildings(g,X,dark?'rgba(42,38,49,.55)':'rgba(251,249,244,.6)',dark?'rgba(255,255,255,.14)':'rgba(23,21,28,.22)');
+      drawCrowns(g,X,null,dark?'rgba(150,210,150,.35)':'rgba(31,90,43,.3)');return;}
     if(LAB.mode==='heat'){const img=SUNH&&SUNH.heatImg;
       if(img){g.imageSmoothingEnabled=true;g.drawImage(img,SUNH.wx*X.k-X.ox,SUNH.wy*X.k-X.oy,SUNH.ww*X.k,SUNH.wh*X.k);}
       drawBuildings(g,X,dark?'rgba(42,38,49,.94)':'rgba(251,249,244,.95)',dark?'rgba(255,255,255,.16)':'rgba(23,21,28,.28)');
@@ -569,11 +593,15 @@ const SURF_TOOL={id:'surface',order:2,icon:IC.surface,
       drawBuildings(g,X,dark?'rgba(60,56,66,.9)':'rgba(206,201,192,.9)',dark?'rgba(255,255,255,.14)':'rgba(23,21,28,.22)');
       drawCrowns(g,X,'rgba(72,140,84,.18)',dark?'rgba(150,210,150,.35)':'rgba(31,90,43,.35)');}},
   click(e){PIN=e.latlng;fillUhi();const [wx,wy]=w20(e.latlng.lat,e.latlng.lng),bld=hits(B,wx,wy)[0];if(bld)return bldInfo(bld);
+    if(LAB.mode==='gaps'){const lv=gapAt(wx,wy),o=hits(S,wx,wy).filter(gapCand).pop(),v=sunHoursAt(wx,wy);
+      if(!lv)return `<b>${T('Keine Kühl-Lücke','No cooling gap','Geen koelkans')}</b><small>${o?T('Fläche liegt schon im Schatten oder ist nicht heiß genug.','This patch is already shaded or not hot enough.','Dit vlak ligt al in de schaduw of is niet heet genoeg.'):T('Fahrbahn, Grün, Wasser, Gebäude oder privater Hof.','Carriageway, green, water, building or private yard.','Rijbaan, groen, water, gebouw of privéterrein.')}</small>`;
+      const nm=o?(GAP_NM[o.f]?T(...GAP_NM[o.f]):T('Platz oder befestigte Fläche','square or paved area','plein of verharding')):T('befestigte Fläche','paved area','verharding');
+      return `<b>${T('Kühl-Lücke','Cooling gap','Koelkans')} · ${lv===2?T('hohe Priorität','high priority','hoge prioriteit'):T('mittel','medium','middel')}</b> · ${nm}<small>${v?`${nf(v.h,1)} h ${T('direkte Sonne am 21. Juni','direct sun on 21 June','directe zon op 21 juni')} · `:''}${T('Baum, Entsiegeln oder heller Belag; Leitungen und Zufahrten prüfen','tree, depaving or lighter paving; check cables and access','boom, ontharden of lichte bestrating; kabels en toegang controleren')}</small>`;}
     if(LAB.mode==='heat'){const v=sunHoursAt(wx,wy);if(v)return `<b>${nf(v.h,1)} h</b> ${T('direkte Sonne','direct sun','directe zon')}<small>${T('von','of','van')} ${nf(SUNH.maxH,1)} h ${T('Tageslicht','daylight','daglicht')}</small>`+(v.risk!=null?`<br>${T('Hitze-Index','Heat index','Hitte-index')} <b>${Math.round(100*Math.min(1,v.risk/RISK_MAX))}</b> / 100`:'');return null;}
     const o=hits(S,wx,wy).pop();if(!o)return null;
     const nm=MAT[o.m]?(opt.lang()==='nl'?o.m:MAT[o.m][opt.lang()==='en'?1:0]):(o.m||T('Fläche','surface','vlak'));
     return `<b>${nm.charAt(0).toUpperCase()+nm.slice(1)}</b> · Albedo ${nf(o.a,2)}<small>${T('Material laut BGT','material per BGT','materiaal volgens BGT')}${o.f?' · '+o.f:''}</small>`;},
-  note:()=>LAB.mode==='albedo'?T('Rückstrahlung (Albedo) je Material laut BGT — Asphalt, Klinker, Pflaster, Grün, Wasser — nach Literaturwerten (Oke; US EPA). Nur aktuell gültige Objekte. Dächer: Material ist nicht erfasst.','Reflectivity (albedo) per material from the BGT — asphalt, brick, paving, green, water — using literature values (Oke; US EPA). Current objects only. Roofs: material is not recorded.','Weerkaatsing (albedo) per materiaal uit de BGT — asfalt, klinkers, tegels, groen, water — volgens literatuurwaarden (Oke; US EPA). Alleen actuele objecten. Daken: materiaal niet vastgelegd.')
+  note:()=>LAB.mode==='gaps'?T('Kühl-Lücke = Pixel auf Parkplatz, Gehweg, Fußgängerbereich, Wohnstraße, Verkehrsinsel oder öffentlichem Platz (BGT), ohne Gebäude und ohne Baumkrone (Baumregister), mit Hitze-Index ab 0,45 (mittel) bzw. 0,6 (hoch) am 21. Juni; ganztägig besonnte Gehwegplatten erreichen etwa 0,85. Fahrbahnen und Radwege zählen nicht. Bewusst streng: Was hier nicht gefärbt ist, ist nicht automatisch gut.','Cooling gap = pixel on parking, footpath, pedestrian area, home zone, traffic island or public square (BGT), without building or tree crown (tree register), with a heat index of at least 0.45 (medium) or 0.6 (high) on 21 June; pavement tiles in sun all day reach about 0.85. Carriageways and cycle paths do not count. Deliberately strict: what is not coloured is not automatically fine.','Koelkans = pixel op parkeervlak, voetpad, voetgangersgebied, woonerf, verkeerseiland of openbaar plein (BGT), zonder gebouw en zonder boomkroon (bomenregister), met een hitte-index vanaf 0,45 (middel) of 0,6 (hoog) op 21 juni; stoeptegels die de hele dag in de zon liggen halen ongeveer 0,85. Rijbanen en fietspaden tellen niet. Bewust streng: wat niet gekleurd is, is niet automatisch goed.'):LAB.mode==='albedo'?T('Rückstrahlung (Albedo) je Material laut BGT — Asphalt, Klinker, Pflaster, Grün, Wasser — nach Literaturwerten (Oke; US EPA). Nur aktuell gültige Objekte. Dächer: Material ist nicht erfasst.','Reflectivity (albedo) per material from the BGT — asphalt, brick, paving, green, water — using literature values (Oke; US EPA). Current objects only. Roofs: material is not recorded.','Weerkaatsing (albedo) per materiaal uit de BGT — asfalt, klinkers, tegels, groen, water — volgens literatuurwaarden (Oke; US EPA). Alleen actuele objecten. Daken: materiaal niet vastgelegd.')
     :T('Näherung, kein Mikroklimamodell: Sonnenstunden am 21. Juni × aufgenommene Strahlung (1 − Albedo) × Oberflächenart (Grün und Wasser kühlen durch Verdunstung). Zeigt, wo Schatten und hellere Beläge am meisten bringen — keine Lufttemperatur.','Approximation, not a microclimate model: sun hours on 21 June × absorbed radiation (1 − albedo) × surface type (green and water cool by evaporation). Shows where shade and lighter paving help most — not air temperature.','Benadering, geen microklimaatmodel: zonuren op 21 juni × geabsorbeerde straling (1 − albedo) × oppervlaktetype (groen en water koelen door verdamping). Toont waar schaduw en lichtere verharding het meest helpen — geen luchttemperatuur.'),
   src:()=>`BGT (Kadaster / PDOK) · 3D BAG (TU Delft / 3DGI, CC BY 4.0) · ${T('Baumregister Gemeente Utrecht','Tree register, Gemeente Utrecht','Bomenregister gemeente Utrecht')} · KNMI'23 (klimaatscenarios-data.knmi.nl) · RIVM ${T('Wärmeinsel-Modell 2022','urban heat island model 2022','hitte-eilandmodel 2022')}`
 };
@@ -597,6 +625,9 @@ function legend(){
   const dk=isDark();
   if(LAB.mode==='shadow')return `<div class="lab-leg"><span><i style="background:${dk?'rgb(12,11,18)':'rgb(146,140,148)'}"></i>${T('Gebäudeschatten','Building shade','Gebouwschaduw')}</span><span><i style="background:${dk?'rgb(44,40,52)':'rgb(204,200,206)'}"></i>${T('Baumschatten','Tree shade','Boomschaduw')}</span><span><i style="background:rgba(72,140,84,.5);border-radius:50%"></i>${T('Baumkrone','Tree crown','Boomkroon')}</span></div>`;
   if(LAB.mode==='sunhours'){const mh=SUNH&&SUNH.maxH&&SUNH.date===dateTag()?SUNH.maxH:null;return `<div class="lab-ramp" style="background:${grad(SUN_RAMP,0,1)}"></div><div class="lab-rl"><span>0 h</span><span>${T('direkte Sonne am Boden','direct sun at ground level','directe zon op maaiveld')}</span><span>${mh?nf(mh,1)+' h':''}</span></div>`;}
+  if(LAB.mode==='gaps'){const G=SUNH&&SUNH.gap;return `<div class="lab-leg"><span><i style="background:rgb(24,128,92)"></i>${T('hohe Priorität','high priority','hoge prioriteit')}</span><span><i style="background:rgb(143,211,182)"></i>${T('mittel','medium','middel')}</span></div>`+
+    (G?`<p class="lab-gapst"><b>${fmt(Math.round(G.hi/10)*10)} m²</b> ${T('hohe und','high and','hoge en')} <b>${fmt(Math.round(G.mid/10)*10)} m²</b> ${T('mittlere Kühl-Lücken im Ausschnitt','medium cooling gaps in view','middelgrote koelkansen in beeld')} — ${T('von','of','van')} ${fmt(Math.round(G.cand/10)*10)} m² ${T('Parkplätzen, Gehwegen und Plätzen ohne Baum.','parking, pavements and squares without trees.','parkeervlakken, stoepen en pleinen zonder boom.')}</p>`:'')+
+    `<p class="lab-mute">${T('Gefärbt sind nur Teilflächen, nie ganze Straßen: dort passt ein Baum, eine Entsiegelung oder ein hellerer Belag — vor Ort prüfen (Leitungen, Zufahrten).','Only patches are coloured, never whole streets: a tree, depaving or lighter paving fits there — check on site (cables, access).','Alleen deelvlakken zijn gekleurd, nooit hele straten: daar past een boom, ontharding of lichtere bestrating — ter plekke controleren (kabels, toegang).')}</p>`;}
   if(LAB.mode==='albedo')return `<div class="lab-ramp" style="background:${grad(ALB_RAMP,0.05,0.35)}"></div><div class="lab-rl"><span>${T('dunkel · speichert Hitze','dark · stores heat','donker · houdt warmte vast')}</span><span>${T('hell · reflektiert','light · reflects','licht · weerkaatst')}</span></div><div class="lab-leg"><span><i style="background:${albCol(0.22,CLASS.green)}"></i>${T('Grün (kühlt durch Verdunstung)','green (cools by evaporation)','groen (koelt door verdamping)')}</span><span><i style="background:${albCol(0.07,CLASS.water)}"></i>${T('Wasser','water','water')}</span></div>`;
   return `<div class="lab-ramp" style="background:${grad(HEAT_RAMP,0,1)}"></div><div class="lab-rl"><span>${T('gering','low','laag')}</span><span>${T('Hitze-Index der Oberfläche · 21. Juni','surface heat index · 21 June','hitte-index oppervlak · 21 juni')}</span><span>${T('hoch','high','hoog')}</span></div>`;
 }
@@ -614,7 +645,7 @@ const BASES=[['map',()=>T('Karte','Map','Kaart')],['photo',()=>T('Luftbild','Aer
 function renderDock(){
   const t=tool();
   dock.innerHTML=`<div class="lab-top"><div><b>${T('Straßenlabor','Street lab','Straatlab')}</b><span>${t.sub?t.sub():''}</span></div><button class="lab-x" aria-label="${T('Straßenlabor schließen','Close street lab','Straatlab sluiten')}">${IC.close}</button></div>
-    <nav class="lab-tools" role="tablist" aria-label="${T('Werkzeuge','Tools','Gereedschap')}">${TOOLS.map(x=>`<button role="tab" data-t="${x.id}" aria-selected="${x===t}" class="${x===t?'on':''}">${x.icon}<span>${x.label()}</span></button>`).join('')}</nav>
+    <nav class="lab-tgs" aria-label="${T('Werkzeuge','Tools','Gereedschap')}">${[['see',T('Verstehen','Understand','Begrijpen')],['make',T('Gestalten','Design','Ontwerpen')]].map(([g,l])=>{const L=TOOLS.filter(x=>(x.grp||'see')===g);return L.length?`<div class="lab-tg"><span class="lab-tgc" id="labTg-${g}">${l}</span><div class="lab-tools" role="tablist" aria-labelledby="labTg-${g}" style="--n:${L.length}">${L.map(x=>`<button role="tab" data-t="${x.id}" aria-selected="${x===t}" class="${x===t?'on':''}">${x.icon}<span>${x.label()}</span></button>`).join('')}</div></div>`:'';}).join('')}</nav>
     <div class="lab-body" data-tool="${t.id}">${t.render?t.render(api):''}</div>
     <div class="lab-status" role="status"></div>
     <div class="lab-base"><span>${T('Hintergrund','Background','Achtergrond')}</span>${BASES.map(([k,l])=>`<button data-b="${k}" class="${LAB.base===k?'on':''}" aria-pressed="${LAB.base===k}">${l()}</button>`).join('')}<a class="lab-osm" target="_blank" rel="noopener" href="${osmUrl()}">${T('In OSM öffnen','Open in OSM','Open in OSM')} ${IC.ext}</a></div>
@@ -644,7 +675,7 @@ function play(onTick,once){
     tick();onTick&&onTick();draw();requestAnimationFrame(f);})();
 }
 async function setMode(m){
-  const owner=TOOLS.find(t=>t.id===(m==='albedo'||m==='heat'?'surface':m==='shadow'||m==='sunhours'?'sun':LAB.tool));
+  const owner=TOOLS.find(t=>t.id===(m==='albedo'||m==='heat'||m==='gaps'?'surface':m==='shadow'||m==='sunhours'?'sun':LAB.tool));
   if(owner&&owner.id!==LAB.tool){LAB.mode=m;setTool(owner.id);return;}
   LAB.mode=m;LAB.playing=false;LAB.min=clampMin();renderDock();await refresh();
 }
@@ -718,6 +749,6 @@ LAB.close=function(){if(!LAB.on)return;if(LAB.v3d&&LAB.v3d.on)LAB.v3d.close();co
 LAB.relang=function(){if(LAB.on)renderDock();};
 LAB.redraw=req;
 LAB.setTool=setTool;
-LAB._t={sunText,legend,NOTE:{heat:()=>{const m=LAB.mode,t=LAB.tool;LAB.mode='heat';LAB.tool='surface';const r=SURF_TOOL.note();LAB.mode=m;LAB.tool=t;return r;}},pointInfo,sunPos,toRD,fromRD,surf,ALB,dayRange,castShadows,signed,inPoly,atMin,
+LAB._t={computeGaps,gapCand,GAP_TH,get SUNH(){return SUNH},sunText,legend,NOTE:{heat:()=>{const m=LAB.mode,t=LAB.tool;LAB.mode='heat';LAB.tool='surface';const r=SURF_TOOL.note();LAB.mode=m;LAB.tool=t;return r;}},pointInfo,sunPos,toRD,fromRD,surf,ALB,dayRange,castShadows,signed,inPoly,atMin,
   get B(){return B},get S(){return S},get SUNH(){return SUNH},get TREES(){return TREES},measureTrees,get TH(){return TH},computeSunHours,get DSM(){return DSM},get GL(){return GL},loadDsm,renderShadow,glInit,computeHeat,ensure,ensureTrees,refresh,draw,setTool,get TOOLS(){return TOOLS}};
 })();

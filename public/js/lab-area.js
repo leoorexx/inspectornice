@@ -86,7 +86,7 @@ function steckbrief(){
     <div class="ar-act">${s.sun?'':`<button class="cta ghost lab-mini" id="arSun">${A.IC.sun}${T('Sonnenstunden ergänzen','Add sun hours','Zonuren toevoegen')}</button>`}${AR.flood?'':`<button class="cta ghost lab-mini" id="arFlood">${T('Überflutungstiefe prüfen','Check flood depth','Overstromingsdiepte checken')}</button>`}<button class="cta ghost lab-mini" id="arExp">${T('Als CAD/GIS exportieren','Export as CAD/GIS','Exporteren als CAD/GIS')}</button></div>`;
 }
 
-LAB.addTool({id:'area',order:6,usesSurfaces:true,
+LAB.addTool({id:'area',order:6,grp:'make',usesSurfaces:true,
   icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 7 12 3l8 5-2 11H7Z"/><circle cx="4" cy="7" r="1.6" fill="currentColor"/><circle cx="12" cy="3" r="1.6" fill="currentColor"/><circle cx="20" cy="8" r="1.6" fill="currentColor"/><circle cx="18" cy="19" r="1.6" fill="currentColor"/><circle cx="7" cy="19" r="1.6" fill="currentColor"/></svg>',
   label:()=>T('Fläche','Area','Gebied'),
   sub:()=>T('Gebiet wählen, Steckbrief erhalten','Pick an area, get a profile','Kies een gebied, krijg een profiel'),
@@ -237,7 +237,7 @@ function svg(E,opts){
 }
 function download(name,text,type){const b=new Blob([text],{type}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return b.size;}
 const EXP={bld:true,surf:true,trees:true,shadow:false,last:null};
-LAB.addTool({id:'export',order:7,usesSurfaces:true,
+LAB.addTool({id:'export',order:9,grp:'make',usesSurfaces:true,
   icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg>',
   label:()=>'Export',
   sub:()=>T('CAD- und GIS-Dateien in RD-Metern','CAD and GIS files in RD metres','CAD- en GIS-bestanden in RD-meters'),
