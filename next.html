@@ -928,6 +928,44 @@ body.nx-picking .leaflet-container{cursor:crosshair}
 .gb-f i{height:8px;border-radius:4px;background:#2f6fa8}.gb-f div:nth-child(2) i{background:#e3a800}.gb-f div:nth-child(3) i{background:#d0583c}.gb-f div:nth-child(4) i{background:#7a4ea8}.gb-f b{text-align:right;color:var(--ink)}
 .gb-x{margin-top:12px}
 :root[data-theme="dark"] .gb-mon{color:#ffb4a3}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gb-mon{color:#ffb4a3}}
+/* Regeln und Richtwerte: Normen-Leiter (js/nx-more.js) */
+.nb{display:inline-flex;align-items:center;min-height:20px;padding:1px 7px;border-radius:6px;font:800 0.6875rem var(--sans);letter-spacing:.02em;white-space:nowrap;border:1px solid transparent;vertical-align:middle}
+.nb-pflicht{background:var(--ink);color:var(--paper)}
+.nb-teils{border:1.5px solid var(--ink);color:var(--ink)}
+.nb-ziel{background:var(--soft2);color:var(--ink)}
+.nb-empfehlung{border-color:var(--line2);color:var(--ink2)}
+.nb-faustregel{border:1px dashed var(--mute);color:var(--ink2)}
+.nb-app{border:1px dotted var(--mute);color:var(--ink2)}
+.nb-un{border-color:currentColor;color:var(--warn);margin-left:4px}
+.nxs-mt{margin:0 0 14px}
+.nxn-f{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px}
+.nxn-f button{min-height:40px;padding:0 12px;border:1px solid var(--line2);border-radius:20px;background:var(--card);font:700 0.8125rem var(--sans);color:var(--ink)}
+.nxn-f button small{font-size:0.75rem;color:var(--mute);font-weight:600;margin-left:2px}
+.nxn-f button.on{background:var(--chrome);border-color:var(--chrome);color:#f3efe7}.nxn-f button.on small{color:#cfc9d6}
+.nxs-b h3 .nb{margin-right:6px}.nxs-b h3 .nxn-d{font:500 0.8125rem var(--sans);color:var(--mute)}
+.nxn-i{border:1px solid var(--line2);border-radius:14px;padding:11px 13px;margin-top:8px;background:var(--card)}
+.nxn-i.hl{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent)}
+.nxn-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.nxn-h b{font:700 0.9375rem var(--sans);color:var(--ink);flex:1 1 220px}
+.nxn-z{font:700 0.875rem var(--sans);color:var(--ink);margin-top:6px}
+.nxn-i p{font-size:0.8438rem;line-height:1.5;color:var(--ink2);margin-top:4px}
+.nxn-i .nxn-m{font-size:0.75rem;color:var(--mute)}.nxn-m a{color:var(--ink)}
+.nxl{margin:10px 0 4px;border:1px solid var(--line2);border-radius:16px;background:var(--card)}
+.nxl summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;min-height:48px;padding:12px 14px;cursor:pointer;list-style:none}
+.nxl summary::-webkit-details-marker{display:none}
+.nxl summary::after{content:"";margin-left:auto;align-self:center;width:8px;height:8px;border-right:2px solid var(--ink2);border-bottom:2px solid var(--ink2);transform:rotate(45deg);transition:transform .2s}
+.nxl[open] summary::after{transform:rotate(-135deg)}
+.nxl summary span{font:700 0.9375rem var(--sans);color:var(--ink)}.nxl summary small{font-size:0.75rem;color:var(--mute)}
+.nxl-g{padding:2px 14px 6px}.nxl-g h4{font:700 0.8125rem var(--sans);color:var(--ink);margin:8px 0 4px}.nxl-g h4 b{color:var(--ink2);font-weight:600;margin-left:4px}
+.nxl ul{list-style:none;margin:0;padding:0}
+.nxl li{display:grid;grid-template-columns:auto 1fr auto auto;gap:4px 8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.nxl-t{font-size:0.8125rem;color:var(--ink);min-width:0}.nxl-t small{display:block;font-size:0.75rem;line-height:1.4;color:var(--mute);margin-top:1px}
+.nxl-t .nxl-note{color:var(--ink2);font-weight:700}
+.nxl-n{border:none;background:none;padding:0;font:600 0.8125rem var(--sans);color:var(--ink);text-align:left;text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:3px;min-height:24px}
+.nxl-s{font:700 0.75rem var(--sans);color:var(--ink2);white-space:nowrap}
+.chip2.nv{background:var(--soft);color:var(--ink2);white-space:normal;text-align:center}
+.nxl-x{font-size:0.75rem;color:var(--mute);padding:4px 14px 12px;line-height:1.45}
+.nxl-all{border:none;background:none;padding:0;font:700 0.75rem var(--sans);color:var(--ink);text-decoration:underline;text-underline-offset:2px;min-height:24px}
+@media (max-width:520px){.nxl li{grid-template-columns:1fr auto}.nxl-b{grid-column:1/-1}.nxl-t{grid-column:1/2}.nxl-s{grid-column:2/3;grid-row:2}.nxl li>.chip2{grid-column:1/-1;justify-self:start}}
 /* Tippflächen am Handy: mindestens 44 px — steht bewusst am Ende, damit spätere Grundregeln (z. B. 40 px) sie nicht überschreiben */
 @media (max-width:760px){
   .nxd-tabs button,.lgrp,.nxd-open,.lab-base button,.lab-osm{min-height:44px}
@@ -937,6 +975,7 @@ body.nx-picking .leaflet-container{cursor:crosshair}
   .gl::after{inset:-15px -4px}
   .lab-dock button,.lab-dock select,.lab-dock summary,.lab-dock .ex-ck,.v3d button,.act button,.chip,.glall{min-height:44px}
   .lab-dock input[type="range"],.v3d input[type="range"]{min-height:44px}
+  .nxn-f button,.nxl-n,.nxl-all{min-height:44px}
 }
 </style>
 </head>
@@ -1377,7 +1416,7 @@ function applyLang(){
   document.getElementById('classicTxt').textContent=T('Klassische Ansicht','Classic view','Klassieke weergave');
   const tx=(id,...v)=>{const e=document.getElementById(id);if(e)e.textContent=T(...v);};
   tx('classicSub','Alle 35 Ebenen, auch Frankfurt','All 35 layers, incl. Frankfurt','Alle 35 lagen, ook Frankfurt');
-  tx('methodTxt','Methodik und Quellen','Methodology and sources','Methodiek en bronnen');tx('methodSub','Wie die Noten entstehen','How the grades are made','Hoe de cijfers ontstaan');
+  tx('methodTxt','Methodik und Quellen','Methodology and sources','Methodiek en bronnen');tx('methodSub','Noten, Regeln und Richtwerte','Grades, rules and guidelines','Cijfers, regels en richtwaarden');
   tx('dashTxt','Alle Quartiere','All neighbourhoods','Alle buurten');tx('dashSub','Tabelle, Ranglisten, Vergleich','Table, rankings, compare','Tabel, ranglijsten, vergelijken');
   tx('cmdTxt','Suchen und Befehle','Search and commands','Zoeken en opdrachten');tx('cmdSub','Quartier, Werkzeug, Seite','Neighbourhood, tool, page','Buurt, tool, pagina');
   tx('nowTxt','Utrecht jetzt','Utrecht now','Utrecht nu');tx('nowSub','Wetter, Regen, Luft — live','Weather, rain, air — live','Weer, regen, lucht — live');

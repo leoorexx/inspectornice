@@ -1,11 +1,18 @@
 {
  "meta": {
-  "stand": "2026-10-16",
+  "stand": "2026-10-17",
   "stadt": "utr",
   "hinweis": {
    "de": "Rahmen, Förderungen, Kosten und Plandaten für Utrecht, Stand 16.10.2026. Jede Angabe mit Quelle; „geprueft: false“ heißt: nicht am Originaldokument bestätigt. Keine Rechtsberatung. Kosten sind Spannen aus niederländischen Quellen (verschiedene Jahre), keine Utrechter Einheitspreise.",
    "en": "Frameworks, funding, costs and plan data for Utrecht as of 16 Oct 2026. Every item has a source; 'geprueft: false' means not confirmed in the original document. Not legal advice. Costs are Dutch ranges (various years), not Utrecht unit rates.",
    "nl": "Kaders, subsidies, kosten en plandata voor Utrecht, stand 16-10-2026. Elke vermelding met bron; 'geprueft: false' betekent: niet in het originele document bevestigd. Geen juridisch advies. Kosten zijn Nederlandse bandbreedtes (verschillende jaren), geen Utrechtse eenheidsprijzen."
+  },
+  "stufen": {
+   "pflicht": {"de": "Pflicht: Gesetz oder Verordnung", "en": "Mandatory: law or regulation", "nl": "Verplicht: wet of verordening"},
+   "teils": {"de": "Teils Pflicht: bindet nur bestimmte Fälle (z. B. Neubau) oder nur die Behörde", "en": "Partly binding: only certain cases (e.g. new builds) or only the authority", "nl": "Deels verplicht: alleen bepaalde gevallen (bijv. nieuwbouw) of alleen de overheid"},
+   "ziel": {"de": "Ziel: politisches Ziel oder nationale Richtlinie, kein Gesetz", "en": "Target: policy goal or national guideline, not law", "nl": "Doel: beleidsdoel of landelijke richtlijn, geen wet"},
+   "empfehlung": {"de": "Empfehlung: Gesundheits- oder Fachorganisation (z. B. WHO)", "en": "Recommendation: health or expert body (e.g. WHO)", "nl": "Advies: gezondheids- of vakorganisatie (bijv. WHO)"},
+   "faustregel": {"de": "Faustregel: verbreitete Daumenregel ohne Beschluss", "en": "Rule of thumb: widely used, not adopted", "nl": "Vuistregel: veelgebruikt, niet vastgesteld"}
   }
  },
  "normen": [
@@ -23,7 +30,8 @@
    "zahl": "bis 01.01.2032",
    "quelle": "https://www.binnenlandsbestuur.nl/bestuur-en-organisatie/kokxdevoogd/hoe-ga-je-soepel-om-met-bruidsschat-en-bkl-in-omgevingsplan",
    "stand": "2026-10",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "pflicht"
   },
   {
    "id": "bbl_tojuli",
@@ -39,7 +47,14 @@
    "zahl": "TOjuli ≤ 1,2",
    "quelle": "https://iplo.nl/regelgeving/regels-voor-activiteiten/technische-bouwactiviteit/nieuwbouw/rijksregels/oververhitting-woningen/",
    "stand": "2026-10",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "pflicht",
+   "bezug": [
+    {
+     "r": "hitze",
+     "nv": {"de": "gilt für die Innenräume neuer Wohnungen", "en": "applies indoors in new homes", "nl": "geldt binnen in nieuwe woningen"}
+    }
+   ]
   },
   {
    "id": "maatlat_hitze",
@@ -55,7 +70,24 @@
    "zahl": "40 % Schatten · 300 m",
    "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
    "stand": "2025-04",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "ziel",
+   "bezug": [
+    {
+     "r": "schatten",
+     "op": ">=",
+     "wert": 30,
+     "gilt": {"de": "ganzes Viertel", "en": "whole neighbourhood", "nl": "hele wijk"}
+    },
+    {
+     "r": "schatten",
+     "nv": {
+      "de": "40 % auf wichtigen Fuß- und Radwegen — unsere Zahl mittelt alle Wege; einzelne Routen im Straßenlabor prüfen",
+      "en": "40 % on key walking and cycling routes — our figure averages all paths; check single routes in the street lab",
+      "nl": "40 % op belangrijke loop- en fietsroutes — ons getal middelt alle paden; losse routes in het straatlab bekijken"
+     }
+    }
+   ]
   },
   {
    "id": "maatlat_wasser",
@@ -71,7 +103,14 @@
    "zahl": "70 mm in 1 Stunde",
    "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
    "stand": "2025-04",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "ziel",
+   "bezug": [
+    {
+     "r": "wasser",
+     "nv": {"de": "betrifft Starkregen am Gebäude, nicht Überflutung durch Deichbruch", "en": "concerns heavy rain at the building, not flooding from a dike breach", "nl": "gaat over wateroverlast bij het gebouw, niet over een dijkdoorbraak"}
+    }
+   ]
   },
   {
    "id": "maatlat_gruen",
@@ -87,7 +126,14 @@
    "zahl": "Grünnorm je Viertel (lokal festzulegen)",
    "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
    "stand": "2023-02",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "ziel",
+   "bezug": [
+    {
+     "r": "gruen",
+     "nv": {"de": "nennt keine feste Zahl", "en": "gives no fixed number", "nl": "noemt geen vast getal"}
+    }
+   ]
   },
   {
    "id": "dpra",
@@ -103,7 +149,14 @@
    "zahl": "klimafest bis 2050",
    "quelle": "https://vng.nl/artikelen/deltaplan-ruimtelijke-adaptatie",
    "stand": "2025-05",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "teils",
+   "bezug": [
+    {
+     "r": "wasser",
+     "nv": {"de": "ein Verfahren (Stresstest, Risikodialog), keine Zahl", "en": "a process (stress test, risk dialogue), not a number", "nl": "een proces (stresstest, risicodialoog), geen getal"}
+    }
+   ]
   },
   {
    "id": "hemelwater",
@@ -119,7 +172,8 @@
    "zahl": "Eigentümer zuerst",
    "quelle": "https://iplo.nl/thema/water/stedelijk-afvalwater/stedelijk-waterbeheer/hemelwatertaak-gemeente/",
    "stand": "2026-10",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "pflicht"
   },
   {
    "id": "nhv_art8",
@@ -135,7 +189,18 @@
    "zahl": "kein Netto-Verlust bis 2030",
    "quelle": "https://www.pbl.nl/publicaties/stedelijke-ecosystemen-en-nulmeting-groen",
    "stand": "2026-08",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "pflicht",
+   "bezug": [
+    {
+     "r": "gruen",
+     "nv": {
+      "de": "prüft den Verlauf (kein Verlust an Kronendach gegenüber 2024) — mit einem einzelnen Jahreswert nicht prüfbar",
+      "en": "checks the trend (no loss of canopy compared with 2024) — cannot be checked with a single year",
+      "nl": "toetst het verloop (geen verlies aan kronendak t.o.v. 2024) — niet te toetsen met één jaarwaarde"
+     }
+    }
+   ]
   },
   {
    "id": "regel_33300",
@@ -151,7 +216,11 @@
    "zahl": "3 · 30 % · 300 m",
    "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
    "stand": "2023-02",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "faustregel",
+   "bezug": [
+    {"r": "gruen", "op": ">=", "wert": 30}
+   ]
   },
   {
    "id": "utr_hitte",
@@ -167,7 +236,24 @@
    "zahl": "5 °C · 40 % · 200 m",
    "quelle": "https://www.utrecht.nl/wonen-en-leven/duurzame-stad/groen-en-water/hitte",
    "stand": "2026-10",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "ziel",
+   "bezug": [
+    {
+     "r": "schatten",
+     "op": ">=",
+     "wert": 30,
+     "gilt": {"de": "außerhalb der wichtigsten Wege; dort 40 %", "en": "outside the most important paths; 40 % on those", "nl": "buiten de belangrijkste routes; daar 40 %"}
+    },
+    {
+     "r": "hitze",
+     "nv": {
+      "de": "„höchstens 5 °C wärmer anfühlen\" meint die gefühlte Temperatur an einem heißen Tag, unsere Zahl die Lufttemperatur im Sommermittel",
+      "en": "\"at most 5 °C warmer in feel\" refers to felt temperature on a hot day; our figure is average summer air temperature",
+      "nl": "„maximaal 5 °C warmer aanvoelen\" gaat over de gevoelstemperatuur op een hete dag, ons getal over de gemiddelde zomerse luchttemperatuur"
+     }
+    }
+   ]
   },
   {
    "id": "utr_bomen",
@@ -175,15 +261,16 @@
    "ebene": "Gemeente",
    "verbindlich": "ja",
    "kern": {
-    "de": "Wer einen Baum mit Nachpflanzpflicht fällt, pflanzt gleichwertig nach: 1 großer Baum = 1 großer oder 2 mittlere. Stammumfang mindestens 16–18 cm, in der Hauptstruktur 20–25 cm, ökologisch wertvolle Arten. Fassung 2023 geprüft; seit 01.02.2025 gilt eine neue Fassung (nicht erneut geprüft). Evaluation der Baumpolitik für 2027 angekündigt.",
-    "en": "Whoever fells a tree with a replanting duty replants equal value: 1 large tree = 1 large or 2 medium. Minimum girth 16–18 cm, 20–25 cm in the main structure, ecologically valuable species. 2023 version checked; a new version applies since 1 Feb 2025 (not re-checked). Tree policy evaluation announced for 2027.",
-    "nl": "Wie een boom met herplantplicht kapt, plant gelijkwaardig terug: 1 boom 1e grootte = 1 boom 1e grootte of 2 van 2e grootte. Stamomtrek minimaal 16–18 cm, in de hoofdstructuur 20–25 cm, ecologisch waardevolle soorten. Versie 2023 gecontroleerd; sinds 1-2-2025 geldt een nieuwe versie (niet opnieuw gecontroleerd). Evaluatie bomenbeleid aangekondigd voor 2027."
+    "de": "Wer einen Baum mit Nachpflanzpflicht fällt, pflanzt gleichwertig nach: 1 großer Baum = 1 großer oder 2 mittlere. Stammumfang mindestens 16–18 cm, in der Hauptstruktur 20–25 cm, ökologisch wertvolle Arten. Fassung 2023 geprüft; seit 01.02.2025 gilt eine neue Fassung (nicht erneut geprüft). Evaluation der Baumpolitik für 2027 angekündigt. Die Fassung ab 01.02.2025 stellt laut Fachpresse die ökologische Eignung in den Mittelpunkt; ihr Text ist nicht am Original geprüft.",
+    "en": "Whoever fells a tree with a replanting duty replants equal value: 1 large tree = 1 large or 2 medium. Minimum girth 16–18 cm, 20–25 cm in the main structure, ecologically valuable species. 2023 version checked; a new version applies since 1 Feb 2025 (not re-checked). Tree policy evaluation announced for 2027. According to trade press the version from 1 Feb 2025 centres on ecological suitability; its text has not been checked against the original.",
+    "nl": "Wie een boom met herplantplicht kapt, plant gelijkwaardig terug: 1 boom 1e grootte = 1 boom 1e grootte of 2 van 2e grootte. Stamomtrek minimaal 16–18 cm, in de hoofdstructuur 20–25 cm, ecologisch waardevolle soorten. Versie 2023 gecontroleerd; sinds 1-2-2025 geldt een nieuwe versie (niet opnieuw gecontroleerd). Evaluatie bomenbeleid aangekondigd voor 2027. Volgens de vakpers staat in de versie vanaf 01-02-2025 ecologische geschiktheid centraal; die tekst is niet aan het origineel getoetst."
    },
    "themen": ["gruen", "bio"],
    "zahl": "1 groß = 2 mittel",
    "quelle": "https://lokaleregelgeving.overheid.nl/CVDR698023/1",
    "stand": "2025-02",
-   "geprueft": false
+   "geprueft": false,
+   "stufe": "pflicht"
   },
   {
    "id": "utr_geveltuin",
@@ -199,7 +286,8 @@
    "zahl": "60 cm tief · 1,20 m frei",
    "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin",
    "stand": "2026-10",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "pflicht"
   },
   {
    "id": "utr_parkeren",
@@ -215,23 +303,25 @@
    "zahl": "Min.- und Max.-Normen je Lage",
    "quelle": "https://lokaleregelgeving.overheid.nl/CVDR668780",
    "stand": "2025-04",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "pflicht"
   },
   {
    "id": "utr_mobiliteitsplan",
-   "titel": {"de": "Utrecht: Mobilitätsplan 2040 – Straßenparkplätze abbauen", "en": "Utrecht: Mobility Plan 2040 – reducing on-street parking", "nl": "Utrecht: Mobiliteitsplan 2040 – straatparkeren afbouwen"},
+   "titel": {"de": "Utrecht: Parkeervisie – öffentliche Parkplätze abbauen", "en": "Utrecht: parking vision – reducing public parking", "nl": "Utrecht: parkeervisie – openbare parkeerplaatsen afbouwen"},
    "ebene": "Gemeente",
    "verbindlich": "nein",
    "kern": {
-    "de": "Laut einer Zusammenfassung wird jedes Jahr im Schnitt 0,5–1 % der Straßenparkplätze für bessere öffentliche Räume aufgehoben: über Bürgerinitiativen, Umbauprojekte und abgegebene Parkausweise. Originaltext nicht geprüft.",
-    "en": "According to a summary, on average 0.5–1 % of on-street parking is removed each year to improve public space: via resident initiatives, redesign projects and returned permits. Original text not checked.",
-    "nl": "Volgens een samenvatting wordt jaarlijks gemiddeld 0,5–1 % van de straatparkeercapaciteit opgeheven voor betere openbare ruimte: via initiatieven, herinrichtingen en ingeleverde vergunningen. Originele tekst niet gecontroleerd."
+    "de": "Die Gemeente will öffentliche Parkplätze um 0,5–1 % pro Jahr verringern, etwa 750–1.500 Plätze (rechnerisch also rund 150.000 Plätze insgesamt). Frei werdender Raum geht an Gehen, Rad, Grün, Spielen und Verweilen; Anwohner:innen dürfen Vorschläge für ihre Straße machen. Vorschlag vom 18.11.2021 zur Parkeervisie (vom Rat am 25.11.2021 beschlossen); 2023 nannte die Gemeente beim Wilhelminapark „1 % pro Jahr\" als geltende Politik. Bindet die Gemeente, nicht den Autobesitz.",
+    "en": "The municipality wants to reduce public parking by 0.5–1 % per year, about 750–1,500 spaces (which implies roughly 150,000 spaces in total). Freed space goes to walking, cycling, green, play and lingering; residents may propose uses for their street. Proposal of 18 Nov 2021 for the parking vision (adopted by the council on 25 Nov 2021); in 2023 the municipality cited \"1 % per year\" as current policy at Wilhelminapark. Binds the municipality, not car ownership.",
+    "nl": "De gemeente wil het aantal openbare parkeerplaatsen met 0,5–1 % per jaar verminderen, zo'n 750–1.500 plaatsen (rekenkundig dus ongeveer 150.000 plaatsen in totaal). Vrijgekomen ruimte gaat naar lopen, fietsen, groen, spelen en verblijven; bewoners mogen voorstellen doen voor hun straat. Voorstel van 18-11-2021 bij de parkeervisie (door de raad vastgesteld op 25-11-2021); in 2023 noemde de gemeente bij het Wilhelminapark „1 % per jaar\" als geldend beleid. Bindt de gemeente, niet het autobezit."
    },
    "themen": ["mobilitaet", "gruen"],
-   "zahl": "0,5–1 % Parkplätze pro Jahr",
-   "quelle": "https://bestuur.gooisemeren.nl/fileadmin/user_upload/221121_PLEK_Beantwoording_schriftelijke_vragen_-_Parkeerbeleid.pdf",
-   "stand": "2022-11",
-   "geprueft": false
+   "zahl": "0,5–1 % / Jahr · ≈ 750–1.500 Plätze",
+   "quelle": "https://www.utrecht.nl/nieuws/nieuwsarchief/nieuwsbericht-gemeente-utrecht/utrecht-wil-jaarlijks-1-procent-parkeerplaatsen-opheffen",
+   "stand": "2021-11",
+   "geprueft": true,
+   "stufe": "ziel"
   },
   {
    "id": "eu_laerm",
@@ -247,7 +337,8 @@
    "zahl": "Karten 2027 · Pläne 2029",
    "quelle": "https://iplo.nl/thema/geluid/monitoring-toezicht/regels-kaart-actieplan/europese-richtlijn-omgevingslawaai/",
    "stand": "2026-10",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "pflicht"
   },
   {
    "id": "utr_geluid",
@@ -263,7 +354,20 @@
    "zahl": "63 dB · ≈ 8.400 Wohnungen",
    "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1",
    "stand": "2026-06",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "teils",
+   "bezug": [
+    {
+     "r": "laerm",
+     "op": "<=",
+     "wert": 63,
+     "gilt": {
+      "de": "Planschwelle der Gemeente an Gemeindestraßen (68 dB an Verbindungsstraßen); bindet die Gemeente, nicht die Anwohner:innen",
+      "en": "municipal planning threshold on local roads (68 dB on connecting roads); binds the municipality, not residents",
+      "nl": "plandrempel van de gemeente op gemeentewegen (68 dB op verbindingswegen); bindt de gemeente, niet de bewoners"
+     }
+    }
+   ]
   },
   {
    "id": "who_laerm",
@@ -279,7 +383,11 @@
    "zahl": "53 dB Lden",
    "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1",
    "stand": "2026-06",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "empfehlung",
+   "bezug": [
+    {"r": "laerm", "op": "<=", "wert": 53}
+   ]
   },
   {
    "id": "eu_luft",
@@ -295,7 +403,8 @@
    "zahl": "NO₂ 20 · PM2,5 10 µg/m³ (2030)",
    "quelle": "https://iplo.nl/thema/lucht/implementatie-europese-richtlijn-luchtkwaliteit/herziening-europese-richtlijn-luchtkwaliteit/",
    "stand": "2026-10",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "pflicht"
   },
   {
    "id": "who_luft",
@@ -311,7 +420,8 @@
    "zahl": "PM2,5 5 · NO₂ 10 µg/m³",
    "quelle": "https://www.who.int/publications/i/item/9789240034228",
    "stand": "2021-09",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "empfehlung"
   },
   {
    "id": "utr_luft",
@@ -327,7 +437,8 @@
    "zahl": "−50 % Gesundheitsschaden bis 2030",
    "quelle": "https://gemeenteraad.groningen.nl/Vergaderingen/Politieke-woensdag-Dag-agenda/2025/10-september/09:00/Houtrook-i-c-m-luchtkwaliteit/Presentatie-Luchtkwaliteitsbeleid-gemeente-Utrecht-Gemeenteraad-Groningen-1.pdf",
    "stand": "2025-09",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "ziel"
   },
   {
    "id": "stedin_afstand",
@@ -343,7 +454,8 @@
    "zahl": "2,5 m",
    "quelle": "https://www.stedin.net/-/media/project/online/files/aansluiting/stedin-richtlijnen-kabels-en-leidingen.pdf",
    "stand": "2016-08",
-   "geprueft": true
+   "geprueft": true,
+   "stufe": "teils"
   },
   {
    "id": "prov_nnn",
@@ -359,6 +471,127 @@
    "zahl": "390 Flächen (Provinz)",
    "quelle": "https://data.overheid.nl/dataset/83254-natuurnetwerk-nederland",
    "stand": "2025-09",
+   "geprueft": false,
+   "stufe": "pflicht"
+  },
+  {
+   "id": "bkl_laerm",
+   "titel": {"de": "Omgevingswet (Bkl): Standardwert Straßenlärm", "en": "Environment and Planning Act (Bkl): road noise standard value", "nl": "Omgevingswet (Bkl): standaardwaarde wegverkeerslawaai"},
+   "ebene": "Rijk",
+   "verbindlich": "teilweise",
+   "stufe": "teils",
+   "kern": {
+    "de": "53 dB Lden ist der Standardwert für Gemeindestraßen. Er gilt nur bei neuen Entwicklungen (neue Wohnungen an einer Straße, neue oder geänderte Straßen), nicht für bestehende Situationen. Darüber ist kein Verbot, sondern eine begründete Abwägung nötig.",
+    "en": "53 dB Lden is the standard value for municipal roads. It applies only to new developments (new homes along a road, new or altered roads), not to existing situations. Above it there is no ban, but a reasoned trade-off is required.",
+    "nl": "53 dB Lden is de standaardwaarde voor gemeentewegen. Die geldt alleen bij nieuwe ontwikkelingen (nieuwe woningen langs een weg, nieuwe of gewijzigde wegen), niet voor bestaande situaties. Daarboven geldt geen verbod, wel een onderbouwde afweging."
+   },
+   "themen": ["laerm"],
+   "zahl": "53 dB Lden (Neubau)",
+   "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1",
+   "stand": "2026-06",
+   "geprueft": true,
+   "bezug": [
+    {
+     "r": "laerm",
+     "op": "<=",
+     "wert": 53,
+     "gilt": {"de": "nur für neue Wohnungen und neue oder geänderte Straßen, nicht für den Bestand", "en": "only for new homes and new or altered roads, not for existing situations", "nl": "alleen voor nieuwe woningen en nieuwe of gewijzigde wegen, niet voor bestaande situaties"}
+    }
+   ]
+  },
+  {
+   "id": "waterwet_basis",
+   "titel": {"de": "Basisschutz vor Überflutung (Wasserschutz-Normen)", "en": "Basic flood protection (flood defence standards)", "nl": "Basisbeschermingsniveau overstromingen"},
+   "ebene": "Rijk",
+   "verbindlich": "ja",
+   "stufe": "pflicht",
+   "kern": {
+    "de": "Seit 2017 gesetzlich: Für jede Person hinter einem Primärdeich darf das Risiko, durch eine Überflutung zu sterben, höchstens 1 zu 100.000 pro Jahr betragen; wo viele Menschen leben oder viel auf dem Spiel steht, strenger. Die Deiche werden danach bemessen. Laut Normierungsbericht (2016) sollen alle Deiche bis 2050 die Normen erfüllen — ein Planungsziel, kein gesetzliches Enddatum.",
+    "en": "Law since 2017: for every person behind a primary flood defence the risk of dying in a flood may be at most 1 in 100,000 per year; stricter where many people live or much is at stake. Dikes are dimensioned accordingly. According to the 2016 standards report all dikes should meet the standards by 2050 — a planning target, not a statutory deadline.",
+    "nl": "Sinds 2017 wettelijk: voor iedereen achter een primaire waterkering mag de kans om door een overstroming te overlijden maximaal 1 op 100.000 per jaar zijn; strenger waar veel mensen wonen of veel op het spel staat. De dijken worden daarop gedimensioneerd. Volgens het normeringsrapport (2016) moeten alle dijken in 2050 aan de normen voldoen — een streefdatum, geen wettelijke einddatum."
+   },
+   "themen": ["wasser"],
+   "zahl": "1 : 100.000 / Jahr",
+   "quelle": "https://zoek.officielebekendmakingen.nl/kst-34436-2.pdf",
+   "stand": "2017-01",
+   "geprueft": true,
+   "bezug": [
+    {
+     "r": "wasser",
+     "nv": {
+      "de": "misst das Sterberisiko je Person, nicht die Wassertiefe — die Deiche werden danach bemessen; das Profil zeigt die Wassertiefe nach Deichbruch",
+      "en": "measures the risk of death per person, not water depth — dikes are dimensioned by it; the profile shows water depth after a breach",
+      "nl": "meet de overlijdenskans per persoon, niet de waterdiepte — dijken worden erop gedimensioneerd; het profiel toont de waterdiepte na een doorbraak"
+     }
+    }
+   ]
+  },
+  {
+   "id": "who_gruen",
+   "titel": {"de": "WHO-Empfehlung: Grün in 300 m", "en": "WHO recommendation: green within 300 m", "nl": "WHO-advies: groen binnen 300 m"},
+   "ebene": "Richtwert",
+   "verbindlich": "nein",
+   "stufe": "empfehlung",
+   "kern": {
+    "de": "Jede Wohnung soll eine Grünfläche von mindestens 0,5 ha in höchstens 300 m Luftlinie haben (etwa 5 Minuten zu Fuß). So zitiert u. a. ISGlobal (Lancet Planetary Health 2021) den WHO-Europa-Bericht von 2016; die Stelle im WHO-Original haben wir nicht geprüft.",
+    "en": "Every home should have a green space of at least 0.5 ha within 300 m straight-line distance (about 5 minutes on foot). Cited this way by ISGlobal (Lancet Planetary Health 2021) from the 2016 WHO Europe report; we have not checked the passage in the WHO original.",
+    "nl": "Elke woning hoort binnen 300 m hemelsbreed een groengebied van minstens 0,5 ha te hebben (ongeveer 5 minuten lopen). Zo citeert o.a. ISGlobal (Lancet Planetary Health 2021) het WHO-Europa-rapport van 2016; de passage in het WHO-origineel hebben we niet gecontroleerd."
+   },
+   "themen": ["gruen"],
+   "zahl": "0,5 ha in 300 m",
+   "quelle": "https://www.who.int/europe/publications/i/item/who-euro-2016-3352-43111-60341",
+   "stand": "2016",
+   "geprueft": false
+  },
+  {
+   "id": "utr_zes",
+   "titel": {"de": "Utrecht: Umweltzone und Null-Emissions-Zone", "en": "Utrecht: low-emission and zero-emission zone", "nl": "Utrecht: milieuzone en zero-emissiezone"},
+   "ebene": "Gemeente",
+   "verbindlich": "ja",
+   "stufe": "pflicht",
+   "kern": {
+    "de": "Seit 01.01.2025 im Zentrum: Diesel-Pkw nur ab Abgasklasse 5. Im selben Gebiet gilt eine Null-Emissions-Zone für Lieferwagen und Lkw: ab 2025 neu zugelassene nur emissionsfrei; nach der landesweiten Übergangsregel alle Lieferwagen ab 2028, Lkw ab 2030. Ausnahmen und Befreiungen möglich.",
+    "en": "Since 1 Jan 2025 in the centre: diesel cars only from emission class 5. In the same area a zero-emission zone applies to vans and trucks: newly registered ones from 2025 must be emission-free; under the national transition rule all vans from 2028, trucks from 2030. Exemptions possible.",
+    "nl": "Sinds 01-01-2025 in het centrum: dieselpersonenauto's alleen vanaf emissieklasse 5. In hetzelfde gebied geldt een zero-emissiezone voor bestel- en vrachtauto's: vanaf 2025 nieuw op kenteken alleen emissievrij; volgens de landelijke overgangsregeling alle bestelauto's vanaf 2028, vrachtauto's vanaf 2030. Vrijstellingen en ontheffingen mogelijk."
+   },
+   "themen": ["mobilitaet", "luft"],
+   "zahl": "Diesel ≥ Klasse 5 · ZE 2025/28/30",
+   "quelle": "https://www.utrecht.nl/nieuws/nieuwsarchief/nieuwsbericht-gemeente-utrecht/utrecht-verscherpt-milieuzone-en-voert-zero-emissiezone-in-voor-schonere-lucht-2",
+   "stand": "2025-01",
+   "geprueft": true
+  },
+  {
+   "id": "utr_10min",
+   "titel": {"de": "Utrecht: Zehn-Minuten-Stadt (Ruimtelijke Strategie 2040)", "en": "Utrecht: ten-minute city (Spatial Strategy 2040)", "nl": "Utrecht: tienminutenstad (Ruimtelijke Strategie 2040)"},
+   "ebene": "Gemeente",
+   "verbindlich": "nein",
+   "stufe": "ziel",
+   "kern": {
+    "de": "Leitbild bis 2040: öffentlicher Verkehr, Grün, Sport, Bildung und Kultur sollen von Wohnung oder Arbeit „binnen 10 Minuten\" erreichbar sein, mit vier neuen Stadtzentren. Rund 455.000 Einwohner:innen 2040 erwartet. Visiondokument, vom Rat im Juli 2021 beschlossen; ob zu Fuß oder mit dem Rad gemeint ist, sagt die Zusammenfassung nicht.",
+    "en": "Vision to 2040: public transport, green, sport, education and culture within \"10 minutes\" of home or work, with four new city centres. About 455,000 residents expected in 2040. Vision document adopted by the council in July 2021; the summary does not say whether walking or cycling is meant.",
+    "nl": "Visie tot 2040: ov, groen, sport, onderwijs en cultuur „binnen 10 minuten\" bereikbaar vanaf woon- of werkplek, met vier nieuwe stadscentra. Ongeveer 455.000 inwoners verwacht in 2040. Visiedocument, in juli 2021 door de raad vastgesteld; of lopen of fietsen bedoeld is, zegt de samenvatting niet."
+   },
+   "themen": ["mobilitaet", "gruen"],
+   "zahl": "10 Minuten",
+   "quelle": "https://www.utrecht.nl/nieuws/nieuwsarchief/nieuwsbericht-gemeente-utrecht/ruimtelijke-strategie-utrecht-2040-aangeboden-aan-gemeenteraad",
+   "stand": "2021-07",
+   "geprueft": true
+  },
+  {
+   "id": "eu_taxonomie",
+   "titel": {"de": "EU-Taxonomie: Klimarisiko-Prüfung für Gebäude", "en": "EU Taxonomy: climate risk assessment for buildings", "nl": "EU-taxonomie: klimaatrisicobeoordeling voor gebouwen"},
+   "ebene": "EU",
+   "verbindlich": "teilweise",
+   "stufe": "teils",
+   "kern": {
+    "de": "Wer Kauf oder Besitz eines Gebäudes als „nachhaltig\" im Sinne der EU-Taxonomie ausweisen will (Tätigkeit 7.7), braucht eine Klimarisiko- und Verwundbarkeitsprüfung (Anhang I, Anlage A der Verordnung 2021/2139): bei mehr als 10 Jahren Lebensdauer mit den besten verfügbaren Klimaprojektionen über mehrere Szenarien, dazu Anpassungsmaßnahmen gegen die wesentlichen Risiken. Pflicht nur für diese Angaben, nicht für jedes Gebäude. Laut Fachzusammenfassungen; der Verordnungstext ist nicht am Original geprüft.",
+    "en": "Anyone who wants to report buying or owning a building as \"sustainable\" under the EU Taxonomy (activity 7.7) needs a climate risk and vulnerability assessment (Annex I, Appendix A of Regulation 2021/2139): for lifespans over 10 years using the best available climate projections across several scenarios, plus adaptation measures against the material risks. Mandatory only for such claims, not for every building. Based on expert summaries; the regulation text has not been checked against the original.",
+    "nl": "Wie de aankoop of het bezit van een gebouw als „duurzaam\" volgens de EU-taxonomie wil rapporteren (activiteit 7.7), heeft een klimaatrisico- en kwetsbaarheidsbeoordeling nodig (bijlage I, aanhangsel A van verordening 2021/2139): bij meer dan 10 jaar levensduur met de best beschikbare klimaatprojecties over meerdere scenario's, plus aanpassingsmaatregelen tegen de materiële risico's. Alleen verplicht voor zulke claims, niet voor elk gebouw. Op basis van vaksamenvattingen; de verordeningstekst is niet aan het origineel getoetst."
+   },
+   "themen": ["immobilien", "wasser", "hitze"],
+   "zahl": "Anlage A · > 10 Jahre",
+   "quelle": "https://eur-lex.europa.eu/eli/reg_del/2021/2139/oj",
+   "stand": "2021-12",
    "geprueft": false
   }
  ],
@@ -621,19 +854,71 @@
    "normen": ["maatlat_hitze", "utr_hitte", "nhv_art8", "regel_33300", "utr_bomen", "stedin_afstand", "utr_mobiliteitsplan"],
    "foerder": ["utr_initiatievenfonds", "prov_groene_steden", "prov_ggm", "eu_horizon_cca"],
    "anreize": [
-    {"de": "Schatten wirkt am stärksten: Auf einem Parkplatz in der Sonne fühlt es sich 10–15 °C heißer an als im Schatten eines Baums.", "en": "Shade works best: a car park in the sun feels 10–15 °C hotter than the shade of a tree.", "nl": "Schaduw werkt het best: op een parkeerplaats in de zon is de gevoelstemperatuur 10–15 °C hoger dan in de schaduw van een boom.", "quelle": "https://klimaatadaptatienederland.nl/kennisdossiers/hitte/gevolgen/gebied", "geprueft": true},
-    {"de": "Mitbauen spart: Die Gemeente plant je Straße, wann sie Fahrbahn oder Kanal erneuert (MJIP); dann ist die Straße ohnehin offen.", "en": "Building along saves money: the city plans per street when it renews the road or sewer (MJIP); the street is open anyway.", "nl": "Meekoppelen bespaart: de gemeente plant per straat wanneer rijbaan of riool vernieuwd wordt (MJIP); de straat ligt dan toch open.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer", "geprueft": true},
-    {"de": "Utrecht plant rund 32 Mio. € bis 2030 für Begrünungsprojekte in der ganzen Stadt.", "en": "Utrecht plans about €32 million for greening projects across the city until 2030.", "nl": "Utrecht trekt tot 2030 circa € 32 mln uit voor vergroeningsprojecten in de hele stad.", "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-", "geprueft": true},
-    {"de": "Bäume und Hauspreise: Das PBL (2023) findet je nach Ort sehr unterschiedliche Effekte; einen festen Prozentwert gibt es nicht (Zahlen nicht geprüft).", "en": "Trees and house prices: PBL (2023) finds very different effects depending on location; there is no single percentage (figures not checked).", "nl": "Bomen en woningprijzen: het PBL (2023) vindt per locatie sterk verschillende effecten; één vast percentage is er niet (cijfers niet gecontroleerd).", "quelle": "https://pbl.nl/downloads/pbl-2023-bomen-en-woningprijzen-5083pdf", "geprueft": false}
+    {
+     "de": "Schatten wirkt am stärksten: Auf einem Parkplatz in der Sonne fühlt es sich 10–15 °C heißer an als im Schatten eines Baums.",
+     "en": "Shade works best: a car park in the sun feels 10–15 °C hotter than the shade of a tree.",
+     "nl": "Schaduw werkt het best: op een parkeerplaats in de zon is de gevoelstemperatuur 10–15 °C hoger dan in de schaduw van een boom.",
+     "quelle": "https://klimaatadaptatienederland.nl/kennisdossiers/hitte/gevolgen/gebied",
+     "geprueft": true
+    },
+    {
+     "de": "Mitbauen spart: Die Gemeente plant je Straße, wann sie Fahrbahn oder Kanal erneuert (MJIP); dann ist die Straße ohnehin offen.",
+     "en": "Building along saves money: the city plans per street when it renews the road or sewer (MJIP); the street is open anyway.",
+     "nl": "Meekoppelen bespaart: de gemeente plant per straat wanneer rijbaan of riool vernieuwd wordt (MJIP); de straat ligt dan toch open.",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer",
+     "geprueft": true
+    },
+    {
+     "de": "Utrecht plant rund 32 Mio. € bis 2030 für Begrünungsprojekte in der ganzen Stadt.",
+     "en": "Utrecht plans about €32 million for greening projects across the city until 2030.",
+     "nl": "Utrecht trekt tot 2030 circa € 32 mln uit voor vergroeningsprojecten in de hele stad.",
+     "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-",
+     "geprueft": true
+    },
+    {
+     "de": "Bäume und Hauspreise: Das PBL (2023) findet je nach Ort sehr unterschiedliche Effekte; einen festen Prozentwert gibt es nicht (Zahlen nicht geprüft).",
+     "en": "Trees and house prices: PBL (2023) finds very different effects depending on location; there is no single percentage (figures not checked).",
+     "nl": "Bomen en woningprijzen: het PBL (2023) vindt per locatie sterk verschillende effecten; één vast percentage is er niet (cijfers niet gecontroleerd).",
+     "quelle": "https://pbl.nl/downloads/pbl-2023-bomen-en-woningprijzen-5083pdf",
+     "geprueft": false
+    }
    ],
    "hemmnisse": [
-    {"de": "Kabel und Leitungen: Stedin verlangt 2,5 m von der Baummitte bis zur Leitungstrasse.", "en": "Cables and pipes: Stedin requires 2.5 m from the tree centre to the cable route.", "nl": "Kabels en leidingen: Stedin hanteert 2,5 m van hart boom tot het leidingentracé.", "quelle": "https://www.stedin.net/-/media/project/online/files/aansluiting/stedin-richtlijnen-kabels-en-leidingen.pdf", "geprueft": true},
-    {"de": "Der Untergrund wird voller: Utrecht erwartet in den nächsten 15 Jahren rund 1.000 zusätzliche Trafohäuschen.", "en": "The subsurface is filling up: Utrecht expects about 1,000 extra substations over the next 15 years.", "nl": "De ondergrond raakt voller: Utrecht verwacht de komende 15 jaar zo'n 1.000 extra elektriciteitshuisjes.", "quelle": "https://www.utrecht.nl/nieuws/nieuwsbericht-gemeente-utrecht/winnaars-ontwerpwedstrijd-elektriciteitshuisjes-bekend", "geprueft": true},
-    {"de": "Parkplätze sind umstritten: In der Reggestraat wären 12 Bäume möglich gewesen, gepflanzt wurden 4 ohne Parkplatzverlust.", "en": "Parking is contested: on Reggestraat 12 trees would have been possible; 4 were planted without losing parking.", "nl": "Parkeren ligt gevoelig: in de Reggestraat konden 12 bomen, er zijn er 4 geplant zonder parkeerverlies.", "quelle": "https://utrecht.bestuurlijkeinformatie.nl/Document/View/d6e30c9f-adfa-4f20-9f1b-1c4f31cbb418", "geprueft": true},
-    {"de": "Pflege: Junge Bäume brauchen 2 Jahre Nachsorge (Beverwijk: etwa 250 € je Baum).", "en": "Care: young trees need 2 years of aftercare (Beverwijk: about €250 per tree).", "nl": "Beheer: jonge bomen hebben 2 jaar nazorg nodig (Beverwijk: circa € 250 per boom).", "quelle": "https://beverwijk.bestuurlijkeinformatie.nl/Document/View/8636f1fe-8be1-4490-931c-6f05f52768b0", "geprueft": true}
+    {
+     "de": "Kabel und Leitungen: Stedin verlangt 2,5 m von der Baummitte bis zur Leitungstrasse.",
+     "en": "Cables and pipes: Stedin requires 2.5 m from the tree centre to the cable route.",
+     "nl": "Kabels en leidingen: Stedin hanteert 2,5 m van hart boom tot het leidingentracé.",
+     "quelle": "https://www.stedin.net/-/media/project/online/files/aansluiting/stedin-richtlijnen-kabels-en-leidingen.pdf",
+     "geprueft": true
+    },
+    {
+     "de": "Der Untergrund wird voller: Utrecht erwartet in den nächsten 15 Jahren rund 1.000 zusätzliche Trafohäuschen.",
+     "en": "The subsurface is filling up: Utrecht expects about 1,000 extra substations over the next 15 years.",
+     "nl": "De ondergrond raakt voller: Utrecht verwacht de komende 15 jaar zo'n 1.000 extra elektriciteitshuisjes.",
+     "quelle": "https://www.utrecht.nl/nieuws/nieuwsbericht-gemeente-utrecht/winnaars-ontwerpwedstrijd-elektriciteitshuisjes-bekend",
+     "geprueft": true
+    },
+    {
+     "de": "Parkplätze sind umstritten: In der Reggestraat wären 12 Bäume möglich gewesen, gepflanzt wurden 4 ohne Parkplatzverlust.",
+     "en": "Parking is contested: on Reggestraat 12 trees would have been possible; 4 were planted without losing parking.",
+     "nl": "Parkeren ligt gevoelig: in de Reggestraat konden 12 bomen, er zijn er 4 geplant zonder parkeerverlies.",
+     "quelle": "https://utrecht.bestuurlijkeinformatie.nl/Document/View/d6e30c9f-adfa-4f20-9f1b-1c4f31cbb418",
+     "geprueft": true
+    },
+    {
+     "de": "Pflege: Junge Bäume brauchen 2 Jahre Nachsorge (Beverwijk: etwa 250 € je Baum).",
+     "en": "Care: young trees need 2 years of aftercare (Beverwijk: about €250 per tree).",
+     "nl": "Beheer: jonge bomen hebben 2 jaar nazorg nodig (Beverwijk: circa € 250 per boom).",
+     "quelle": "https://beverwijk.bestuurlijkeinformatie.nl/Document/View/8636f1fe-8be1-4490-931c-6f05f52768b0",
+     "geprueft": true
+    }
    ],
    "wirkung": {
-    "text": {"de": "Ein ausgewachsener Baum wirft etwa 42,5 m² Schatten; im Schatten ist es gefühlt 10–15 °C kühler. Volle Wirkung erst, wenn die Krone gewachsen ist.", "en": "A mature tree casts about 42.5 m² of shade; in its shade it feels 10–15 °C cooler. Full effect only once the crown has grown.", "nl": "Een volgroeide boom geeft circa 42,5 m² schaduw; daaronder voelt het 10–15 °C koeler. Volledig effect pas als de kroon is uitgegroeid."},
+    "text": {
+     "de": "Ein ausgewachsener Baum wirft etwa 42,5 m² Schatten; im Schatten ist es gefühlt 10–15 °C kühler. Volle Wirkung erst, wenn die Krone gewachsen ist.",
+     "en": "A mature tree casts about 42.5 m² of shade; in its shade it feels 10–15 °C cooler. Full effect only once the crown has grown.",
+     "nl": "Een volgroeide boom geeft circa 42,5 m² schaduw; daaronder voelt het 10–15 °C koeler. Volledig effect pas als de kroon is uitgegroeid."
+    },
     "quelle": "https://www.tweedekamer.nl/downloads/document?id=2026D03769"
    }
   },
@@ -655,15 +940,43 @@
    "normen": ["maatlat_wasser", "hemelwater", "dpra", "omgevingswet"],
    "foerder": ["utr_groenblauw_vastgoed", "utr_schoolpleinen", "hdsr_bbi", "rijk_impuls", "eu_life_cca"],
    "anreize": [
-    {"de": "Utrecht fördert Entsiegeln und Versickern bei Vereinen, Kirchen und Schulen mit 40 €/m².", "en": "Utrecht subsidises unsealing and infiltration at clubs, churches and schools with €40/m².", "nl": "Utrecht subsidieert ontharden en infiltreren bij verenigingen, kerken en scholen met € 40/m².", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729119", "geprueft": true},
-    {"de": "Maatlat-Leitbild: Regen bleibt, wo er fällt; Wadi und Gründach werden ausdrücklich empfohlen.", "en": "Maatlat principle: rain stays where it falls; swales and green roofs are explicitly recommended.", "nl": "Maatlat-uitgangspunt: regen blijft waar hij valt; wadi en groendak worden expliciet aanbevolen.", "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf", "geprueft": true}
+    {
+     "de": "Utrecht fördert Entsiegeln und Versickern bei Vereinen, Kirchen und Schulen mit 40 €/m².",
+     "en": "Utrecht subsidises unsealing and infiltration at clubs, churches and schools with €40/m².",
+     "nl": "Utrecht subsidieert ontharden en infiltreren bij verenigingen, kerken en scholen met € 40/m².",
+     "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729119",
+     "geprueft": true
+    },
+    {
+     "de": "Maatlat-Leitbild: Regen bleibt, wo er fällt; Wadi und Gründach werden ausdrücklich empfohlen.",
+     "en": "Maatlat principle: rain stays where it falls; swales and green roofs are explicitly recommended.",
+     "nl": "Maatlat-uitgangspunt: regen blijft waar hij valt; wadi en groendak worden expliciet aanbevolen.",
+     "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Grundwasser: Laut Maatlat bestimmen Grundwasserstand und Boden, welche Maßnahme passt; in nassen Lagen braucht die Mulde Drainage.", "en": "Groundwater: per the Maatlat, groundwater level and soil determine which measure fits; in wet spots the swale needs drainage.", "nl": "Grondwater: volgens de Maatlat zijn grondwaterstand en bodem sturend; op natte plekken heeft een wadi drainage nodig.", "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf", "geprueft": true},
-    {"de": "Laufender Unterhalt (Laub, Müll, Bepflanzung) etwa 0,50 €/m² im Jahr.", "en": "Ongoing maintenance (leaves, litter, planting) about €0.50/m² per year.", "nl": "Doorlopend beheer (blad, zwerfvuil, beplanting) circa € 0,50/m² per jaar.", "quelle": "https://publicwiki.deltares.nl/spaces/AST/pages/160236837/Tabellen+aanleg-+en+beheerkosten", "geprueft": true}
+    {
+     "de": "Grundwasser: Laut Maatlat bestimmen Grundwasserstand und Boden, welche Maßnahme passt; in nassen Lagen braucht die Mulde Drainage.",
+     "en": "Groundwater: per the Maatlat, groundwater level and soil determine which measure fits; in wet spots the swale needs drainage.",
+     "nl": "Grondwater: volgens de Maatlat zijn grondwaterstand en bodem sturend; op natte plekken heeft een wadi drainage nodig.",
+     "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf",
+     "geprueft": true
+    },
+    {
+     "de": "Laufender Unterhalt (Laub, Müll, Bepflanzung) etwa 0,50 €/m² im Jahr.",
+     "en": "Ongoing maintenance (leaves, litter, planting) about €0.50/m² per year.",
+     "nl": "Doorlopend beheer (blad, zwerfvuil, beplanting) circa € 0,50/m² per jaar.",
+     "quelle": "https://publicwiki.deltares.nl/spaces/AST/pages/160236837/Tabellen+aanleg-+en+beheerkosten",
+     "geprueft": true
+    }
    ],
    "wirkung": {
-    "text": {"de": "Hält Regen im Straßenraum und entlastet den Kanal. Ziel der Maatlat: kein Schaden bis 70 mm Regen in einer Stunde (Klima 2050).", "en": "Keeps rain in the street and relieves the sewer. Maatlat target: no damage up to 70 mm of rain in one hour (2050 climate).", "nl": "Houdt regen in de straat en ontlast het riool. Maatlat-doel: geen schade tot 70 mm regen in één uur (klimaat 2050)."},
+    "text": {
+     "de": "Hält Regen im Straßenraum und entlastet den Kanal. Ziel der Maatlat: kein Schaden bis 70 mm Regen in einer Stunde (Klima 2050).",
+     "en": "Keeps rain in the street and relieves the sewer. Maatlat target: no damage up to 70 mm of rain in one hour (2050 climate).",
+     "nl": "Houdt regen in de straat en ontlast het riool. Maatlat-doel: geen schade tot 70 mm regen in één uur (klimaat 2050)."
+    },
     "quelle": "https://klimaatadaptatienederland.nl/publish/pages/218475/1286065-landelijke-maatlat-factsheets-en-overzichtstabel-20230228-tauw-arcadis.pdf"
    }
   },
@@ -685,11 +998,29 @@
    "normen": ["utr_geluid", "utr_mobiliteitsplan", "maatlat_hitze", "nhv_art8"],
    "foerder": ["prov_ggm", "eu_eui_ia", "eu_horizon_cca"],
    "anreize": [
-    {"de": "Tempo 30 kommt 2026 auf vielen Utrechter Straßen; schmalere Fahrbahnen passen dazu und senken Lärm.", "en": "30 km/h comes to many Utrecht streets in 2026; narrower carriageways fit this and cut noise.", "nl": "In 2026 komt 30 km/uur op veel Utrechtse straten; smallere rijbanen passen daarbij en verlagen geluid.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1", "geprueft": true},
-    {"de": "Zeitfenster: Im MJIP stehen Straßenprojekte mit Planjahr, z. B. 40 für 2026, 32 für 2027 und 48 für 2030.", "en": "Windows of opportunity: the MJIP lists road projects with a plan year, e.g. 40 for 2026, 32 for 2027 and 48 for 2030.", "nl": "Kansen: in het MJIP staan wegprojecten met planjaar, bijv. 40 in 2026, 32 in 2027 en 48 in 2030.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer/14", "geprueft": true}
+    {
+     "de": "Tempo 30 kommt 2026 auf vielen Utrechter Straßen; schmalere Fahrbahnen passen dazu und senken Lärm.",
+     "en": "30 km/h comes to many Utrecht streets in 2026; narrower carriageways fit this and cut noise.",
+     "nl": "In 2026 komt 30 km/uur op veel Utrechtse straten; smallere rijbanen passen daarbij en verlagen geluid.",
+     "quelle": "https://lokaleregelgeving.overheid.nl/CVDR763142/1",
+     "geprueft": true
+    },
+    {
+     "de": "Zeitfenster: Im MJIP stehen Straßenprojekte mit Planjahr, z. B. 40 für 2026, 32 für 2027 und 48 für 2030.",
+     "en": "Windows of opportunity: the MJIP lists road projects with a plan year, e.g. 40 for 2026, 32 for 2027 and 48 for 2030.",
+     "nl": "Kansen: in het MJIP staan wegprojecten met planjaar, bijv. 40 in 2026, 32 in 2027 en 48 in 2030.",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer/14",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Busse, Rettungsdienste und Lieferverkehr: Mindestbreiten mit Feuerwehr und Verkehrsbetrieb klären (keine Zahl geprüft).", "en": "Buses, emergency services and deliveries: agree minimum widths with fire service and transport operator (no figure checked).", "nl": "Bussen, hulpdiensten en bevoorrading: minimale breedtes afstemmen met brandweer en vervoerder (geen getal gecontroleerd).", "quelle": null, "geprueft": false}
+    {
+     "de": "Busse, Rettungsdienste und Lieferverkehr: Mindestbreiten mit Feuerwehr und Verkehrsbetrieb klären (keine Zahl geprüft).",
+     "en": "Buses, emergency services and deliveries: agree minimum widths with fire service and transport operator (no figure checked).",
+     "nl": "Bussen, hulpdiensten en bevoorrading: minimale breedtes afstemmen met brandweer en vervoerder (geen getal gecontroleerd).",
+     "quelle": null,
+     "geprueft": false
+    }
    ],
    "wirkung": {
     "text": {"de": "Weniger Asphalt, Platz für eine Baumreihe; zusammen mit Tempo 30 leiser.", "en": "Less asphalt, room for a row of trees; quieter together with 30 km/h.", "nl": "Minder asfalt, ruimte voor een bomenrij; samen met 30 km/uur stiller."},
@@ -714,15 +1045,43 @@
    "normen": ["maatlat_hitze", "utr_hitte"],
    "foerder": [],
    "anreize": [
-    {"de": "Utrecht will helles Asphalt an Probestellen testen und die Wirkung messen.", "en": "Utrecht wants to test light asphalt at trial sites and measure the effect.", "nl": "Utrecht wil licht asfalt op proeflocaties testen en het effect meten.", "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-", "geprueft": true}
+    {
+     "de": "Utrecht will helles Asphalt an Probestellen testen und die Wirkung messen.",
+     "en": "Utrecht wants to test light asphalt at trial sites and measure the effect.",
+     "nl": "Utrecht wil licht asfalt op proeflocaties testen en het effect meten.",
+     "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Seit April 2025 ist die Richtlinie zu hitzeabweisenden Oberflächen aus der Landelijke Maatlat gestrichen.", "en": "Since April 2025 the guideline on heat-reflecting surfaces has been dropped from the national Maatlat.", "nl": "Sinds april 2025 is de richtlijn over warmtewerende oppervlakken uit de Landelijke Maatlat geschrapt.", "quelle": "https://klimaatadaptatienederland.nl/aan-de-slag/overheden/klimaatadaptief-bouwen/landelijke-maatlat/", "geprueft": true},
-    {"de": "Teurer als normales Asphalt, Haltbarkeit noch unbekannt.", "en": "More expensive than regular asphalt, durability still unknown.", "nl": "Duurder dan gewoon asfalt, levensduur nog onbekend.", "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-", "geprueft": true},
-    {"de": "Helle Flächen werfen Sonne auf Menschen zurück; ob die gefühlte Temperatur merkbar sinkt, ist fachlich umstritten.", "en": "Light surfaces reflect sunlight onto people; whether perceived temperature drops noticeably is disputed.", "nl": "Lichte vlakken kaatsen zonlicht terug op mensen; of de gevoelstemperatuur merkbaar daalt, is omstreden.", "quelle": "https://www.hva.nl/binaries/content/assets/subsites/kc-techniek/publicaties-klimaatbestendige-stad/klok-et-al_2022_het-is-heet.pdf", "geprueft": false}
+    {
+     "de": "Seit April 2025 ist die Richtlinie zu hitzeabweisenden Oberflächen aus der Landelijke Maatlat gestrichen.",
+     "en": "Since April 2025 the guideline on heat-reflecting surfaces has been dropped from the national Maatlat.",
+     "nl": "Sinds april 2025 is de richtlijn over warmtewerende oppervlakken uit de Landelijke Maatlat geschrapt.",
+     "quelle": "https://klimaatadaptatienederland.nl/aan-de-slag/overheden/klimaatadaptief-bouwen/landelijke-maatlat/",
+     "geprueft": true
+    },
+    {
+     "de": "Teurer als normales Asphalt, Haltbarkeit noch unbekannt.",
+     "en": "More expensive than regular asphalt, durability still unknown.",
+     "nl": "Duurder dan gewoon asfalt, levensduur nog onbekend.",
+     "quelle": "https://www.duic.nl/algemeen/algemeen/61087/van-wit-asfalt-tot-ventilatoren-uitdelen-wat-gaat-utrecht-doen-tegen-steeds-hetere-zomers-",
+     "geprueft": true
+    },
+    {
+     "de": "Helle Flächen werfen Sonne auf Menschen zurück; ob die gefühlte Temperatur merkbar sinkt, ist fachlich umstritten.",
+     "en": "Light surfaces reflect sunlight onto people; whether perceived temperature drops noticeably is disputed.",
+     "nl": "Lichte vlakken kaatsen zonlicht terug op mensen; of de gevoelstemperatuur merkbaar daalt, is omstreden.",
+     "quelle": "https://www.hva.nl/binaries/content/assets/subsites/kc-techniek/publicaties-klimaatbestendige-stad/klok-et-al_2022_het-is-heet.pdf",
+     "geprueft": false
+    }
    ],
    "wirkung": {
-    "text": {"de": "Senkt die Oberflächentemperatur am Tag, ersetzt aber keinen Schatten. Wirkung auf die gefühlte Temperatur unsicher.", "en": "Lowers surface temperature by day but does not replace shade. Effect on perceived temperature uncertain.", "nl": "Verlaagt overdag de oppervlaktetemperatuur, maar vervangt geen schaduw. Effect op gevoelstemperatuur onzeker."},
+    "text": {
+     "de": "Senkt die Oberflächentemperatur am Tag, ersetzt aber keinen Schatten. Wirkung auf die gefühlte Temperatur unsicher.",
+     "en": "Lowers surface temperature by day but does not replace shade. Effect on perceived temperature uncertain.",
+     "nl": "Verlaagt overdag de oppervlaktetemperatuur, maar vervangt geen schaduw. Effect op gevoelstemperatuur onzeker."
+    },
     "quelle": "https://klimaatadaptatienederland.nl/aan-de-slag/overheden/klimaatadaptief-bouwen/landelijke-maatlat/"
    }
   },
@@ -744,11 +1103,29 @@
    "normen": ["maatlat_hitze", "utr_hitte", "nhv_art8", "stedin_afstand", "utr_bomen"],
    "foerder": ["utr_initiatievenfonds", "prov_ggm"],
    "anreize": [
-    {"de": "Breite Gehwege gibt es: 5.512 Abschnitte sind breiter als 3,10 m (Gehweg-Inventar der Gemeente 2025).", "en": "Wide pavements exist: 5,512 sections are wider than 3.10 m (municipal pavement inventory 2025).", "nl": "Brede stoepen zijn er: 5.512 stukken zijn breder dan 3,10 m (stoepinventarisatie gemeente 2025).", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer", "geprueft": true}
+    {
+     "de": "Breite Gehwege gibt es: 5.512 Abschnitte sind breiter als 3,10 m (Gehweg-Inventar der Gemeente 2025).",
+     "en": "Wide pavements exist: 5,512 sections are wider than 3.10 m (municipal pavement inventory 2025).",
+     "nl": "Brede stoepen zijn er: 5.512 stukken zijn breder dan 3,10 m (stoepinventarisatie gemeente 2025).",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Unter Gehwegen liegen oft Hausanschlüsse; das Stedin-Niederspannungsnetz umfasst in Utrecht 9.114 Abschnitte (MJIP).", "en": "House connections often run under pavements; Stedin's low-voltage network in Utrecht has 9,114 sections (MJIP).", "nl": "Onder stoepen liggen vaak huisaansluitingen; het laagspanningsnet van Stedin telt in Utrecht 9.114 delen (MJIP).", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer/34", "geprueft": true},
-    {"de": "Hindernisse im Gehweg: Das Inventar zählt 20.117 Laternen und 3.537 Bäume; der Durchgang muss frei bleiben.", "en": "Obstacles on pavements: the inventory counts 20,117 lamp posts and 3,537 trees; the walkway must stay clear.", "nl": "Obstakels op de stoep: de inventarisatie telt 20.117 lichtmasten en 3.537 bomen; de doorgang moet vrij blijven.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer", "geprueft": true}
+    {
+     "de": "Unter Gehwegen liegen oft Hausanschlüsse; das Stedin-Niederspannungsnetz umfasst in Utrecht 9.114 Abschnitte (MJIP).",
+     "en": "House connections often run under pavements; Stedin's low-voltage network in Utrecht has 9,114 sections (MJIP).",
+     "nl": "Onder stoepen liggen vaak huisaansluitingen; het laagspanningsnet van Stedin telt in Utrecht 9.114 delen (MJIP).",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/MJIP/FeatureServer/34",
+     "geprueft": true
+    },
+    {
+     "de": "Hindernisse im Gehweg: Das Inventar zählt 20.117 Laternen und 3.537 Bäume; der Durchgang muss frei bleiben.",
+     "en": "Obstacles on pavements: the inventory counts 20,117 lamp posts and 3,537 trees; the walkway must stay clear.",
+     "nl": "Obstakels op de stoep: de inventarisatie telt 20.117 lichtmasten en 3.537 bomen; de doorgang moet vrij blijven.",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer",
+     "geprueft": true
+    }
    ],
    "wirkung": {
     "text": {"de": "Schatten direkt auf dem Fußweg, also genau dort, wo die Maatlat 40 % fordert.", "en": "Shade right on the footway, exactly where the Maatlat asks for 40 %.", "nl": "Schaduw direct op de looproute, precies waar de Maatlat 40 % vraagt."},
@@ -773,15 +1150,43 @@
    "normen": ["utr_geveltuin", "hemelwater"],
    "foerder": ["utr_geveltuin_pakket", "utr_initiatievenfonds", "hdsr_bbi"],
    "anreize": [
-    {"de": "Keine Genehmigung nötig; die Gemeente verleiht Lastenrad oder Anhänger und gibt Erde und Randsteine.", "en": "No permit needed; the city lends a cargo bike or trailer and provides soil and edging.", "nl": "Geen vergunning nodig; de gemeente leent een bakfiets of aanhanger uit en levert potgrond en opsluitbanden.", "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin", "geprueft": true},
-    {"de": "Utrecht erlaubt bis 60 cm Tiefe bei 1,20 m freiem Gehweg – mehr Fläche, als das Labor heute ansetzt (30 cm, 1,5 m).", "en": "Utrecht allows up to 60 cm depth with 1.20 m of clear pavement – more area than the lab currently assumes (30 cm, 1.5 m).", "nl": "Utrecht staat tot 60 cm diepte toe bij 1,20 m vrije stoep – meer dan het lab nu aanneemt (30 cm, 1,5 m).", "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin", "geprueft": true}
+    {
+     "de": "Keine Genehmigung nötig; die Gemeente verleiht Lastenrad oder Anhänger und gibt Erde und Randsteine.",
+     "en": "No permit needed; the city lends a cargo bike or trailer and provides soil and edging.",
+     "nl": "Geen vergunning nodig; de gemeente leent een bakfiets of aanhanger uit en levert potgrond en opsluitbanden.",
+     "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin",
+     "geprueft": true
+    },
+    {
+     "de": "Utrecht erlaubt bis 60 cm Tiefe bei 1,20 m freiem Gehweg – mehr Fläche, als das Labor heute ansetzt (30 cm, 1,5 m).",
+     "en": "Utrecht allows up to 60 cm depth with 1.20 m of clear pavement – more area than the lab currently assumes (30 cm, 1.5 m).",
+     "nl": "Utrecht staat tot 60 cm diepte toe bij 1,20 m vrije stoep – meer dan het lab nu aanneemt (30 cm, 1,5 m).",
+     "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Mieter:innen brauchen das Okay der Eigentümer:in; 0,9 m Abstand zu Laternen.", "en": "Tenants need the owner's consent; 0.9 m distance from lamp posts.", "nl": "Huurders hebben akkoord van de eigenaar nodig; 0,9 m afstand tot lantaarnpalen.", "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin", "geprueft": true},
-    {"de": "Schmale Gehwege: 1.875 Abschnitte sind schmaler als 1,30 m – dort passt kaum ein Fassadengarten.", "en": "Narrow pavements: 1,875 sections are narrower than 1.30 m – hardly room for a façade garden there.", "nl": "Smalle stoepen: 1.875 stukken zijn smaller dan 1,30 m – daar past nauwelijks een geveltuin.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer/17", "geprueft": true}
+    {
+     "de": "Mieter:innen brauchen das Okay der Eigentümer:in; 0,9 m Abstand zu Laternen.",
+     "en": "Tenants need the owner's consent; 0.9 m distance from lamp posts.",
+     "nl": "Huurders hebben akkoord van de eigenaar nodig; 0,9 m afstand tot lantaarnpalen.",
+     "quelle": "https://www.utrecht.nl/wonen-en-leven/parken-en-groen/zelfbeheer/geveltuin",
+     "geprueft": true
+    },
+    {
+     "de": "Schmale Gehwege: 1.875 Abschnitte sind schmaler als 1,30 m – dort passt kaum ein Fassadengarten.",
+     "en": "Narrow pavements: 1,875 sections are narrower than 1.30 m – hardly room for a façade garden there.",
+     "nl": "Smalle stoepen: 1.875 stukken zijn smaller dan 1,30 m – daar past nauwelijks een geveltuin.",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Breedte_stoepen/FeatureServer/17",
+     "geprueft": true
+    }
    ],
    "wirkung": {
-    "text": {"de": "Kleine Fläche, kleine Wirkung: Regen versickert an der Fassade, etwas Kühlung, mehr Insekten (qualitativ). Vor allem ein sichtbarer erster Schritt, den Nachbar:innen selbst machen.", "en": "Small area, small effect: rain soaks in at the façade, some cooling, more insects (qualitative). Above all a visible first step residents take themselves.", "nl": "Klein oppervlak, klein effect: regen zakt weg langs de gevel, wat verkoeling, meer insecten (kwalitatief). Vooral een zichtbare eerste stap die bewoners zelf zetten."},
+    "text": {
+     "de": "Kleine Fläche, kleine Wirkung: Regen versickert an der Fassade, etwas Kühlung, mehr Insekten (qualitativ). Vor allem ein sichtbarer erster Schritt, den Nachbar:innen selbst machen.",
+     "en": "Small area, small effect: rain soaks in at the façade, some cooling, more insects (qualitative). Above all a visible first step residents take themselves.",
+     "nl": "Klein oppervlak, klein effect: regen zakt weg langs de gevel, wat verkoeling, meer insecten (kwalitatief). Vooral een zichtbare eerste stap die bewoners zelf zetten."
+    },
     "quelle": "https://www.utrecht.nl/wonen-en-leven/duurzame-stad/groen-en-water/hitte"
    }
   },
@@ -803,16 +1208,44 @@
    "normen": ["maatlat_wasser", "hemelwater", "maatlat_gruen"],
    "foerder": ["utr_groenblauwe_daken", "rijk_mia_vamil", "hdsr_bbi", "prov_groene_steden"],
    "anreize": [
-    {"de": "Utrecht zahlt 30–70 €/m² (höchstens 50 %), mit U-Pas 60–140 €/m² (bis 100 %).", "en": "Utrecht pays €30–70/m² (max. 50 %), with a U-pas €60–140/m² (up to 100 %).", "nl": "Utrecht betaalt € 30–70/m² (maximaal 50 %), met U-pas € 60–140/m² (tot 100 %).", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852", "geprueft": true},
+    {
+     "de": "Utrecht zahlt 30–70 €/m² (höchstens 50 %), mit U-Pas 60–140 €/m² (bis 100 %).",
+     "en": "Utrecht pays €30–70/m² (max. 50 %), with a U-pas €60–140/m² (up to 100 %).",
+     "nl": "Utrecht betaalt € 30–70/m² (maximaal 50 %), met U-pas € 60–140/m² (tot 100 %).",
+     "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852",
+     "geprueft": true
+    },
     {"de": "Unternehmen: 45 % MIA plus 75 % Vamil (Code F 5300, 2026).", "en": "Businesses: 45 % MIA plus 75 % Vamil (code F 5300, 2026).", "nl": "Ondernemers: 45 % MIA plus 75 % Vamil (code F 5300, 2026).", "quelle": "https://www.rvo.nl/milieu-en-energielijst-2026/5300", "geprueft": true},
-    {"de": "Großes Potenzial: Etwa 2,4 Mio. m² Dachfläche gelten als geeignet für blau-grüne Dächer, erst 1.083 Dächer sind grün (Dakenkansenkaart 2022).", "en": "Big potential: about 2.4 million m² of roof is rated suitable for blue-green roofs, only 1,083 roofs are green (roof opportunity map 2022).", "nl": "Groot potentieel: circa 2,4 mln m² dak geschikt voor blauwgroene daken, pas 1.083 daken zijn groen (Dakenkansenkaart 2022).", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Dakenkansenkaart/FeatureServer/0", "geprueft": true}
+    {
+     "de": "Großes Potenzial: Etwa 2,4 Mio. m² Dachfläche gelten als geeignet für blau-grüne Dächer, erst 1.083 Dächer sind grün (Dakenkansenkaart 2022).",
+     "en": "Big potential: about 2.4 million m² of roof is rated suitable for blue-green roofs, only 1,083 roofs are green (roof opportunity map 2022).",
+     "nl": "Groot potentieel: circa 2,4 mln m² dak geschikt voor blauwgroene daken, pas 1.083 daken zijn groen (Dakenkansenkaart 2022).",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Dakenkansenkaart/FeatureServer/0",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Tragfähigkeit prüfen (die Förderung zahlt bis 250 € für eine Bauexpert:in); 5 Jahre Pflegepflicht.", "en": "Check load capacity (the subsidy pays up to €250 for a structural expert); 5-year maintenance duty.", "nl": "Draagkracht laten controleren (subsidie betaalt tot € 250 voor een bouwkundig expert); 5 jaar onderhoudsplicht.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852", "geprueft": true},
-    {"de": "Konkurrenz mit Solar: 12.824 Dächer tragen schon Solarmodule (2022); Kombination ist planbar, aber nicht automatisch.", "en": "Competition with solar: 12,824 roofs already carry panels (2022); combining is possible but needs planning.", "nl": "Concurrentie met zon: 12.824 daken hebben al zonnepanelen (2022); combineren kan, maar vraagt planning.", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Dakenkansenkaart/FeatureServer/0", "geprueft": true}
+    {
+     "de": "Tragfähigkeit prüfen (die Förderung zahlt bis 250 € für eine Bauexpert:in); 5 Jahre Pflegepflicht.",
+     "en": "Check load capacity (the subsidy pays up to €250 for a structural expert); 5-year maintenance duty.",
+     "nl": "Draagkracht laten controleren (subsidie betaalt tot € 250 voor een bouwkundig expert); 5 jaar onderhoudsplicht.",
+     "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852",
+     "geprueft": true
+    },
+    {
+     "de": "Konkurrenz mit Solar: 12.824 Dächer tragen schon Solarmodule (2022); Kombination ist planbar, aber nicht automatisch.",
+     "en": "Competition with solar: 12,824 roofs already carry panels (2022); combining is possible but needs planning.",
+     "nl": "Concurrentie met zon: 12.824 daken hebben al zonnepanelen (2022); combineren kan, maar vraagt planning.",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/Dakenkansenkaart/FeatureServer/0",
+     "geprueft": true
+    }
    ],
    "wirkung": {
-    "text": {"de": "Hält je nach Aufbau 20–70 Liter Regen pro m² zurück. Für die Hitze auf der Straße kaum Wirkung, für den Kanal schon.", "en": "Holds 20–70 litres of rain per m² depending on build-up. Little effect on street-level heat, but relieves the sewer.", "nl": "Houdt afhankelijk van de opbouw 20–70 liter regen per m² vast. Weinig effect op hitte op straat, wel op het riool."},
+    "text": {
+     "de": "Hält je nach Aufbau 20–70 Liter Regen pro m² zurück. Für die Hitze auf der Straße kaum Wirkung, für den Kanal schon.",
+     "en": "Holds 20–70 litres of rain per m² depending on build-up. Little effect on street-level heat, but relieves the sewer.",
+     "nl": "Houdt afhankelijk van de opbouw 20–70 liter regen per m² vast. Weinig effect op hitte op straat, wel op het riool."
+    },
     "quelle": "https://lokaleregelgeving.overheid.nl/CVDR719852"
    }
   },
@@ -834,12 +1267,36 @@
    "normen": ["maatlat_hitze", "utr_hitte", "nhv_art8", "hemelwater"],
    "foerder": ["utr_schoolpleinen", "hdsr_bbi", "prov_groene_steden"],
    "anreize": [
-    {"de": "Utrecht: fester Zuschuss bis 55.000 € in Vierteln mit niedrigem sozioökonomischem Status (sonst 22.000 €) plus bis 50.000 € fürs Entsiegeln und Abkoppeln.", "en": "Utrecht: fixed grant up to €55,000 in low-SES neighbourhoods (otherwise €22,000) plus up to €50,000 for unsealing and disconnecting.", "nl": "Utrecht: vaste bijdrage tot € 55.000 in lage-SES-buurten (anders € 22.000) plus tot € 50.000 voor ontharden en afkoppelen.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114", "geprueft": true},
-    {"de": "Provinz-Voucher 15.000/20.000 €: Budget 2026 erschöpft, neue Runde ab 04.01.2027.", "en": "Provincial voucher €15,000/20,000: 2026 budget used up, new round from 4 Jan 2027.", "nl": "Provinciale voucher € 15.000/20.000: budget 2026 op, nieuwe ronde vanaf 4-1-2027.", "quelle": "https://www.utrechtseschoolpleinen.nl/financien-en-subsidies", "geprueft": true}
+    {
+     "de": "Utrecht: fester Zuschuss bis 55.000 € in Vierteln mit niedrigem sozioökonomischem Status (sonst 22.000 €) plus bis 50.000 € fürs Entsiegeln und Abkoppeln.",
+     "en": "Utrecht: fixed grant up to €55,000 in low-SES neighbourhoods (otherwise €22,000) plus up to €50,000 for unsealing and disconnecting.",
+     "nl": "Utrecht: vaste bijdrage tot € 55.000 in lage-SES-buurten (anders € 22.000) plus tot € 50.000 voor ontharden en afkoppelen.",
+     "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114",
+     "geprueft": true
+    },
+    {
+     "de": "Provinz-Voucher 15.000/20.000 €: Budget 2026 erschöpft, neue Runde ab 04.01.2027.",
+     "en": "Provincial voucher €15,000/20,000: 2026 budget used up, new round from 4 Jan 2027.",
+     "nl": "Provinciale voucher € 15.000/20.000: budget 2026 op, nieuwe ronde vanaf 4-1-2027.",
+     "quelle": "https://www.utrechtseschoolpleinen.nl/financien-en-subsidies",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Auflage: Der Hof ist nach Schulschluss von 08 bis 20 Uhr öffentlich zugänglich (Ausnahme bei belegtem Vandalismus).", "en": "Condition: the yard must be publicly accessible from 08:00 to 20:00 outside school hours (exception for documented vandalism).", "nl": "Voorwaarde: het plein is buiten schooltijd van 08:00 tot 20:00 openbaar toegankelijk (uitzondering bij aantoonbaar vandalisme).", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114", "geprueft": true},
-    {"de": "Umsetzung binnen 24 Monaten; laut Regel viel Personal- und Finanzaufwand für die Schule.", "en": "Completion within 24 months; per the scheme a heavy staff and financial burden for the school.", "nl": "Uitvoering binnen 24 maanden; volgens de regeling veel personele en financiële inzet van de school.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114", "geprueft": true}
+    {
+     "de": "Auflage: Der Hof ist nach Schulschluss von 08 bis 20 Uhr öffentlich zugänglich (Ausnahme bei belegtem Vandalismus).",
+     "en": "Condition: the yard must be publicly accessible from 08:00 to 20:00 outside school hours (exception for documented vandalism).",
+     "nl": "Voorwaarde: het plein is buiten schooltijd van 08:00 tot 20:00 openbaar toegankelijk (uitzondering bij aantoonbaar vandalisme).",
+     "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114",
+     "geprueft": true
+    },
+    {
+     "de": "Umsetzung binnen 24 Monaten; laut Regel viel Personal- und Finanzaufwand für die Schule.",
+     "en": "Completion within 24 months; per the scheme a heavy staff and financial burden for the school.",
+     "nl": "Uitvoering binnen 24 maanden; volgens de regeling veel personele en financiële inzet van de school.",
+     "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729114",
+     "geprueft": true
+    }
    ],
    "wirkung": {
     "text": {"de": "Schattige, grüne Pausen und ein kühler Ort fürs Viertel nach Schulschluss (08–20 Uhr).", "en": "Shaded, green breaks and a cool place for the neighbourhood after school (08:00–20:00).", "nl": "Schaduwrijke, groene pauzes en een koele plek voor de buurt na schooltijd (08:00–20:00)."},
@@ -864,12 +1321,30 @@
    "normen": ["hemelwater", "maatlat_wasser", "dpra", "omgevingswet"],
    "foerder": ["utr_groenblauw_vastgoed", "utr_schoolpleinen", "hdsr_bbi", "rijk_impuls"],
    "anreize": [
-    {"de": "Großes Potenzial: 86.636 Utrechter Gebäude (56 %) leiten Regen noch in den Mischkanal (Afkoppelkaart vom 18.11.2025).", "en": "Big potential: 86,636 Utrecht buildings (56 %) still drain rain into the combined sewer (disconnection map of 18 Nov 2025).", "nl": "Groot potentieel: 86.636 Utrechtse panden (56 %) lozen regen nog op het gemengde riool (afkoppelkaart 18-11-2025).", "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/PandAfkoppelstatusAfkoppelkaart20251118/FeatureServer/0", "geprueft": true},
+    {
+     "de": "Großes Potenzial: 86.636 Utrechter Gebäude (56 %) leiten Regen noch in den Mischkanal (Afkoppelkaart vom 18.11.2025).",
+     "en": "Big potential: 86,636 Utrecht buildings (56 %) still drain rain into the combined sewer (disconnection map of 18 Nov 2025).",
+     "nl": "Groot potentieel: 86.636 Utrechtse panden (56 %) lozen regen nog op het gemengde riool (afkoppelkaart 18-11-2025).",
+     "quelle": "https://services-eu1.arcgis.com/SMnoOtmU2UWf0vRp/arcgis/rest/services/PandAfkoppelstatusAfkoppelkaart20251118/FeatureServer/0",
+     "geprueft": true
+    },
     {"de": "Förderung 20–40 €/m² für Vereine, Schulen und Kirchen.", "en": "Subsidy €20–40/m² for clubs, schools and churches.", "nl": "Subsidie € 20–40/m² voor verenigingen, scholen en kerken.", "quelle": "https://lokaleregelgeving.overheid.nl/CVDR729119", "geprueft": true}
    ],
    "hemmnisse": [
-    {"de": "Eigentümer:innen sind zuerst selbst verantwortlich; auf Privatgrund geht nichts ohne sie.", "en": "Owners are responsible first; nothing happens on private land without them.", "nl": "Eigenaren zijn eerst zelf verantwoordelijk; op privaat terrein gebeurt niets zonder hen.", "quelle": "https://iplo.nl/thema/water/stedelijk-afvalwater/stedelijk-waterbeheer/hemelwatertaak-gemeente/", "geprueft": true},
-    {"de": "Öffentliche Kostenkennzahlen sind dünn: RIONED-Werte nur für Mitglieder.", "en": "Public cost benchmarks are thin: RIONED figures are members-only.", "nl": "Openbare kostenkengetallen zijn schaars: RIONED-cijfers alleen voor leden.", "quelle": "https://www.riool.net/kennisbank/organiseren-en-afwegen/kostenkengetallen/kostenkengetallen-per-rioleringsobject/wadi", "geprueft": true}
+    {
+     "de": "Eigentümer:innen sind zuerst selbst verantwortlich; auf Privatgrund geht nichts ohne sie.",
+     "en": "Owners are responsible first; nothing happens on private land without them.",
+     "nl": "Eigenaren zijn eerst zelf verantwoordelijk; op privaat terrein gebeurt niets zonder hen.",
+     "quelle": "https://iplo.nl/thema/water/stedelijk-afvalwater/stedelijk-waterbeheer/hemelwatertaak-gemeente/",
+     "geprueft": true
+    },
+    {
+     "de": "Öffentliche Kostenkennzahlen sind dünn: RIONED-Werte nur für Mitglieder.",
+     "en": "Public cost benchmarks are thin: RIONED figures are members-only.",
+     "nl": "Openbare kostenkengetallen zijn schaars: RIONED-cijfers alleen voor leden.",
+     "quelle": "https://www.riool.net/kennisbank/organiseren-en-afwegen/kostenkengetallen/kostenkengetallen-per-rioleringsobject/wadi",
+     "geprueft": true
+    }
    ],
    "wirkung": {
     "text": {"de": "Weniger Regen im Mischkanal bei Starkregen, mehr Wasser im Boden.", "en": "Less rain in the combined sewer during cloudbursts, more water in the soil.", "nl": "Minder regen in het gemengde riool bij hoosbuien, meer water in de bodem."},
@@ -894,10 +1369,22 @@
    "normen": ["maatlat_hitze", "utr_hitte"],
    "foerder": ["utr_initiatievenfonds"],
    "anreize": [
-    {"de": "Schatten sofort; die IenW-Kostenstudie rechnet Pergolen dort ein, wo Bäume allein nicht reichen (1 m² Pergola ≈ 1,7 m² Schatten).", "en": "Instant shade; the IenW cost study counts pergolas where trees alone are not enough (1 m² of pergola ≈ 1.7 m² of shade).", "nl": "Direct schaduw; de IenW-kostenstudie rekent pergola's waar bomen alleen niet volstaan (1 m² pergola ≈ 1,7 m² schaduw).", "quelle": "https://www.tweedekamer.nl/downloads/document?id=2026D03769", "geprueft": true}
+    {
+     "de": "Schatten sofort; die IenW-Kostenstudie rechnet Pergolen dort ein, wo Bäume allein nicht reichen (1 m² Pergola ≈ 1,7 m² Schatten).",
+     "en": "Instant shade; the IenW cost study counts pergolas where trees alone are not enough (1 m² of pergola ≈ 1.7 m² of shade).",
+     "nl": "Direct schaduw; de IenW-kostenstudie rekent pergola's waar bomen alleen niet volstaan (1 m² pergola ≈ 1,7 m² schaduw).",
+     "quelle": "https://www.tweedekamer.nl/downloads/document?id=2026D03769",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Keine Verdunstungskühlung wie bei Bäumen, kein Beitrag zu Grün oder Biodiversität (qualitativ).", "en": "No evaporative cooling like trees, no contribution to green or biodiversity (qualitative).", "nl": "Geen verdampingskoeling zoals bij bomen, geen bijdrage aan groen of biodiversiteit (kwalitatief).", "quelle": null, "geprueft": false}
+    {
+     "de": "Keine Verdunstungskühlung wie bei Bäumen, kein Beitrag zu Grün oder Biodiversität (qualitativ).",
+     "en": "No evaporative cooling like trees, no contribution to green or biodiversity (qualitative).",
+     "nl": "Geen verdampingskoeling zoals bij bomen, geen bijdrage aan groen of biodiversiteit (kwalitatief).",
+     "quelle": null,
+     "geprueft": false
+    }
    ],
    "wirkung": {
     "text": {"de": "Schatten an Haltestellen, Plätzen und Schulhöfen, wo Leitungen oder Platz keine Bäume zulassen.", "en": "Shade at stops, squares and schoolyards where cables or space rule out trees.", "nl": "Schaduw bij haltes, pleinen en schoolpleinen waar kabels of ruimte geen bomen toelaten."},
@@ -922,13 +1409,29 @@
    "normen": ["utr_hitte"],
    "foerder": [],
    "anreize": [
-    {"de": "Teil des Utrechter Hitteplans: Die Verkoelingskaart zeigt Wasserzapfstellen, Planschbecken und Sonnencreme-Spender.", "en": "Part of Utrecht's heat plan: the cooling map shows water taps, paddling pools and sunscreen dispensers.", "nl": "Onderdeel van het Utrechtse hitteplan: de verkoelingskaart toont watertappunten, spetterbadjes en zonnebrandpalen.", "quelle": "https://www.utrecht.nl/nieuws/nieuwsbericht-gemeente-utrecht/gemeentelijk-hitteplan-van-kracht-vanwege-extreme-hitte", "geprueft": true}
+    {
+     "de": "Teil des Utrechter Hitteplans: Die Verkoelingskaart zeigt Wasserzapfstellen, Planschbecken und Sonnencreme-Spender.",
+     "en": "Part of Utrecht's heat plan: the cooling map shows water taps, paddling pools and sunscreen dispensers.",
+     "nl": "Onderdeel van het Utrechtse hitteplan: de verkoelingskaart toont watertappunten, spetterbadjes en zonnebrandpalen.",
+     "quelle": "https://www.utrecht.nl/nieuws/nieuwsbericht-gemeente-utrecht/gemeentelijk-hitteplan-van-kracht-vanwege-extreme-hitte",
+     "geprueft": true
+    }
    ],
    "hemmnisse": [
-    {"de": "Laufende Kosten und Hygiene; die Kostenteilung mit Vitens ist für Utrecht nicht belegt.", "en": "Running costs and hygiene; cost sharing with Vitens is not documented for Utrecht.", "nl": "Doorlopende kosten en hygiëne; kostenverdeling met Vitens is voor Utrecht niet gedocumenteerd.", "quelle": null, "geprueft": false}
+    {
+     "de": "Laufende Kosten und Hygiene; die Kostenteilung mit Vitens ist für Utrecht nicht belegt.",
+     "en": "Running costs and hygiene; cost sharing with Vitens is not documented for Utrecht.",
+     "nl": "Doorlopende kosten en hygiëne; kostenverdeling met Vitens is voor Utrecht niet gedocumenteerd.",
+     "quelle": null,
+     "geprueft": false
+    }
    ],
    "wirkung": {
-    "text": {"de": "Wasser unterwegs an Hitzetagen – wichtig für Ältere, Kinder und Menschen ohne kühle Wohnung.", "en": "Water on the go on hot days – important for older people, children and people without a cool home.", "nl": "Water onderweg op hete dagen – belangrijk voor ouderen, kinderen en mensen zonder koele woning."},
+    "text": {
+     "de": "Wasser unterwegs an Hitzetagen – wichtig für Ältere, Kinder und Menschen ohne kühle Wohnung.",
+     "en": "Water on the go on hot days – important for older people, children and people without a cool home.",
+     "nl": "Water onderweg op hete dagen – belangrijk voor ouderen, kinderen en mensen zonder koele woning."
+    },
     "quelle": "https://www.utrecht.nl/nieuws/nieuwsbericht-gemeente-utrecht/gemeentelijk-hitteplan-van-kracht-vanwege-extreme-hitte"
    }
   }
@@ -1245,11 +1748,7 @@
    "cors": true,
    "lizenz": "Public Domain Mark 1.0",
    "stand": "2025-09",
-   "nutzen": {
-    "de": "Geschützte Naturflächen der Provinz – Kontext für Stadtränder und Landgüter.",
-    "en": "Protected provincial nature areas – context for the urban fringe and estates.",
-    "nl": "Beschermde provinciale natuur – context voor stadsranden en landgoederen."
-   }
+   "nutzen": {"de": "Geschützte Naturflächen der Provinz – Kontext für Stadtränder und Landgüter.", "en": "Protected provincial nature areas – context for the urban fringe and estates.", "nl": "Beschermde provinciale natuur – context voor stadsranden en landgoederen."}
   },
   {
    "id": "gbif",

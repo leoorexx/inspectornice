@@ -137,7 +137,7 @@ M.methodik=function(focus){
     bouw:['BAG — Gebäude mit Status Baugenehmigung, Bau begonnen, Umbau, Abrissgenehmigung','BAG — buildings with status permit granted, construction started, renovation, demolition permit','BAG — panden met status bouwvergunning verleend, bouw gestart, verbouwing, sloopvergunning verleend'],
     leefbaar:['Leefbaarometer 3.0 — Ministerie van BZK (Stand 2024)','Leefbaarometer 3.0 — Ministry of BZK (2024)','Leefbaarometer 3.0 — Ministerie van BZK (peiljaar 2024)']};
   const src=Object.entries(meta.sources||{}).map(([k,s])=>{const t=SRCT[k]?SRCT[k][L]:s.title;return `<li>${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(t)}</a>`:esc(t)}${s.license?` <small>${esc(s.license)}</small>`:''}</li>`;}).join('');
-  const b=sheet('methodik',T('Methodik und Quellen','Methodology and sources','Methodiek en bronnen'),`
+  const b=sheet('methodik',T('Methodik und Quellen','Methodology and sources','Methodiek en bronnen'),`${mtabs('methodik')}
     <p class="nxs-lead">${T('Inspector Nice zeigt, wo in Utrecht Klimarisiken und verletzliche Menschen zusammenkommen — nur aus offenen, amtlichen Daten. Hier steht, wie gerechnet wird und was die Zahlen nicht können.','Inspector Nice shows where in Utrecht climate risks and vulnerable people come together — using only open, official data. Here is how it is calculated and what the numbers cannot do.','Inspector Nice laat zien waar in Utrecht klimaatrisico\'s en kwetsbare mensen samenkomen — alleen met open, officiële data. Hier staat hoe er gerekend wordt en wat de cijfers niet kunnen.')}</p>
     <h3>${T('So entsteht die Klimabelastung','How the climate burden is made','Zo ontstaat de klimaatbelasting')}</h3>
     <p>${T('Vier Risiken, die sich von Quartier zu Quartier unterscheiden, geben je 0 bis 25 Punkte. Dazwischen steigen die Punkte gleichmäßig. Die Summe ergibt 0 bis 100.','Four risks that differ from neighbourhood to neighbourhood give 0 to 25 points each, rising evenly in between. Together they make 0 to 100.','Vier risico\'s die per buurt verschillen geven elk 0 tot 25 punten, daartussen gelijkmatig oplopend. Samen 0 tot 100.')}</p>
@@ -161,7 +161,77 @@ M.methodik=function(focus){
     <dl class="nxs-dl">${Object.entries(GL).map(([k,g])=>`<div id="gl-${k}"><dt>${g[0][L]}</dt><dd>${g[1][L]}</dd></div>`).join('')}</dl>
     <p class="note"><a href="methodik.html">${T('Ausführliche Methodik der klassischen Ansicht (mit Konfidenzklassen)','Detailed methodology of the classic view (with confidence classes)','Uitgebreide methodiek van de klassieke weergave (met betrouwbaarheidsklassen)')}</a></p>`);
   if(focus==='begriffe')setTimeout(()=>{const h=b.querySelector('#nxBegriffe');if(h&&h.scrollIntoView)h.scrollIntoView({block:'start'});},40);
+  mtabsBind(b);
 };
+
+// ══ Regeln und Richtwerte: die Normen-Leiter ══
+// Jede Regel aus data/rahmen_utr.json bekommt eine Stufe: Pflicht · Teils Pflicht · Ziel · Empfehlung · Faustregel.
+// Im Quartiersprofil steht der Wert neben jeder passenden Regel — oder ehrlich „nicht direkt vergleichbar".
+let RZ=null,rzLoad=null;
+const rahmen=()=>rzLoad||(rzLoad=fetch('data/rahmen_utr.json').then(r=>r.ok?r.json():null).catch(()=>null).then(j=>(RZ=j)));
+const STUFEN=['pflicht','teils','ziel','empfehlung','faustregel'];
+const SL={pflicht:['Pflicht','Mandatory','Verplicht'],teils:['Teils Pflicht','Partly binding','Deels verplicht'],ziel:['Ziel','Target','Doel'],empfehlung:['Empfehlung','Recommendation','Advies'],faustregel:['Faustregel','Rule of thumb','Vuistregel'],app:['Für die Note','For the grade','Voor het cijfer']};
+const THEMEN={hitze:['Hitze','Heat','Hitte'],gruen:['Grün','Green','Groen'],wasser:['Wasser','Water','Water'],laerm:['Lärm','Noise','Geluid'],luft:['Luft','Air','Lucht'],mobilitaet:['Mobilität','Mobility','Mobiliteit'],bio:['Natur','Nature','Natuur'],immobilien:['Immobilien','Real estate','Vastgoed']};
+const LX=()=>L_()==='en'?'en':L_()==='nl'?'nl':'de';
+const tx3=o=>o==null?'':typeof o==='string'?o:(o[LX()]||o.de||'');
+const nbadge=k=>`<span class="nb nb-${k}">${T(...SL[k])}</span>`;
+const unbadge=()=>`<span class="nb nb-un">${T('ungeprüft','unverified','ongecontroleerd')}</span>`;
+function mtabs(on){return `<div class="nxd-tabs nxs-mt" role="tablist">${[['methodik',T('Methodik','Methodology','Methodiek')],['normen',T('Regeln und Richtwerte','Rules and guidelines','Regels en richtwaarden')]].map(([k,l])=>`<button role="tab" data-mt="${k}" aria-selected="${k===on}" class="${k===on?'on':''}">${l}</button>`).join('')}</div>`;}
+function mtabsBind(root){root.querySelectorAll('[data-mt]').forEach(x=>x.onclick=()=>{if(x.classList.contains('on'))return;x.dataset.mt==='normen'?M.normen():M.methodik();});}
+let NF='';
+M.normen=function(focus){
+  const R=RZ;
+  if(!R){const b=sheet('normen',T('Regeln und Richtwerte','Rules and guidelines','Regels en richtwaarden'),`${mtabs('normen')}<p class="nxs-lead">${T('Regeln werden geladen …','Loading rules …','Regels laden …')}</p>`);mtabsBind(b);
+    rahmen().then(j=>{if(SH&&SH.id==='normen')j?M.normen(focus):(b.querySelector('.nxs-lead').textContent=T('Regeln gerade nicht erreichbar.','Rules not reachable right now.','Regels nu niet bereikbaar.'));});return;}
+  const all=R.normen.filter(n=>STUFEN.includes(n.stufe)),cnt={};all.forEach(n=>n.themen.forEach(t=>{cnt[t]=(cnt[t]||0)+1;}));
+  const show=all.filter(n=>!NF||n.themen.includes(NF));
+  const item=n=>`<article class="nxn-i" id="n-${esc(n.id)}"><div class="nxn-h">${nbadge(n.stufe)}${n.geprueft===false?unbadge():''}<b>${esc(tx3(n.titel))}</b></div>
+    ${n.zahl?`<p class="nxn-z">${esc(n.zahl)}</p>`:''}<p>${esc(tx3(n.kern))}</p>
+    <p class="nxn-m">${esc(n.ebene)} · ${T('Stand','As of','Stand')} ${esc(n.stand||'—')} · <a href="${esc(n.quelle)}" target="_blank" rel="noopener">${T('Quelle','Source','Bron')}</a></p></article>`;
+  const groups=STUFEN.map(k=>{const xs=show.filter(n=>n.stufe===k);return xs.length?`<h3>${nbadge(k)} <span class="nxn-d">${esc(tx3(R.meta.stufen&&R.meta.stufen[k]))}</span></h3>${xs.map(item).join('')}`:'';}).join('');
+  const b=sheet('normen',T('Regeln und Richtwerte','Rules and guidelines','Regels en richtwaarden'),`${mtabs('normen')}
+    <p class="nxs-lead">${T('Was gilt in Utrecht für Hitze, Grün, Wasser, Lärm, Luft und Mobilität — und wie verbindlich ist es? Jede Regel mit Quelle und Stand. Keine Rechtsberatung.','What applies in Utrecht to heat, green, water, noise, air and mobility — and how binding is it? Every rule with source and date. Not legal advice.','Wat geldt er in Utrecht voor hitte, groen, water, geluid, lucht en mobiliteit — en hoe bindend is het? Elke regel met bron en datum. Geen juridisch advies.')}</p>
+    <div class="nxn-f" role="group" aria-label="${T('Nach Thema filtern','Filter by topic','Filter op thema')}"><button data-th="" aria-pressed="${!NF}" class="${!NF?'on':''}">${T('Alle','All','Alle')} <small>${all.length}</small></button>${Object.keys(THEMEN).filter(t=>cnt[t]).map(t=>`<button data-th="${t}" aria-pressed="${NF===t}" class="${NF===t?'on':''}">${T(...THEMEN[t])} <small>${cnt[t]}</small></button>`).join('')}</div>
+    ${groups}
+    <p class="note">${T(`${all.filter(n=>n.geprueft===false).length} Angaben sind als „ungeprüft" markiert: nicht am Originaldokument bestätigt. Stand der Sammlung: ${R.meta.stand}.`,`${all.filter(n=>n.geprueft===false).length} items are marked "unverified": not confirmed in the original document. Collection as of ${R.meta.stand}.`,`${all.filter(n=>n.geprueft===false).length} gegevens zijn gemarkeerd als „ongecontroleerd": niet in het originele document bevestigd. Stand van de verzameling: ${R.meta.stand}.`)}</p>`,true);
+  mtabsBind(b);
+  b.querySelectorAll('[data-th]').forEach(x=>x.onclick=()=>{NF=x.dataset.th;M.normen();const f=SH&&SH.ov.querySelector(`[data-th="${NF}"]`);f&&f.focus();});
+  if(focus)setTimeout(()=>{const h=b.querySelector('#n-'+focus);if(h){h.classList.add('hl');h.scrollIntoView&&h.scrollIntoView({block:'center'});}},40);
+};
+// Leiter im Quartiersprofil: je Risiko die passenden Regeln, sortiert nach Verbindlichkeit
+const NOTE={laerm:'who_laerm',gruen:'regel_33300'};   // Regeln, deren Wert die Note benutzt; sonst steht die Einteilung der App als eigene Zeile da
+function ladderRows(b){
+  const X=NX(),R=RZ,out=[];if(!R)return out;
+  X.RISKS.forEach(r=>{const v=r.v(b);if(v==null)return;const rows=[];let inNote=false;
+    R.normen.forEach(n=>(n.bezug||[]).filter(z=>z.r===r.id).forEach(z=>{
+      if(z.nv){rows.push({n,z,st:'nv'});return;}
+      const ok=z.op==='<='?v<=z.wert:v>=z.wert,note=NOTE[r.id]===n.id;if(note)inNote=true;
+      rows.push({n,z,st:ok?'ok':'bad',note});}));
+    if(!inNote)rows.unshift({app:true,st:r.over(v)?'bad':'ok'});
+    rows.sort((a,c)=>(a.app?-1:STUFEN.indexOf(a.n.stufe))-(c.app?-1:STUFEN.indexOf(c.n.stufe))||(a.st==='nv')-(c.st==='nv'));
+    out.push({r,v,rows});});
+  return out;
+}
+function ladderHTML(b){
+  const X=NX(),groups=ladderRows(b);if(!groups.length)return '';
+  const all=groups.flatMap(g=>g.rows),bad=all.filter(x=>x.st==='bad'&&!x.app).length,n=all.filter(x=>!x.app).length;
+  const soll=(r,z)=>`${z.op==='<='?'≤':'≥'} ${r.f(z.wert)}`;
+  const st=(x,r)=>x.st==='nv'?`<span class="chip2 nv">${T('nicht direkt vergleichbar','not directly comparable','niet direct vergelijkbaar')}</span>`:
+    `<span class="chip2 ${x.st}">${x.st==='ok'?T('erreicht','met','gehaald'):(x.z?x.z.op:(r.inv?'>=':'<='))==='<='?T('darüber','above','erboven'):T('darunter','below','eronder')}</span>`;
+  const row=(x,r)=>x.app?`<li><span class="nxl-b"><span class="nb nb-app">${T(...SL.app)}</span></span><span class="nxl-t">${T('Einteilung der App','App classification','Indeling van de app')}<small>${r.rule()} — ${T('keine Rechtsnorm','not a legal norm','geen wettelijke norm')}</small></span><span class="nxl-s">${r.cls?'':`${r.inv?'≥':'≤'} ${r.lim}`}</span>${st(x,r)}</li>`:
+    `<li><span class="nxl-b">${nbadge(x.n.stufe)}${x.n.geprueft===false?unbadge():''}</span><span class="nxl-t"><button class="nxl-n" data-n="${esc(x.n.id)}">${esc(tx3(x.n.titel))}</button>${x.z.nv?`<small>${esc(tx3(x.z.nv))}</small>`:x.z.gilt?`<small>${esc(tx3(x.z.gilt))}</small>`:''}${x.note?`<small class="nxl-note">${T('zählt für die Note','counts towards the grade','telt mee voor het cijfer')}</small>`:''}</span><span class="nxl-s">${x.z.nv?'':soll(r,x.z)}</span>${st(x,r)}</li>`;
+  return `<details class="nxl"><summary><span>${T('Was gilt hier?','What applies here?','Wat geldt hier?')}</span><small>${T(`${n} Regeln und Richtwerte · ${bad} hier nicht erreicht`,`${n} rules and guidelines · ${bad} not met here`,`${n} regels en richtwaarden · ${bad} hier niet gehaald`)}</small></summary>
+    ${groups.map(g=>`<div class="nxl-g"><h4>${tn(g.r)} <b>${g.r.f(g.v)}</b></h4><ul>${g.rows.map(x=>row(x,g.r)).join('')}</ul></div>`).join('')}
+    ${groups.some(g=>g.r.id==='schatten'&&g.rows.some(x=>x.app))?`<p class="nxl-x">${T('Schatten: Die Note rechnet streng mit 40 % — dem Wert für wichtige Wege. Für das ganze Viertel nennen Maatlat und Gemeente 30 %.','Shade: the grade uses a strict 40 % — the value for key routes. For the whole neighbourhood the Maatlat and the municipality name 30 %.','Schaduw: het cijfer rekent streng met 40 % — de waarde voor belangrijke routes. Voor de hele wijk noemen de Maatlat en de gemeente 30 %.')}</p>`:''}
+    <p class="nxl-x"><button class="nxl-all">${T('Alle Regeln und Richtwerte','All rules and guidelines','Alle regels en richtwaarden')}</button> · ${T('Keine Rechtsberatung. Neubau-Werte gelten nicht für den Bestand.','Not legal advice. New-build values do not apply to existing situations.','Geen juridisch advies. Nieuwbouwwaarden gelden niet voor bestaande situaties.')}</p></details>`;
+}
+function ladder(b,pb){
+  const put=()=>{if(NX().sel!==b||!pb.isConnected)return;const old=pb.querySelector('.nxl');if(old)old.remove();const h=ladderHTML(b);if(!h)return;
+    const at=pb.querySelector('.rcs');if(!at)return;at.insertAdjacentHTML('afterend',h);const d=pb.querySelector('.nxl');
+    d.querySelectorAll('.nxl-n').forEach(x=>x.onclick=()=>M.normen(x.dataset.n));d.querySelector('.nxl-all').onclick=()=>M.normen();};
+  RZ?put():rahmen().then(put);
+}
+M.ladderRows=ladderRows;M.rahmen=rahmen;
 
 // ══ Merkliste ══
 const pins=()=>ST.get('nx_pins',[]);
@@ -360,12 +430,12 @@ M.heat=async function(stub){
 function heatPop(b){
   const old=document.getElementById('nxHeatPop');if(old){old.remove();b.setAttribute('aria-expanded','false');return;}
   const d=HW.d,mx=d.temperature_2m_max,mn=d.temperature_2m_min||[],days=d.time||[],lv=Math.max(lvl(mx[0]),lvl(mx[1]||0));
-  let run=0,best=0,hot=0,bh=0;mx.forEach(t=>{if(t>=27){run++;if(t>=30)hot++;if(run>best){best=run;bh=hot;}}else{run=0;hot=0;}});
-  const plan=best>=4&&bh>=3,dn=s=>new Date(s+'T12:00').toLocaleDateString(L_()==='en'?'en-GB':L_()==='nl'?'nl-NL':'de-DE',{weekday:'short'});
+  let run=0,best=0,hot=0,bh=0;mx.forEach(t=>{if(t>=25){run++;if(t>=30)hot++;if(run>best||(run===best&&hot>bh)){best=run;bh=hot;}}else{run=0;hot=0;}});
+  const plan=best>=5&&bh>=3,dn=s=>new Date(s+'T12:00').toLocaleDateString(L_()==='en'?'en-GB':L_()==='nl'?'nl-NL':'de-DE',{weekday:'short'});
   const p=document.createElement('div');p.id='nxHeatPop';p.className='more nxhp';p.setAttribute('role','dialog');p.setAttribute('aria-label',T('Hitze-Hinweis','Heat notice','Hittemelding'));
   p.innerHTML=`<div class="more-h">${[T('Warm','Warm','Warm'),T('Warm','Warm','Warm'),T('Hitze','Heat','Hitte'),T('Extreme Hitze','Extreme heat','Extreme hitte')][lv]}</div>
     <div class="nxhp-d">${mx.map((t,i)=>`<div class="${lvl(t)?'l'+lvl(t):''}"><b>${Math.round(t)}°</b><i style="height:${Math.max(4,Math.min(40,(t-10)*1.6))}px"></i><span>${i?dn(days[i]):T('heute','today','vandaag')}</span>${mn[i]>=20?`<em title="${T('Tropennacht','Tropical night','Tropische nacht')}" aria-label="${T('Tropennacht','Tropical night','Tropische nacht')}"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></em>`:''}</div>`).join('')}</div>
-    ${plan?`<p class="nxhp-plan">${T('Vier warme Tage in Folge, drei davon über 30 °C: Das ist die Schwelle des Nationalen Hitzeplans.','Four warm days in a row, three of them above 30 °C: that is the threshold of the National Heat Plan.','Vier warme dagen op rij, waarvan drie boven 30 °C: dat is de drempel van het Nationaal Hitteplan.')}</p>`:''}
+    ${plan?`<p class="nxhp-plan">${T('Die Vorhersage erfüllt die KNMI-Definition einer Hitzewelle: 5 Tage ab 25 °C, davon 3 ab 30 °C. Ob der Nationale Hitzeplan gilt, entscheidet das RIVM — ohne feste Gradzahl, auch nach Nachttemperatur und Luftfeuchte.','The forecast meets the KNMI definition of a heatwave: 5 days from 25 °C, 3 of them from 30 °C. Whether the National Heat Plan applies is decided by RIVM — without a fixed temperature, also based on night temperature and humidity.','De verwachting voldoet aan de KNMI-definitie van een hittegolf: 5 dagen vanaf 25 °C, waarvan 3 vanaf 30 °C. Of het Nationaal Hitteplan geldt, beslist het RIVM — zonder vaste temperatuur, ook op basis van nachttemperatuur en luchtvochtigheid.')} <a href="https://www.rivm.nl/hitte/nationaal-hitteplan" target="_blank" rel="noopener">rivm.nl</a></p>`:''}
     <ul class="nxhp-tips"><li>${T('Bei Älteren, Kindern und Alleinlebenden nachfragen','Check on older people, children and people living alone','Kijk om naar ouderen, kinderen en alleenwonenden')}</li><li>${T('Genug trinken, mittags im Schatten bleiben','Drink enough, stay in the shade at midday','Drink genoeg, blijf \'s middags in de schaduw')}</li><li>${T('Morgens und nachts lüften, tagsüber abdunkeln','Air rooms in the morning and at night, keep them dark during the day','\'s Ochtends en \'s nachts luchten, overdag verduisteren')}</li></ul>
     <div class="nxhp-a"><button data-h="shade">${T('Wo es schattig ist','Where it is shady','Waar het schaduwrijk is')}</button><button data-h="hide">${T('Heute ausblenden','Hide for today','Vandaag verbergen')}</button></div>
     <p class="more-f">${T('Vorhersage von Open-Meteo, keine amtliche Warnung. Amtlich warnt das KNMI.','Forecast from Open-Meteo, not an official warning. Official warnings come from the KNMI.','Verwachting van Open-Meteo, geen officiële waarschuwing. Officieel waarschuwt het KNMI.')}</p>`;
@@ -420,6 +490,7 @@ function cmds(){
   A(T('Quartiere vergleichen','Compare neighbourhoods','Buurten vergelijken'),T('Seite','Page','Pagina'),'vergleich compare versus',()=>M.dashboard('cmp',X.sel&&X.sel.code),IC.cmp);
   A(T('Ranglisten','Rankings','Ranglijsten'),T('Seite','Page','Pagina'),'top rang liste',()=>M.dashboard('rank'),IC.grid);
   A(T('Methodik und Quellen','Methodology and sources','Methodiek en bronnen'),T('Seite','Page','Pagina'),'methode quellen punkte noten',()=>M.methodik(),IC.book);
+  A(T('Regeln und Richtwerte','Rules and guidelines','Regels en richtwaarden'),T('Seite','Page','Pagina'),'normen regeln pflicht gesetz richtwert who maatlat parkeernorm omgevingswet rules law',()=>M.normen(),IC.book);
   A(T('Begriffe erklärt','Terms explained','Begrippen uitgelegd'),T('Seite','Page','Pagina'),'glossar glossary woorden',()=>M.methodik('begriffe'),IC.book);
   A(T('Utrecht jetzt','Utrecht now','Utrecht nu'),T('Wetter, Regen, Luft — live','Weather, rain, air — live','Weer, regen, lucht — live'),'live jetzt now wetter regen luft air',()=>M.now(),IC.therm);
   lab('route',T('Kühle Route','Cool route','Koele route'),'route weg schatten schattig kühl');
@@ -475,6 +546,7 @@ document.addEventListener('nx:panel',e=>{
   d.querySelector('[data-a="cmp"]').onclick=()=>M.dashboard('cmp',b.code);
   d.querySelector('[data-a="pdf"]').onclick=()=>M.report(b);
   d.querySelector('[data-a="rep"]').onclick=()=>M.report_spot();
+  ladder(b,pb);
 });
 document.addEventListener('nx:view',drawReps);
 wire();drawReps();
