@@ -172,18 +172,55 @@ function paintRain(){
   const G=RN.g;if(!G)return null;const c=RN.img||document.createElement('canvas');c.width=G.w;c.height=G.h;const g=c.getContext('2d');if(!g||typeof g.createImageData!=='function')return null;
   const id=g.createImageData(G.w,G.h),t=RN.t;
   for(let i=0;i<G.dep.length;i++){let d=G.dep[i];if(d<.1)continue;if(t<1){const k=G.lab[i];d=k>=0?d-(1-t)*G.Dk[k]:0;if(d<.1)continue;}
-    let cc=RCOL[0][1];for(const [v,col] of RCOL)if(d>=v)cc=col;const p=4*i;id.data[p]=cc[0];id.data[p+1]=cc[1];id.data[p+2]=cc[2];id.data[p+3]=Math.round(170+Math.min(1,d/.4)*80);}
+    let cc=RCOL[0][1];if(A.bs())cc=A.waterRGB(d);else for(const [v,col] of RCOL)if(d>=v)cc=col;const p=4*i;id.data[p]=cc[0];id.data[p+1]=cc[1];id.data[p+2]=cc[2];id.data[p+3]=Math.round(170+Math.min(1,d/.4)*80);}
   g.putImageData(id,0,0);RN.img=c;return c;
 }
 function rainAt(lat,lon){const G=RN.g;if(!G)return null;const [x,y]=A.toRD(lat,lon),i=Math.floor((x-G.x0)/G.rx),j=Math.floor((G.y1-y)/G.ry);if(i<0||j<0||i>=G.w||j>=G.h)return null;return G.dep[j*G.w+i];}
 function playRain(){if(RN.playing)return;RN.playing=true;const t0=performance.now(),dur=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?1:6500;
-  const step=now=>{if(!RN.playing||!LAB.on||LAB.tool!=='water'||W.mode!=='rain'){RN.playing=false;return;}RN.t=Math.min(1,(now-t0)/dur);paintRain();A.req();const sl=document.getElementById('rnT');if(sl)sl.value=Math.round(RN.t*100);
+  const step=now=>{if(!RN.playing||!LAB.on||LAB.tool!=='water'||W.mode!=='rain'){RN.playing=false;return;}RN.t=Math.min(1,(now-t0)/dur);paintRain();A.req();const sl=document.getElementById('rnT');if(sl)sl.value=Math.round(RN.t*100);const sv=document.getElementById('rnV');if(sv)sv.textContent=Math.round(RN.t*100)+' %';
     if(RN.t<1)requestAnimationFrame(step);else{RN.playing=false;A.rerender();}};
   RN.t=0;requestAnimationFrame(step);}
 const kpIn=()=>{if(!RN.kp)return [];const b=A.map.getBounds(),nw=A.w20(b.getNorth(),b.getWest()),se=A.w20(b.getSouth(),b.getEast());return RN.kp.filter(k=>k.rings.some(r=>r.some(p=>p[0]>=nw[0]&&p[0]<=se[0]&&p[1]>=nw[1]&&p[1]<=se[1])));};
 const KPN=l=>l===0?T('Straße bei Starkregen unpassierbar','Road impassable in heavy rain','Weg onbegaanbaar bij hevige neerslag'):l===2?T('Wasserschäden an Gebäuden','Water damage to buildings','Waterschade aan panden'):T('Hitzestress','Heat stress','Hittestress');
 
 // ── Werkzeug ──
+// ── Bausteine-Fassung (Test über ?bausteine=1): gleiche Funktionen, einheitliche Formen ──
+// Umschalter statt Pillen, Regler mit Bezeichnung/Wert/Endwerten, eine Legende, eine Wassertiefen-Skala für 2D und 3D.
+function renderBS(){
+  const modes=A.seg([['rain',T('Starkregen','Heavy rain','Hevige bui')],['flood',T('Deichbruch','Dike breach','Dijkdoorbraak')],['chance',T('Zukunft','Future','Toekomst')],['terrain',T('Höhe','Height','Hoogte')]],W.mode,true);
+  const fld=(lbl,inner)=>`<div class="ui-fld"><span class="ui-fl">${lbl}</span>${inner}</div>`;
+  const opt=(attr,v,on,l)=>`<button ${attr}="${v}" class="${on?'on':''}" aria-pressed="${on}">${l}</button>`;
+  const leg=(title,inner,src)=>`<div class="ui-legend"><b>${title}</b>${inner}<small>${src}</small></div>`;
+  const sw=xs=>`<div class="ui-sw">${xs.map(([c,l,k])=>`<span><i class="${k||''}" style="${c?`background:${c}`:''}"></i>${l}</span>`).join('')}</div>`;
+  if(W.mode==='rain'){const S=RN.stats,kp=kpIn().filter(k=>k.l!==1);
+    return modes+(S?`<div class="ar-grid wt-rg"><div><b>${A.fmt(S.deep)}</b><span>${T('Mulden tiefer als 20 cm','hollows deeper than 20 cm','kommen dieper dan 20 cm')}</span></div><div><b>${A.fmt(S.bTouch)}</b><span>${T('Gebäude grenzen an solche Mulden','buildings border such hollows','gebouwen grenzen aan zulke kommen')}</span></div>
+        <div><b>${A.fmt(S.a10)} m²</b><span>${T('Fläche mit mehr als 10 cm Wasser','area with more than 10 cm of water','oppervlak met meer dan 10 cm water')}</span></div><div><b>${A.fmt(S.vol)} m³</b><span>${T('Wasser, wenn alle Mulden voll sind','water when all hollows are full','water als alle kommen vol zijn')}</span></div></div>
+      <div class="ui-sl"><div class="ui-sl-h"><span>${T('Mulden füllen sich','Hollows fill up','Kommen lopen vol')}</span><b id="rnV">${Math.round(RN.t*100)} %</b></div>
+        <div class="ui-sl-r"><button class="ui-icon pri" id="rnP" aria-label="${RN.playing?T('Regen anhalten','Pause the rain','Regen pauzeren'):T('Regen abspielen','Play the rain','Regen afspelen')}">${RN.playing?'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg>'}</button><input id="rnT" class="ui-range" type="range" min="0" max="100" value="${Math.round(RN.t*100)}" style="--track:${A.waterCss()}" aria-label="${T('Füllstand der Mulden','Fill level of the hollows','Vulling van de kommen')}"></div>
+        <div class="ui-sl-t"><span>${T('leer','empty','leeg')}</span><span>${T('randvoll','full to the brim','tot de rand vol')}</span></div></div>`
+      :RN.busy?`<p class="lab-hint"><span class="lab-spin" aria-hidden="true"></span> ${T('Mulden werden berechnet …','Computing hollows …','Kommen worden berekend …')}</p>`
+      :`<p class="lab-hint">${T('Für die Mulden-Rechnung auf ein Viertel zoomen — dann zeigt das Werkzeug, wo Regenwasser stehen bleibt.','Zoom to a neighbourhood for the hollow calculation — the tool then shows where rainwater collects.','Zoom in op een buurt voor de komberekening — dan toont het gereedschap waar regenwater blijft staan.')}</p><button class="ui-btn pri" id="rnZ">${T('Hierhin heranzoomen','Zoom in here','Hier inzoomen')}</button>`)+
+      leg(T('Wassertiefe','Water depth','Waterdiepte'),`<div class="ui-ramp" style="background:${A.waterCss()}"></div><div class="ui-ramp-l">${A.waterTicks()}</div>${sw([[null,T('Klimaknelpunt der Gemeente','municipal climate hotspot','klimaatknelpunt gemeente'),'kp-sw']])}`,T('Eigene Rechnung auf dem AHN-Gelände, Obergrenze · gleiche Skala wie in 3D','Own calculation on AHN terrain, upper bound · same scale as in 3D','Eigen berekening op AHN-maaiveld, bovengrens · zelfde schaal als in 3D'))+
+      `${kp.length?`<div class="wt-kp">${kp.map(k=>`<p><b>${k.name}</b> · ${KPN(k.l)}${k.urg==='ambitie'?` <small>(${T('Ambition','ambition','ambitie')})</small>`:''}</p>`).join('')}</div>`:''}
+      <p class="wt-warn">${T('Gezeigt ab 10 cm — Wasser in Rinnsteinen bis 10 cm ist bei Wolkenbrüchen normal. Obergrenze: Mulden im Gelände, randvoll — ohne Kanalisation, Versickerung und Gräben. Wie voll sie bei einem Wolkenbruch wirklich werden, hängt vom Regen und vom Einzugsgebiet ab. Die Knelpunte sind die amtliche Einschätzung der Gemeente Utrecht.','Shown from 10 cm — up to 10 cm in gutters is normal in cloudbursts. Upper bound: hollows in the terrain, filled to the brim — without sewers, infiltration and ditches. How full they really get in a cloudburst depends on the rain and the catchment. The hotspots are the official assessment of the Gemeente Utrecht.','Getoond vanaf 10 cm — tot 10 cm in goten is normaal bij wolkbreuken. Bovengrens: kommen in het maaiveld, tot de rand gevuld — zonder riolering, infiltratie en sloten. Hoe vol ze bij een wolkbreuk echt worden, hangt af van de bui en het stroomgebied. De knelpunten zijn de officiële inschatting van de gemeente Utrecht.')}</p>
+      <p class="lab-hint">${T('Tippe auf die Karte: Wassertiefe in der Mulde an diesem Punkt.','Tap the map: water depth in the hollow at that spot.','Tik op de kaart: waterdiepte in de kom op dat punt.')}</p>`;}
+  if(W.mode==='chance')return modes+fld(T('Zeitpunkt','Time horizon','Tijdshorizon'),`<div class="ui-seg" role="group" aria-label="${T('Zeitpunkt','Time horizon','Tijdshorizon')}">${YRS.map(([k,l])=>opt('data-y',k,W.yr===k,l())).join('')}</div>`)+
+      fld(T('Wassertiefe mehr als','Water depth more than','Waterdiepte meer dan'),`<div class="ui-seg" role="group" aria-label="${T('Wassertiefe','Water depth','Waterdiepte')}">${CMS.map(c=>opt('data-c',c,W.cm===c,c+' cm')).join('')}</div>`)+
+      `<p class="wt-cap"><b>${T('Wahrscheinlichkeit pro Jahr','Probability per year','Kans per jaar')}</b>, ${T('dass hier mehr als','that more than','dat hier meer dan')} ${W.cm} cm ${T('Wasser steht','of water stands here','water staat')} — ${W.yr==='huidig'?T('heute, mit dem aktuellen Zustand der Deiche. Bis 2050 sollen alle Primärdeiche die gesetzliche Norm erfüllen (Waterwet) — der Vergleich steht unter „2050".','today, with the current state of the dikes. By 2050 all primary dikes are to meet the legal standard (Water Act) — compare under “2050”.','nu, met de huidige staat van de dijken. In 2050 moeten alle primaire keringen aan de wettelijke norm voldoen (Waterwet) — vergelijk onder „2050".'):W.yr==='2050'?T('2050, <b>wenn alle Primärdeiche die gesetzliche Norm erfüllen</b> — ein Ziel, keine Vorhersage.','2050, <b>if all primary dikes meet the legal standard</b> — a target, not a forecast.','2050, <b>als alle primaire keringen aan de wettelijke norm voldoen</b> — een doel, geen voorspelling.'):T('2100, Deiche auf Normniveau <b>und</b> Klimawandel berücksichtigt.','2100, dikes at the legal standard <b>and</b> climate change included.','2100, dijken op normniveau <b>en</b> klimaatverandering meegenomen.')}</p>`+
+      leg(T('Wahrscheinlichkeit pro Jahr','Probability per year','Kans per jaar'),sw((W.chLegend||[]).slice().reverse().map(e=>[e.c,chl(e.v)])),T('LIWO, Rijkswaterstaat · amtliche Farben','LIWO, Rijkswaterstaat · official colours','LIWO, Rijkswaterstaat · officiële kleuren'))+
+      `<p class="lab-hint">${T('Tippe auf die Karte: heute, 2050 und 2100 im Vergleich.','Tap the map: today, 2050 and 2100 compared.','Tik op de kaart: nu, 2050 en 2100 vergeleken.')}</p>`;
+  if(W.mode==='flood'){const c=CLS.find(x=>x.k===W.k);
+    return modes+fld(T('Etwa einmal in … Jahren','About once in … years','Ongeveer eens per … jaar'),`<div class="ui-seg tight" role="group" aria-label="${T('Wahrscheinlichkeit','Probability','Kans')}">${CLS.map(x=>opt('data-k',x.k,x.k===W.k,fmtP(x.p))).join('')}</div>`)+
+      `<p class="wt-cap"><b>${per(c.p)}</b> · ${c.n[A.lang()==='en'?1:A.lang()==='nl'?2:0]} (LIWO). ${T('Maximale Wassertiefe, wenn Deiche brechen oder Gewässer über die Ufer treten.','Maximum water depth if dikes breach or waters overflow.','Maximale waterdiepte bij een dijkdoorbraak of buiten de oevers tredend water.')}</p>`+
+      leg(T('Maximale Wassertiefe','Maximum water depth','Maximale waterdiepte'),sw((W.legend||[]).map(e=>[e.c,e.l.replace('.',A.lang()==='en'?'.':',').replace('.',A.lang()==='en'?'.':',')+' m'])),T('LIWO, Rijkswaterstaat · amtliche Farben','LIWO, Rijkswaterstaat · official colours','LIWO, Rijkswaterstaat · officiële kleuren'))+
+      `<p class="lab-hint">${T('Tippe auf die Karte: Wassertiefe an diesem Punkt in allen fünf Szenarien.','Tap the map: water depth at that spot in all five scenarios.','Tik op de kaart: waterdiepte op dat punt in alle vijf scenario\'s.')}</p>`;}
+  const D=W.dem;
+  return modes+`<div class="ui-sl"><div class="ui-sl-h"><label for="wtL">${T('Wasserstand','Water level','Waterstand')}</label><b id="wtV">${A.nf(W.level,1)} m NAP</b></div><input id="wtL" class="ui-range" type="range" min="-3" max="6" step="0.1" value="${W.level}"><div class="ui-sl-t"><span>−3 m</span><span>+6 m</span></div></div>`+
+    fld(T('Schnellwahl','Quick pick','Snelkeuze'),`<div class="ui-seg" role="group" aria-label="${T('Schnellwahl Wasserstand','Quick pick water level','Snelkeuze waterstand')}">${[0,1,2,5].map(v=>opt('data-l',v,Math.abs(W.level-v)<.05,`${v>0?'+':''}${v} m`)).join('')}</div>`)+
+    `<p class="wt-cap" id="wtS">${D?`${T('Gelände hier','Terrain here','Maaiveld hier')}: ${A.nf(D.lo,1)} ${T('bis','to','tot')} ${A.nf(D.hi,1)} m NAP · ${T('Mitte','median','mediaan')} ${A.nf(D.med,1)} m. <b>${Math.round(100*(W.below||0))} %</b> ${T('des Ausschnitts liegen tiefer als der gewählte Wasserstand.','of the view lie below the chosen water level.','van het beeld ligt lager dan de gekozen waterstand.')}`:T('Zoome auf einen Stadtteil (ab Zoom 14), um das Höhenmodell zu laden.','Zoom to a district (level 14+) to load the elevation model.','Zoom in op een wijk (vanaf niveau 14) om het hoogtemodel te laden.')}</p>`+
+    leg(T('Geländehöhe','Ground height','Maaiveldhoogte'),`<div class="ui-ramp" style="background:${A.grad(ELEV.slice(0,7),-4,8)}"></div><div class="ui-ramp-l"><span>−4 m</span><span>NAP 0</span><span>+8 m</span></div>`,'AHN')+
+    `<p class="wt-warn">${T('Gedankenexperiment: zeigt nur, welches Gelände tiefer liegt als der Wasserstand — ohne Deiche, Pumpwerke und Kanäle. Das echte Risiko zeigt die amtliche Karte „Überflutung".','Thought experiment: shows only which ground lies lower than the water level — without dikes, pumping stations and canals. The real risk is in the official “Flooding” map.','Gedachte-experiment: toont alleen welk maaiveld lager ligt dan de waterstand — zonder dijken, gemalen en kanalen. Het echte risico staat op de officiële kaart „Overstroming".')}</p>`;
+}
 LAB.addTool({id:'water',order:4,gate:false,keepStatus:true,
   icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 9c1.7-1.6 3.3-1.6 5 0s3.3 1.6 5 0 3.3-1.6 5 0 3.3 1.6 5 0"/><path d="M2 15c1.7-1.6 3.3-1.6 5 0s3.3 1.6 5 0 3.3-1.6 5 0 3.3 1.6 5 0"/></svg>',
   label:()=>T('Wasser','Water','Water'),
@@ -191,6 +228,7 @@ LAB.addTool({id:'water',order:4,gate:false,keepStatus:true,
   enter(){showLayer();knelpunten();Promise.all([legend(),chLegend()]).then(()=>A.rerender());},
   leave(){if(W.layer){A.map.removeLayer(W.layer);W.layer=null;}},
   render(){
+    if(A.bs())return renderBS();
     const modes=A.seg([['rain',T('Starkregen','Heavy rain','Hevige bui')],['flood',T('Deichbruch','Dike breach','Dijkdoorbraak')],['chance',T('Zukunft','Future','Toekomst')],['terrain',T('Höhe','Height','Hoogte')]],W.mode);
     if(W.mode==='rain'){const S=RN.stats,kp=kpIn().filter(k=>k.l!==1);
       return modes+(S?`<div class="ar-grid wt-rg"><div><b>${A.fmt(S.deep)}</b><span>${T('Mulden tiefer als 20 cm','hollows deeper than 20 cm','kommen dieper dan 20 cm')}</span></div><div><b>${A.fmt(S.bTouch)}</b><span>${T('Gebäude grenzen an solche Mulden','buildings border such hollows','gebouwen grenzen aan zulke kommen')}</span></div>
@@ -221,14 +259,14 @@ LAB.addTool({id:'water',order:4,gate:false,keepStatus:true,
   },
   bind(root){
     root.querySelectorAll('[data-m]').forEach(el=>el.onclick=()=>{W.mode=el.dataset.m;showLayer();A.rerender();A.refresh();});
-    root.querySelectorAll('.wt-cls [data-k]').forEach(el=>el.onclick=()=>{W.k=+el.dataset.k;showLayer();A.rerender();});
+    root.querySelectorAll('[data-k]').forEach(el=>el.onclick=()=>{W.k=+el.dataset.k;showLayer();A.rerender();});
     root.querySelectorAll('[data-y]').forEach(el=>el.onclick=()=>{W.yr=el.dataset.y;showLayer();A.rerender();});
     root.querySelectorAll('[data-c]').forEach(el=>el.onclick=()=>{W.cm=+el.dataset.c;showLayer();A.rerender();});
-    const sl=root.querySelector('#wtL');if(sl)sl.oninput=()=>{W.level=+sl.value;root.querySelector('#wtV').textContent=A.nf(W.level,1)+' m NAP';paint();A.req();const s=root.querySelector('#wtS b');if(s)s.textContent=Math.round(100*(W.below||0))+' %';root.querySelectorAll('.wt-chips [data-l]').forEach(b=>b.classList.toggle('on',Math.abs(W.level-+b.dataset.l)<.05));};
-    root.querySelectorAll('.wt-chips [data-l]').forEach(el=>el.onclick=()=>{W.level=+el.dataset.l;paint();A.rerender();A.req();});
+    const sl=root.querySelector('#wtL');if(sl)sl.oninput=()=>{W.level=+sl.value;root.querySelector('#wtV').textContent=A.nf(W.level,1)+' m NAP';paint();A.req();const s=root.querySelector('#wtS b');if(s)s.textContent=Math.round(100*(W.below||0))+' %';root.querySelectorAll('[data-l]').forEach(b=>{const on=Math.abs(W.level-+b.dataset.l)<.05;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});};
+    root.querySelectorAll('[data-l]').forEach(el=>el.onclick=()=>{W.level=+el.dataset.l;paint();A.rerender();A.req();});
     const rz=root.querySelector('#rnZ');if(rz)rz.onclick=()=>A.map.setZoom(16.5);
     const rp=root.querySelector('#rnP');if(rp)rp.onclick=()=>{if(RN.playing){RN.playing=false;A.rerender();}else{playRain();A.rerender();}};
-    const rt=root.querySelector('#rnT');if(rt)rt.oninput=()=>{RN.playing=false;RN.t=+rt.value/100;paintRain();A.req();};
+    const rt=root.querySelector('#rnT');if(rt)rt.oninput=()=>{RN.playing=false;RN.t=+rt.value/100;const v=root.querySelector('#rnV');if(v)v.textContent=Math.round(RN.t*100)+' %';paintRain();A.req();};
   },
   async load(){
     if(W.mode==='rain'){knelpunten();if(A.map.getZoom()<16){RN.g=null;RN.stats=null;A.status('');A.rerender();return;}
