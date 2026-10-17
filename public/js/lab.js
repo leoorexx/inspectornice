@@ -317,6 +317,11 @@ async function computeSunHours(){
 }
 const SUN_RAMP=[[0,[44,38,92]],[0.25,[108,70,150]],[0.5,[206,96,74]],[0.75,[236,168,58]],[1,[255,236,150]]];
 const HEAT_RAMP=[[0,[214,226,206]],[0.35,[240,214,160]],[0.6,[228,140,84]],[0.8,[192,70,52]],[1,[118,22,36]]];
+// Wassertiefe: eine Skala für Starkregen, Deichbruch, 2D und 3D (logarithmisch 10 cm … 3 m). Amtliche LIWO-Karten behalten ihre Farben.
+const WATER_RAMP=[[.1,[156,201,238]],[.3,[74,143,212]],[1,[31,90,168]],[3,[11,42,99]]],WL=v=>(Math.log10(v)+1)/Math.log10(30);
+function waterRGB(d){const x=WL(Math.max(.1,Math.min(3,d)));for(let i=1;i<WATER_RAMP.length;i++){const a=WATER_RAMP[i-1],b=WATER_RAMP[i],xa=WL(a[0]),xb=WL(b[0]);if(x<=xb){const t=(x-xa)/(xb-xa);return a[1].map((c,j)=>Math.round(c+(b[1][j]-c)*t));}}return WATER_RAMP[WATER_RAMP.length-1][1];}
+const waterCss=()=>`linear-gradient(90deg,${WATER_RAMP.map(r=>`rgb(${r[1].join(',')}) ${(WL(r[0])*100).toFixed(0)}%`).join(',')})`;
+const waterTicks=()=>['10 cm','30 cm','1 m','3 m'].map(x=>`<span>${x}</span>`).join('');
 const RISK_MAX=0.85;
 async function computeHeat(){
   const sh=await computeSunHours();if(!sh||!sh.hrs||!sh.maxH)return;
@@ -403,7 +408,7 @@ const IC={
 };
 function status(t,busy){const el=dock&&dock.querySelector('.lab-status');if(!el)return;el.innerHTML=t?(busy?'<span class="lab-spin" aria-hidden="true"></span>':'')+`<span>${t}</span>`:'';el.classList.toggle('on',!!t);}
 const grad=(R,lo,hi)=>`linear-gradient(90deg,${R.map(r=>`rgb(${r[1].join(',')}) ${((r[0]-lo)/(hi-lo)*100).toFixed(0)}%`).join(',')})`;
-function seg(modes,cur){return `<div class="lab-seg" role="tablist">${modes.map(([k,l])=>`<button role="tab" data-m="${k}" aria-selected="${cur===k}" class="${cur===k?'on':''}">${IC[k]||''}<span>${l}</span></button>`).join('')}</div>`;}
+function seg(modes,cur,ui){if(ui)return `<div class="ui-seg" role="tablist">${modes.map(([k,l])=>`<button role="tab" data-m="${k}" aria-selected="${cur===k}" class="${cur===k?'on':''}">${l}</button>`).join('')}</div>`;return `<div class="lab-seg" role="tablist">${modes.map(([k,l])=>`<button role="tab" data-m="${k}" aria-selected="${cur===k}" class="${cur===k?'on':''}">${IC[k]||''}<span>${l}</span></button>`).join('')}</div>`;}
 function dates(){const ds=[['today',T('Heute','Today','Vandaag')],['jun',T('21. Juni','21 June','21 juni')],['sep',T('21. Sept.','21 Sept','21 sept')],['dec',T('21. Dez.','21 Dec','21 dec')]];
   return `<div class="lab-dates" role="group" aria-label="${T('Tag','Day','Dag')}">${ds.map(([k,l])=>`<button data-d="${k}" class="${LAB.dateKey===k?'on':''}" aria-pressed="${LAB.dateKey===k}">${l}</button>`).join('')}</div>`;}
 function timeRow(){const [a,b]=dayRange();return `<div class="lab-time"><button class="lab-play" aria-label="${LAB.playing?T('Anhalten','Pause','Pauzeren'):T('Tagesverlauf abspielen','Play the day','Dagverloop afspelen')}">${LAB.playing?IC.pause:IC.play}</button>
@@ -714,9 +719,9 @@ const api={T,nf,fmt,SR,lang:()=>opt.lang(),dark:isDark,status,req,refresh,rerend
   get map(){return map},get B(){return B},get S(){return S},get TREES(){return TREES},get GENERA(){return GENERA},get SUNH(){return SUNH},get PIN(){return PIN},set PIN(v){PIN=v;},
   computeSunHours,computeHeat,sunHoursAt,measureTrees,uhiAt,loadKnmi,get KNMI(){return KNMI},geotiff,treeAt,treeInfo,get TH(){return TH},w20,xf,mpp,m20,toRD,fromRD,inPoly,poly,chunked,signed,sunPos,sunNow,sunAt,atMin,dayRange,dayDate,hhmm,bearing,dirName,
   ALB,MAT,CLASS,albCol,ramp,grad,showInfo,hideInfo,offscreen,yieldNow,tooFar,isPhoto:photo,drawBuildings,drawCrowns,drawSurfaces,castShadows,bldInfo,limited,bgtItems,live,
-  dates,timeRow,bindTime,seg,label,IC,tool:()=>LAB.tool,setTool,
+  dates,timeRow,bindTime,seg,label,IC,tool:()=>LAB.tool,setTool,waterRGB,waterCss,waterTicks,bs:()=>document.documentElement.classList.contains('bs'),
   cv:()=>cv,dpr:()=>dpr,body:()=>dock.querySelector('.lab-body'),opt:()=>opt};
-LAB.api=api;
+LAB.api=api;LAB.RAMPS={water:WATER_RAMP,heat:HEAT_RAMP,sun:SUN_RAMP,albedo:ALB_RAMP};
 
 // ── Lebenszyklus ──
 let moveT=null;

@@ -1,0 +1,43 @@
+// Bausteine-Test (public/bausteine.html): Wasser-Werkzeug mit ?bausteine=1 — gleiche Funktionen, einheitliche Formen.
+// Ohne Schalter bleibt alles wie bisher. Prüft auch die gemeinsame Wassertiefen-Skala (LAB.RAMPS.water).
+const H=require('./lib/labHarness.cjs');const {ok,wait,errs,C}=H;
+const fs=require('fs');const html=fs.readFileSync('public/next.html','utf8');
+console.log('— Bausteine im Stylesheet —');
+ok('Umschalter, Chips, Regler, Knöpfe, Legende als .ui-* definiert, nur mit Tokens',['ui-seg','ui-chips','ui-sl','ui-range','ui-btn','ui-link','ui-icon','ui-legend','ui-ramp','ui-sw'].every(c=>new RegExp('\\.'+c+'[{>.:\\s]').test(html))&&!/\.ui-[a-z-]+[^{]*\{[^}]*#[0-9a-fA-F]{3,6}/.test(html.replace(/rgba\([^)]*\)/g,'')));
+ok('Gewählte Fläche über Token --raised, mit Dunkel-Variante',/--raised:#fffdf8/.test(html)&&(html.match(/--raised:#3b3544/g)||[]).length===2);
+ok('Testschalter ?bausteine=1 im Kopf, ohne globale Variablen',/\(function\(\)\{[^<]*get\('bausteine'\)[^<]*\}\)\(\);<\/script>/.test(html));
+ok('Übersichtsseite lädt das echte Stylesheet (keine Kopie)',/fetch\('next\.html'/.test(fs.readFileSync('public/bausteine.html','utf8')));
+const old=H.mk('https://test.local/next.html'),neu=H.mk('https://test.local/next.html?bausteine=1');
+setTimeout(async()=>{
+  const open=async w=>{const map=w.eval('map');map.getSize=()=>w.L.point(1024,768);map.setView(C,17,{animate:false});w.__NX.openLab(null);await wait(60);w.document.querySelector('.lab-tools [data-t="water"]').click();await wait(80);return w.document;};
+  console.log('— Ohne Schalter: unverändert —');
+  const d0=await open(old);
+  ok('Alte Form bleibt Standard (Modus-Reiter .lab-seg, keine .ui-*)',!old.document.documentElement.classList.contains('bs')&&!!d0.querySelector('.lab-body .lab-seg')&&!d0.querySelector('.lab-body [class^="ui-"]'));
+  console.log('— Mit ?bausteine=1 —');
+  const d=await open(neu),W=neu.LAB.water.W,A=neu.LAB.api,body=()=>d.querySelector('.lab-body');
+  ok('Schalter aktiv und für den Tab gemerkt',neu.document.documentElement.classList.contains('bs')&&neu.sessionStorage.getItem('nx_bs')==='1');
+  const noOld=()=>!body().querySelector('.lab-seg,.wt-chips,.wt-cls,.wt-leg,.lab-play,.lab-legw,.wt-lvl')&&[...body().querySelectorAll('input[type="range"]')].every(r=>r.classList.contains('ui-range'));
+  ok('Starkregen: Umschalter mit 4 Modi (nur Text), Legende mit Wassertiefen-Skala, keine alten Formen',body().querySelectorAll('.ui-seg [data-m]').length===4&&!body().querySelector('.ui-seg svg')&&!!body().querySelector('.ui-legend .ui-ramp')&&noOld());
+  ok('Legende nennt Einheit-Endwerte und Quelle',/10 cm/.test(body().querySelector('.ui-legend').textContent)&&/3 m/.test(body().querySelector('.ui-legend').textContent)&&/AHN/.test(body().querySelector('.ui-legend small').textContent));
+  ok('Hauptaktion „Hierhin heranzoomen" als einziger hervorgehobener Knopf',body().querySelectorAll('.ui-btn.pri').length<=1);
+  body().querySelector('[data-m="flood"]').click();await wait(40);
+  ok('Deichbruch: 5 Wahrscheinlichkeiten als Umschalter („einmal in … Jahren"), amtliche LIWO-Farben in der Legende',W.mode==='flood'&&body().querySelectorAll('.ui-seg.tight [data-k]').length===5&&/einmal in/.test(body().textContent)&&/amtliche Farben/.test(body().querySelector('.ui-legend').textContent)&&noOld());
+  body().querySelector('[data-k="5"]').click();await wait(30);
+  ok('Klasse wählen funktioniert wie bisher (Ebene + Text)',W.k===5&&/100\.000 Jahren/.test(body().querySelector('.wt-cap').textContent)&&body().querySelector('[data-k="5"]').getAttribute('aria-pressed')==='true');
+  body().querySelector('[data-m="chance"]').click();await wait(40);
+  body().querySelector('[data-y="2050"]').click();await wait(20);body().querySelector('[data-c="50"]').click();await wait(20);
+  ok('Zukunft: Zeitpunkt und Tiefe als zwei beschriftete Umschalter, Auswahl wirkt',W.yr==='2050'&&W.cm===50&&body().querySelectorAll('.ui-fld .ui-seg').length===2&&/gesetzliche Norm/.test(body().querySelector('.wt-cap').textContent)&&noOld());
+  body().querySelector('[data-m="terrain"]').click();await wait(80);
+  const sl=body().querySelector('#wtL');sl.value='2';sl.dispatchEvent(new neu.Event('input'));await wait(20);
+  ok('Höhe: Regler mit Bezeichnung, Wert und Endwerten; Wert folgt dem Regler',W.level===2&&/2,0 m NAP/.test(body().querySelector('#wtV').textContent)&&/−3 m/.test(body().querySelector('.ui-sl-t').textContent)&&body().querySelector('[data-l="2"]').getAttribute('aria-pressed')==='true');
+  body().querySelector('[data-l="5"]').click();await wait(30);
+  ok('Schnellwahl +5 m setzt den Wasserstand',W.level===5&&body().querySelector('[data-l="5"]').classList.contains('on')&&noOld());
+  console.log('— Eine Wassertiefen-Skala —');
+  const c=A.waterRGB,lum=x=>.2126*x[0]+.7152*x[1]+.0722*x[2];
+  ok('10 cm hell, 3 m dunkel, dazwischen stetig dunkler',c(.1).join()==='156,201,238'&&c(3).join()==='11,42,99'&&[.1,.2,.3,.5,1,2,3].map(v=>lum(c(v))).every((v,i,a)=>!i||a[i-1]>=v));
+  ok('Skala zentral (LAB.RAMPS.water) und als Legende darstellbar',neu.LAB.RAMPS&&neu.LAB.RAMPS.water.length===4&&/linear-gradient/.test(A.waterCss()));
+  ok('3D nutzt dieselbe Skala (Code)',/A\.waterRGB\(/.test(fs.readFileSync('public/js/lab-3d.js','utf8'))&&/mat\.color\.set\(0xffffff\)/.test(fs.readFileSync('public/js/lab-3d.js','utf8')));
+  ok('Keine Laufzeitfehler',errs.length===0,errs.slice(0,2).join(' | '));
+  console.log('\nCHECKS: Fehler-Checks: '+(H.fails===0)+' | jsdom-Fehler: '+errs.length+' '+JSON.stringify(errs.slice(0,3)));
+  process.exit(0);
+},1500);

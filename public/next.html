@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#f1ede5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121016" media="(prefers-color-scheme: dark)">
-<script>try{var t=localStorage.getItem('nx_look');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>(function(){try{var t=localStorage.getItem('nx_look');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}
+try{var q=new URLSearchParams(location.search).get('bausteine');if(q==='1'||q==='0')sessionStorage.setItem('nx_bs',q);if(sessionStorage.getItem('nx_bs')==='1')document.documentElement.classList.add('bs')}catch(e){}})();</script>
 <title>Inspector Nice — Klimarisiken in Utrecht</title>
 <meta name="description" content="Jeder Ort hat eine Signatur aus Klima, Umwelt und sozialer Lage — ein Bild statt 35 Ebenen.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1007,6 +1008,11 @@ body.nx-picking .leaflet-container{cursor:crosshair}
 .ui-sw{display:flex;flex-wrap:wrap;gap:6px 14px}.ui-sw>span{display:inline-flex;align-items:center;gap:6px}
 .ui-sw i{width:12px;height:12px;border-radius:3px;flex:none}.ui-sw i.ln{height:3px;border-radius:2px;width:16px}.ui-sw i.pt{border-radius:50%}
 .ui-legend small{font-size:0.6875rem;color:var(--mute)}
+/* Beschriftung über einem Umschalter; Abstände der Bausteine im Werkzeug und in 3D */
+.ui-fld{display:grid;gap:4px}.ui-fl{font:600 0.75rem var(--sans);color:var(--ink2)}
+.ui-seg.tight>button{padding:0 4px}
+.lab-body>.ui-seg,.lab-body>.ui-sl,.lab-body>.ui-fld,.lab-body>.ui-legend,.lab-body>.ui-btn,.v3-pane .ui-seg,.v3-pane .ui-sl,.v3-pane .ui-fld,.v3-pane .ui-legend{margin-top:12px}
+.lab-body>.ui-seg:first-child,.v3-pane .ui-seg:first-child{margin-top:0}
 /* Tippflächen am Handy: mindestens 44 px — steht bewusst am Ende, damit spätere Grundregeln (z. B. 40 px) sie nicht überschreiben */
 @media (max-width:760px){
   .nxd-tabs button,.lgrp,.nxd-open,.lab-base button,.lab-osm{min-height:44px}

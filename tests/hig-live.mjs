@@ -73,7 +73,7 @@ export function summary(inv){const by={};Object.entries(inv).forEach(([key,e])=>
 
 export function start(opts={}){window.__hig={running:true,step:'start',issues:[],opts};run(opts).then(r=>Object.assign(window.__hig,r,{running:false,step:'fertig'})).catch(e=>{window.__hig.running=false;window.__hig.crash=String(e&&e.stack||e).slice(0,600);});return window.__hig;}
 
-export async function run({modes=['light','dark'],spot=[52.0907,5.1214],lab=true}={}){
+export async function run({modes=['light','dark'],spot=[52.0907,5.1214],lab=true,tools=null,city=true}={}){
   const H=window.__hig||{issues:[]},NX=window.__NX,M=window.NXM,LAB=window.LAB,ACT=window.ACT;
   const add=a=>H.issues.push(...a),step=s=>{H.step=s;},mobile=innerWidth<768;
   H.inv={};const look=(root,area)=>{add(audit(root,area));if(root)inventory(root,area,H.inv);};
@@ -84,7 +84,7 @@ export async function run({modes=['light','dark'],spot=[52.0907,5.1214],lab=true
   const still=document.createElement('style');still.textContent='*,*::before,*::after{transition:none!important;animation:none!important}';document.head.appendChild(still);   // gemessen wird der Endzustand, nicht ein Übergang
   for(const mode of modes){const tag=x=>`${mode==='dark'?'Dunkel':'Hell'}${mobile?' Handy':''} · ${x}`;
     lookBtn(mode).click();await wait(300);if(LAB.on)LAB.close();NX.closePanel();await wait(200);
-    step(tag('Stadt'));look(document.body,tag('Stadt'));
+    if(city){step(tag('Stadt'));look(document.body,tag('Stadt'));
     if(document.documentElement.scrollWidth>innerWidth+1)add([{area:tag('Stadt'),k:'ueberstand',msg:`Seite scrollt quer (${document.documentElement.scrollWidth} > ${innerWidth})`}]);
     step(tag('Menü'));const mb=document.getElementById('moreBtn');mb.click();await wait(350);look(document.getElementById('moreMenu'),tag('Mehr-Menü'));
     esc();await wait(80);if(!document.getElementById('moreMenu').hidden){add([{area:tag('Mehr-Menü'),k:'escape',msg:'schließt nicht mit Escape'}]);mb.click();}
@@ -98,17 +98,18 @@ export async function run({modes=['light','dark'],spot=[52.0907,5.1214],lab=true
       if(sh&&!sh.matches('[role="dialog"],[role="listbox"]')&&!sh.querySelector('[role="dialog"]'))add([{area:tag(nm),k:'name',msg:'Fenster ohne role="dialog"'}]);
       for(const t of sub||[]){const b=sh&&sh.querySelector(`[data-tab="${t}"]`);if(b){b.click();await wait(250);look(sheet(),tag(nm+' '+t));}}
       esc();await wait(250);if(sheet()&&vis(sheet())){add([{area:tag(nm),k:'escape',msg:'schließt nicht mit Escape'}]);M._t.close();await wait(200);}}
-    if(ACT){step(tag('Handeln'));const m0=ACT._t.MISSIONS[0];ACT.m=m0.id;ACT.toggle(true);await until(()=>ACT.cases[m0.id]&&(ACT.cases[m0.id].length||ACT.cases[m0.id].err),30000);await wait(300);
+    }
+    if(city&&ACT){step(tag('Handeln'));const m0=ACT._t.MISSIONS[0];ACT.m=m0.id;ACT.toggle(true);await until(()=>ACT.cases[m0.id]&&(ACT.cases[m0.id].length||ACT.cases[m0.id].err),30000);await wait(300);
       look(document.querySelector('.act'),tag('Handeln'));const c=ACT.cases[m0.id];if(c&&c.length){ACT._t.openCase(c[0]);await wait(400);look(document.querySelector('.act'),tag('Fall'));}
       ACT.toggle(false);await wait(200);if(LAB.on)LAB.close();}
     if(lab){step(tag('Labor'));NX.openLab(spot,'sun');await wait(400);NX.map.stop();NX.map.setView(spot,17,{animate:false});await wait(600);
       const ll=L.latLng(spot[0],spot[1]),click=async p=>{const m=NX.map;m.fire('click',{latlng:p,layerPoint:m.latLngToLayerPoint(p),containerPoint:m.latLngToContainerPoint(p),originalEvent:new MouseEvent('click')});await wait(150);};
-      for(const b of [...document.querySelectorAll('.lab-tools [data-t]')].map(b=>b.dataset.t)){step(tag('Labor '+b));document.querySelector(`.lab-tools [data-t="${b}"]`).click();await wait(400);
+      for(const b of [...document.querySelectorAll('.lab-tools [data-t]')].map(b=>b.dataset.t).filter(t=>!tools||tools.includes(t))){step(tag('Labor '+b));document.querySelector(`.lab-tools [data-t="${b}"]`).click();await wait(400);
         if(['sun','standort','building','area','street'].includes(b))await click(ll);
         await until(()=>!document.querySelector('.lab-status .lab-spin'),b==='building'||b==='standort'?25000:12000);await wait(300);
         look(document.querySelector('.lab-dock'),tag('Labor '+b));
         const ms=[...document.querySelectorAll('.lab-body [data-m]')].slice(1,4);for(const x of ms){x.click();await wait(500);await until(()=>!document.querySelector('.lab-status .lab-spin'),8000);look(document.querySelector('.lab-dock'),tag('Labor '+b+' '+x.dataset.m));}}
-      if(LAB.v3d){step(tag('3D'));const V=LAB.v3d;V.open();await until(()=>V.on&&!V.busy,60000);await wait(400);look(document.querySelector('.v3-pane')||document.body,tag('3D'));
+      if(LAB.v3d&&(!tools||tools.includes('3d'))){step(tag('3D'));const V=LAB.v3d;V.open();await until(()=>V.on&&!V.busy,60000);await wait(400);look(document.querySelector('.v3-pane')||document.body,tag('3D'));
         for(const m of ['wasser','wind','rad','wachstum']){const b=document.querySelector(`.v3-modes [data-md="${m}"]`);if(b){b.click();await wait(300);look(document.querySelector('.v3-pane'),tag('3D '+m));}}V.close();}
       LAB.close();await wait(200);}
   }
