@@ -20,6 +20,8 @@ const CHECKS=[
   ['Neben','Open-Meteo (Wind, Hitze-Hinweis)',`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=wind_speed_10m&daily=temperature_2m_max&forecast_days=1`,json,j=>j.current&&j.daily],
   ['Neben','GBIF (Arten)',`https://api.gbif.org/v1/occurrence/search?limit=0&country=NL`,json,j=>j.count>0],
   ['Neben','Leefbaarometer',`https://geo.leefbaarometer.nl/lbm3/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=lbm3:buurtscore24&count=1&outputFormat=application/json&propertyName=id,lbm`,json,j=>(j.features||[]).length>0],
+  ['Neben','Luchtmeetnet / RIVM (Luft jetzt)','https://api.luchtmeetnet.nl/open_api/stations/NL10636/measurements?page=1&order=timestamp_measured&order_direction=desc&formula=NO2',json,j=>(j.data||[]).length>0],
+  ['Neben','Panoramax (Straßenfotos)',`https://api.panoramax.xyz/api/search?bbox=5.118,52.089,5.124,52.092&limit=1`,json,j=>(j.features||[]).length>0],
   ['Neben','PDOK Luftbild',`https://service.pdok.nl/hwh/luchtfotorgb/wms/v1_0?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities`,text,t=>/Actueel_orthoHR/.test(t)],
   ['Neben','three.js (3D)',`https://cdn.jsdelivr.net/npm/three@0.160.0/+esm`,text,t=>t.length>1000],
   ['Neben','jsPDF (Berichte)',`https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js`,text,t=>t.length>1000],

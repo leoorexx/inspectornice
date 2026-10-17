@@ -369,6 +369,41 @@ function heatPop(b){
   p.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();p.remove();b.setAttribute('aria-expanded','false');b.focus();}});
 }
 
+// ══ Utrecht jetzt — offene Live-Daten nach dem God's-Eye-Prinzip (ohne Kameras, ohne Personen) ══
+const AIR=[['NL10636','Kardinaal de Jongweg'],['NL10639','Constant Erzeijstraat'],['NL10643','Griftpark']],WHO={NO2:25,PM25:15};
+let airLayer=null,NOWD=null;
+async function airStation(id){
+  const base='https://api.luchtmeetnet.nl/open_api/stations/'+id,get=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
+  const [st,no2,pm]=await Promise.all([get(base),get(base+'/measurements?page=1&order=timestamp_measured&order_direction=desc&formula=NO2'),get(base+'/measurements?page=1&order=timestamp_measured&order_direction=desc&formula=PM25')]);
+  const v=j=>j&&j.data&&j.data[0]?{v:j.data[0].value,t:j.data[0].timestamp_measured}:null,c=st&&st.data&&st.data.geometry&&st.data.geometry.coordinates;
+  return {id,lat:c?c[1]:null,lon:c?c[0]:null,type:st&&st.data&&st.data.type,no2:v(no2),pm:v(pm)};
+}
+M.now=async function(){
+  const b=sheet('now',T('Utrecht jetzt','Utrecht now','Utrecht nu'),`<div id="nxNow"><p class="nxs-lead">${T('Live-Daten werden geladen …','Loading live data …','Live-data laden …')}</p></div>`);
+  const el=b.querySelector('#nxNow');
+  const [w,air]=await Promise.all([fetch('https://api.open-meteo.com/v1/forecast?latitude=52.0907&longitude=5.1214&current=temperature_2m,apparent_temperature,uv_index,precipitation,wind_speed_10m,wind_direction_10m,relative_humidity_2m&minutely_15=precipitation&forecast_minutely_15=8&timezone=Europe%2FAmsterdam&wind_speed_unit=ms').then(r=>r.ok?r.json():null).catch(()=>null),
+    Promise.all(AIR.map(a=>airStation(a[0]).then(x=>({...x,name:a[1]}))))]);
+  NOWD={w,air};if(!el.isConnected)return;
+  const c=w&&w.current,m=w&&w.minutely_15,rain=m?m.precipitation.slice(0,8):[],tm=m?m.time.slice(0,8):[],first=rain.findIndex(v=>v>=.1);
+  const dir=d=>{const D=L_()==='en'?['N','NE','E','SE','S','SW','W','NW']:L_()==='nl'?['N','NO','O','ZO','Z','ZW','W','NW']:['N','NO','O','SO','S','SW','W','NW'];return D[Math.round(((d%360)+360)%360/45)%8];};
+  const hm=s2=>(s2||'').slice(11,16),chip=(v,lim)=>v==null?'':`<span class="chip2 ${v>lim?'bad':'ok'}">${v>lim?T('über WHO-Tageswert','above WHO daily value','boven WHO-dagwaarde'):T('unter WHO-Tageswert','below WHO daily value','onder WHO-dagwaarde')}</span>`;
+  el.innerHTML=`${c?`<div class="now-t"><div><b>${N(c.temperature_2m,0)} °C</b><span>${T('gefühlt','feels like','gevoelstemperatuur')} ${N(c.apparent_temperature,0)} °C</span></div><div><b>${N(c.uv_index,0)}</b><span>${T('UV-Index','UV index','UV-index')}${c.uv_index>=6?' · '+T('hoch','high','hoog'):''}</span></div><div><b>${N(c.wind_speed_10m,1)} m/s</b><span>${T('Wind aus','wind from','wind uit')} ${dir(c.wind_direction_10m)}</span></div><div><b>${N(c.relative_humidity_2m,0)} %</b><span>${T('Luftfeuchte','humidity','luchtvochtigheid')}</span></div></div>`:`<p class="note">${T('Wetterdaten gerade nicht erreichbar.','Weather data currently unavailable.','Weerdata nu niet bereikbaar.')}</p>`}
+    ${rain.length?`<h3>${T('Regen in den nächsten 2 Stunden','Rain in the next 2 hours','Regen in de komende 2 uur')}</h3><div class="now-r" role="img" aria-label="${rain.map((v,i)=>hm(tm[i])+' '+N(v,1)+' mm').join(', ')}">${rain.map((v,i)=>`<div><i style="height:${Math.max(3,Math.min(44,v*22))}px"></i><span>${i%2?'':hm(tm[i])}</span></div>`).join('')}</div><p class="note">${first<0?T('Trocken — kein Regen erwartet.','Dry — no rain expected.','Droog — geen regen verwacht.'):T(`Regen ab etwa ${hm(tm[first])} Uhr.`,`Rain from about ${hm(tm[first])}.`,`Regen vanaf ongeveer ${hm(tm[first])}.`)}</p>`:''}
+    <h3>${T('Luft an den Messstationen','Air at the monitoring stations','Lucht bij de meetstations')}</h3>
+    <div class="now-a">${air.map(a=>`<div><b>${esc(a.name)}</b><small>${a.type==='Traffic'?T('an einer Hauptstraße','next to a main road','langs een drukke weg'):T('im Wohngebiet','in a residential area','in een woonwijk')}${a.no2?' · '+hm(new Date(a.no2.t).toLocaleString('sv-SE',{timeZone:'Europe/Amsterdam'}).replace(' ','T'))+' '+T('Uhr','','uur'):''}</small>
+      <p>NO₂ <b>${a.no2?N(a.no2.v,0):'—'}</b> µg/m³ ${chip(a.no2&&a.no2.v,WHO.NO2)}</p><p>PM2,5 <b>${a.pm?N(a.pm.v,0):'—'}</b> µg/m³ ${chip(a.pm&&a.pm.v,WHO.PM25)}</p></div>`).join('')}</div>
+    <p class="note">${T('Stundenwerte des RIVM. Zum Vergleich die WHO-Richtwerte für 24 Stunden (NO₂ 25, PM2,5 15 µg/m³) — ein Stundenwert ist kein Tagesmittel.','Hourly values from RIVM. For comparison, the WHO 24-hour guidelines (NO₂ 25, PM2.5 15 µg/m³) — an hourly value is not a daily mean.','Uurwaarden van het RIVM. Ter vergelijking de WHO-richtwaarden voor 24 uur (NO₂ 25, PM2,5 15 µg/m³) — een uurwaarde is geen daggemiddelde.')}</p>
+    <div class="nxhp-a"><button id="nowMap">${airLayer?T('Stationen ausblenden','Hide stations','Stations verbergen'):T('Stationen auf der Karte','Stations on the map','Stations op de kaart')}</button><button id="nowWind">${T('Wind in 3D','Wind in 3D','Wind in 3D')}</button></div>
+    <p class="note">${T('Quellen: Open-Meteo (CC BY 4.0), Luchtmeetnet / RIVM. Bewusst nicht dabei: Kameras und Daten über einzelne Menschen.','Sources: Open-Meteo (CC BY 4.0), Luchtmeetnet / RIVM. Deliberately left out: cameras and data on individual people.','Bronnen: Open-Meteo (CC BY 4.0), Luchtmeetnet / RIVM. Bewust weggelaten: camera\'s en gegevens over individuele mensen.')}</p>`;
+  el.querySelector('#nowMap').onclick=()=>{toggleAir(air);close();};
+  el.querySelector('#nowWind').onclick=()=>{close();const X=NX();X.openLab(null,'sun');setTimeout(()=>{if(window.LAB&&LAB.v3d){LAB.v3d.mode='wind';LAB.v3d.open();}},400);};
+};
+function toggleAir(air){const X=NX();if(airLayer){X.map.removeLayer(airLayer);airLayer=null;return;}airLayer=L.layerGroup();
+  for(const a of air){if(a.lat==null)continue;const bad=(a.no2&&a.no2.v>WHO.NO2)||(a.pm&&a.pm.v>WHO.PM25);
+    L.circleMarker([a.lat,a.lon],{radius:9,color:'#fff',weight:2.5,fillColor:bad?'#d0583c':'#3f7f6a',fillOpacity:.95}).bindTooltip(`<b>${esc(a.name)}</b><br>NO₂ ${a.no2?N(a.no2.v,0):'—'} · PM2,5 ${a.pm?N(a.pm.v,0):'—'} µg/m³`,{permanent:true,direction:'right',offset:[10,0],className:'nx-air'}).addTo(airLayer);}
+  airLayer.addTo(X.map);}
+document.addEventListener('nx:view',e=>{if(airLayer&&e.detail==='street'){NX().map.removeLayer(airLayer);}else if(airLayer&&e.detail==='city')airLayer.addTo(NX().map);});
+
 // ══ Befehle (⌘K / Strg K) ══
 const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 function cmds(){
@@ -379,6 +414,8 @@ function cmds(){
   A(T('Ranglisten','Rankings','Ranglijsten'),T('Seite','Page','Pagina'),'top rang liste',()=>M.dashboard('rank'),IC.grid);
   A(T('Methodik und Quellen','Methodology and sources','Methodiek en bronnen'),T('Seite','Page','Pagina'),'methode quellen punkte noten',()=>M.methodik(),IC.book);
   A(T('Begriffe erklärt','Terms explained','Begrippen uitgelegd'),T('Seite','Page','Pagina'),'glossar glossary woorden',()=>M.methodik('begriffe'),IC.book);
+  A(T('Utrecht jetzt','Utrecht now','Utrecht nu'),T('Wetter, Regen, Luft — live','Weather, rain, air — live','Weer, regen, lucht — live'),'live jetzt now wetter regen luft air',()=>M.now(),IC.therm);
+  lab('route',T('Kühle Route','Cool route','Koele route'),'route weg schatten schattig kühl');
   A(T('Etwas melden','Flag a spot','Iets melden'),T('Mitwirken','Take part','Meedoen'),'melden report mitwirken bank schatten',()=>M.report_spot(),IC.flag);
   lab('sun',T('Sonne und Schatten','Sun and shade','Zon en schaduw'),'schatten shadow sonne');lab('surface',T('Hitze und Kühl-Lücken','Heat and cooling gaps','Hitte en koelkansen'),'hitze heat kühl gaps');
   lab('street',T('Straßenquerschnitt','Street cross-section','Straatprofiel'),'strasse street profil');lab('water',T('Starkregen und Überflutung','Heavy rain and flooding','Hevige regen en overstroming'),'wasser water regen');
@@ -418,7 +455,7 @@ document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&!e.altKey&&(e
 function wire(){
   const mb=document.getElementById('moreMenu');
   const hook=(id,f)=>{const el=document.getElementById(id);if(el)el.onclick=e=>{e.preventDefault();const b=document.getElementById('moreBtn');if(b&&!mb.hidden)b.click();f();};};
-  hook('methodBtn',()=>M.methodik());hook('dashBtn',()=>M.dashboard('list'));hook('cmdBtn',()=>M.palette());hook('repBtn',()=>M.report_spot());
+  hook('methodBtn',()=>M.methodik());hook('nowBtn',()=>M.now());hook('dashBtn',()=>M.dashboard('list'));hook('cmdBtn',()=>M.palette());hook('repBtn',()=>M.report_spot());
   const k=document.getElementById('cmdKey');if(k)k.textContent=/Mac|iPhone|iPad/.test(navigator.platform||'')?'⌘K':'Strg K';
 }
 document.addEventListener('nx:panel',e=>{
@@ -435,5 +472,5 @@ document.addEventListener('nx:panel',e=>{
 document.addEventListener('nx:view',drawReps);
 wire();drawReps();
 setTimeout(()=>M.heat(),1200);
-M._t={D,cols,rowsOf,csv,lin,pinToggle,sheet,close,annotate,chooseType,supaSend,cmds,heatPop};
+M._t={toggleAir,airStation,D,cols,rowsOf,csv,lin,pinToggle,sheet,close,annotate,chooseType,supaSend,cmds,heatPop};
 })();

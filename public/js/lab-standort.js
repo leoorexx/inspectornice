@@ -8,7 +8,7 @@
 'use strict';
 const LAB=window.LAB;if(!LAB||!LAB.api)return;
 const A=LAB.api,T=(d,e,n)=>A.T(d,e,n);
-const SC={pt:null,res:null,busy:false,uhi:null,job:0};
+const SC={pt:null,res:null,busy:false,uhi:null,job:0,photo:null};
 const CATS=[
   {k:'shop',g:'winkelfunctie',r:500,goal:[6,2],col:'#c9a53f',de:'Läden und Nahversorgung',en:'Shops and daily needs',nl:'Winkels en dagelijkse boodschappen'},
   {k:'meet',g:'bijeenkomstfunctie',r:500,goal:[6,2],col:'#c97b4f',de:'Gastronomie, Kultur, Treffpunkte',en:'Food, culture, meeting places',nl:'Horeca, cultuur, ontmoetingsplekken'},
@@ -34,8 +34,16 @@ async function osm(la,lo){
     return {ov:pick(t=>t.highway==='bus_stop'||/^(tram_stop|station|halt)$/.test(t.railway||'')),park:pick(t=>/^(park|garden)$/.test(t.leisure||''))};}catch(e){}}
   return null;
 }
+// Straßenfoto in der Nähe (Panoramax, offene Straßenbilder, CC BY-SA)
+async function photo(la,lo){
+  const d=.0007,j=await fetch(`https://api.panoramax.xyz/api/search?bbox=${lo-d*1.6},${la-d},${lo+d*1.6},${la+d}&limit=40`).then(r=>r.ok?r.json():null).catch(()=>null);
+  let best=null,bd=Infinity;for(const f of (j&&j.features)||[]){const c=f.geometry&&f.geometry.coordinates,a=f.assets||{};if(!c||!a.thumb)continue;const dd=dist(la,lo,c[1],c[0]);if(dd<bd){bd=dd;best=f;}}
+  if(!best||bd>90)return null;const pr=best.properties||{};
+  return {id:best.id,thumb:best.assets.sd?best.assets.sd.href:best.assets.thumb.href,by:(pr.providers&&pr.providers[0]&&pr.providers[0].name)||pr['geovisio:producer']||'',date:(pr.datetime||'').slice(0,10),d:Math.round(bd),lic:pr.license||'CC-BY-SA-4.0'};
+}
 async function analyse(ll){
-  const job=++SC.job,la=+ll.lat.toFixed(5),lo=+ll.lng.toFixed(5);SC.pt={lat:la,lon:lo};SC.res=null;SC.busy=true;SC.uhi=null;A.PIN=ll;A.rerender();A.req();
+  const job=++SC.job,la=+ll.lat.toFixed(5),lo=+ll.lng.toFixed(5);SC.pt={lat:la,lon:lo};SC.res=null;SC.busy=true;SC.uhi=null;SC.photo=null;
+  photo(la,lo).then(p=>{if(job!==SC.job)return;SC.photo=p;if(SC.res)A.rerender();});A.PIN=ll;A.rerender();A.req();
   A.status(T('Umfeld wird abgefragt (BAG, OpenStreetMap) …','Querying surroundings (BAG, OpenStreetMap) …','Omgeving wordt opgevraagd (BAG, OpenStreetMap) …'),true);
   const mk=(c,raw)=>{if(raw===undefined)return {...c,wait:true};if(!raw)return {...c,fail:true};
     const pts=raw.map(p=>({...p,d:Math.round(dist(la,lo,p.lat,p.lon))})).filter(p=>p.d<=c.r).sort((a,b)=>a.d-b.d);
@@ -69,6 +77,7 @@ function body(){
   return `<div class="sc-top"><svg viewBox="0 0 64 64" width="60" height="60" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="none" stroke="var(--line2)" stroke-width="5"/>${tot!=null?`<circle cx="32" cy="32" r="27" fill="none" stroke="${tot>=75?'#4f7a3a':tot>=50?'#b48a1c':'#b34a4a'}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(tot/100*169.6).toFixed(1)} 170" transform="rotate(-90 32 32)"/>`:''}<text x="32" y="38" text-anchor="middle" class="sc-num">${tot!=null?tot:'–'}</text></svg>
       <div><b>${T('Versorgung in Gehweite','Amenities within walking distance','Voorzieningen op loopafstand')}</b><span>${T('Mittel der Kategorien: gut 100, ausreichend 60, knapp 20. Zählt, was da ist — nicht, wie gut es ist.','Mean of the categories: good 100, fair 60, scarce 20. Counts what is there — not how good it is.','Gemiddelde van de categorieën: goed 100, voldoende 60, schaars 20. Telt wat er is — niet hoe goed.')}</span></div></div>
     <div class="sc-list">${R.map(c=>`<div class="sc-row"><i style="background:${c.col}"></i><div class="sc-n"><b>${T(c.de,c.en,c.nl)}</b><small>≤ ${c.r} m · ${c.g?'BAG':'OpenStreetMap'}</small></div>${c.wait?`<em class="sc-f">${T('lädt …','loading …','laden …')}</em>`:c.fail?`<em class="sc-f">${T('gerade nicht erreichbar','currently unavailable','nu niet bereikbaar')}</em>`:`<div class="sc-v"><b>${c.n}</b><small style="color:${stCol(c.st)}">${stLbl(c.st)}${c.near!=null?' · '+c.near+' m':''}</small></div>`}</div>`).join('')}</div>
+    ${SC.photo?`<figure class="sc-ph"><a href="https://api.panoramax.xyz/#focus=pic&pic=${SC.photo.id}" target="_blank" rel="noopener"><img src="${SC.photo.thumb}" alt="${T('Straßenfoto','Street photo','Straatfoto')} ${SC.photo.d} m ${T('vom Punkt','from the point','van het punt')}" loading="lazy"></a><figcaption>${T('So sieht es hier aus','What it looks like here','Zo ziet het er hier uit')} · ${SC.photo.d} m · ${SC.photo.date} · ${T('Foto','Photo','Foto')}: ${SC.photo.by} · ${SC.photo.lic.replace(/^CC-/,'CC ').replace(/-(\d)/,' $1')} · Panoramax</figcaption></figure>`:''}
     ${climate()}
     <button class="cta ghost lab-mini" id="scSun">${A.IC.sun||''}<span>${T('Besonnung an diesem Ort ansehen','See sunlight at this place','Bezonning op deze plek bekijken')}</span></button>
     <p class="lab-mute">${T('BAG zählt Einheiten mit genau einer Nutzung (gemischt genutzte fehlen) — eher zu wenig als zu viel. OpenStreetMap ist je nach Stadtteil unvollständig.','BAG counts units with exactly one use (mixed-use ones are missing) — rather too few than too many. OpenStreetMap is incomplete in some districts.','BAG telt eenheden met precies één gebruiksdoel (gemengde ontbreken) — eerder te weinig dan te veel. OpenStreetMap is per wijk onvolledig.')}</p>`;
