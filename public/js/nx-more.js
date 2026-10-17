@@ -159,7 +159,7 @@ M.methodik=function(focus){
 // ══ Merkliste ══
 const pins=()=>ST.get('nx_pins',[]);
 const pinToggle=code=>{const p=pins(),i=p.indexOf(code);if(i>=0)p.splice(i,1);else p.push(code);ST.set('nx_pins',p);return i<0;};
-M.pins=pins;
+M.pins=pins;M.toast=toast;
 
 // ══ Alle Quartiere: Tabelle, Ranglisten, Vergleich ══
 const D={sort:'s',dir:-1,q:'',wijk:'',only:false,tab:'list',cmp:[]};

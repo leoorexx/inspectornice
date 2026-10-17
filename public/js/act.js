@@ -169,7 +169,7 @@ async function labFor(c,m){
 let jspdfLoad=null;
 const jspdf=()=>window.jspdf?Promise.resolve(window.jspdf):(jspdfLoad=jspdfLoad||new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=()=>res(window.jspdf);s.onerror=rej;document.head.appendChild(s);}));
 async function brief(c,m){
-  let lib;try{lib=await jspdf();}catch(e){alert(T('PDF-Bibliothek gerade nicht erreichbar.','PDF library currently unreachable.','PDF-bibliotheek nu niet bereikbaar.'));return;}
+  let lib;try{lib=await jspdf();}catch(e){const msg=T('PDF-Bibliothek gerade nicht erreichbar. Bitte später erneut versuchen.','PDF library currently unreachable. Please try again later.','PDF-bibliotheek nu niet bereikbaar. Probeer het later opnieuw.');if(window.NXM&&NXM.toast)NXM.toast(msg);else alert(msg);return;}
   const doc=new lib.jsPDF({unit:'mm',format:'a4'}),W=210,M=18,Lg=L_(),tx=o=>o?(o[Lg]||o.de||''):'',st=stGet(c);let y=20;
   const line=(t,size,bold,col)=>{doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(size);doc.setTextColor(...(col||[23,21,28]));const ls=doc.splitTextToSize(String(t).replace(/[–—]/g,'-').replace(/[„“"]/g,'"'),W-2*M);for(const l of ls){if(y>282){doc.addPage();y=20;}doc.text(l,M,y);y+=size*.45;}y+=1.5;};
   doc.setFillColor(255,214,0);doc.rect(0,0,W,6,'F');
