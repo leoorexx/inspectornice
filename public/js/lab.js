@@ -408,16 +408,20 @@ const IC={
 };
 function status(t,busy){const el=dock&&dock.querySelector('.lab-status');if(!el)return;el.innerHTML=t?(busy?'<span class="lab-spin" aria-hidden="true"></span>':'')+`<span>${t}</span>`:'';el.classList.toggle('on',!!t);}
 const grad=(R,lo,hi)=>`linear-gradient(90deg,${R.map(r=>`rgb(${r[1].join(',')}) ${((r[0]-lo)/(hi-lo)*100).toFixed(0)}%`).join(',')})`;
-function seg(modes,cur,ui){if(ui)return `<div class="ui-seg" role="tablist">${modes.map(([k,l])=>`<button role="tab" data-m="${k}" aria-selected="${cur===k}" class="${cur===k?'on':''}">${l}</button>`).join('')}</div>`;return `<div class="lab-seg" role="tablist">${modes.map(([k,l])=>`<button role="tab" data-m="${k}" aria-selected="${cur===k}" class="${cur===k?'on':''}">${IC[k]||''}<span>${l}</span></button>`).join('')}</div>`;}
+const BS=()=>document.documentElement.classList.contains('bs');   // Bausteine-Test (?bausteine=1)
+function seg(modes,cur,ui){if(ui==null)ui=BS();if(ui)return `<div class="ui-seg" role="tablist">${modes.map(([k,l])=>`<button role="tab" data-m="${k}" aria-selected="${cur===k}" class="${cur===k?'on':''}">${l}</button>`).join('')}</div>`;return `<div class="lab-seg" role="tablist">${modes.map(([k,l])=>`<button role="tab" data-m="${k}" aria-selected="${cur===k}" class="${cur===k?'on':''}">${IC[k]||''}<span>${l}</span></button>`).join('')}</div>`;}
 function dates(){const ds=[['today',T('Heute','Today','Vandaag')],['jun',T('21. Juni','21 June','21 juni')],['sep',T('21. Sept.','21 Sept','21 sept')],['dec',T('21. Dez.','21 Dec','21 dec')]];
+  if(BS())return `<div class="ui-fld"><span class="ui-fl">${T('Tag','Day','Dag')}</span><div class="ui-seg" role="group" aria-label="${T('Tag','Day','Dag')}">${ds.map(([k,l])=>`<button data-d="${k}" class="${LAB.dateKey===k?'on':''}" aria-pressed="${LAB.dateKey===k}">${l}</button>`).join('')}</div></div>`;
   return `<div class="lab-dates" role="group" aria-label="${T('Tag','Day','Dag')}">${ds.map(([k,l])=>`<button data-d="${k}" class="${LAB.dateKey===k?'on':''}" aria-pressed="${LAB.dateKey===k}">${l}</button>`).join('')}</div>`;}
-function timeRow(){const [a,b]=dayRange();return `<div class="lab-time"><button class="lab-play" aria-label="${LAB.playing?T('Anhalten','Pause','Pauzeren'):T('Tagesverlauf abspielen','Play the day','Dagverloop afspelen')}">${LAB.playing?IC.pause:IC.play}</button>
+function timeRow(){const [a,b]=dayRange();
+  if(BS())return `<div class="ui-sl"><div class="ui-sl-h"><span>${T('Uhrzeit','Time of day','Tijdstip')}</span><b data-clock>${hhmm(LAB.min)}</b></div><div class="ui-sl-r"><button class="ui-icon pri" data-play aria-label="${LAB.playing?T('Anhalten','Pause','Pauzeren'):T('Tagesverlauf abspielen','Play the day','Dagverloop afspelen')}">${LAB.playing?IC.pause:IC.play}</button><input type="range" class="ui-range" data-time min="${a!=null?a:300}" max="${b!=null?b:1260}" step="1" value="${clampMin()}" style="--track:linear-gradient(90deg,#3a3470,#d0583c 22%,#f1c45a 50%,#d0583c 78%,#3a3470)" aria-label="${T('Uhrzeit','Time of day','Tijdstip')}"></div><div class="ui-sl-t"><span>${T('Aufgang','Sunrise','Opkomst')} ${a!=null?hhmm(a):'—'}</span><span>${T('Untergang','Sunset','Ondergang')} ${b!=null?hhmm(b):'—'}</span></div></div>`;
+  return `<div class="lab-time"><button class="lab-play" aria-label="${LAB.playing?T('Anhalten','Pause','Pauzeren'):T('Tagesverlauf abspielen','Play the day','Dagverloop afspelen')}">${LAB.playing?IC.pause:IC.play}</button>
       <input type="range" class="lab-slider" min="${a!=null?a:300}" max="${b!=null?b:1260}" step="1" value="${clampMin()}" aria-label="${T('Uhrzeit','Time of day','Tijdstip')}">
       <b class="lab-clock">${hhmm(LAB.min)}</b></div>`;}
 function bindTime(root,onTick){
   root.querySelectorAll('[data-d]').forEach(el=>el.onclick=()=>{LAB.dateKey=el.dataset.d;LAB.min=clampMin();renderDock();refresh();});
-  const sl=root.querySelector('.lab-slider');if(sl)sl.oninput=()=>{LAB.min=+sl.value;if(LAB.playing){LAB.playing=false;syncPlay();}tick();onTick&&onTick();req();};
-  const pl=root.querySelector('.lab-play');if(pl)pl.onclick=()=>{LAB.playing=!LAB.playing;syncPlay();if(LAB.playing)play(onTick);};
+  const sl=root.querySelector('.lab-slider,[data-time]');if(sl)sl.oninput=()=>{LAB.min=+sl.value;if(LAB.playing){LAB.playing=false;syncPlay();}tick();onTick&&onTick();req();};
+  const pl=root.querySelector('.lab-play,[data-play]');if(pl)pl.onclick=()=>{LAB.playing=!LAB.playing;syncPlay();if(LAB.playing)play(onTick);};
 }
 
 // ── Schatten wie Shademap: AHN-Oberflächenmodell (Gebäude + Bäume, gemessen) auf der Grafikkarte ──
@@ -499,7 +503,7 @@ function drawDsmShadow(g,X,sun,alpha){
 }
 
 // 3D-Ansicht (js/lab-3d.js): echte Körper und Schattenwurf in Echtzeit, Zeitregler bleibt hier
-const v3dBtn=()=>{const V=LAB.v3d;if(!V)return '';return `<button class="lab-3dbtn${V.on?' on':''}" id="v3dBtn" ${V.busy?'disabled':''}>${V.busy?'<span class="lab-spin" aria-hidden="true"></span>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>'}<span>${V.on?T('Zurück zur Karte','Back to the map','Terug naar de kaart'):T('In 3D ansehen — Schatten in Echtzeit','View in 3D — real-time shadows','Bekijk in 3D — schaduw in realtime')}</span></button>${V.err?`<p class="wt-warn">${V.err}</p>`:''}`;};
+const v3dBtn=()=>{const V=LAB.v3d;if(!V)return '';return `<button class="${BS()?`ui-btn wide${V.on?'':' pri'}`:`lab-3dbtn${V.on?' on':''}`}" id="v3dBtn" ${V.busy?'disabled':''}>${V.busy?'<span class="lab-spin" aria-hidden="true"></span>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>'}<span>${V.on?T('Zurück zur Karte','Back to the map','Terug naar de kaart'):T('In 3D ansehen — Schatten in Echtzeit','View in 3D — real-time shadows','Bekijk in 3D — schaduw in realtime')}</span></button>${V.err?`<p class="wt-warn">${V.err}</p>`:''}`;};
 // ── Werkzeug „Sonne": Schatten, Sonnenstunden, Sonnenbahn am Punkt ──
 const SUN_TOOL={id:'sun',order:1,icon:IC.sun,gate:false,keepStatus:true,
   label:()=>T('Sonne','Sun','Zon'),
@@ -508,7 +512,7 @@ const SUN_TOOL={id:'sun',order:1,icon:IC.sun,gate:false,keepStatus:true,
   render(){const timed=LAB.mode==='shadow';
     return seg([['shadow',T('Schatten','Shadows','Schaduw')],['sunhours',T('Sonnenstunden','Sun hours','Zonuren')]],LAB.mode)+dates()+
       (timed?timeRow()+v3dBtn()+`<div class="lab-sun"><div class="lab-dialw">${dial()}</div><p class="lab-suntxt">${sunText()}</p></div>`:'')+
-      `<div class="lab-legw">${legend()}</div><p class="lab-hint">${T('Tippe auf die Karte: Sonnenbahn, Auf- und Untergangsrichtung für diesen Punkt.','Tap the map: sun path, sunrise and sunset direction for that spot.','Tik op de kaart: zonnebaan, op- en ondergangsrichting voor dat punt.')}</p>`;},
+      `${legendBox()}<p class="lab-hint">${T('Tippe auf die Karte: Sonnenbahn, Auf- und Untergangsrichtung für diesen Punkt.','Tap the map: sun path, sunrise and sunset direction for that spot.','Tik op de kaart: zonnebaan, op- en ondergangsrichting voor dat punt.')}</p>`;},
   bind(root){bindTime(root);const b=root.querySelector('#v3dBtn');if(b)b.onclick=()=>LAB.v3d.toggle();},
   async load(){
     if(LAB.mode==='shadow'){
@@ -585,7 +589,7 @@ const SURF_TOOL={id:'surface',order:2,icon:IC.surface,
   label:()=>T('Hitze','Heat','Hitte'),
   sub:()=>T('Oberflächen und Hitze-Index','Surfaces and heat index','Oppervlakken en hitte-index'),
   enter(){if(LAB.mode!=='albedo'&&LAB.mode!=='heat'&&LAB.mode!=='gaps')LAB.mode='heat';if(!KNMI)loadKnmi().then(()=>{if(LAB.tool==='surface')renderDock();});},
-  render(){return seg([['albedo',T('Oberflächen','Surfaces','Oppervlakken')],['heat',T('Hitze-Index','Heat index','Hitte-index')],['gaps',T('Kühl-Lücken','Cooling gaps','Koelkansen')]],LAB.mode)+`<div class="lab-legw">${legend()}</div>`+future();},
+  render(){return seg([['albedo',T('Oberflächen','Surfaces','Oppervlakken')],['heat',T('Hitze-Index','Heat index','Hitte-index')],['gaps',T('Kühl-Lücken','Cooling gaps','Koelkansen')]],LAB.mode)+legendBox()+future();},
   bind(){fillUhi();},
   async load(){if(LAB.mode==='albedo')await Promise.all([ensure('s'),ensure('b'),ensureTrees()]);else if(LAB.mode==='gaps'){req();await computeGaps();}else{req();await computeHeat();}},
   draw(g,X){const dark=isDark();
@@ -629,15 +633,22 @@ function sunText(){
   const shadow=s.alt>0.02?`<br>${T('10 m hohes Haus wirft','A 10 m building casts','Een gebouw van 10 m werpt')} <b>${nf(Math.min(999,10/Math.tan(s.alt)),1)} m</b> ${T('Schatten','of shade','schaduw')}`:'';
   return `${now}${shadow}<br><span class="lab-mute">${T('Aufgang','Sunrise','Opkomst')} ${a!=null?hhmm(a):'—'} · ${T('Untergang','Sunset','Ondergang')} ${b!=null?hhmm(b):'—'} · ${T('Tageslicht','Daylight','Daglicht')} ${a!=null?nf((b-a)/60,1)+' h':'—'}</span>`;
 }
-function legend(){
+function legend(c){
   const dk=isDark();
   if(LAB.mode==='shadow')return `<div class="lab-leg"><span><i style="background:${dk?'rgb(12,11,18)':'rgb(146,140,148)'}"></i>${T('Gebäudeschatten','Building shade','Gebouwschaduw')}</span><span><i style="background:${dk?'rgb(44,40,52)':'rgb(204,200,206)'}"></i>${T('Baumschatten','Tree shade','Boomschaduw')}</span><span><i style="background:rgba(72,140,84,.5);border-radius:50%"></i>${T('Baumkrone','Tree crown','Boomkroon')}</span></div>`;
-  if(LAB.mode==='sunhours'){const mh=SUNH&&SUNH.maxH&&SUNH.date===dateTag()?SUNH.maxH:null;return `<div class="lab-ramp" style="background:${grad(SUN_RAMP,0,1)}"></div><div class="lab-rl"><span>0 h</span><span>${T('direkte Sonne am Boden','direct sun at ground level','directe zon op maaiveld')}</span><span>${mh?nf(mh,1)+' h':''}</span></div>`;}
+  if(LAB.mode==='sunhours'){const mh=SUNH&&SUNH.maxH&&SUNH.date===dateTag()?SUNH.maxH:null;return `<div class="lab-ramp" style="background:${grad(SUN_RAMP,0,1)}"></div><div class="lab-rl"><span>0 h</span><span>${c?'':T('direkte Sonne am Boden','direct sun at ground level','directe zon op maaiveld')}</span><span>${mh?nf(mh,1)+' h':''}</span></div>`;}
   if(LAB.mode==='gaps'){const G=SUNH&&SUNH.gap;return `<div class="lab-leg"><span><i style="background:rgb(24,128,92)"></i>${T('hohe Priorität','high priority','hoge prioriteit')}</span><span><i style="background:rgb(143,211,182)"></i>${T('mittel','medium','middel')}</span></div>`+
     (G?`<p class="lab-gapst"><b>${fmt(Math.round(G.hi/10)*10)} m²</b> ${T('hohe und','high and','hoge en')} <b>${fmt(Math.round(G.mid/10)*10)} m²</b> ${T('mittlere Kühl-Lücken im Ausschnitt','medium cooling gaps in view','middelgrote koelkansen in beeld')} — ${T('von','of','van')} ${fmt(Math.round(G.cand/10)*10)} m² ${T('Parkplätzen, Gehwegen und Plätzen ohne Baum.','parking, pavements and squares without trees.','parkeervlakken, stoepen en pleinen zonder boom.')}</p>`:'')+
     `<p class="lab-mute">${T('Gefärbt sind nur Teilflächen, nie ganze Straßen: dort passt ein Baum, eine Entsiegelung oder ein hellerer Belag — vor Ort prüfen (Leitungen, Zufahrten).','Only patches are coloured, never whole streets: a tree, depaving or lighter paving fits there — check on site (cables, access).','Alleen deelvlakken zijn gekleurd, nooit hele straten: daar past een boom, ontharding of lichtere bestrating — ter plekke controleren (kabels, toegang).')}</p>`;}
   if(LAB.mode==='albedo')return `<div class="lab-ramp" style="background:${grad(ALB_RAMP,0.05,0.35)}"></div><div class="lab-rl"><span>${T('dunkel · speichert Hitze','dark · stores heat','donker · houdt warmte vast')}</span><span>${T('hell · reflektiert','light · reflects','licht · weerkaatst')}</span></div><div class="lab-leg"><span><i style="background:${albCol(0.22,CLASS.green)}"></i>${T('Grün (kühlt durch Verdunstung)','green (cools by evaporation)','groen (koelt door verdamping)')}</span><span><i style="background:${albCol(0.07,CLASS.water)}"></i>${T('Wasser','water','water')}</span></div>`;
-  return `<div class="lab-ramp" style="background:${grad(HEAT_RAMP,0,1)}"></div><div class="lab-rl"><span>${T('gering','low','laag')}</span><span>${T('Hitze-Index der Oberfläche · 21. Juni','surface heat index · 21 June','hitte-index oppervlak · 21 juni')}</span><span>${T('hoch','high','hoog')}</span></div>`;
+  return `<div class="lab-ramp" style="background:${grad(HEAT_RAMP,0,1)}"></div><div class="lab-rl"><span>${T('gering','low','laag')}</span><span>${c?'':T('Hitze-Index der Oberfläche · 21. Juni','surface heat index · 21 June','hitte-index oppervlak · 21 juni')}</span><span>${T('hoch','high','hoog')}</span></div>`;
+}
+
+function legendBox(){
+  if(!BS())return `<div class="lab-legw">${legend()}</div>`;
+  const m=LAB.mode,t={shadow:T('Schatten','Shade','Schaduw'),sunhours:T('Direkte Sonne am Boden','Direct sun at ground level','Directe zon op maaiveld'),albedo:T('Helligkeit der Oberflächen','Surface brightness','Helderheid van oppervlakken'),heat:T('Hitze-Index der Oberfläche · 21. Juni','Surface heat index · 21 June','Hitte-index oppervlak · 21 juni'),gaps:T('Kühl-Lücken · 21. Juni','Cooling gaps · 21 June','Koelkansen · 21 juni')}[m]||'';
+  const src=m==='shadow'||m==='sunhours'?T('AHN-Oberflächenmodell · 3D BAG · Baumregister','AHN surface model · 3D BAG · tree register','AHN-oppervlaktemodel · 3D BAG · bomenregister'):T('BGT · 3D BAG · Baumregister','BGT · 3D BAG · tree register','BGT · 3D BAG · bomenregister');
+  return `<div class="ui-legend"><b>${t}</b>${legend(true).replace(/class="lab-ramp"/g,'class="ui-ramp"').replace(/class="lab-rl"/g,'class="ui-ramp-l"').replace(/class="lab-leg"/g,'class="ui-sw"')}<small>${src}</small></div>`;
 }
 
 // ── Werkzeug-Verwaltung ──
@@ -656,19 +667,19 @@ function renderDock(){
     <nav class="lab-tgs" aria-label="${T('Werkzeuge','Tools','Gereedschap')}">${[['see',T('Verstehen','Understand','Begrijpen')],['check',T('Prüfen','Assess','Toetsen')],['make',T('Gestalten','Design','Ontwerpen')]].map(([g,l])=>{const L=TOOLS.filter(x=>(x.grp||'see')===g);return L.length?`<div class="lab-tg"><span class="lab-tgc" id="labTg-${g}">${l}</span><div class="lab-tools" role="tablist" aria-labelledby="labTg-${g}" style="--n:${L.length}">${L.map(x=>`<button role="tab" data-t="${x.id}" aria-selected="${x===t}" class="${x===t?'on':''}">${x.icon}<span>${x.label()}</span></button>`).join('')}</div></div>`:'';}).join('')}</nav>
     <div class="lab-body" data-tool="${t.id}">${t.render?t.render(api):''}</div>
     <div class="lab-status" role="status"></div>
-    <div class="lab-base"><span>${T('Hintergrund','Background','Achtergrond')}</span>${BASES.map(([k,l])=>`<button data-b="${k}" class="${LAB.base===k?'on':''}" aria-pressed="${LAB.base===k}">${l()}</button>`).join('')}<a class="lab-osm" target="_blank" rel="noopener" href="${osmUrl()}">${T('In OSM öffnen','Open in OSM','Open in OSM')} ${IC.ext}</a></div>
+    ${BS()?`<div class="lab-bg"><div class="ui-fld"><span class="ui-fl">${T('Hintergrund','Background','Achtergrond')}</span><div class="ui-seg" role="group" aria-label="${T('Hintergrund','Background','Achtergrond')}">${BASES.map(([k,l])=>`<button data-b="${k}" class="${LAB.base===k?'on':''}" aria-pressed="${LAB.base===k}">${l()}</button>`).join('')}</div></div><a class="ui-link" data-osm target="_blank" rel="noopener" href="${osmUrl()}">${T('In OSM öffnen','Open in OSM','Open in OSM')} ${IC.ext}</a></div>`:`<div class="lab-base"><span>${T('Hintergrund','Background','Achtergrond')}</span>${BASES.map(([k,l])=>`<button data-b="${k}" class="${LAB.base===k?'on':''}" aria-pressed="${LAB.base===k}">${l()}</button>`).join('')}<a class="lab-osm" target="_blank" rel="noopener" href="${osmUrl()}">${T('In OSM öffnen','Open in OSM','Open in OSM')} ${IC.ext}</a></div>`}
     <details class="lab-how"><summary>${T('Wie wird gerechnet?','How is this computed?','Hoe wordt dit berekend?')}</summary><p>${t.note?t.note(api):''}</p><p class="lab-src">${T('Quellen','Sources','Bronnen')}: ${t.src?t.src(api):''}</p></details>`;
   dock.querySelector('.lab-x').onclick=()=>LAB.close();
   dock.querySelectorAll('.lab-tools [data-t]').forEach(el=>el.onclick=()=>setTool(el.dataset.t));
   dock.querySelectorAll('.lab-body [data-m]').forEach(el=>el.onclick=()=>setMode(el.dataset.m));
-  dock.querySelectorAll('.lab-base [data-b]').forEach(el=>el.onclick=()=>{LAB.base=el.dataset.b;opt.setBase&&opt.setBase(LAB.base);dock.querySelectorAll('.lab-base [data-b]').forEach(x=>{x.classList.toggle('on',x.dataset.b===LAB.base);x.setAttribute('aria-pressed',x.dataset.b===LAB.base);});req();});
+  dock.querySelectorAll('.lab-base [data-b],.lab-bg [data-b]').forEach(el=>el.onclick=()=>{LAB.base=el.dataset.b;opt.setBase&&opt.setBase(LAB.base);dock.querySelectorAll('.lab-base [data-b],.lab-bg [data-b]').forEach(x=>{x.classList.toggle('on',x.dataset.b===LAB.base);x.setAttribute('aria-pressed',x.dataset.b===LAB.base);});req();});
   t.bind&&t.bind(dock.querySelector('.lab-body'),api);
 }
 function osmUrl(){const c=map.getCenter();return `https://www.openstreetmap.org/#map=${Math.round(map.getZoom())}/${c.lat.toFixed(5)}/${c.lng.toFixed(5)}`;}
 function clampMin(){const [a,b]=dayRange();if(a==null)return LAB.min;return Math.round(Math.min(Math.max(LAB.min,a),b));}
-function syncPlay(){const pl=dock.querySelector('.lab-play');if(pl){pl.innerHTML=LAB.playing?IC.pause:IC.play;pl.setAttribute('aria-label',LAB.playing?T('Anhalten','Pause','Pauzeren'):T('Tagesverlauf abspielen','Play the day','Dagverloop afspelen'));}}
+function syncPlay(){const pl=dock.querySelector('.lab-play,[data-play]');if(pl){pl.innerHTML=LAB.playing?IC.pause:IC.play;pl.setAttribute('aria-label',LAB.playing?T('Anhalten','Pause','Pauzeren'):T('Tagesverlauf abspielen','Play the day','Dagverloop afspelen'));}}
 function tick(){
-  const sl=dock.querySelector('.lab-slider'),cl=dock.querySelector('.lab-clock'),dw=dock.querySelector('.lab-dialw'),tx=dock.querySelector('.lab-suntxt');
+  const sl=dock.querySelector('.lab-slider,[data-time]'),cl=dock.querySelector('.lab-clock,[data-clock]'),dw=dock.querySelector('.lab-dialw'),tx=dock.querySelector('.lab-suntxt');
   if(sl&&document.activeElement!==sl)sl.value=LAB.min;if(cl)cl.textContent=hhmm(LAB.min);if(dw)dw.innerHTML=dial();if(tx)tx.innerHTML=sunText();
   const t=tool();t.tick&&t.tick(api);
 }
@@ -736,7 +747,7 @@ LAB.init=function(m,o){
     const tx=sz.x/2*(1-s)-s*(c.x-sz.x/2),ty=sz.y/2*(1-s)-s*(c.y-sz.y/2);
     cv.style.transformOrigin='0 0';cv.style.transition='transform .25s cubic-bezier(0,0,.25,1)';cv.style.transform=`translate(${tx}px,${ty}px) scale(${s})`;});
   map.on('zoomend',()=>{cv.style.transition='none';cv.style.transform='';if(LAB.on)draw();});
-  map.on('moveend',()=>{if(!LAB.on)return;const a=dock.querySelector('.lab-osm');if(a)a.href=osmUrl();const t=tool();t.moved&&t.moved(api);
+  map.on('moveend',()=>{if(!LAB.on)return;const a=dock.querySelector('.lab-osm,[data-osm]');if(a)a.href=osmUrl();const t=tool();t.moved&&t.moved(api);
     clearTimeout(moveT);moveT=setTimeout(refresh,(LAB.mode==='sunhours'||LAB.mode==='heat')&&(t.id==='sun'||t.id==='surface')?450:150);});
   map.on('click',pointInfo);
 };
