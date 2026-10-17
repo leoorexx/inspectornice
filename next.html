@@ -1004,10 +1004,13 @@ const MORE=[
  {id:'senioren',g:'menschen',col:'#9a6a3a',v:b=>b.v.senioren,f:v=>nf(v,0)+' %',de:'65 Jahre und älter',en:'Aged 65+',nl:'65 jaar en ouder',def:()=>T('Anteil der Einwohner ab 65 (CBS 2024) — bei Hitze besonders gefährdet','share of residents aged 65+ (CBS 2024) — particularly at risk in heat','aandeel inwoners van 65+ (CBS 2024) — extra kwetsbaar bij hitte')},
  {id:'einsam',g:'menschen',col:'#7a6a8a',v:b=>b.v.einsam,f:v=>nf(v,0)+' %',de:'Stark einsam',en:'Severely lonely',nl:'Sterk eenzaam',def:()=>T('Erwachsene, die sich stark einsam fühlen (GGD-Monitor 2024, Modell) — bei Hitzewellen ein Risiko','adults who feel severely lonely (GGD monitor 2024, model) — a risk in heatwaves','volwassenen die zich sterk eenzaam voelen (GGD-monitor 2024, model) — een risico bij hittegolven')},
  {id:'kuehl',g:'menschen',col:'#2a8a9f',v:b=>b.v.kuehlinnen,f:v=>nf(v,0)+' %',de:'Kühlt zu Hause gut ab',en:'Can cool down at home',nl:'Kan thuis goed afkoelen',def:()=>T('Erwachsene, die nach eigener Angabe bei Hitze in der Wohnung gut Abkühlung finden (GGD-Monitor 2024, Modell)','adults who say they can find good cooling at home in heat (GGD monitor 2024, model)','volwassenen die volgens zichzelf bij hitte thuis goed verkoeling vinden (GGD-monitor 2024, model)')},
+ {id:'leefbaar',g:'menschen',col:'#3f7f6a',rev:true,v:b=>b.v.lbmk,f:v=>v==null?'—':`${v} · ${LBK(v)}`,de:'Lebensqualität',en:'Liveability',nl:'Leefbaarheid',def:()=>T('Leefbaarometer 2024 des Ministeriums BZK: Modell aus über 100 Merkmalen zu Wohnungen, Umgebung, Versorgung, Zusammenleben und Sicherheit — Klasse 1 (sehr ungenügend) bis 9 (ausgezeichnet). Dunkler = schwächer.','Leefbaarometer 2024 by the Ministry BZK: a model of over 100 features on housing, surroundings, amenities, social cohesion and safety — class 1 (very insufficient) to 9 (excellent). Darker = weaker.','Leefbaarometer 2024 van BZK: model uit ruim 100 kenmerken over woningen, omgeving, voorzieningen, samenleven en veiligheid — klasse 1 (zeer onvoldoende) tot 9 (uitstekend). Donkerder = zwakker.')},
  {id:'baenke',g:'wandel',col:'#8a6a3a',v:b=>b.v.baenke1000,f:v=>nf(v,1),de:'Bänke je 1.000 Einw.',en:'Benches per 1,000',nl:'Banken per 1.000',def:()=>T('öffentliche Bänke laut Register der Gemeente je 1.000 Einwohner','public benches from the municipal register per 1,000 residents','openbare banken uit het gemeenteregister per 1.000 inwoners')},
  {id:'solar',g:'wandel',col:'#c49a2b',v:b=>b.v.solar,f:v=>nf(v,0)+' %',de:'Solarstrom',en:'Solar power',nl:'Zonnestroom',def:()=>T('Wohnungen mit Solaranlage (CBS)','homes with solar panels (CBS)','woningen met zonnepanelen (CBS)')},
  {id:'bau',g:'wandel',col:'#17151c',v:b=>b.bau?b.bau[0]+b.bau[1]:null,f:v=>fmt(v),de:'Baustellen & Genehmigungen',en:'Construction & permits',nl:'Bouw & vergunningen',def:()=>T('Gebäude mit Status „Bau begonnen" oder „Baugenehmigung erteilt" im amtlichen Gebäuderegister (BAG)','buildings with status "construction started" or "permit granted" in the national building register (BAG)','panden met status „bouw gestart" of „bouwvergunning verleend" in de BAG')},
 ];
+const LBK=k=>k==null?'—':T(...[['sehr ungenügend','very insufficient','zeer onvoldoende'],['deutlich ungenügend','highly insufficient','ruim onvoldoende'],['ungenügend','insufficient','onvoldoende'],['schwach','weak','zwak'],['ausreichend','sufficient','voldoende'],['mehr als ausreichend','more than sufficient','ruim voldoende'],['gut','good','goed'],['sehr gut','very good','zeer goed'],['ausgezeichnet','excellent','uitstekend']][k-1]);
+const LBD={fys:['Umgebung','surroundings','fysieke omgeving'],onv:['Belästigung und Unsicherheit','nuisance and insecurity','overlast en onveiligheid'],soc:['Zusammenhalt','social cohesion','sociale samenhang'],vrz:['Versorgung','amenities','voorzieningen'],won:['Wohnungen','housing','woningvoorraad']};
 const GROUPS=[['risiko',()=>T('Risiken','Risks','Risico\'s')],['menschen',()=>T('Menschen','People','Mensen')],['wandel',()=>T('Wandel','Change','Verandering')]];
 const tname=t=>T(t.de,t.en,t.nl);
 const ALL=()=>[...RISKS.map(r=>({...r,g:'risiko'})),...MORE];
@@ -1038,7 +1041,7 @@ function fillOf(b){
   if(theme==='alle'){const s=score(b);return s==null?null:scol(s);}
   const t=ALL().find(x=>x.id===theme),v=t&&t.v(b);if(v==null)return null;
   if(t.over){const bad=t.over(v),span=Math.max(.1,t.inv?t.limv-t.min:t.max-t.limv),d=Math.min(1,Math.abs(v-t.limv)/span);return bad?tint(t.col,.55+.45*d):tint(t.col,.14+.25*(1-d));}
-  return tint(t.col,.1+.9*(b.r[t.id]||0));
+  const rk=b.r[t.id]||0;return tint(t.col,.1+.9*(t.rev?1-rk:rk));
 }
 const shown=b=>sevFilter==null||theme!=='alle'||grade(score(b))===sevFilter;
 
@@ -1141,7 +1144,7 @@ function renderLegend(){
     return;}
   const q=p=>vals[Math.min(vals.length-1,Math.round(p*(vals.length-1)))];
   el.innerHTML=`<h4>${tname(t)}</h4><p class="lead">${t.def()}</p>
-    <div class="qramp" style="background:linear-gradient(90deg,${[0,.5,1].map(p=>tint(t.col,.1+.9*p)+' '+(p*100)+'%').join(',')})"></div>
+    <div class="qramp" style="background:linear-gradient(90deg,${[0,.5,1].map(p=>tint(t.col,.1+.9*(t.rev?1-p:p))+' '+(p*100)+'%').join(',')})"></div>
     <div class="rlab"><span>${t.f(q(0))}</span><span>${T('Mitte','median','mediaan')} ${t.f(q(.5))}</span><span>${t.f(q(1))}</span></div>
     ${miss?`<p class="lead" style="margin:8px 0 0">${miss} ${T('Quartiere ohne Angabe (gestrichelt) — CBS hält Werte kleiner Gruppen geheim.','neighbourhoods without data (dashed) — CBS withholds values for small groups.','buurten zonder gegevens (gestreept) — CBS houdt waarden van kleine groepen geheim.')}</p>`:''}`;
 }
@@ -1223,6 +1226,7 @@ function renderPanel(b){
       ${v.allein!=null?`<div><b>${nf(v.allein,0)} %</b><span>${T('Haushalte mit einer Person','one-person households','eenpersoonshuishoudens')}</span></div>`:''}
       ${v.bijstand!=null?`<div><b>${nf(v.bijstand,1)} %</b><span>${T('beziehen Bijstand','receive social assistance','ontvangen bijstand')}</span></div>`:''}
       ${v.sozialmiete!=null?`<div><b>${nf(v.sozialmiete,0)} %</b><span>${T('Sozialwohnungen','social housing','corporatiewoningen')}</span></div>`:''}
+      ${v.lbmk!=null?(()=>{const d=['fys','onv','soc','vrz','won'].map(k=>[k,v['lbm_'+k]]).filter(x=>x[1]!=null).sort((a,b)=>a[1]-b[1]);return `<div><b>${v.lbmk} · ${LBK(v.lbmk)}</b><span>${T('Lebensqualität','liveability','leefbaarheid')} <small>Leefbaarometer ${b.y&&b.y.lbm||2024}</small>${d.length?`<br>${T('stark','strong','sterk')}: ${T(...LBD[d[d.length-1][0]])} · ${T('schwach','weak','zwak')}: ${T(...LBD[d[0][0]])}`:''}</span></div>`;})():''}
     </div>
     <p class="note">${T('Ein Median-Einkommen veröffentlicht CBS je Quartier nicht; gezeigt wird das Median-Vermögen. Wer wenig Geld hat, kann sich schlechter vor Hitze schützen.','CBS publishes no median income per neighbourhood; median wealth is shown. People with little money find it harder to protect themselves from heat.','CBS publiceert geen mediaan inkomen per buurt; getoond wordt het mediaan vermogen. Wie weinig geld heeft, kan zich slechter tegen hitte beschermen.')}</p>
     ${um.length?`<div class="h">${T('Wo umbauen — was hier hilft','Where to redesign — what helps here','Waar herinrichten — wat hier helpt')}</div><div class="carousel">${um.map(x=>`<article class="mu">${x.mu.svg}<div><em>${x.why}</em><b>${x.mu.n[lang]||x.mu.n.de}</b><p>${x.mu.wirkung[lang]||x.mu.wirkung.de}</p></div></article>`).join('')}</div>`:''}
