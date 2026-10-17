@@ -1,0 +1,20 @@
+const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs');
+let html=fs.readFileSync('index.html','utf8').replace(/\/urbanlens\//g,'/_d/');
+const errs=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>{const m=((e&&(e.message||e.detail))||e)+'';if(!/getContext|Not implemented|Could not load|parse CSS|fetch/.test(m))errs.push(m.slice(0,120));});
+function sf(u){u=String(u);if(u.includes('overpass'))return Promise.resolve({ok:true,text:()=>Promise.resolve('{"elements":[]}'),json:()=>Promise.resolve({elements:[]})});if(u.includes('open-meteo'))return Promise.resolve({ok:true,json:()=>Promise.resolve({current:{}})});let f=null;if(!u.includes('/_d/')&&u.includes('/data/layers/'))f='public/data/layers/'+u.split('/data/layers/')[1].split('?')[0];else if(!u.includes('/_d/')&&u.includes('/data/'))f='public/data/'+u.split('/data/')[1].split('?')[0];else if(u.includes('/_d/data/layers/'))f='public/data/layers/'+u.split('/_d/data/layers/')[1].split('?')[0];else if(u.includes('/_d/data/'))f='public/data/'+u.split('/_d/data/')[1].split('?')[0];else if(!u.includes('/_d/')&&u.includes('/data/'))f='public/data/'+u.split('/data/')[1].split('?')[0];if(f&&fs.existsSync(f)){const d=fs.readFileSync(f,'utf8');return Promise.resolve({ok:true,json:()=>Promise.resolve(JSON.parse(d)),text:()=>Promise.resolve(d)});}return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({}),text:()=>Promise.resolve('')});}
+const ctx=new Proxy({},{get:()=>(()=>{}),set:()=>true});
+const dom=new JSDOM(html,{runScripts:'dangerously',resources:'usable',pretendToBeVisual:true,url:'https://test.local/',virtualConsole:vc,beforeParse(w){w.HTMLCanvasElement.prototype.getContext=()=>ctx;w.fetch=u=>sf(u);w.scrollTo=()=>{};w.requestAnimationFrame=c=>setTimeout(c,0);}});
+const {window}=dom;window.onerror=m=>errs.push('e:'+String(m).slice(0,120));
+setTimeout(async()=>{const w=window;
+  console.log('INIT:',errs.filter(e=>!/getContext/.test(e)).slice(0,3));
+  const field=await w.loadHeatField();
+  const bn=await new Promise(r=>w.loadCityBundle('utr').then(r));
+  const bb=w.eval("L.latLngBounds([52.088,5.088],[52.108,5.118])");
+  const els=w.bundleToEls(bn,bb);
+  const data=w.heatGrid(bb,els,field,{s:52.088,w:5.088,n:52.108,e:5.118});
+  const classes={};let strong=0;data.cells.forEach(c=>{const cl=w.potInfo(c).cls;classes[cl]=(classes[cl]||0)+1;if(c.pot>0.5)strong++;});
+  console.log('Zellen:',data.cells.length,'| Klassen:',JSON.stringify(classes));
+  console.log('Hohe Priorität (kräftiges Grün, pot>0.5):',strong,'('+(strong/data.cells.length*100).toFixed(0)+'%) — sollte fokussiert sein');
+  console.log('Fehler:',errs.filter(e=>!/getContext/.test(e)).length);
+  process.exit(0);
+},2200);

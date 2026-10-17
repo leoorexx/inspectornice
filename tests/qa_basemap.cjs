@@ -1,0 +1,47 @@
+// Basiskarte: amtliche Open-Data-Karten statt CARTO (seit Herbst 2026 nur „API KEY REQUIRED").
+const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs');
+let html=fs.readFileSync('index.html','utf8').replace(/\/urbanlens\//g,'/_d/');
+const errs=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>{const m=((e&&(e.message||e.detail))||e)+'';if(!/getContext|Not implemented|Could not load|parse CSS|fetch/.test(m))errs.push(m.slice(0,110));});
+function sf(u){u=String(u);
+  if(u.includes('overpass'))return Promise.resolve({ok:true,text:()=>Promise.resolve('{"elements":[]}'),json:()=>Promise.resolve({elements:[]})});
+  if(u.includes('open-meteo'))return Promise.resolve({ok:true,json:()=>Promise.resolve({current:{},daily:{temperature_2m_max:[20]}})});
+  let f=null;if(!u.includes('/_d/')&&u.includes('/data/layers/'))f='public/data/layers/'+u.split('/data/layers/')[1].split('?')[0];else if(!u.includes('/_d/')&&u.includes('/data/'))f='public/data/'+u.split('/data/')[1].split('?')[0];else if(u.includes('/_d/data/'))f='public/data/'+u.split('/_d/data/')[1].split('?')[0];
+  if(f&&fs.existsSync(f)){const d=fs.readFileSync(f,'utf8');return Promise.resolve({ok:true,json:()=>Promise.resolve(JSON.parse(d)),text:()=>Promise.resolve(d)});}
+  return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({}),text:()=>Promise.resolve('')});}
+const ctx=new Proxy({},{get:()=>(()=>{}),set:()=>true});
+const dom=new JSDOM(html,{runScripts:'dangerously',resources:'usable',pretendToBeVisual:true,url:'https://test.local/',virtualConsole:vc,beforeParse(w){w.HTMLCanvasElement.prototype.getContext=()=>ctx;w.fetch=u=>sf(u);w.scrollTo=()=>{};w.requestAnimationFrame=c=>setTimeout(c,0);w.localStorage.setItem('nh_intro_v1','1');w.localStorage.setItem('ul_lang','de');w.localStorage.setItem('nh_city','utr');}});
+const {window}=dom;window.onerror=m=>errs.push('e:'+String(m).slice(0,110));
+let fails=0;const ok=(n,v,i)=>{console.log((v?'  ✓ ':'  ✗ ')+n+(i!=null?'  ['+i+']':''));if(!v)fails++;};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+setTimeout(async()=>{const w=window,d=w.document;
+  const urls=()=>w.eval('(()=>{const a=[];map.eachLayer(l=>{if(l._url)a.push(l._url)});return a;})()');
+  const attr=()=>(d.querySelector('.leaflet-control-attribution')||{}).textContent||'';
+  console.log('— Quelle —');
+  ok('Kein CARTO mehr im Quelltext',!/cartocdn/.test(html));
+  ok('Utrecht: PDOK grijs',urls().some(u=>/achtergrondkaart\/wmts\/v2_0\/grijs/.test(u)),urls().join(' | ').slice(0,90));
+  ok('Nachweis PDOK in der Kartenquelle',/Kadaster \/ PDOK/.test(attr()),attr().slice(0,80));
+  console.log('— Modi —');
+  w.setBasemap('plan');
+  ok('Plan: PDOK water',urls().some(u=>/v2_0\/water/.test(u)));
+  w.setBasemap('sat');
+  ok('Satellit: Esri-Bild + Esri-Beschriftung',urls().some(u=>/World_Imagery/.test(u))&&urls().some(u=>/World_Boundaries_and_Places/.test(u)));
+  ok('Satellit: PDOK-Nachweis entfernt',!/Kadaster/.test(attr()));
+  w.setBasemap('map');
+  ok('Zurück: genau eine Basiskarte',urls().filter(u=>/achtergrondkaart|basemapde|World_/.test(u)).length===1,urls().length);
+  console.log('— Dark Mode —');
+  w.applyTheme('dark');
+  ok('Dark: gleiche amtliche Quelle (keine eigene Kachel)',urls().some(u=>/v2_0\/grijs/.test(u)));
+  ok('Dark: Umkehr-Regel im CSS',/body\.dark:not\(\.plan-on\):not\(\.bm-sat\) \.leaflet-tile-pane\{filter:invert\(1\)/.test(html));
+  w.applyTheme('light');
+  ok('Missions-Abdunkelung wieder wirksam',/body\.mission-on:not\(\.dark\):not\(\.plan-on\):not\(\.bm-sat\) \.leaflet-tile-pane/.test(html));
+  console.log('— Stadtwechsel —');
+  w.eval("loadCity('ffm')");await wait(1500);
+  ok('Frankfurt: basemap.de grau',urls().some(u=>/de_basemapde_web_raster_grau/.test(u)),urls().join(' | ').slice(0,90));
+  ok('Nachweis basemap.de, PDOK raus',/basemap\.de/.test(attr())&&!/Kadaster/.test(attr()),attr().slice(0,80));
+  w.eval("loadCity('utr')");await wait(1500);
+  ok('Zurück Utrecht: PDOK',urls().some(u=>/v2_0\/grijs/.test(u))&&/Kadaster/.test(attr()));
+  console.log('— 3D —');
+  ok('3D nutzt amtliche Quelle',/sources:\{base:\{type:'raster',tiles:\[baseSrc\(\)\.map\]/.test(html)&&typeof w.eval('m3baseSync')==='function');
+  console.log('\nCHECKS: Fehler-Checks:',fails===0,'| jsdom-Fehler:',errs.filter(e=>!/getContext/.test(e)).length,errs.slice(0,3));
+  process.exit(fails?1:0);
+},3200);

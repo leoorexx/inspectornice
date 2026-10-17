@@ -1,0 +1,72 @@
+const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs');
+let html=fs.readFileSync('index.html','utf8').replace(/\/urbanlens\//g,'/_d/');
+const errs=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>{const m=((e&&(e.message||e.detail))||e)+'';if(!/getContext|Not implemented|Could not load|parse CSS|fetch/.test(m))errs.push(m.slice(0,110));});
+function sf(u){u=String(u);if(u.includes('overpass'))return Promise.resolve({ok:true,text:()=>Promise.resolve('{"elements":[]}'),json:()=>Promise.resolve({elements:[]})});if(u.includes('open-meteo'))return Promise.resolve({ok:true,json:()=>Promise.resolve({current:{},daily:{temperature_2m_max:[20]}})});let f=null;if(!u.includes('/_d/')&&u.includes('/data/layers/'))f='public/data/layers/'+u.split('/data/layers/')[1].split('?')[0];else if(!u.includes('/_d/')&&u.includes('/data/'))f='public/data/'+u.split('/data/')[1].split('?')[0];else if(u.includes('/_d/data/layers/'))f='public/data/layers/'+u.split('/_d/data/layers/')[1].split('?')[0];else if(u.includes('/_d/data/'))f='public/data/'+u.split('/_d/data/')[1].split('?')[0];if(f&&fs.existsSync(f)){const d=fs.readFileSync(f,'utf8');return Promise.resolve({ok:true,json:()=>Promise.resolve(JSON.parse(d)),text:()=>Promise.resolve(d)});}return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({}),text:()=>Promise.resolve('')});}
+const ctx=new Proxy({},{get:()=>(()=>{}),set:()=>true});
+const dom=new JSDOM(html,{runScripts:'dangerously',resources:'usable',pretendToBeVisual:true,url:'https://test.local/',virtualConsole:vc,beforeParse(w){w.HTMLCanvasElement.prototype.getContext=()=>ctx;w.fetch=u=>sf(u);w.scrollTo=()=>{};w.requestAnimationFrame=c=>setTimeout(c,0);
+  w.localStorage.setItem('nh_intro_v1','1');w.localStorage.setItem('nh_city','utr');w.localStorage.setItem('ul_lang','en');
+  w.localStorage.setItem('nh_reports_utr',JSON.stringify([{city:'utr',lat:52.09,lon:5.11,type:'barrier',ts:Date.now()-3600000},{city:'utr',lat:52.10,lon:5.12,type:'heat',ts:Date.now()-60000}]));}});
+const {window}=dom;window.onerror=m=>errs.push('e:'+String(m).slice(0,110));
+let fails=0;const ok=(n,v)=>{console.log((v?'  ✓ ':'  ✗ ')+n);if(!v)fails++;};
+setTimeout(async()=>{const w=window,d=w.document;
+  // ── Fall-Status im Case ──
+  w.toggleMission();w.chooseMission('schools');
+  await new Promise(r=>setTimeout(r,2600));
+  w.missionCase(0);
+  console.log('— Fall-Status —');
+  ok('Status-Zeile im Fall',!!d.getElementById('csRow'));
+  ok('3 Status-Pills',d.querySelectorAll('#csRow .csp').length===3);
+  ok('Notiz-Feld',!!d.getElementById('csNote'));
+  w.csSet('UTR-SCH-001','review');
+  ok('Pill aktiv nach csSet',[...d.querySelectorAll('#csRow .csp')].some(b=>b.dataset.st==='review'&&b.classList.contains('on')));
+  ok('localStorage geschrieben',/review/.test(w.localStorage.getItem('nh_cs_utr')||''));
+  w.csSetNote('UTR-SCH-001','Rat 9/2026');
+  ok('Notiz gespeichert',/Rat 9\/2026/.test(w.localStorage.getItem('nh_cs_utr')||''));
+  w.renderMission();
+  await new Promise(r=>setTimeout(r,200));
+  const lb=d.getElementById('msBody').innerHTML;
+  ok('Status-Punkt in Liste',/width:7px;height:7px/.test(lb));
+  ok('Zähler-Badge',/1 marked/.test(d.getElementById('msBody').textContent));
+  w.csSet('UTR-SCH-001','review'); // Toggle aus (gleicher Status = abwählen)
+  ok('Status abwählbar',!(w.csGetAll()['UTR-SCH-001']||{}).st);
+  w.closeMission();
+  // ── Mitwirken-Triage ──
+  console.log('— Triage —');
+  w.toggleMitwirkung();
+  w.mitTab('triage');
+  await new Promise(r=>setTimeout(r,300));
+  const p=d.getElementById('mitPanel');
+  ok('Triage-Tab gerendert',/Administration view|Triage/.test(p.textContent));
+  ok('2 Meldungen gelistet',(p.innerHTML.match(/✓ Done/g)||[]).length===2);
+  ok('Filter-Chips',/All \(2\)/.test(p.textContent));
+  const hadHeat=/\(1\)/.test(p.textContent);
+  ok('Typ-Chips mit Zählern',hadHeat);
+  w.removeReport(0);
+  await new Promise(r=>setTimeout(r,200));
+  ok('Erledigt entfernt Meldung',(d.getElementById('mitPanel').innerHTML.match(/✓ Done/g)||[]).length===1);
+  // ── Kommandopalette ──
+  console.log('— Cmd-K-Palette —');
+  w.ckOpen();
+  ok('Palette offen',d.getElementById('ckOv').classList.contains('on'));
+  ok('Items gerendert',d.querySelectorAll('#ckList .ck-item').length>5);
+  d.getElementById('ckIn').value='overvecht';w.ckRender();
+  const items=[...d.querySelectorAll('#ckList .ck-item')];
+  ok('Filter findet Overvecht',items.length===1&&/Overvecht/.test(items[0].textContent));
+  w.ckGo(0);
+  await new Promise(r=>setTimeout(r,400));
+  ok('Enter öffnet Stadtteil-Fall',d.getElementById('drawer').classList.contains('open')&&/Overvecht/.test(d.getElementById('drawer').textContent));
+  ok('Palette zu nach Aktion',!d.getElementById('ckOv').classList.contains('on'));
+  w.closeDrawer();
+  // ── Coach-Marks ──
+  console.log('— Coach-Marks —');
+  w.localStorage.removeItem('nh_coach_v1');
+  w.coachStart();
+  ok('Coach 1 sichtbar',!!d.querySelector('.coach'));
+  ok('Coach-Text (Stadtteile)',/Districts compared|Stadtteile/.test(d.querySelector('.coach').textContent));
+  w.coachShow(1);
+  ok('Coach 2 (Mission)',/Mission/.test(d.querySelector('.coach').textContent));
+  w.coachShow(3);
+  ok('Tour beendet + gemerkt',!d.querySelector('.coach')&&w.localStorage.getItem('nh_coach_v1')==='1');
+  console.log('\nCHECKS: Fehler-Checks:',fails===0,'| jsdom-Fehler:',errs.filter(e=>!/getContext/.test(e)).length);
+  process.exit(fails?1:0);
+},3200);

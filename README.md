@@ -1,73 +1,43 @@
-# React + TypeScript + Vite
+# Inspector Nice
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Klimarisiken und die Menschen, die sie treffen — für Utrecht, nur aus offenen, amtlichen Daten.
+Live: **https://inspectornice.nicehere.nl** (neue Ansicht `next.html` ist die Startseite, die klassische Ansicht bleibt über `index.html?classic` erreichbar).
 
-Currently, two official plugins are available:
+## Zwei Perspektiven
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| | Stadt | Straße |
+|---|---|---|
+| Frage | Wo ist die Belastung am größten, wen trifft sie? | Was passiert genau hier, und was hilft? |
+| Inhalt | Klimabelastung A–E je Quartier, Menschen- und Wandel-Themen, Profile, Missionen | Straßenlabor: 10 Werkzeuge in „Verstehen" und „Gestalten", 3D-Spielstadt |
+| Daten | CBS, RIVM, GGD, Gemeente, LIWO, Leefbaarometer | 3D BAG, BGT, AHN, NWB, LIWO, Baumregister, Open-Meteo |
 
-## React Compiler
+Umgeschaltet wird oben mit **Stadt | Straße**; jede Perspektive zeigt nur ihre eigenen Ebenen.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Schnellstart
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev          # http://localhost:5199/next.html
+npm test             # alle jsdom-Prüfungen (ohne Netz, ≈ 70 s)
+npm run check:live   # echte Anfrage an alle 22 Datenquellen
+npm run build        # dist/ (index.html + public/ werden kopiert)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Deploy: `git push origin main:react-app` → GitHub Actions → Pages (`.github/workflows/deploy.yml`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Aufbau
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `public/next.html` — neue Ansicht: Karte, Klimabelastung, Profile, Legende, Kopfzeile (Stil und Kernlogik in einer Datei)
+- `public/js/` — Module, die sich an `window.__NX` (Kern) bzw. `window.LAB` (Straßenlabor) hängen
+- `public/data/official/` — vorbereitete amtliche Daten (Quartiere, Bäume, Straßenschatten, KNMI'23 …)
+- `tools/` — Abruf- und Aufbereitungsskripte für diese Daten, `live_check.cjs`
+- `tests/` — jsdom-Prüfungen `qa_*.cjs`, `run.cjs`, Live-Durchlauf `smoke-live.mjs`
+- `index.html`, `public/dashboard.html`, `public/methodik.html` — klassische Ansicht (auch Frankfurt)
+
+Mehr: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md) · [docs/FUNKTIONEN.md](docs/FUNKTIONEN.md) · [ONTOLOGY_ROADMAP.md](ONTOLOGY_ROADMAP.md)
+
+## Grundsätze
+
+- Nur offene Daten, Quelle und Jahr an jeder Zahl, „ungeprüft" wo nicht geprüft; keine Kameras, keine Daten über einzelne Menschen.
+- Apple-HIG als Maßstab: Schrift in rem und ≥ 11 px, Tippflächen ≥ 44 px, Kontrast ≥ 4,5 : 1 in hell und dunkel, Hell/Dunkel nach System.
+- Vor jedem Deploy `npm test`; bei sichtbaren Änderungen zusätzlich im Browser prüfen.

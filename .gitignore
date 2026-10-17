@@ -23,7 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 tools/_src/
-qa_*.cjs
 /tmp
 
 # Apple-HIG-Skill (dickwu/apple-design-skill, ohne Lizenzangabe): nur lokal nutzen, nicht weitergeben

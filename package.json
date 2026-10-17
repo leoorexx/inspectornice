@@ -1,44 +1,18 @@
 {
-  "name": "urbanlens-app",
+  "name": "inspector-nice",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
+  "description": "Inspector Nice — Klimarisiken und Menschen in Utrecht, nur aus offenen amtlichen Daten",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@deck.gl/core": "^9.3.2",
-    "@deck.gl/layers": "^9.3.2",
-    "@deck.gl/mapbox": "^9.3.2",
-    "clsx": "^2.1.1",
-    "html2canvas": "^1.4.1",
-    "jspdf": "^4.2.1",
-    "lucide-react": "^1.16.0",
-    "maplibre-gl": "^3.6.2",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "recharts": "^3.8.1",
-    "suncalc": "^1.9.0",
-    "zustand": "^5.0.13"
+    "dev": "vite --port 5199",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node tests/run.cjs",
+    "check:live": "node tools/live_check.cjs"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@tailwindcss/vite": "^4.3.0",
-    "@types/node": "^24.12.3",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@types/suncalc": "^1.9.2",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.3.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.6.0",
-    "tailwindcss": "^4.3.0",
-    "typescript": "~6.0.2",
-    "typescript-eslint": "^8.59.2",
+    "jsdom": "^29.1.1",
     "vite": "^8.0.12"
   }
 }

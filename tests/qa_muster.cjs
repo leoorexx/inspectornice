@@ -1,0 +1,56 @@
+// Muster-Katalog: Registry, SVGs, Karten-Renderer, Panel, Trittpfad-Meldung.
+const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs');
+let html=fs.readFileSync('index.html','utf8').replace(/\/urbanlens\//g,'/_d/');
+const errs=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>{const m=((e&&(e.message||e.detail))||e)+'';if(!/getContext|Not implemented|Could not load|parse CSS|fetch/.test(m))errs.push(m.slice(0,110));});
+function sf(u){u=String(u);
+  if(u.includes('overpass'))return Promise.resolve({ok:true,text:()=>Promise.resolve('{"elements":[]}'),json:()=>Promise.resolve({elements:[]})});
+  if(u.includes('open-meteo'))return Promise.resolve({ok:true,json:()=>Promise.resolve({current:{},daily:{temperature_2m_max:[20]}})});
+  let f=null;if(!u.includes('/_d/')&&u.includes('/data/layers/'))f='public/data/layers/'+u.split('/data/layers/')[1].split('?')[0];else if(!u.includes('/_d/')&&u.includes('/data/'))f='public/data/'+u.split('/data/')[1].split('?')[0];else if(u.includes('/_d/data/layers/'))f='public/data/layers/'+u.split('/_d/data/layers/')[1].split('?')[0];else if(u.includes('/_d/data/'))f='public/data/'+u.split('/_d/data/')[1].split('?')[0];
+  if(f&&fs.existsSync(f)){const d=fs.readFileSync(f,'utf8');return Promise.resolve({ok:true,json:()=>Promise.resolve(JSON.parse(d)),text:()=>Promise.resolve(d)});}
+  return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({}),text:()=>Promise.resolve('')});}
+const ctx=new Proxy({},{get:()=>(()=>{}),set:()=>true});
+const dom=new JSDOM(html,{runScripts:'dangerously',resources:'usable',pretendToBeVisual:true,url:'https://test.local/',virtualConsole:vc,beforeParse(w){w.HTMLCanvasElement.prototype.getContext=()=>ctx;w.fetch=u=>sf(u);w.scrollTo=()=>{};w.requestAnimationFrame=c=>setTimeout(c,0);w.localStorage.setItem('nh_intro_v1','1');w.localStorage.setItem('ul_lang','de');w.localStorage.setItem('nh_city','utr');}});
+const {window}=dom;window.onerror=m=>errs.push('e:'+String(m).slice(0,110));
+let fails=0;const ok=(n,v,i)=>{console.log((v?'  ✓ ':'  ✗ ')+n+(i?'  ['+i+']':''));if(!v)fails++;};
+const ALLOWED=new Set(['#1a1a2e','#f7f5ef','#f4f6ef','#ffffff','#9aa0a6','#c9c5bb','#e8e4da','#b34a4a','#c97b4f','#c9a53f','#8ba36e','#5f7a52','#ffd600']);
+setTimeout(async()=>{const w=window,d=w.document;
+  console.log('— Muster-Registry —');
+  const M=w.eval('MUSTER');
+  ok('7 Muster',Array.isArray(M)&&M.length===7,M&&M.length);
+  ok('IDs M1–M7 eindeutig',new Set(M.map(m=>m.id)).size===7&&M.every(m=>/^M[1-7]$/.test(m.id)));
+  ok('Keys eindeutig',new Set(M.map(m=>m.key)).size===7);
+  ok('Alle Texte 3-sprachig',M.every(m=>['n','wann','wirkung','foerder'].every(f=>m[f]&&m[f].de&&m[f].en&&m[f].nl)&&m.el&&m.el.de.length>=3&&m.el.en.length>=3&&m.el.nl.length>=3));
+  ok('Kostenklasse gesetzt',M.every(m=>['€','€€','€€€'].includes(m.kosten)));
+  console.log('— SVGs —');
+  const SV=w.eval('MU_SVG');
+  ok('SVG je Muster',M.every(m=>typeof SV[m.key]==='string'&&SV[m.key].length>200),Object.keys(SV).length+' SVGs');
+  let colOk=true,colBad='';let struct=true;
+  M.forEach(m=>{const s=SV[m.key]||'';
+    if(!s.startsWith('<svg viewBox="0 0 640 150"'))struct=false;
+    if(/<text|<image|<script|gradient|filter|url\(#/i.test(s))struct=false;
+    (s.match(/#[0-9a-fA-F]{6}/g)||[]).forEach(h=>{if(!ALLOWED.has(h.toLowerCase())){colOk=false;colBad=m.key+':'+h;}});
+  });
+  ok('SVG-Struktur (viewBox, kein text/gradient/filter)',struct);
+  ok('Nur erlaubte Farben',colOk,colBad);
+  // Parsebar? In DOM einsetzen und Elemente zählen
+  const probe=d.createElement('div');probe.innerHTML=SV[M[0].key]||'';
+  ok('SVG parsebar (Elemente > 10)',probe.querySelectorAll('svg *').length>10,probe.querySelectorAll('svg *').length+' Elemente');
+  console.log('— Karten & Panel —');
+  const card=w.eval('musterCard(musterById("M3"))');
+  ok('Karte rendert SVG + Texte',/mu-card/.test(card)&&/<svg/.test(card)&&/Kühlmeile/.test(card));
+  w.eval('openMuster()');
+  const P=d.getElementById('musterPanel');
+  ok('Bibliothek öffnet mit 7 Karten',P.classList.contains('open')&&P.querySelectorAll('.mu-card').length===7);
+  ok('Alle 7 SVGs im Panel',P.querySelectorAll('.mu-card svg').length===7);
+  w.eval('closeMuster()');
+  ok('Bibliothek schließt',!P.classList.contains('open'));
+  console.log('— Verdrahtung —');
+  ok('Straßen-Fall verweist auf M3+M2',JSON.stringify(w.eval('musterFor("streets")'))==='["M3","M2"]');
+  ok('Schulen-Fall verweist auf M7+M2',JSON.stringify(w.eval('musterFor("schools")'))==='["M7","M2"]');
+  const sec=w.eval('musterSec("streets")');
+  ok('Fall-Sektion mit Überschrift + Link',/Muster für den Umbau/.test(sec)&&/openMuster/.test(sec));
+  ok('Cmd-K-Eintrag vorhanden',/Muster-Bibliothek/.test(html)&&/openMuster\(\)/.test(html));
+  ok('Trittpfad-Meldekategorie',!!w.eval('REPORT_TYPES.trittpfad')&&w.eval('REPORT_TYPES.trittpfad.nl')==='Olifantenpaadje');
+  console.log('\nCHECKS: Fehler-Checks:',fails===0,'| jsdom-Fehler:',errs.filter(e=>!/getContext/.test(e)).length,errs.slice(0,2));
+  process.exit(fails?1:0);
+},3200);
