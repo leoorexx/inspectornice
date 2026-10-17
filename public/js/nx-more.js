@@ -169,7 +169,8 @@ function cols(){const X=NX(),R=X.RISKS.filter(r=>r.pt);return [
   ...R.map(r=>({k:r.id,l:tn(r),v:r.v,f:v=>v==null?'—':r.f(v),bad:v=>v!=null&&r.over(v),inv:r.inv,csv:v=>v==null?'':v})),
   {k:'inw',l:T('Einwohner','Residents','Inwoners'),v:b=>b.v.inw,f:v=>v==null?'—':F(v),csv:v=>v==null?'':v},
   {k:'senioren',l:'65+',v:b=>b.v.senioren,f:v=>v==null?'—':N(v,0)+' %',csv:v=>v==null?'':v},
-  {k:'niedrig',l:T('Niedriges Einkommen','Low income','Laag inkomen'),v:b=>b.v.niedrig,f:v=>v==null?'—':N(v,0)+' %',csv:v=>v==null?'':v}];}
+  {k:'niedrig',l:T('Niedriges Einkommen','Low income','Laag inkomen'),v:b=>b.v.niedrig,f:v=>v==null?'—':N(v,0)+' %',csv:v=>v==null?'':v},
+  {k:'lbmk',l:T('Lebensqualität','Liveability','Leefbaarheid'),v:b=>b.v.lbmk,f:v=>v==null?'—':v+'/9',csv:v=>v==null?'':v}];}
 function rowsOf(){const X=NX(),q=D.q.trim().toLowerCase(),p=pins(),c=cols().find(x=>x.k===D.sort)||cols()[0];
   return X.BU.filter(b=>(!q||b.name.toLowerCase().includes(q)||wijkOf(b).toLowerCase().includes(q))&&(!D.wijk||b.wijk===D.wijk)&&(!D.only||p.includes(b.code)))
     .sort((a,b)=>{const va=c.v(a),vb=c.v(b);if(va==null&&vb==null)return a.name.localeCompare(b.name);if(va==null)return 1;if(vb==null)return -1;return (va-vb)*D.dir||a.name.localeCompare(b.name);});}
@@ -203,7 +204,7 @@ function renderDash(el){
   body.querySelector('#nxdW').onchange=e=>{D.wijk=e.target.value;renderDash(el);};
   body.querySelector('#nxdP').onclick=()=>{D.only=!D.only;renderDash(el);};
   body.querySelector('#nxdCsv').onclick=()=>csv();
-  body.querySelectorAll('[data-sort]').forEach(s=>s.onclick=()=>{const k=s.dataset.sort;if(D.sort===k)D.dir=-D.dir;else{D.sort=k;D.dir=k==='inw'||k==='s'||k==='senioren'||k==='niedrig'||!(cols().find(c=>c.k===k)||{}).inv?-1:1;}renderDash(el);const f=el.querySelector(`[data-sort="${k}"]`);if(f)f.focus();});
+  body.querySelectorAll('[data-sort]').forEach(s=>s.onclick=()=>{const k=s.dataset.sort;if(D.sort===k)D.dir=-D.dir;else{D.sort=k;D.dir=k==='lbmk'?1:k==='inw'||k==='s'||k==='senioren'||k==='niedrig'||!(cols().find(c=>c.k===k)||{}).inv?-1:1;}renderDash(el);const f=el.querySelector(`[data-sort="${k}"]`);if(f)f.focus();});
   body.querySelectorAll('[data-open]').forEach(o=>o.onclick=()=>openB(o.dataset.open));
   body.querySelectorAll('[data-cmp]').forEach(c=>c.onchange=()=>{const k=c.dataset.cmp;if(c.checked){if(D.cmp.length>=3){c.checked=false;toast(T('Höchstens drei Quartiere vergleichen.','Compare at most three neighbourhoods.','Vergelijk hooguit drie buurten.'),3000);return;}D.cmp.push(k);}else D.cmp=D.cmp.filter(x=>x!==k);
     const t=el.querySelector('[data-tab="cmp"]');if(t)t.textContent=T('Vergleich','Compare','Vergelijken')+(D.cmp.length?` (${D.cmp.length})`:'');});
@@ -232,7 +233,8 @@ function cmp(body,el){
     [T('Niedriges Einkommen','Low income','Laag inkomen'),b=>b.v.niedrig,v=>v==null?'—':N(v,0)+' %',0],
     [T('Kühlt zu Hause gut ab','Can cool down at home','Kan thuis goed afkoelen'),b=>b.v.kuehlinnen,v=>v==null?'—':N(v,0)+' %',1],
     [T('Stark einsam','Severely lonely','Sterk eenzaam'),b=>b.v.einsam,v=>v==null?'—':N(v,0)+' %',-1],
-    [T('Bänke je 1.000 Einw.','Benches per 1,000','Banken per 1.000'),b=>b.v.baenke1000,v=>v==null?'—':N(v,1),1]];
+    [T('Bänke je 1.000 Einw.','Benches per 1,000','Banken per 1.000'),b=>b.v.baenke1000,v=>v==null?'—':N(v,1),1],
+    [T('Lebensqualität (Leefbaarometer)','Liveability (Leefbaarometer)','Leefbaarheid (Leefbaarometer)'),b=>b.v.lbmk,v=>v==null?'—':v+'/9',1]];
   const pick=(i)=>`<select data-ci="${i}" aria-label="${T('Quartier','Neighbourhood','Buurt')} ${i+1}"><option value="">${i>=2?T('— drittes Quartier —','— third neighbourhood —','— derde buurt —'):'—'}</option>${B.map(b=>`<option value="${b.code}"${D.cmp[i]===b.code?' selected':''}>${esc(b.name)}</option>`).join('')}</select>`;
   body.innerHTML=`<div class="nxd-cs">${[0,1,2].map(pick).join('')}</div>
     <div class="nxd-tw"><table class="nxd-t nxd-ct"><thead><tr><th class="nxd-c0"></th>${sel.map(b=>`<th scope="col"><button data-open="${b.code}">${esc(b.name)}<small>${esc(wijkOf(b))}</small></button></th>`).join('')}</tr></thead>
@@ -258,7 +260,7 @@ const plain=s=>String(s==null?'':s).replace(/<sub>(.*?)<\/sub>/g,'_$1').replace(
 M.reportLines=function(b){
   const X=NX(),s=X.score(b),g=X.grade(s),P=X.people(b),pa=X.parts(b),um=X.umbau(b),v=b.v,KN=X.KN,out=[];
   const H=t=>out.push(['h',t]),P_=t=>out.push(['p',t]),K=(a,c)=>out.push(['k',a,c]);
-  out.push(['t',b.name]);out.push(['s',`${wijkOf(b)?wijkOf(b)+' · ':''}Utrecht · ${T('Stand','As of','Stand')} ${new Date().toISOString().slice(0,10)} · ID UTR-BU-${b.code.replace(/^BU/,'')}`]);
+  out.push(['t',b.name]);out.push(['s',`${wijkOf(b)?wijkOf(b)+' · ':''}Utrecht · ${T('Stand','As of','Peildatum')} ${new Date().toISOString().slice(0,10)} · ID UTR-BU-${b.code.replace(/^BU/,'')}`]);
   out.push(['big',s==null?T('Keine Note (zu wenige Werte)','No grade (too few values)','Geen cijfer (te weinig waarden)'):`${T('Klimabelastung','Climate burden','Klimaatbelasting')} ${X.GR[g][1]} · ${X.gname(g)} — ${Math.round(s)}/100`]);
   P_(`${F(P.inw)} ${T('Menschen leben hier.','people live here.','mensen wonen hier.')}`);
   if(s!=null){H(T('So setzt sich der Wert zusammen','How the value is made up','Zo is de waarde opgebouwd'));for(const x of pa)K(tn(x.r),`${x.v==null?'—':x.r.f(x.v)} (${T('Richtwert','guideline','richtwaarde')} ${x.r.lim}) → ${x.p==null?'—':Math.round(x.p)}/25`);}

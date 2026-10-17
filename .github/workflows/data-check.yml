@@ -1,0 +1,26 @@
+name: Datenquellen prüfen
+
+# Jeden Morgen eine kleine echte Anfrage an jede Datenquelle (PDOK, 3D BAG, AHN, LIWO, RIVM, Gemeente …).
+# Fällt eine Kern-Quelle aus, schlägt der Lauf fehl und GitHub schickt eine E-Mail — bevor Nutzer es merken.
+# Läuft nur, wenn dieser Branch der Standard-Branch des Repos ist (Zeitpläne laufen nur dort).
+on:
+  schedule:
+    - cron: '40 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools/live_check.cjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Datenquellen anfragen
+        run: node tools/live_check.cjs
