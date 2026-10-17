@@ -51,11 +51,32 @@ export function audit(root,area,{mobile=innerWidth<768}={}){
   return out;
 }
 
+// ── Bausteine-Inventar: welche Form hat jeder Regler, Umschalter, Knopf, jede Legende? ──
+// Gleiche Aufgabe soll gleich aussehen (HIG design-principles › Keep visuals and interactions consistent).
+const sig=el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return [Math.round(r.height),s.borderRadius,s.fontSize,s.fontWeight,s.borderStyle==='none'||parseFloat(s.borderWidth)===0?'-':s.borderStyle].join(' ');};
+const cls=el=>(el.className&&typeof el.className==='string'?el.className.trim().split(/\s+/).filter(c=>!/^(on|bad|ok|l\d)$/.test(c))[0]:'')||el.tagName.toLowerCase();
+function kind(el){
+  if(el.matches('input[type="range"]'))return 'regler';
+  const p=el.parentElement;if(!p)return null;
+  const sib=[...p.children].filter(x=>x.tagName==='BUTTON');
+  if(el.tagName==='BUTTON'&&sib.length>=2&&sib.some(x=>x.classList.contains('on')||x.getAttribute('aria-pressed')==='true'||x.getAttribute('aria-selected')==='true'))return 'umschalter';
+  if(el.tagName==='BUTTON'||el.matches('[role="button"]'))return 'knopf';
+  return null;}
+export function inventory(root,area,inv){
+  root.querySelectorAll('button,[role="button"],input[type="range"]').forEach(el=>{if(!vis(el)||el.closest('.leaflet-control-attribution,.gl'))return;const k=kind(el);if(!k)return;
+    const host=k==='umschalter'?el.parentElement:el,key=k+' | '+(k==='umschalter'?cls(host)+' > ':'')+cls(el);
+    const e=inv[key]||(inv[key]={k,sig:new Set(),areas:new Set()});e.sig.add(k==='umschalter'?sig(el)+' / '+getComputedStyle(host).borderRadius:sig(el));e.areas.add(area.replace(/^(Hell|Dunkel)( Handy)? · /,''));});
+  root.querySelectorAll('[class*="leg"],[class*="ramp"],[class*="scale"],[class*="key"]').forEach(el=>{if(!vis(el)||el.closest('.leg,.legend')!==el&&el.closest('[class*="leg"]')!==el)return;
+    const key='legende | '+cls(el),e=inv[key]||(inv[key]={k:'legende',sig:new Set(),areas:new Set()});const s=getComputedStyle(el);e.sig.add([s.display,s.fontSize,s.borderRadius].join(' '));e.areas.add(area.replace(/^(Hell|Dunkel)( Handy)? · /,''));});
+}
+export function summary(inv){const by={};Object.entries(inv).forEach(([key,e])=>{(by[e.k]=by[e.k]||[]).push({key,sig:[...e.sig],areas:[...e.areas]});});return by;}
+
 export function start(opts={}){window.__hig={running:true,step:'start',issues:[],opts};run(opts).then(r=>Object.assign(window.__hig,r,{running:false,step:'fertig'})).catch(e=>{window.__hig.running=false;window.__hig.crash=String(e&&e.stack||e).slice(0,600);});return window.__hig;}
 
 export async function run({modes=['light','dark'],spot=[52.0907,5.1214],lab=true}={}){
   const H=window.__hig||{issues:[]},NX=window.__NX,M=window.NXM,LAB=window.LAB,ACT=window.ACT;
   const add=a=>H.issues.push(...a),step=s=>{H.step=s;},mobile=innerWidth<768;
+  H.inv={};const look=(root,area)=>{add(audit(root,area));if(root)inventory(root,area,H.inv);};
   const esc=()=>document.activeElement&&document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
   const sheet=()=>document.getElementById('nxSheet');
   const lookBtn=t=>document.querySelector(`.thm [data-t="${t}"]`);
@@ -63,32 +84,32 @@ export async function run({modes=['light','dark'],spot=[52.0907,5.1214],lab=true
   const still=document.createElement('style');still.textContent='*,*::before,*::after{transition:none!important;animation:none!important}';document.head.appendChild(still);   // gemessen wird der Endzustand, nicht ein Übergang
   for(const mode of modes){const tag=x=>`${mode==='dark'?'Dunkel':'Hell'}${mobile?' Handy':''} · ${x}`;
     lookBtn(mode).click();await wait(300);if(LAB.on)LAB.close();NX.closePanel();await wait(200);
-    step(tag('Stadt'));add(audit(document.body,tag('Stadt')));
+    step(tag('Stadt'));look(document.body,tag('Stadt'));
     if(document.documentElement.scrollWidth>innerWidth+1)add([{area:tag('Stadt'),k:'ueberstand',msg:`Seite scrollt quer (${document.documentElement.scrollWidth} > ${innerWidth})`}]);
-    step(tag('Menü'));const mb=document.getElementById('moreBtn');mb.click();await wait(350);add(audit(document.getElementById('moreMenu'),tag('Mehr-Menü')));
+    step(tag('Menü'));const mb=document.getElementById('moreBtn');mb.click();await wait(350);look(document.getElementById('moreMenu'),tag('Mehr-Menü'));
     esc();await wait(80);if(!document.getElementById('moreMenu').hidden){add([{area:tag('Mehr-Menü'),k:'escape',msg:'schließt nicht mit Escape'}]);mb.click();}
     step(tag('Quartier'));const B=NX.BU.filter(b=>NX.score(b)!=null).sort((a,b)=>NX.score(b)-NX.score(a))[0];NX.openBuurt(B,false);await wait(500);await until(()=>document.querySelector('#pBody .nxl'),8000);{const nl=document.querySelector('#pBody .nxl');if(nl)nl.open=true;}await wait(100);
-    add(audit(document.getElementById('panel')||document.querySelector('.panel'),tag('Quartiersprofil')));
-    const g=document.querySelector('#pBody .gl');if(g){g.click();await wait(120);add(audit(document.querySelector('.glpop'),tag('Begriff')));document.body.click();}
+    look(document.getElementById('panel')||document.querySelector('.panel'),tag('Quartiersprofil'));
+    const g=document.querySelector('#pBody .gl');if(g){g.click();await wait(120);look(document.querySelector('.glpop'),tag('Begriff'));document.body.click();}
     NX.closePanel();await wait(200);
     step(tag('Fenster'));
     for(const [nm,open,sub] of [['Alle Quartiere',()=>M.dashboard('list'),['rank','cmp']],['Methodik',()=>M.methodik()],['Regeln',()=>M.normen()],['Utrecht jetzt',()=>M.now()],['Befehle',()=>M.palette('')]]){
-      await open();await wait(450);const sh=sheet()||document.querySelector('.nxk,.nx-pal,[role="dialog"]');add(audit(sh,tag(nm)));
+      await open();await wait(450);const sh=sheet()||document.querySelector('.nxk,.nx-pal,[role="dialog"]');look(sh,tag(nm));
       if(sh&&!sh.matches('[role="dialog"],[role="listbox"]')&&!sh.querySelector('[role="dialog"]'))add([{area:tag(nm),k:'name',msg:'Fenster ohne role="dialog"'}]);
-      for(const t of sub||[]){const b=sh&&sh.querySelector(`[data-tab="${t}"]`);if(b){b.click();await wait(250);add(audit(sheet(),tag(nm+' '+t)));}}
+      for(const t of sub||[]){const b=sh&&sh.querySelector(`[data-tab="${t}"]`);if(b){b.click();await wait(250);look(sheet(),tag(nm+' '+t));}}
       esc();await wait(250);if(sheet()&&vis(sheet())){add([{area:tag(nm),k:'escape',msg:'schließt nicht mit Escape'}]);M._t.close();await wait(200);}}
     if(ACT){step(tag('Handeln'));const m0=ACT._t.MISSIONS[0];ACT.m=m0.id;ACT.toggle(true);await until(()=>ACT.cases[m0.id]&&(ACT.cases[m0.id].length||ACT.cases[m0.id].err),30000);await wait(300);
-      add(audit(document.querySelector('.act'),tag('Handeln')));const c=ACT.cases[m0.id];if(c&&c.length){ACT._t.openCase(c[0]);await wait(400);add(audit(document.querySelector('.act'),tag('Fall')));}
+      look(document.querySelector('.act'),tag('Handeln'));const c=ACT.cases[m0.id];if(c&&c.length){ACT._t.openCase(c[0]);await wait(400);look(document.querySelector('.act'),tag('Fall'));}
       ACT.toggle(false);await wait(200);if(LAB.on)LAB.close();}
     if(lab){step(tag('Labor'));NX.openLab(spot,'sun');await wait(400);NX.map.stop();NX.map.setView(spot,17,{animate:false});await wait(600);
       const ll=L.latLng(spot[0],spot[1]),click=async p=>{const m=NX.map;m.fire('click',{latlng:p,layerPoint:m.latLngToLayerPoint(p),containerPoint:m.latLngToContainerPoint(p),originalEvent:new MouseEvent('click')});await wait(150);};
       for(const b of [...document.querySelectorAll('.lab-tools [data-t]')].map(b=>b.dataset.t)){step(tag('Labor '+b));document.querySelector(`.lab-tools [data-t="${b}"]`).click();await wait(400);
         if(['sun','standort','building','area','street'].includes(b))await click(ll);
         await until(()=>!document.querySelector('.lab-status .lab-spin'),b==='building'||b==='standort'?25000:12000);await wait(300);
-        add(audit(document.querySelector('.lab-dock'),tag('Labor '+b)));
-        const ms=[...document.querySelectorAll('.lab-body [data-m]')].slice(1,4);for(const x of ms){x.click();await wait(500);await until(()=>!document.querySelector('.lab-status .lab-spin'),8000);add(audit(document.querySelector('.lab-dock'),tag('Labor '+b+' '+x.dataset.m)));}}
-      if(LAB.v3d){step(tag('3D'));const V=LAB.v3d;V.open();await until(()=>V.on&&!V.busy,60000);await wait(400);add(audit(document.querySelector('.v3-pane')||document.body,tag('3D')));
-        for(const m of ['wasser','wind','rad','wachstum']){const b=document.querySelector(`.v3-modes [data-md="${m}"]`);if(b){b.click();await wait(300);add(audit(document.querySelector('.v3-pane'),tag('3D '+m)));}}V.close();}
+        look(document.querySelector('.lab-dock'),tag('Labor '+b));
+        const ms=[...document.querySelectorAll('.lab-body [data-m]')].slice(1,4);for(const x of ms){x.click();await wait(500);await until(()=>!document.querySelector('.lab-status .lab-spin'),8000);look(document.querySelector('.lab-dock'),tag('Labor '+b+' '+x.dataset.m));}}
+      if(LAB.v3d){step(tag('3D'));const V=LAB.v3d;V.open();await until(()=>V.on&&!V.busy,60000);await wait(400);look(document.querySelector('.v3-pane')||document.body,tag('3D'));
+        for(const m of ['wasser','wind','rad','wachstum']){const b=document.querySelector(`.v3-modes [data-md="${m}"]`);if(b){b.click();await wait(300);look(document.querySelector('.v3-pane'),tag('3D '+m));}}V.close();}
       LAB.close();await wait(200);}
   }
   lookBtn('auto').click();await wait(200);still.remove();
