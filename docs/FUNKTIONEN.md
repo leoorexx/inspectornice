@@ -23,7 +23,7 @@ Stand 17. Oktober 2026. Jede Zeile nennt die Datenquelle und die Prüfung (`test
 | Befehle (⌘K / Strg K) | — | qa_more |
 | Etwas melden (7 Arten, ohne Freitext) | Supabase, sonst Gerät | qa_more |
 | Hitze-Hinweis ab 27 °C, Schwelle Nationaler Hitzeplan | Open-Meteo | qa_more |
-| Sprache DE · EN · NL, Klassische Ansicht | — | qa_next |
+| Sprache DE · EN · NL, Darstellung System · Hell · Dunkel, Klassische Ansicht | — | qa_next |
 
 ## Straße (Straßenlabor)
 
@@ -55,4 +55,4 @@ Prüfung: qa_more (Code-Merkmale), im Browser per `smoke-live.mjs` und Bildvergl
 
 ## Querschnitt
 
-Zwei Perspektiven Stadt | Straße ohne Überlagerung, Apple-HIG (rem-Schrift, Fokusring, Kontrastmodus, 44-px-Flächen), Hell/Dunkel nach System, tägliche Live-Prüfung der Quellen (`npm run check:live`).
+Zwei Perspektiven Stadt | Straße ohne Überlagerung, Apple-HIG (rem-Schrift, Fokusring, Kontrastmodus, 44-px-Flächen), Hell/Dunkel nach System, tägliche Live-Prüfung der Quellen (`npm run check:live`), Apple-Regel-Check aller Oberflächen (`tests/hig-live.mjs`).

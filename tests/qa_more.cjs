@@ -194,7 +194,7 @@ setTimeout(async()=>{const d=w.document,NX=w.__NX,M=w.NXM;
   ok('Schrift skaliert mit der Browser-Einstellung (rem statt px)',!/font(-size)?:[^;{}]*\d px/.test(css.replace(/(\d)px/g,'$1 px'))&&(css.match(/rem/g)||[]).length>250);
   ok('Fokusring auf hellem und dunklem Grund sichtbar (dunkler Ring + gelber Halo)',/:focus-visible\{outline:2\.5px solid var\(--ink\);outline-offset:2px;box-shadow:0 0 0 5px var\(--accent\)\}/.test(css));
   ok('Antwort auf „Erhöhter Kontrast" und „Weniger Transparenz"',/prefers-contrast:more/.test(css)&&/prefers-reduced-transparency:reduce/.test(css)&&/prefers-reduced-motion:reduce/.test(css));
-  ok('Handy: Reiter, Sortierköpfe, Häkchen, Zeilen, Hintergrund-Knöpfe ≥ 44 px',/\.nxd-tabs button,\.lgrp\{min-height:44px\}/.test(css)&&/\.nxd-ck\{width:44px;height:44px\}/.test(css)&&/\.lab-base button,\.lab-osm\{min-height:44px\}/.test(css));
+  ok('Handy: Reiter, Sortierköpfe, Häkchen, Zeilen, Hintergrund-Knöpfe ≥ 44 px',/\.nxd-tabs button,\.lgrp,\.nxd-open,\.lab-base button,\.lab-osm\{min-height:44px\}/.test(css)&&/\.nxd-ck\{width:44px;height:44px\}/.test(css));
   ok('Keine Alert-Fenster mehr (Rückmeldung in der Oberfläche)',!/[^.]alert\(T\(/.test(fs.readFileSync('public/js/act.js','utf8'))&&typeof M.toast==='function');
   {const w3=mk('https://test.local/next.html');await wait(2500);const d3=w3.document,h=d3.getElementById('hint');
    ok('Begrüßung beim ersten Besuch ist ein Dialog mit Ausweg (Escape)',!!h&&h.getAttribute('role')==='dialog'&&h.getAttribute('aria-modal')==='true');

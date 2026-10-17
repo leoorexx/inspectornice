@@ -27,6 +27,7 @@ next.html ─ Kern: Karte, Quartiere, Klimabelastung, Profil, Legende, Kopfzeile
 
 **Ereignisse auf `document`**
 - `nx:panel` (detail = Quartier) — nach jedem Profil-Aufbau; nx-more hängt die Aktionsleiste an.
+- `nx:theme` (detail = `'light'` | `'dark'`) — nach jedem Wechsel der Darstellung (System oder Menü).
 - `nx:view` (detail = `'street'` | `'city'`) — beim Wechsel der Perspektive. **Jede Ebene, die nur zu einer Perspektive gehört, blendet sich hier aus bzw. ein** (Missionen, Meldungen, Messstationen …).
 
 **Labor-Werkzeug** (`LAB.addTool`)
@@ -49,6 +50,8 @@ Daten fürs Gebiet immer mit `api.ensure(kind,bounds)` laden (eigene Liste, leer
 
 - **Kommentare:** Die Module sind lange Einzeiler. Nie `// …` mitten in eine Zeile setzen — es verschluckt den Rest der Zeile.
 - **Klassennamen:** `.top` gehört der Kopfzeile. Allgemeine Namen in Bausteinen vermeiden (eine Karte mit `.top` lag einmal fest über dem Querschnitt).
+- **Hell/Dunkel:** Standard folgt dem System; im Mehr-Menü fest wählbar (System · Hell · Dunkel, gespeichert als `nx_look`, vor dem ersten Zeichnen im `<head>` gesetzt). Wer Farben je Modus rechnet, hört auf das Ereignis `nx:theme`.
+- **Knöpfe** brauchen eigene Gestaltung (`border:none;background:none` oder eigene Farbe) — sonst zeigt der Browser graue Standardknöpfe, im Dunkelmodus besonders auffällig.
 - **Farben** nur über Tokens (`--ink`, `--ink2`, `--mute`, `--card`, `--sheet`, `--glass`, `--pos`, `--neg`); jedes Token hat eine Dunkel-Variante.
 - **Schrift** in `rem`; Tippflächen ≥ 44 px am Handy; Glas nur auf Bedienelementen, Textflächen fast deckend.
 - **Ehrlichkeit:** Schätzungen als Schätzung benennen, Quelle und Jahr nennen, bei Ausfall „gerade nicht erreichbar" statt leerer Zahl.
@@ -69,6 +72,8 @@ Daten fürs Gebiet immer mit `api.ensure(kind,bounds)` laden (eigene Liste, leer
 - `npm run check:live` — echte Anfrage an jede Datenquelle (täglich per GitHub Action, sobald `react-app` Standard-Branch ist).
 - `tests/smoke-live.mjs` — Durchlauf aller Funktionen im echten Browser mit echten Daten. Im Dev-Server in der Konsole:
   `const m=await import('/tests/smoke-live.mjs?'+Date.now()); m.start({lang:'de'})` → Ergebnis in `window.__smoke`.
+- `tests/hig-live.mjs` — Apple-Regel-Check jeder Oberfläche in Hell und Dunkel: Kontrast nach Überblendung (4,5:1, große Schrift 3:1), Schrift ≥ 11 px, Tippflächen (Handy 44 px, Desktop 24 px; Begriffe im Fließtext ausgenommen), Browser-Standardknöpfe, Namen für Bildschirmleser, Escape, Querscrollen. Für das Handy das Fenster vorher auf 375 px stellen.
+  `const m=await import('/tests/hig-live.mjs?'+Date.now()); m.start()` → Ergebnis in `window.__hig`.
 
 ## Daten aufbereiten
 

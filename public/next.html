@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#f1ede5">
+<meta name="theme-color" content="#f1ede5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121016" media="(prefers-color-scheme: dark)">
+<script>try{var t=localStorage.getItem('nx_look');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>Inspector Nice — Klimarisiken in Utrecht</title>
 <meta name="description" content="Jeder Ort hat eine Signatur aus Klima, Umwelt und sozialer Lage — ein Bild statt 35 Ebenen.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,22 +16,22 @@
 :root{
   --paper:#f1ede5;--ink:#17151c;--ink2:#46424f;--mute:#67626f;--line:rgba(23,21,28,.08);--line2:rgba(23,21,28,.15);
   --glass:rgba(250,248,243,.86);--sheet:rgba(250,248,243,.97);--card:#fbfaf6;--soft:#eee9df;--soft2:#e6e0d4;
-  --accent:#FFD600;--chrome:#17151c;--pos:#2f6a55;--neg:#8a2a3a;
+  --accent:#FFD600;--chrome:#17151c;--pos:#2f6a55;--neg:#8a2a3a;--warn:#7d5a10;
   --sh:0 1px 1px rgba(23,21,28,.04),0 6px 20px rgba(23,21,28,.08);
   --sh2:0 2px 4px rgba(23,21,28,.06),0 22px 56px rgba(23,21,28,.16);
   --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
   --serif:'Syne','DM Sans',system-ui,sans-serif;--sans:'DM Sans',system-ui,-apple-system,sans-serif;
-  --tap:44px;
+  --tap:44px;color-scheme:light;
 }
-:root[data-theme="dark"]{
+:root[data-theme="dark"]{color-scheme:dark;
   --paper:#121016;--ink:#f3efe7;--ink2:#cfc9d6;--mute:#938da0;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.15);
   --glass:rgba(27,24,32,.86);--sheet:rgba(27,24,32,.97);--card:#1c1922;--soft:#25212c;--soft2:#2e2936;
-  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);--pos:#8fd3b6;--neg:#f2a7b1;
+  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);--pos:#8fd3b6;--neg:#f2a7b1;--warn:#e3b85c;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
   --paper:#121016;--ink:#f3efe7;--ink2:#cfc9d6;--mute:#938da0;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.15);
   --glass:rgba(27,24,32,.86);--sheet:rgba(27,24,32,.97);--card:#1c1922;--soft:#25212c;--soft2:#2e2936;
-  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);--pos:#8fd3b6;--neg:#f2a7b1}}
+  --sh:0 1px 1px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh2:0 22px 56px rgba(0,0,0,.55);--pos:#8fd3b6;--neg:#f2a7b1;--warn:#e3b85c}}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;overflow:hidden;font-size:0.875rem;-webkit-tap-highlight-color:transparent}
@@ -42,8 +44,8 @@ button:active{transform:scale(.97)}
 #map{position:fixed;inset:0;background:var(--paper)}
 .leaflet-container{background:var(--paper);font-family:var(--sans)}
 .leaflet-tile-pane{filter:grayscale(.85) contrast(.82) brightness(1.06) sepia(.12);opacity:.78}
-:root[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) grayscale(.8) brightness(.78) contrast(.9);opacity:.6}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) grayscale(.8) brightness(.78) contrast(.9);opacity:.6}}
+:root[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) grayscale(.7) brightness(1.15) contrast(.85);opacity:.9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) grayscale(.7) brightness(1.15) contrast(.85);opacity:.9}}
 body[data-base="photo"] .leaflet-tile-pane{filter:saturate(.85) contrast(1.02)!important;opacity:1!important}
 body[data-base="osm"] .leaflet-tile-pane{filter:saturate(.55) contrast(.95)!important;opacity:.9!important}
 .leaflet-control-attribution{background:transparent!important;color:var(--ink2)!important;font-size:0.6875rem}
@@ -345,7 +347,7 @@ details.lab-how{margin-top:8px;padding-top:0}
 .kp-sw{background:repeating-linear-gradient(135deg,#b0302a 0 3px,transparent 3px 6px)!important;box-shadow:inset 0 0 0 1.5px #b0302a}
 .wt-kp{margin-top:10px;display:flex;flex-direction:column;gap:4px;font-size:0.7812rem;line-height:1.45;color:var(--ink2);padding:10px 12px;border-radius:14px;background:color-mix(in srgb,#b0302a 8%,transparent)}
 .wt-kp b{color:var(--ink)}
-.wt-warn{font-size:0.75rem;line-height:1.5;color:#7a4a2a;background:rgba(233,162,59,.14);border-radius:12px;padding:9px 11px;margin-top:10px}
+.wt-warn{font-size:0.75rem;line-height:1.5;color:var(--warn);background:rgba(233,162,59,.14);border-radius:12px;padding:9px 11px;margin-top:10px}
 .wt-tab{border-collapse:collapse;margin-top:4px;font-size:0.75rem}
 .wt-tab th{font-weight:600;color:var(--mute);text-align:left;padding:1px 10px 1px 0}
 .wt-tab td{font-weight:800;text-align:right}
@@ -424,7 +426,7 @@ body.act-on .legend{display:none}
 .act-list{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:4px}
 .act-list button{width:100%;display:grid;grid-template-columns:auto 1fr;grid-template-areas:'id name' 'bar small';gap:2px 10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 11px;min-height:52px;color:var(--ink);position:relative}
 .act-list button.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.act-id{grid-area:id;font:700 0.6562rem var(--sans);color:var(--mute);letter-spacing:.03em}
+.act-id{grid-area:id;font:700 0.6875rem var(--sans);color:var(--mute);letter-spacing:.03em}
 .act-list b{grid-area:name;font:600 0.8438rem var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .act-list small{grid-area:small;font-size:0.7188rem;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .act-bar{grid-area:bar;width:64px;height:6px;border-radius:3px;background:color-mix(in srgb,var(--ink) 9%,transparent);position:relative;overflow:hidden}
@@ -688,11 +690,14 @@ body.panel-on .ptsbtn{right:494px}
 .more .lang{height:auto;padding:4px;background:var(--soft);border:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;border-radius:14px;margin-bottom:8px}
 .more .lang button{flex:1;min-height:44px;font:700 0.8125rem var(--sans);color:var(--ink2)}
 .more .lang button.on{color:var(--accent)}
-.more-i{display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 10px;border-radius:14px;color:var(--ink);text-decoration:none}
+.more-i{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:6px 10px;border:none;background:none;border-radius:14px;color:var(--ink);text-align:left;font:inherit;text-decoration:none}
 .more-i:hover,.more-i:focus-visible{background:var(--soft)}
 .more-i svg{flex:none;color:var(--ink2)}
 .more-i b{display:block;font:700 0.875rem var(--sans)}
 .more-i small{display:block;font-size:0.7812rem;color:var(--mute);margin-top:1px}
+.more .thm{display:flex;gap:2px;padding:4px;background:var(--soft);border-radius:14px;margin-bottom:8px}
+.more .thm button{flex:1;min-height:44px;border:none;background:none;border-radius:11px;font:700 0.8125rem var(--sans);color:var(--ink2);display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s,color .2s}
+.more .thm button.on{background:var(--chrome);color:var(--accent)}
 .more-f{margin:8px 4px 2px;font-size:0.75rem;line-height:1.45;color:var(--mute)}
 
 /* HIG Materials: Glas nur für Bedienelemente; Textflächen fast deckend, damit Schrift auf jeder Karte lesbar bleibt */
@@ -759,7 +764,7 @@ body.lab-on .act,body.lab-on .pacts{display:none}
 .nxd-tabs button.on{background:var(--chrome);color:#f3efe7}
 .nxd-f{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .nxd-q{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-height:44px;padding:0 12px;border:1px solid var(--line2);border-radius:12px;background:var(--card);color:var(--mute)}
-.nxd-q input{flex:1;border:none;background:none;outline:none;font:500 0.875rem var(--sans);color:var(--ink);min-width:0}
+.nxd-q input{flex:1;align-self:stretch;border:none;background:none;outline:none;font:500 0.875rem var(--sans);color:var(--ink);min-width:0}
 .nxd-f select,.nxd-cs select{min-height:44px;border:1px solid var(--line2);border-radius:12px;background:var(--card);color:var(--ink);font:600 0.8438rem var(--sans);padding:0 10px;max-width:100%}
 .nxd-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid var(--line2);border-radius:12px;background:var(--card);font:700 0.8125rem var(--sans);color:var(--ink)}
 .nxd-chip.on{border-color:var(--ink)}.nxd-chip.on svg{color:#d19a00}
@@ -809,7 +814,7 @@ body.nx-picking .leaflet-container{cursor:crosshair}
 .nxk-ov{padding-top:12vh}
 .nxk{width:min(600px,100%);background:var(--card);border-radius:20px;box-shadow:var(--sh2);overflow:hidden;animation:rise .25s var(--ease)}
 .nxk-q{display:flex;align-items:center;gap:10px;padding:0 16px;min-height:58px;border-bottom:1px solid var(--line);color:var(--mute)}
-.nxk-q input{flex:1;border:none;background:none;outline:none;font:500 1.0625rem var(--sans);color:var(--ink);min-width:0}
+.nxk-q input{flex:1;align-self:stretch;border:none;background:none;outline:none;font:500 1.0625rem var(--sans);color:var(--ink);min-width:0}
 .nxk-l{max-height:52vh;overflow:auto;padding:6px}
 .nxk-l button{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;border:none;background:none;border-radius:12px;padding:4px 10px;text-align:left;color:var(--ink2)}
 .nxk-l button.on,.nxk-l button:hover{background:var(--soft)}
@@ -903,17 +908,6 @@ body.nx-picking .leaflet-container{cursor:crosshair}
   .gl{text-decoration-style:solid}
 }
 @media (prefers-contrast:more) and (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mute:#cfc9d6;--ink2:#e6e1ec;--line:rgba(255,255,255,.3);--line2:rgba(255,255,255,.55);--glass:var(--card);--sheet:var(--card)}}
-/* Tippflächen am Handy: mindestens 44 px */
-@media (max-width:760px){
-  .nxd-tabs button,.lgrp{min-height:44px}
-  .nxd-t thead th button{min-height:44px;min-width:44px}
-  .nxd-ck{width:44px;height:44px}
-  .nxd-open{min-height:44px}
-  .lab-base button,.lab-osm{min-height:44px}
-  .sevbar button{min-width:44px}
-  .gl::after{inset:-14px -4px}
-  .ex-r button,.ex-go,.ex-cb select,.ex-raw summary{min-height:44px}
-}
 
 /* CAD-Paket und Gebäudeanalyse (js/lab-cad.js) */
 .ex-card{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line2);border-radius:14px;padding:10px 12px;margin-top:8px;background:var(--card)}
@@ -934,6 +928,16 @@ body.nx-picking .leaflet-container{cursor:crosshair}
 .gb-f i{height:8px;border-radius:4px;background:#2f6fa8}.gb-f div:nth-child(2) i{background:#e3a800}.gb-f div:nth-child(3) i{background:#d0583c}.gb-f div:nth-child(4) i{background:#7a4ea8}.gb-f b{text-align:right;color:var(--ink)}
 .gb-x{margin-top:12px}
 :root[data-theme="dark"] .gb-mon{color:#ffb4a3}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gb-mon{color:#ffb4a3}}
+/* Tippflächen am Handy: mindestens 44 px — steht bewusst am Ende, damit spätere Grundregeln (z. B. 40 px) sie nicht überschreiben */
+@media (max-width:760px){
+  .nxd-tabs button,.lgrp,.nxd-open,.lab-base button,.lab-osm{min-height:44px}
+  .nxd-t thead th button{min-height:44px;min-width:44px}
+  .nxd-ck{width:44px;height:44px}
+  .sevbar button{min-width:44px}
+  .gl::after{inset:-15px -4px}
+  .lab-dock button,.lab-dock select,.lab-dock summary,.lab-dock .ex-ck,.v3d button,.act button,.chip,.glall{min-height:44px}
+  .lab-dock input[type="range"],.v3d input[type="range"]{min-height:44px}
+}
 </style>
 </head>
 <body>
@@ -958,13 +962,15 @@ body.nx-picking .leaflet-container{cursor:crosshair}
     <div class="more" id="moreMenu" hidden>
       <div class="more-h" id="moreLangH">Sprache</div>
       <div class="lang" role="group" aria-labelledby="moreLangH"><button data-l="de" lang="de">Deutsch</button><button data-l="en" lang="en">English</button><button data-l="nl" lang="nl">Nederlands</button></div>
+      <div class="more-h" id="moreThH">Darstellung</div>
+      <div class="thm" role="group" aria-labelledby="moreThH"><button data-t="auto" aria-pressed="true" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span id="thAuto">System</span></button><button data-t="light" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg><span id="thLight">Hell</span></button><button data-t="dark" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg><span id="thDark">Dunkel</span></button></div>
       <button class="more-i" id="dashBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span><b id="dashTxt">Alle Quartiere</b><small id="dashSub">Tabelle, Ranglisten, Vergleich</small></span></button>
       <button class="more-i" id="nowBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span><b id="nowTxt">Utrecht jetzt</b><small id="nowSub">Wetter, Regen, Luft — live</small></span></button>
       <button class="more-i" id="methodBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 12h5"/></svg><span><b id="methodTxt">Methodik und Quellen</b><small id="methodSub">Wie die Noten entstehen</small></span></button>
       <button class="more-i" id="cmdBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span><b id="cmdTxt">Suchen und Befehle</b><small id="cmdSub">Quartier, Werkzeug, Seite</small></span><kbd id="cmdKey">⌘K</kbd></button>
       <button class="more-i" id="repBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h11l-1.5 4L16 12H5"/></svg><span><b id="repTxt">Etwas melden</b><small id="repSub">Fehlende Bank, Hitzepunkt, Trittpfad</small></span></button>
       <a class="more-i" href="index.html?classic" id="classicBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M3 10h6"/></svg><span><b id="classicTxt">Klassische Ansicht</b><small id="classicSub">Alle 35 Ebenen, auch Frankfurt</small></span></a>
-      <p class="more-f" id="moreFoot">Hell oder dunkel folgt deinen Systemeinstellungen.</p>
+      <p class="more-f" id="moreFoot">System folgt der Einstellung deines Geräts.</p>
     </div>
   </div>
 </header>
@@ -1376,17 +1382,26 @@ function applyLang(){
   tx('cmdTxt','Suchen und Befehle','Search and commands','Zoeken en opdrachten');tx('cmdSub','Quartier, Werkzeug, Seite','Neighbourhood, tool, page','Buurt, tool, pagina');
   tx('nowTxt','Utrecht jetzt','Utrecht now','Utrecht nu');tx('nowSub','Wetter, Regen, Luft — live','Weather, rain, air — live','Weer, regen, lucht — live');
   tx('repTxt','Etwas melden','Flag a spot','Iets melden');tx('repSub','Fehlende Bank, Hitzepunkt, Trittpfad','Missing bench, heat spot, desire path','Ontbrekend bankje, hittepunt, olifantenpaadje');
-  tx('moreLangH','Sprache','Language','Taal');tx('moreFoot','Hell oder dunkel folgt deinen Systemeinstellungen.','Light or dark follows your system settings.','Licht of donker volgt je systeeminstellingen.');
+  tx('moreLangH','Sprache','Language','Taal');tx('moreFoot','System folgt der Einstellung deines Geräts.','System follows your device setting.','Systeem volgt de instelling van je apparaat.');
+  tx('moreThH','Darstellung','Appearance','Weergave');tx('thAuto','System','System','Systeem');tx('thLight','Hell','Light','Licht');tx('thDark','Dunkel','Dark','Donker');
   document.getElementById('moreLang').textContent=lang.toUpperCase();
-  document.getElementById('moreBtn').setAttribute('aria-label',T('Mehr: Sprache, Methodik, klassische Ansicht','More: language, methodology, classic view','Meer: taal, methodiek, klassieke weergave'));
+  document.getElementById('moreBtn').setAttribute('aria-label',T('Mehr: Sprache, Darstellung, Methodik, klassische Ansicht','More: language, appearance, methodology, classic view','Meer: taal, weergave, methodiek, klassieke weergave'));
   document.getElementById('ldTxt').textContent=T('Utrechts Quartiere werden geladen','Loading Utrecht\'s neighbourhoods','Utrechtse buurten laden');
   const pt=document.getElementById('ptsBtn');if(pt)pt.innerHTML=ptsLbl();
   if(BU){renderLenses();renderLegend();if(sel)renderPanel(sel);}
   syncView();if(window.LAB)LAB.relang();
 }
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();});
-// Hell/Dunkel folgt dem System (HIG: keine app-eigene Darstellungs-Einstellung)
-MM('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(document.documentElement.dataset.theme)return;if(BU){restyle();renderLegend();if(sel)openBuurt(sel,false);}drawPts();if(window.LAB)LAB.redraw();});
+// Hell/Dunkel: Standard folgt dem System; im Mehr-Menü fest wählbar (wie „Immer helle Karte" in Apple Karten)
+function reTheme(){if(BU){restyle();renderLegend();if(sel)openBuurt(sel,false);}drawPts();if(window.LAB)LAB.redraw();}
+function setAppearance(t,save,quiet){const r=document.documentElement;if(t==='light'||t==='dark')r.dataset.theme=t;else{t='auto';delete r.dataset.theme;}
+  if(save)STORE.set('nx_look',t==='auto'?'':t);
+  document.querySelectorAll('.thm button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m=>{m.dataset.c=m.dataset.c||m.content;m.content=t==='auto'?m.dataset.c:(t==='dark'?'#121016':'#f1ede5');});
+  if(quiet)return;reTheme();document.dispatchEvent(new CustomEvent('nx:theme',{detail:isDark()?'dark':'light'}));}
+setAppearance(document.documentElement.dataset.theme||'auto',false,true);
+document.querySelectorAll('.thm button').forEach(b=>b.onclick=()=>setAppearance(b.dataset.t,true));
+MM('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(document.documentElement.dataset.theme)return;reTheme();document.dispatchEvent(new CustomEvent('nx:theme',{detail:isDark()?'dark':'light'}));});
 // Mehr-Menü: Sprache, Methodik, Dashboard, klassische Ansicht
 (()=>{const btn=document.getElementById('moreBtn'),m=document.getElementById('moreMenu');
   const set=o=>{m.hidden=!o;btn.setAttribute('aria-expanded',o);btn.classList.toggle('on',o);if(o)(m.querySelector('.lang button.on')||m.querySelector('button,a')).focus();};
