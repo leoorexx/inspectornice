@@ -95,7 +95,7 @@ function body(){
     <button class="cta ghost lab-mini" id="scSun">${A.IC.sun||''}<span>${T('Besonnung an diesem Ort ansehen','See sunlight at this place','Bezonning op deze plek bekijken')}</span></button>
     <p class="lab-mute">${T('BAG zählt Einheiten mit genau einer Nutzung (gemischt genutzte fehlen) — eher zu wenig als zu viel. Grün: Pflanzflächen der BGT, deren Mitte höchstens 300 m entfernt ist (ab 0,5 ha ausreichend, ab 2 ha gut — angelehnt an die WHO). OpenStreetMap ist je nach Stadtteil unvollständig.','BAG counts units with exactly one use (mixed-use ones are missing) — rather too few than too many. Green: planted areas from the BGT whose centre is within 300 m (0.5 ha fair, 2 ha good — based on WHO guidance). OpenStreetMap is incomplete in some districts.','BAG telt eenheden met precies één gebruiksdoel (gemengde ontbreken) — eerder te weinig dan te veel. Groen: begroeide vlakken uit de BGT waarvan het midden binnen 300 m ligt (vanaf 0,5 ha voldoende, vanaf 2 ha goed — naar de WHO). OpenStreetMap is per wijk onvolledig.')}</p>`;
 }
-LAB.addTool({id:'standort',order:5.5,grp:'see',gate:false,keepStatus:true,
+LAB.addTool({id:'standort',order:5.5,grp:'check',gate:false,keepStatus:true,
   icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
   label:()=>T('Standort','Location','Locatie'),
   sub:()=>T('Was liegt in Gehweite — und wie ist das Klima dort?','What is within walking distance — and what is the climate like?','Wat ligt op loopafstand — en hoe is het klimaat daar?'),
