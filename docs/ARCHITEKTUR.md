@@ -14,7 +14,8 @@ next.html ─ Kern: Karte, Quartiere, Klimabelastung, Profil, Legende, Kopfzeile
   ├─ lab-area.js       Fläche + Export                  │
   ├─ lab-studio.js     Studio, Diagramme, Laserschnitt  │
   ├─ lab-standort.js   Standort-Check                   │
-  ├─ lab-route.js      Kühle Route                      ┘
+  ├─ lab-route.js      Kühle Route                      │
+  ├─ lab-cad.js        CAD-Paket (Export) + Gebäudeanalyse ┘
   ├─ lab-3d.js         3D-Spielstadt (LAB.v3d)
   ├─ act.js            Handeln: Missionen und Fälle (window.ACT)
   └─ nx-more.js        Methodik, Alle Quartiere, Begriffe, Befehle, Hitze-Hinweis, Bericht, Mitwirken, Utrecht jetzt (window.NXM)
@@ -32,7 +33,7 @@ next.html ─ Kern: Karte, Quartiere, Klimabelastung, Profil, Legende, Kopfzeile
 
 | Feld | Bedeutung |
 |---|---|
-| `id`, `order`, `grp` | Kennung, Reihenfolge, Gruppe `'see'` (Verstehen) oder `'make'` (Gestalten) |
+| `id`, `order`, `grp` | Kennung, Reihenfolge, Gruppe `'see'` (Verstehen), `'check'` (Prüfen) oder `'make'` (Gestalten) |
 | `gate:false` | Werkzeug geht auch weit herausgezoomt (sonst ab Zoom 16) |
 | `icon`, `label()`, `sub()` | Knopf und Untertitel, dreisprachig über `T` |
 | `render(api)`, `bind(root,api)` | Inhalt des Bedienfelds und seine Ereignisse |
@@ -53,6 +54,14 @@ Daten fürs Gebiet immer mit `api.ensure(kind,bounds)` laden (eigene Liste, leer
 - **Ehrlichkeit:** Schätzungen als Schätzung benennen, Quelle und Jahr nennen, bei Ausfall „gerade nicht erreichbar" statt leerer Zahl.
 - **Langsame Fremddienste** (OpenStreetMap/Overpass) nie blockierend: amtliche Werte zuerst zeigen, Fremdes nachladen, Zeitlimit setzen.
 - **Leaflet:** `setView` während einer Kamerafahrt wird verschluckt — vorher `map.stop()`.
+
+## CAD-Ausgaben (lab-cad.js)
+
+- **Koordinaten:** Pläne (DXF/SVG) in echten RD-Koordinaten (EPSG:28992), Höhen in m NAP. 3D-Rohdaten (DXF 3D, OBJ) mit lokalem Ursprung. IFC lokal mit `IfcMapConversion` (Verschiebung = linke untere Ecke des Gebiets).
+- **DXF:** R12 (AC1009), Text nur ASCII (Umlaute umschrieben, Akzente entfernt), Ebenen siehe `LAY`. Höhenlinien aus AHN `dtm_05m`, geglättet, an Wasserflächen aufgetrennt.
+- **IFC4 (ReferenceView):** `IfcProject → IfcSite → IfcBuilding` je 3D-BAG-Gebäude mit `IfcBuildingElementProxy` (extrudierter Grundriss), Gelände als `IfcGeographicElement` (`.TERRAIN.`, `IfcTriangulatedFaceSet`), Eigenschaften in `Pset_InspectorNice` und `Pset_BuildingCommon`.
+- **STL:** binär, wasserdicht (geprüft in `qa_cad`), Sockel ≥ 3 mm, Wasser als ebene Rinne, Gebäude 1 m eingelassen, Relief wählbar überhöht.
+- **Gebäude:** 3D BAG (`identificatie`, `b3_h_max`, `b3_h_nok`, `b3_bouwlagen`, `b3_opp_buitenmuur`, `b3_opp_scheidingsmuur`, `b3_volume_lod22`), BAG-Einheiten über die **interne Kennung (UUID)** des Gebäudes (`pand.href`), Denkmalregister (RCE, PDOK `ps-ch`) liefert **RD-Koordinaten**.
 
 ## Prüfen
 

@@ -9,6 +9,7 @@ const BAD=/\bundefined\b|\bNaN\b|\[object |Infinity|\{\{|\$\{/;
 const DE_WORDS=/\b(und|nicht|Straße|Quartiere?|Menschen|Gebäude|Schatten|zwischen|werden|Werkzeug|Fläche)\b/;
 const NL_DE=/[äüß]|\b(und|nicht|Straße|Quartiere?|Menschen|Gebäude|zwischen|werden|Werkzeug|Fläche)\b/;
 export function start(opts){window.__smoke={running:true,step:'start',issues:[],timings:{},errors:[],opts};run(opts).then(r=>{Object.assign(window.__smoke,r,{running:false,step:'fertig'});}).catch(e=>{window.__smoke.running=false;window.__smoke.crash=String(e&&e.stack||e).slice(0,600);});return window.__smoke;}
+const A2B=()=>window.LAB.api.B.list;
 export async function run({lang='de',spots=[[52.0907,5.1214],[52.0775,5.1045],[52.1105,5.1135]],parts=['city','menu','act','lab','3d']}={}){
   const S=window.__smoke||{issues:[],timings:{},errors:[]},NX=window.__NX,M=window.NXM,LAB=window.LAB;
   const issue=(area,msg)=>S.issues.push({area,msg:String(msg).slice(0,260)});
@@ -74,7 +75,13 @@ export async function run({lang='de',spots=[[52.0907,5.1214],[52.0775,5.1045],[5
     step(tag('Straße'));await tool('street');let SEC=null;for(const [dy,dx] of [[0,0],[.0003,0],[-.0003,0],[0,.0005],[0,-.0005],[.0006,.0006]]){LAB.street.SEC=null;await click(L.latLng(sp[0]+dy,sp[1]+dx));await until(()=>LAB.street.SEC&&!document.querySelector('.lab-status .lab-spin'),30000);SEC=LAB.street.SEC;if(SEC&&!SEC.err)break;}if(!SEC||SEC.err)issue(tag('Straße'),'kein Querschnitt'+(SEC&&SEC.err?': '+SEC.err:''));else if(!document.querySelector('.sx'))issue(tag('Straße'),'Profil-SVG fehlt');check(document.querySelector('.lab-dock'),tag('Straße'));
     step(tag('Fläche'));await tool('area');await mode('circle');await click(ll);await until(()=>LAB.area.AR.stats&&!LAB.area.AR.busy,40000)||issue(tag('Fläche'),'keine Auswertung');check(document.querySelector('.lab-dock'),tag('Fläche'));
     step(tag('Studio'));await tool('studio');await until(()=>!document.querySelector('.lab-status .lab-spin'),40000);labStatus(tag('Studio'));const ds=[...document.querySelectorAll('.lab-body [data-d]')].slice(0,4);for(const d of ds){d.click();await wait(250);}check(document.querySelector('.lab-dock'),tag('Studio'));
-    step(tag('Export'));await tool('export');await wait(300);check(document.querySelector('.lab-dock'),tag('Export'));
+    step(tag('Gebäude'));await tool('building');const bb=A2B().find(b=>b.id&&b.h>6);if(bb){LAB.cad.GB.b=null;await LAB.cad.analyse(bb);await until(()=>!LAB.cad.GB.busy,20000);check(document.querySelector('.lab-dock'),tag('Gebäude'));if(!LAB.cad.GB.info||!LAB.cad.GB.info.pand)issue(tag('Gebäude'),'BAG-Daten fehlen');}else issue(tag('Gebäude'),'kein Gebäude mit Höhe');
+    step(tag('CAD'));await tool('export');await wait(300);check(document.querySelector('.lab-dock'),tag('CAD'));
+    const AR=LAB.area.AR,keep={type:AR.type,r:AR.r,center:AR.center};Object.assign(AR,{type:'circle',r:120,center:ll});
+    try{const t1=performance.now(),LP=await LAB.cad.lageplan(500);if(!LP.C.length)issue(tag('CAD'),'Lageplan ohne Höhenlinien');if(/[^\x00-\x7f]/.test(LP.txt))issue(tag('CAD'),'DXF nicht ASCII');
+      const E=LAB.cad.site();if(!LAB.cad.elevationsSvg(E))issue(tag('CAD'),'keine Ansichten');const I=await LAB.cad.ifc(true);if(!I.terrain||!I.n)issue(tag('CAD'),'IFC unvollständig');
+      const ST=await LAB.cad.stl(100,1);if(!ST.terrain||!ST.nb)issue(tag('CAD'),'STL unvollständig');S.timings[tag('CAD alles')]=Math.round(performance.now()-t1);}
+    catch(e){issue(tag('CAD'),'Absturz: '+e.message);}finally{Object.assign(AR,keep);}
   });
   // ── 3D ──
   if(parts.includes('3d')&&LAB.v3d)await timed('3D',async()=>{step('3D');const V=LAB.v3d;NX.openLab(spots[0],'sun');await wait(300);NX.map.stop();NX.map.setView(spots[0],17,{animate:false});await wait(300);

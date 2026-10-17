@@ -116,7 +116,7 @@ async function fetchBuildings(y,x){
   const s=y*TILE_LAT,w=x*TILE_LON,n=s+TILE_LAT,e=w+TILE_LON;
   const C=[toRD(s,w),toRD(s,e),toRD(n,w),toRD(n,e)],X=C.map(c=>c[0]),Y=C.map(c=>c[1]);
   const bbox=[Math.floor(Math.min(...X)),Math.floor(Math.min(...Y)),Math.ceil(Math.max(...X)),Math.ceil(Math.max(...Y))].join(',');
-  const base='https://data.3dbag.nl/api/BAG3D/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=BAG3D:lod12&SRSNAME=EPSG:4326&OUTPUTFORMAT=application/json&PROPERTYNAME=geom,b3_h_70p,b3_h_maaiveld,oorspronkelijkbouwjaar,b3_dak_type,b3_opp_dak_plat,b3_opp_dak_schuin,b3_opp_grond&COUNT=2000';
+  const base='https://data.3dbag.nl/api/BAG3D/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=BAG3D:lod12&SRSNAME=EPSG:4326&OUTPUTFORMAT=application/json&PROPERTYNAME=geom,identificatie,b3_h_70p,b3_h_max,b3_h_nok,b3_h_maaiveld,oorspronkelijkbouwjaar,b3_dak_type,b3_opp_dak_plat,b3_opp_dak_schuin,b3_opp_grond,b3_opp_buitenmuur,b3_opp_scheidingsmuur,b3_volume_lod22,b3_bouwlagen&COUNT=2000';
   const out=[];
   for(let start=0;start<10000;start+=2000){
     const r=await fetch(`${base}&STARTINDEX=${start}&BBOX=${bbox},EPSG:28992`);
@@ -125,7 +125,9 @@ async function fetchBuildings(y,x){
     for(const f of fs){const p=f.properties||{};
       const h=(p.b3_h_70p!=null&&p.b3_h_maaiveld!=null)?Math.max(0,p.b3_h_70p-p.b3_h_maaiveld):null;
       const yr=p.oorspronkelijkbouwjaar>1000&&p.oorspronkelijkbouwjaar<2100?p.oorspronkelijkbouwjaar:null,num=v=>v!=null&&isFinite(v)?+v:null;   // Baujahr, Dachform und Dachflächen für Studio-Diagramme
-      for(const ring of outerRings(f.geometry)){const z=pack(ring);out.push({z,h,g:p.b3_h_maaiveld!=null?p.b3_h_maaiveld:null,sg:signed(z)>0,yr,dt:p.b3_dak_type||null,fl:num(p.b3_opp_dak_plat),sl:num(p.b3_opp_dak_schuin),gr:num(p.b3_opp_grond)});}}
+      for(const ring of outerRings(f.geometry)){const z=pack(ring);const g0=num(p.b3_h_maaiveld),rel=v=>v!=null&&g0!=null&&isFinite(v)?Math.max(0,v-g0):null;
+        out.push({z,h,g:g0,sg:signed(z)>0,yr,dt:p.b3_dak_type||null,fl:num(p.b3_opp_dak_plat),sl:num(p.b3_opp_dak_schuin),gr:num(p.b3_opp_grond),
+          id:p.identificatie||null,hx:rel(num(p.b3_h_max)),hn:rel(num(p.b3_h_nok)),wa:num(p.b3_opp_buitenmuur),pw:num(p.b3_opp_scheidingsmuur),v22:num(p.b3_volume_lod22),lg:num(p.b3_bouwlagen)});}}
     if(fs.length<2000)break;
   }
   return out;
@@ -646,7 +648,7 @@ const BASES=[['map',()=>T('Karte','Map','Kaart')],['photo',()=>T('Luftbild','Aer
 function renderDock(){
   const t=tool();
   dock.innerHTML=`<div class="lab-top"><div><b>${T('Straßenlabor','Street lab','Straatlab')}</b><span>${t.sub?t.sub():''}</span></div><button class="lab-x" aria-label="${T('Straßenlabor schließen','Close street lab','Straatlab sluiten')}">${IC.close}</button></div>
-    <nav class="lab-tgs" aria-label="${T('Werkzeuge','Tools','Gereedschap')}">${[['see',T('Verstehen','Understand','Begrijpen')],['make',T('Gestalten','Design','Ontwerpen')]].map(([g,l])=>{const L=TOOLS.filter(x=>(x.grp||'see')===g);return L.length?`<div class="lab-tg"><span class="lab-tgc" id="labTg-${g}">${l}</span><div class="lab-tools" role="tablist" aria-labelledby="labTg-${g}" style="--n:${L.length}">${L.map(x=>`<button role="tab" data-t="${x.id}" aria-selected="${x===t}" class="${x===t?'on':''}">${x.icon}<span>${x.label()}</span></button>`).join('')}</div></div>`:'';}).join('')}</nav>
+    <nav class="lab-tgs" aria-label="${T('Werkzeuge','Tools','Gereedschap')}">${[['see',T('Verstehen','Understand','Begrijpen')],['check',T('Prüfen','Assess','Toetsen')],['make',T('Gestalten','Design','Ontwerpen')]].map(([g,l])=>{const L=TOOLS.filter(x=>(x.grp||'see')===g);return L.length?`<div class="lab-tg"><span class="lab-tgc" id="labTg-${g}">${l}</span><div class="lab-tools" role="tablist" aria-labelledby="labTg-${g}" style="--n:${L.length}">${L.map(x=>`<button role="tab" data-t="${x.id}" aria-selected="${x===t}" class="${x===t?'on':''}">${x.icon}<span>${x.label()}</span></button>`).join('')}</div></div>`:'';}).join('')}</nav>
     <div class="lab-body" data-tool="${t.id}">${t.render?t.render(api):''}</div>
     <div class="lab-status" role="status"></div>
     <div class="lab-base"><span>${T('Hintergrund','Background','Achtergrond')}</span>${BASES.map(([k,l])=>`<button data-b="${k}" class="${LAB.base===k?'on':''}" aria-pressed="${LAB.base===k}">${l()}</button>`).join('')}<a class="lab-osm" target="_blank" rel="noopener" href="${osmUrl()}">${T('In OSM öffnen','Open in OSM','Open in OSM')} ${IC.ext}</a></div>

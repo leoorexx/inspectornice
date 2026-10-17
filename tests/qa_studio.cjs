@@ -54,7 +54,7 @@ const w=mk('https://test.local/next.html');
 setTimeout(async()=>{const d=w.document,LAB=w.LAB,A=LAB.api,map=w.eval('map'),L_=w.L,S=LAB.studio;
   map.getSize=()=>L_.point(1024,768);
   console.log('— Anmeldung & Daten —');
-  ok('Studio als Werkzeug angemeldet (Gruppe Gestalten)',LAB._t.TOOLS.map(t=>t.id).join()==='sun,surface,street,water,wind,standort,route,area,studio,export'&&LAB._t.TOOLS.find(t=>t.id==='studio').grp==='make',LAB._t.TOOLS.map(t=>t.id).join());
+  ok('Studio als Werkzeug angemeldet (Gruppe Gestalten)',LAB._t.TOOLS.map(t=>t.id).join()==='sun,surface,street,water,wind,standort,route,building,area,studio,export'&&LAB._t.TOOLS.find(t=>t.id==='studio').grp==='make',LAB._t.TOOLS.map(t=>t.id).join());
   map.setView(C,17,{animate:false});w.__NX.openLab(null,'studio');await wait(60);
   for(let i=0;i<60&&(S.ST.busy||!S.ST.stats);i++)await wait(100);
   ok('Baujahr und Dachflächen aus 3D BAG übernommen',S.SN.B.some(b=>b.yr===1932&&b.fl===40)&&S.SN.B.some(b=>b.yr===2011&&b.sl===60));

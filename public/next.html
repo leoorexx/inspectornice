@@ -912,7 +912,28 @@ body.nx-picking .leaflet-container{cursor:crosshair}
   .lab-base button,.lab-osm{min-height:44px}
   .sevbar button{min-width:44px}
   .gl::after{inset:-14px -4px}
+  .ex-r button,.ex-go,.ex-cb select,.ex-raw summary{min-height:44px}
 }
+
+/* CAD-Paket und Gebäudeanalyse (js/lab-cad.js) */
+.ex-card{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line2);border-radius:14px;padding:10px 12px;margin-top:8px;background:var(--card)}
+.ex-ct b{display:block;font:700 0.875rem var(--sans);color:var(--ink)}.ex-ct span{display:block;font-size:0.75rem;line-height:1.4;color:var(--mute);margin-top:2px}
+.ex-cb{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ex-cb select{min-height:36px;border:1px solid var(--line2);border-radius:10px;background:var(--soft);color:var(--ink);font:600 0.78rem var(--sans);padding:0 8px}
+.ex-go{margin-left:auto;min-height:40px;border:none;border-radius:11px;padding:0 14px;background:var(--chrome);color:#f3efe7;font:800 0.8rem var(--sans)}
+.ex-go:disabled{opacity:.55}
+.ex-in{display:inline-flex;align-items:center;gap:6px;font:600 0.78rem var(--sans);color:var(--ink2)}.ex-in input{width:18px;height:18px;accent-color:var(--chrome)}
+.ex-r{display:flex;gap:6px;margin-top:8px}.ex-r button{flex:1;white-space:nowrap;min-height:40px;border:1px solid var(--line2);border-radius:9px;background:var(--card);font:700 0.75rem var(--sans);color:var(--ink2);padding:0 8px}.ex-r button.on{background:var(--chrome);color:#f3efe7;border-color:var(--chrome)}
+.ex-raw{margin-top:14px}.ex-raw summary{min-height:44px;display:flex;align-items:center;font:700 0.8rem var(--sans);color:var(--ink2);cursor:pointer}
+.gb-h b{display:block;font:600 1.15rem var(--serif);color:var(--ink);margin-top:4px}.gb-h span{font-size:0.75rem;color:var(--mute)}
+.gb-mon{margin-top:6px;font:700 0.8rem var(--sans);color:#8f3520}.gb-mon a{color:inherit}
+.gb-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.gb-r{background:var(--soft);border-radius:12px;padding:8px 10px}.gb-r span{display:block;font-size:0.72rem;color:var(--mute)}.gb-r b{display:block;font:600 1.05rem var(--serif);color:var(--ink)}.gb-r small{display:block;font-size:0.7rem;color:var(--mute)}
+.gb-hh{margin-top:16px}
+.gb-f{display:flex;flex-direction:column;gap:6px}.gb-f div{display:grid;grid-template-columns:44px 1fr 74px;align-items:center;gap:8px;font-size:0.78rem;color:var(--ink2)}
+.gb-f i{height:8px;border-radius:4px;background:#2f6fa8}.gb-f div:nth-child(2) i{background:#e3a800}.gb-f div:nth-child(3) i{background:#d0583c}.gb-f div:nth-child(4) i{background:#7a4ea8}.gb-f b{text-align:right;color:var(--ink)}
+.gb-x{margin-top:12px}
+:root[data-theme="dark"] .gb-mon{color:#ffb4a3}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gb-mon{color:#ffb4a3}}
 </style>
 </head>
 <body>
@@ -971,6 +992,7 @@ body.nx-picking .leaflet-container{cursor:crosshair}
 <script src="js/lab-studio.js"></script>
 <script src="js/lab-standort.js"></script>
 <script src="js/lab-route.js"></script>
+<script src="js/lab-cad.js"></script>
 <script src="js/lab-3d.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════════

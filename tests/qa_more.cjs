@@ -43,7 +43,7 @@ setTimeout(async()=>{const d=w.document,NX=w.__NX,M=w.NXM;
   console.log('— Werkzeuge in zwei Gruppen —');
   NX.openLab(null,'surface');await wait(100);
   const grp=[...d.querySelectorAll('.lab-tg')].map(g=>g.querySelector('.lab-tgc').textContent+':'+[...g.querySelectorAll('[data-t]')].map(b=>b.dataset.t).join(','));
-  ok('Verstehen: Sonne, Hitze, Wasser, Wind, Standort, Route · Gestalten: Straße, Fläche, Studio, Export',grp[0]==='Verstehen:sun,surface,water,wind,standort,route'&&grp[1]==='Gestalten:street,area,studio,export',grp.join(' | '));
+  ok('Verstehen: Sonne, Hitze, Wasser, Wind · Prüfen: Standort, Route, Gebäude, Fläche · Gestalten: Straße, Studio, CAD',grp[0]==='Verstehen:sun,surface,water,wind'&&grp[1]==='Prüfen:standort,route,building,area'&&grp[2]==='Gestalten:street,studio,export',grp.join(' | '));
   console.log('— Kühl-Lücken —');
   ok('Hitze-Werkzeug hat die Ansicht Kühl-Lücken',!!d.querySelector('.lab-seg [data-m="gaps"]'));
   const X=w.LAB._t,mkS=(k,f,fy,c)=>({k,f,fy,c});

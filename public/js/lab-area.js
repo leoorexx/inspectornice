@@ -86,7 +86,7 @@ function steckbrief(){
     <div class="ar-act">${s.sun?'':`<button class="cta ghost lab-mini" id="arSun">${A.IC.sun}${T('Sonnenstunden ergänzen','Add sun hours','Zonuren toevoegen')}</button>`}${AR.flood?'':`<button class="cta ghost lab-mini" id="arFlood">${T('Überflutungstiefe prüfen','Check flood depth','Overstromingsdiepte checken')}</button>`}<button class="cta ghost lab-mini" id="arExp">${T('Als CAD/GIS exportieren','Export as CAD/GIS','Exporteren als CAD/GIS')}</button></div>`;
 }
 
-LAB.addTool({id:'area',order:6,grp:'make',usesSurfaces:true,
+LAB.addTool({id:'area',order:6,grp:'check',usesSurfaces:true,
   icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 7 12 3l8 5-2 11H7Z"/><circle cx="4" cy="7" r="1.6" fill="currentColor"/><circle cx="12" cy="3" r="1.6" fill="currentColor"/><circle cx="20" cy="8" r="1.6" fill="currentColor"/><circle cx="18" cy="19" r="1.6" fill="currentColor"/><circle cx="7" cy="19" r="1.6" fill="currentColor"/></svg>',
   label:()=>T('Fläche','Area','Gebied'),
   sub:()=>T('Gebiet wählen, Steckbrief erhalten','Pick an area, get a profile','Kies een gebied, krijg een profiel'),
@@ -236,36 +236,6 @@ function svg(E,opts){
   return s+'</svg>';
 }
 function download(name,text,type){const b=new Blob([text],{type}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return b.size;}
-const EXP={bld:true,surf:true,trees:true,shadow:false,last:null};
-LAB.addTool({id:'export',order:9,grp:'make',usesSurfaces:true,
-  icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg>',
-  label:()=>'Export',
-  sub:()=>T('CAD- und GIS-Dateien in RD-Metern','CAD and GIS files in RD metres','CAD- en GIS-bestanden in RD-meters'),
-  render(){
-    const r=AR.type==='draw'&&!AR.done?null:ring(),what=r&&AR.stats?T('die gewählte Fläche','the selected area','het gekozen gebied'):r&&AR.type!=='view'?T('die Fläche aus dem Werkzeug „Fläche"','the area from the “Area” tool','het gebied uit het gereedschap „Gebied"'):T('den Kartenausschnitt','the map view','het kaartbeeld');
-    const ck=(k,l)=>`<label class="ex-ck"><input type="checkbox" data-o="${k}" ${EXP[k]?'checked':''}><span>${l}</span></label>`;
-    return `<p class="lab-hint">${T('Exportiert','Exports','Exporteert')} ${what}. ${T('Koordinaten in Rijksdriehoek (EPSG:28992), Meter, mit lokalem Ursprung — direkt für AutoCAD, Rhino, Vectorworks, SketchUp, Blender, QGIS.','Coordinates in Rijksdriehoek (EPSG:28992), metres, with a local origin — ready for AutoCAD, Rhino, Vectorworks, SketchUp, Blender, QGIS.','Coördinaten in Rijksdriehoek (EPSG:28992), meters, met lokale oorsprong — direct voor AutoCAD, Rhino, Vectorworks, SketchUp, Blender, QGIS.')}</p>
-      <div class="ex-cks">${ck('bld',T('Gebäude mit Höhen','Buildings with heights','Gebouwen met hoogtes'))}${ck('surf',T('Straßen- und Grünflächen','Street and green areas','Straat- en groenvlakken'))}${ck('trees',T('Bäume','Trees','Bomen'))}${ck('shadow',T('Schatten jetzt (nur SVG)','Shadows now (SVG only)','Schaduw nu (alleen SVG)'))}</div>
-      <div class="ex-fmt">
-        <button data-f="dxf"><b>DXF</b><span>${T('2D-Pläne + 3D-Gebäude (3DFACE)','2D plans + 3D buildings (3DFACE)','2D-plannen + 3D-gebouwen (3DFACE)')}</span></button>
-        <button data-f="obj"><b>OBJ</b><span>${T('3D-Modell der Gebäude','3D model of the buildings','3D-model van de gebouwen')}</span></button>
-        <button data-f="geojson"><b>GeoJSON</b><span>${T('alle Objekte mit Attributen','all objects with attributes','alle objecten met attributen')}</span></button>
-        <button data-f="svg"><b>SVG</b><span>${T('Schwarzplan zum Gestalten','figure-ground plan for design','zwartplan om te vormgeven')}</span></button>
-      </div>${EXP.last?`<p class="ex-last">${EXP.last}</p>`:''}`;
-  },
-  bind(root){
-    root.querySelectorAll('[data-o]').forEach(el=>el.onchange=()=>{EXP[el.dataset.o]=el.checked;});
-    root.querySelectorAll('[data-f]').forEach(el=>el.onclick=async()=>{
-      el.disabled=true;await Promise.all([A.ensure('b'),A.ensure('s'),A.ensureTrees()]);
-      const E=exportSet(),stamp=new Date().toISOString().slice(0,10),base=`inspector-nice_${Math.round(E.ox)}_${Math.round(E.oy)}_${stamp}`,f=el.dataset.f;
-      const [txt,type]=f==='dxf'?[dxf(E,EXP),'application/dxf']:f==='obj'?[obj(E),'text/plain']:f==='geojson'?[geojson(E,EXP),'application/geo+json']:[svg(E,EXP),'image/svg+xml'];
-      const n=download(`${base}.${f}`,txt,type);
-      EXP.last=`${base}.${f} · ${(n/1024).toFixed(0)} KB · ${A.fmt(E.blds.length)} ${T('Gebäude','buildings','gebouwen')}, ${A.fmt(E.surfs.length)} ${T('Flächen','areas','vlakken')}, ${A.fmt(E.trees.length)} ${T('Bäume','trees','bomen')}`;A.rerender();});
-  },
-  async load(){await Promise.all([A.ensure('b'),A.ensure('s'),A.ensureTrees()]);},
-  draw(g,X){const dark=A.dark();A.drawSurfaces(g,X);A.drawBuildings(g,X,dark?'rgba(60,56,66,.9)':'#fbf9f4',dark?'rgba(255,255,255,.2)':'rgba(23,21,28,.45)');A.drawCrowns(g,X,'rgba(72,140,84,.3)','rgba(31,90,43,.4)');outline(g,X,dark);},
-  note:()=>T('Gebäude: Grundriss mit gemessener Höhe (3D BAG, LoD 1.2: 70-%-Dachhöhe) als Polylinie mit Objekthöhe und als 3D-Flächen; Flächen aus der BGT nach Nutzung auf Ebenen verteilt und am Rahmen zugeschnitten; Bäume als Kreise mit geschätzter Krone. Höhen relativ zum niedrigsten Gelände im Gebiet; Ursprung und Quellen stehen im Dateikopf.','Buildings: footprint with measured height (3D BAG, LoD 1.2: 70 % roof height) as polyline with thickness and as 3D faces; BGT areas split into layers by use and clipped to the frame; trees as circles with estimated crowns. Heights relative to the lowest ground in the area; origin and sources are in the file header.','Gebouwen: contour met gemeten hoogte (3D BAG, LoD 1.2: 70%-dakhoogte) als polylijn met dikte en als 3D-vlakken; BGT-vlakken per gebruik op lagen en op het kader bijgesneden; bomen als cirkels met geschatte kroon. Hoogtes t.o.v. het laagste maaiveld in het gebied; oorsprong en bronnen staan in de bestandskop.'),
-  src:()=>`3D BAG (TU Delft / 3DGI, CC BY 4.0) · BGT (Kadaster / PDOK) · ${T('Baumregister Gemeente Utrecht','Tree register, Gemeente Utrecht','Bomenregister gemeente Utrecht')}`
-});
+// Das Werkzeug „Export" (CAD-Paket) steht in lab-cad.js und nutzt die Funktionen hier.
 LAB.area={AR,ring,compute,exportSet,dxf,obj,geojson,svg,clip,triangulate};
 })();

@@ -33,12 +33,13 @@ Stand 17. Oktober 2026. Jede Zeile nennt die Datenquelle und die Prüfung (`test
 | | Hitze: Oberflächen, Hitze-Index, Kühl-Lücken (21. Juni, zweistufig) | BGT, 3D BAG, Baumregister | qa_lab, qa_more |
 | | Wasser: Starkregen-Mulden, Deichbruch, Zukunft, Gelände | AHN, LIWO, Gemeente-Knelpunte | qa_lab_tools |
 | | Wind: Strömung und Wetter 36 h | Open-Meteo (KNMI HARMONIE) | qa_lab_tools |
-| | Standort: Läden, Bildung, Gesundheit, Sport, Gastro, Grün in Gehweite, Haltestellen, Klima am Ort, Straßenfoto | BAG, BGT, OSM, RIVM, Panoramax | qa_more |
+| Prüfen | Standort: Läden, Bildung, Gesundheit, Sport, Gastro, Grün in Gehweite, Haltestellen, Klima am Ort, Straßenfoto | BAG, BGT, OSM, RIVM, Panoramax | qa_more |
 | | Route: schattigster gegen kürzesten Fußweg, Bänke unterwegs | NWB, Schaduw wegdelen, Straatmeubilair | qa_more |
-| Gestalten | Straße: Querschnitt Fassade zu Fassade, Umbau, Maßnahmen mit Kosten, Förderung, Regelwerk | BGT, 3D BAG, NWB, Rahmenwerk, Kanalerneuerung | qa_lab_tools |
+| | Gebäude: Maße, Höhen (70 %, max., First), Geschosse, Volumen, Geschossfläche amtlich, Nutzung, Adressen, Fassaden je Himmelsrichtung, Trennwände, Dach, Solar grob, Rijksmonument, geschütztes Stadtbild, Wärmeinsel, Bäume; Pläne nur für dieses Haus | 3D BAG, BAG, RCE, RIVM, Baumregister | qa_cad |
 | | Fläche: Kreis, Zeichnen, Ausschnitt — Kennzahlen | BGT, 3D BAG, Bäume | qa_lab_tools |
+| Gestalten | Straße: Querschnitt Fassade zu Fassade, Umbau, Maßnahmen mit Kosten, Förderung, Regelwerk | BGT, 3D BAG, NWB, Rahmenwerk, Kanalerneuerung | qa_lab_tools |
 | | Studio: Diagramme, Explosionszeichnung, Laserschnitt-ZIP | alle oben | qa_studio |
-| | Export: DXF, OBJ, GeoJSON, SVG | alle oben | qa_lab_tools |
+| | CAD: Lageplan 1:500/1:1000 (DXF + SVG: Höhen, Höhenlinien, Höhenpunkte, Straßennamen, Nordpfeil, Maßstab, Schriftfeld), Umgebungsplan 1:2500, Ansichten N/O/S/W mit Höhen, IFC4 georeferenziert mit Gelände, STL-3D-Druck; Rohdaten DXF/OBJ/GeoJSON/SVG | 3D BAG, BGT, AHN, NWB, Baumregister | qa_cad, qa_lab_tools |
 
 ## 3D-Spielstadt (aus Sonne und Befehlen)
 

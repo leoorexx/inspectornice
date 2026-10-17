@@ -83,7 +83,7 @@ function body(){
     ${cool.unk>.3?`<p class="lab-mute">${T(`${Math.round(100*cool.unk)} % des Weges ohne Straßennamen — dort ist der Schatten mit 25 % angenommen.`,`${Math.round(100*cool.unk)} % of the route has no street name — shade assumed at 25 % there.`,`${Math.round(100*cool.unk)} % van de route zonder straatnaam — daar is 25 % schaduw aangenomen.`)}</p>`:''}
     <button class="cta ghost lab-mini" id="rtNew">${T('Neue Route','New route','Nieuwe route')}</button>`;
 }
-LAB.addTool({id:'route',order:5.7,grp:'see',gate:false,keepStatus:true,
+LAB.addTool({id:'route',order:5.7,grp:'check',gate:false,keepStatus:true,
   icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="5" r="2.2"/><path d="M8 18.5c6 0 2-7 8-7 3 0 2-4 0-4.5"/></svg>',
   label:()=>T('Route','Route','Route'),
   sub:()=>T('Schattigster statt kürzester Fußweg','Shadiest instead of shortest walk','Schaduwrijkste in plaats van kortste looproute'),
