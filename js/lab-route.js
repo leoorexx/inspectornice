@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════════
 // Straßenlabor · Werkzeug „Kühle Route" — schattigster statt kürzester Fußweg.
-// Wegenetz: Nationaal Wegenbestand (NWB, Rijkswaterstaat/PDOK), Fuß- und Radwege, Fahrbahnen mit Gehweg.
+// Wegenetz: Nationaal Wegenbestand (NWB, Rijkswaterstaat/PDOK), Fuß- und Radwege, Fahrbahnen mit Gehweg, Wohnstraßen (ERF), Parallelwege (PAR).
 // Schatten je Straße: Gemeente Utrecht „Schaduw wegdelen" (Fuß- und Radwege, Stand 2023) als Mittel je Straßenname.
 // Bänke unterwegs: Straatmeubilair der Gemeente. Kein Navi — ein Vergleich zweier Wege.
 // ══════════════════════════════════════════════════════════════
@@ -9,7 +9,7 @@
 const LAB=window.LAB;if(!LAB||!LAB.api)return;
 const A=LAB.api,T=(d,e,n)=>A.T(d,e,n);
 const R={a:null,b:null,res:null,busy:false,err:null,job:0};
-const WALK=new Set(['','RB','FP','VP','VZ']),UNKNOWN=.25,ALPHA=1.4,KMH=4.8;
+const WALK=new Set(['','RB','FP','VP','VZ','ERF','PAR']),UNKNOWN=.25,ALPHA=1.4,KMH=4.8;
 let SHADE=null,BENCH=null;
 const shadeLoad=()=>SHADE||(SHADE=fetch('data/official/streets_utr.json').then(r=>r.ok?r.json():null).then(j=>{const m=new Map();for(const s of (j&&j.streets)||[]){const k=s.n.toLowerCase(),o=m.get(k);if(!o||s.a>o.a)m.set(k,{sh:s.sh/100,a:s.a});}return m;}).catch(()=>new Map()));
 const benchLoad=()=>BENCH||(BENCH=fetch('data/official/furniture_utr.json').then(r=>r.ok?r.json():null).then(j=>(j&&j.bank)||[]).catch(()=>[]));
@@ -29,7 +29,18 @@ function graph(feats,SH){
       for(const [id,c] of [[a,ln[0]],[b,ln[ln.length-1]]]){if(!nodes.has(id))nodes.set(id,{lat:c[1],lon:c[0],e:[]});nodes.get(id).e.push(edges.length-1);}}}
   return {nodes,edges};
 }
-function nearest(G,ll){let best=null,bd=Infinity;for(const [id,n] of G.nodes){const d=dist(ll.lat,ll.lng,n.lat,n.lon);if(d<bd){bd=d;best=id;}}return bd<200?best:null;}
+// Größtes zusammenhängendes Teilnetz (isolierte Parkwege im NWB sind nicht angebunden)
+function mainNet(G){if(G.main)return G.main;const comp=new Map();let cid=0,best=0,bn=0;
+  for(const id of G.nodes.keys()){if(comp.has(id))continue;cid++;let n=0;const st=[id];comp.set(id,cid);while(st.length){const v=st.pop();n++;for(const ei of G.nodes.get(v).e){const e=G.edges[ei];for(const w of [e.a,e.b])if(!comp.has(w)){comp.set(w,cid);st.push(w);}}}if(n>bn){bn=n;best=cid;}}
+  return (G.main=new Set([...comp].filter(([,c])=>c===best).map(([id])=>id)));}
+// An die nächste Straße des Hauptnetzes einrasten (nicht nur an Kreuzungen): nächstes Wegstück, dann dessen näherer Endknoten
+function nearest(G,ll){
+  const k0=111320*Math.cos(ll.lat*Math.PI/180),k1=110574,M=mainNet(G);let best=null,bd=Infinity;
+  for(const e of G.edges)if(M.has(e.a))for(let i=1;i<e.pts.length;i++){const ax=(e.pts[i-1][1]-ll.lng)*k0,ay=(e.pts[i-1][0]-ll.lat)*k1,bx=(e.pts[i][1]-ll.lng)*k0,by=(e.pts[i][0]-ll.lat)*k1,dx=bx-ax,dy=by-ay,L2=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,-(ax*dx+ay*dy)/L2)),d=Math.hypot(ax+t*dx,ay+t*dy);
+    if(d<bd){bd=d;best=e;}}
+  if(!best||bd>250)return null;const na=G.nodes.get(best.a),nb=G.nodes.get(best.b);
+  return dist(ll.lat,ll.lng,na.lat,na.lon)<=dist(ll.lat,ll.lng,nb.lat,nb.lon)?best.a:best.b;
+}
 function dijkstra(G,s,t,cost){
   const D=new Map([[s,0]]),P=new Map(),done=new Set(),H=[[0,s]];
   const push=(d,v)=>{H.push([d,v]);let i=H.length-1;while(i>0){const q=(i-1)>>1;if(H[q][0]<=H[i][0])break;[H[q],H[i]]=[H[i],H[q]];i=q;}};
@@ -92,5 +103,5 @@ LAB.addTool({id:'route',order:5.7,grp:'see',gate:false,keepStatus:true,
   note:()=>T('Wegenetz aus dem Nationalen Wegebestand (Fahrbahnen mit Gehweg, Fuß- und Radwege, Fußgängerzonen). Schatten je Straße aus „Schaduw wegdelen" der Gemeente (Stand 2023, Berechnungszeitpunkt nicht angegeben) — ein Mittel je Straßenname, nicht je Meter. Der schattigste Weg darf bis zu 2,4-mal so lang sein wie ein voll besonnter. Bänke innerhalb von 25 m aus dem Straatmeubilair der Gemeente. Gehtempo 4,8 km/h.','Network from the national road database (carriageways with pavement, foot and cycle paths, pedestrian zones). Shade per street from the municipality\'s "Schaduw wegdelen" (2023, calculation time not stated) — one average per street name, not per metre. The shadiest route may be up to 2.4 times as long as a fully sunny one. Benches within 25 m from the municipal street furniture register. Walking speed 4.8 km/h.','Wegennet uit het Nationaal Wegenbestand (rijbanen met stoep, voet- en fietspaden, voetgangersgebieden). Schaduw per straat uit „Schaduw wegdelen" van de gemeente (2023, rekentijdstip niet vermeld) — één gemiddelde per straatnaam, niet per meter. De schaduwrijkste route mag tot 2,4 keer zo lang zijn als een volledig zonnige. Bankjes binnen 25 m uit het straatmeubilair van de gemeente. Looptempo 4,8 km/u.'),
   src:()=>'NWB (Rijkswaterstaat / PDOK) · Gemeente Utrecht: Schaduw wegdelen, Straatmeubilair'
 });
-LAB.route={R,graph,dijkstra,compute,shadeLoad};
+LAB.route={R,graph,dijkstra,compute,shadeLoad,nearest,mainNet};
 })();

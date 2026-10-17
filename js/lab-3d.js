@@ -13,11 +13,11 @@
 'use strict';
 const LAB=window.LAB;if(!LAB||!LAB.api)return;
 const A=LAB.api,T=(d,e,n)=>A.T(d,e,n);
-const V={on:false,busy:false,err:null,R:320,ground:'map',eye:false,grow:null,stats:null,mode:'licht',exag:1,
+const V={on:false,busy:false,err:null,R:320,ground:'map',eye:false,stats:null,mode:'licht',exag:1,
   water:{kind:null,k:3,level:null,target:null,t:1,busy:false,info:null},bikes:{on:false,n:0,follow:-1,ride:null,shade:null,busy:false,err:null},
   walk:{on:false,n:0,seek:true,shade:null,busy:false},wind:{on:false,busy:false,err:null,dir:null,sp:null,cur:null},fut:{busy:false,err:null,yr:null,info:null,loaded:false,play:false}};
 LAB.v3d=V;
-let THREE=null,ren,scene,cam,sunL,hemi,sunBall,pathLine,root,buckets=[],crowns=null,trunks=null,el=null,raf=0,dirty=true,lastSun='',clock=0;
+let THREE=null,ren,scene,cam,sunL,hemi,sunBall,root,buckets=[],crowns=null,trunks=null,el=null,raf=0,dirty=true,lastSun='',clock=0;
 let TER=null,terMesh=null,canals=[],waterMesh=null,waterTex=null,bikeMeshes=null,NET=null,AG=[],PLAYER=null;
 let dial=null,dialDay='',skyCv=null,skyTx=null,walkMeshes=null,WK=[],windObj=null,WG=null,futObj=null;
 const CAM={th:-2.35,ph:1.0,r:620,tx:0,tz:0,yaw:0,pitch:.08,vth:0,vph:0,vr:1,vx:0,vz:0,goal:null};   // Umlauf mit Schwung + Augenhöhe
@@ -159,8 +159,8 @@ function waterTick(now){const Wt=V.water;if(!waterMesh||Wt.t>=1)return;Wt.t=REDU
 const OVP=['https://overpass-api.de/api/interpreter','https://z.overpass-api.de/api/interpreter','https://lz4.overpass-api.de/api/interpreter'];
 async function overpass(q){for(const u of OVP){try{const r=await fetch(u,{method:'POST',body:new URLSearchParams({data:q})});if(r.ok)return await r.json();}catch(e){}}throw new Error('Overpass');}
 // Wegenetz: amtlich aus dem Nationalen Wegebestand (NWB, Rijkswaterstaat/PDOK) mit Knoten-IDs; Rückfall OpenStreetMap
-const BIKE_OK=new Set(['','RB','FP']);   // RB = Fahrbahn, FP = Radweg; ohne Fußwege (VP), Fußgängerzonen (VZ), Autobahnen
-const WALK_OK=new Set(['','RB','FP','VP','VZ']);   // zu Fuß zusätzlich Fußwege und Fußgängerzonen
+const BIKE_OK=new Set(['','RB','FP','ERF','PAR']);   // RB = Fahrbahn, FP = Radweg; ohne Fußwege (VP), Fußgängerzonen (VZ), Autobahnen
+const WALK_OK=new Set(['','RB','FP','VP','VZ','ERF','PAR']);   // zu Fuß zusätzlich Fußwege und Fußgängerzonen
 async function loadNwb(){
   const b=bounds(),P=(lon,lat)=>{const r=A.toRD(lat,lon);return [r[0]-C0[0],-(r[1]-C0[1])];};
   let url=`https://api.pdok.nl/rws/nationaal-wegenbestand-wegen/ogc/v1/collections/wegvakken/items?bbox=${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}&limit=1000&f=json`;
@@ -491,16 +491,6 @@ function pick(e){   // Radfahrer:in antippen → mitfahren
 addEventListener('keydown',e=>{if(!V.on||!PLAYER)return;const k=e.key;if(k==='ArrowLeft'||k==='a')KEYS.turn=-1;else if(k==='ArrowRight'||k==='d')KEYS.turn=1;else if(k==='ArrowUp'||k==='w')KEYS.acc=1;else if(k==='ArrowDown'||k==='s')KEYS.acc=-1;else return;e.preventDefault();});
 addEventListener('keyup',e=>{const k=e.key;if(['ArrowLeft','a','ArrowRight','d'].includes(k))KEYS.turn=0;if(['ArrowUp','w','ArrowDown','s'].includes(k))KEYS.acc=0;});
 
-// ── Stadt wächst ──
-function growTick(now){
-  const G=V.grow;if(!G)return;const t=Math.min(1,(now-G.t0)/G.dur),yr=Math.round(G.y0+(G.y1-G.y0)*ease(t));
-  let n=0;for(const m of buckets){const show=m.userData.y!=null&&m.userData.y<=yr;m.visible=show||t>=1;if(show)n+=m.userData.n;}
-  const lbl=el&&el.querySelector('.v3-year');if(lbl)lbl.innerHTML=`<b>${yr}</b><span>${A.fmt(n)} ${T('Gebäude stehen','buildings standing','gebouwen staan')}</span>`;
-  dirty=true;if(t>=1){V.grow=null;setTimeout(()=>{const l=el&&el.querySelector('.v3-year');if(l)l.classList.remove('on');},2400);}
-}
-function startGrow(){const ys=buckets.map(m=>m.userData.y).filter(v=>v!=null);if(!ys.length)return;
-  V.grow={y0:Math.min(...ys),y1:new Date().getFullYear(),t0:performance.now(),dur:REDUCED()?1:14000};const l=el&&el.querySelector('.v3-year');if(l)l.classList.add('on');}
-
 // ── Bau der Szene ──
 async function build(){
   const c=A.PIN||A.map.getCenter();C0=A.toRD(c.lat,c.lng);const bb=bounds();
@@ -620,7 +610,7 @@ function panel(){
 // ── Ein-/Ausschalten ──
 let lastNow=0;
 function frame(now){if(!V.on||!ren)return;now=now||performance.now();const dt=Math.min(.05,(now-(lastNow||now))/1000);lastNow=now;
-  updateSun();if(V.grow)growTick(now);inertia(dt);waterTick(now);bikeTick(dt,now);walkTick(dt,now);windTick(dt);futTick(now);
+  updateSun();inertia(dt);waterTick(now);bikeTick(dt,now);walkTick(dt,now);windTick(dt);futTick(now);
   if(LAB.playing&&V.mode==='licht'&&now-(frame._s||0)>120){frame._s=now;const sl=el.querySelector('#v3T'),lb=el.querySelector('#v3Tv');if(sl)sl.value=Math.round(LAB.min);if(lb)lb.textContent=A.hhmm(LAB.min);}
   if(waterTex&&(canals.length||waterMesh)){waterTex.offset.x=(now/1000)*.012;waterTex.offset.y=(now/1000)*.007;dirty=true;}   // Wasser bewegt sich
   const w=el.clientWidth,h=el.clientHeight;if(ren.domElement.width!==Math.round(w*ren.getPixelRatio())||ren.domElement.height!==Math.round(h*ren.getPixelRatio())){ren.setSize(w,h,false);cam.aspect=w/Math.max(1,h);cam.updateProjectionMatrix();dirty=true;}
@@ -654,10 +644,10 @@ V.open=async function(){
   CAM.tx=CAM.tz=0;CAM.r=900;CAM.ph=1.2;placeCam();flyCam({th:-2.2,ph:.95,r:560},REDUCED()?1:2200);   // sanfter Anflug
   panel();V.busy=false;A.rerender();dirty=true;frame();if(!raf)raf=requestAnimationFrame(loop);
 };
-V.close=function(){if(!V.on&&!el)return;V.on=false;V.grow=null;PLAYER=null;V.bikes.on=false;V.bikes.ride=false;V.bikes.follow=-1;V.water.kind=null;V.walk.on=false;V.wind.on=false;V.fut.play=false;V.fut.loaded=false;V.fut.yr=null;V.fut.info=null;WK=[];document.body.classList.remove('v3d-on');cancelAnimationFrame(raf);raf=0;
+V.close=function(){if(!V.on&&!el)return;V.on=false;PLAYER=null;V.bikes.on=false;V.bikes.ride=false;V.bikes.follow=-1;V.water.kind=null;V.walk.on=false;V.wind.on=false;V.fut.play=false;V.fut.loaded=false;V.fut.yr=null;V.fut.info=null;WK=[];document.body.classList.remove('v3d-on');cancelAnimationFrame(raf);raf=0;
   if(scene)scene.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach(m=>{if(m.map)m.map.dispose();m.dispose();});}});
-  if(ren){ren.dispose();ren.forceContextLoss&&ren.forceContextLoss();}if(el)el.remove();el=ren=scene=cam=root=crowns=trunks=pathLine=terMesh=waterMesh=bikeMeshes=walkMeshes=windObj=WG=futObj=dial=skyTx=null;dialDay='';buckets=[];canals=[];TER=null;AG=[];A.rerender();};
+  if(ren){ren.dispose();ren.forceContextLoss&&ren.forceContextLoss();}if(el)el.remove();el=ren=scene=cam=root=crowns=trunks=terMesh=waterMesh=bikeMeshes=walkMeshes=windObj=WG=futObj=dial=skyTx=null;dialDay='';buckets=[];canals=[];TER=null;AG=[];A.rerender();};
 V.toggle=()=>V.on?V.close():V.open();
-V._t={bldGeo,BUCKET,sunDir,CAM,get buckets(){return buckets},startGrow,frame:t=>{dirty=true;placeCam();frame(t);},scenario,startBikes,rideStart,rideStop,setExag,get TER(){return TER},get NET(){return NET},get AG(){return AG},get PLAYER(){return PLAYER},nextEdge,stepAgent,posOn,hAt,
+V._t={bldGeo,BUCKET,sunDir,CAM,get buckets(){return buckets},frame:t=>{dirty=true;placeCam();frame(t);},scenario,startBikes,rideStart,rideStop,setExag,get TER(){return TER},get NET(){return NET},get AG(){return AG},get PLAYER(){return PLAYER},nextEdge,stepAgent,posOn,hAt,
   get water(){return waterMesh},flyCam,loadNet,windGrid,windField,get WG(){return WG},set WG(v){WG=v;},setYear,futureLoad,get dial(){return dial},startWalk,startWind,shadedAt,skyGrad};
 })();

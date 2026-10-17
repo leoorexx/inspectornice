@@ -116,7 +116,7 @@ async function skyCalc(){   // Sky View Factor am Boden: 16 Richtungen, Horizont
   const nw=wOfRD(x0,y1),se=wOfRD(x1,y0);
   return {img:cv,b:[nw[0],nw[1],se[0],se[1]],mean:n?sum/n:null,low:n?100*low/n:null,n};
 }
-const WALK_OK=new Set(['','RB','FP','VP','VZ']);
+const WALK_OK=new Set(['','RB','FP','VP','VZ','ERF','PAR']);
 let FURN=null;
 async function walkCalc(){   // Gehminuten (Dijkstra) auf dem NWB ab der Gebietsmitte
   const c=AR.center||A.map.getCenter(),R=1250,dLat=R/111320,dLon=R/(111320*Math.cos(c.lat*A.SR));

@@ -407,7 +407,7 @@ details.lab-how{margin-top:8px;padding-top:0}
 .v3-year b{display:block;font:700 4.75rem/1 var(--serif);letter-spacing:-.04em}
 .v3-year span{font:600 0.8125rem var(--sans)}
 .v3-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:600 0.7188rem var(--sans);color:#46424f;background:rgba(250,248,243,.8);padding:6px 12px;border-radius:14px;white-space:nowrap}
-body.v3d-on .leaflet-control-zoom,body.v3d-on #labHint,body.v3d-on .ptsbtn{display:none}
+body.v3d-on .leaflet-control-zoom,body.v3d-on .ptsbtn{display:none}
 @media (max-width:760px){.v3-bar{top:70px;right:8px;max-width:calc(100% - 16px)}.v3-year b{font-size:3.375rem}.v3-year{bottom:46vh}.v3-hint{display:none}}
 /* Handeln */
 .actchip svg{color:#c49a2b}.actchip.on{background:var(--chrome);color:#f3efe7}.actchip.on svg{color:var(--accent)}
@@ -536,15 +536,6 @@ body.act-on .legend{display:none}
 
 .lab-how p{font-size:0.75rem;line-height:1.55;color:var(--mute);margin-top:2px}
 .lab-how .lab-src{margin-top:6px}
-.lens.labchip{background:var(--chrome);color:#f3efe7;border-color:var(--chrome)}
-.lens.labchip svg{color:var(--accent);flex:none}
-.lens.labchip:hover{background:#2a2631;color:#fff}
-.labhint{position:fixed;left:50%;bottom:24px;z-index:1000;display:flex;align-items:center;gap:10px;border:none;border-radius:26px;min-height:52px;padding:0 20px 0 16px;background:var(--chrome);color:#f3efe7;font:800 0.875rem var(--sans);box-shadow:var(--sh2);opacity:0;transform:translate(-50%,16px);pointer-events:none;transition:opacity .3s var(--ease),transform .4s var(--ease)}
-.labhint svg{color:var(--accent)}
-.labhint.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
-.labhint.on:active{transform:translate(-50%,0) scale(.97)}
-body.panel-on .labhint{left:calc(50% - 230px)}
-body.lab-on .labhint{display:none}
 
 /* ── Risiken für Menschen (Quartiere) ── */
 .lgrps{display:flex;gap:2px;flex:none;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:22px;padding:3px;box-shadow:var(--sh)}
@@ -673,18 +664,16 @@ body.panel-on .ptsbtn{right:494px}
   .lab-top span{display:none}
   .lab-seg button{min-height:50px}
   .lab-dial{width:74px;height:74px}
-  .labhint{bottom:auto;top:172px}
   .lgrps{order:-1}
   .ptsbtn{bottom:auto;top:172px;right:10px}
   body.panel-on .ptsbtn{display:none}
   .vnum{width:64px;height:64px;padding-top:11px}.vnum b{font-size:2.25rem}
-  body.panel-on .labhint{left:50%;opacity:0;pointer-events:none}
 }
 /* iPhone: Sicherheitsabstände (Notch, Home-Leiste) — HIG layout.md › Guides and safe areas; viewport-fit=cover ist gesetzt */
 .top,.lenses,.lab-dock,.act{margin-top:env(safe-area-inset-top,0px)}
 .top,.lenses,.legend,.lab-dock,.act{margin-left:env(safe-area-inset-left,0px)}
 .top,.ptsbtn{margin-right:env(safe-area-inset-right,0px)}
-.legend,.labhint,.ptsbtn,.leaflet-bottom,.v3-play{margin-bottom:env(safe-area-inset-bottom,0px)}
+.legend,.ptsbtn,.leaflet-bottom,.v3-play{margin-bottom:env(safe-area-inset-bottom,0px)}
 .leaflet-right{margin-right:env(safe-area-inset-right,0px)}
 .panel .pb{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
 
@@ -1336,12 +1325,12 @@ function show(items){
 const LAB_ATTR='3D BAG (TU Delft / 3DGI) · BGT · AHN · LIWO · RIVM · Bomenkaart';
 function openLab(at,toolId){if(!window.LAB)return;if(document.getElementById('panel').classList.contains('on'))closePanel();LAB.open(at?L.latLng(at):null,toolId);}
 if(window.LAB)LAB.init(map,{T,lang:()=>lang,dark:isDark,buurtAt:(la,lo)=>buurtAt(la,lo),treesUrl:'data/official/trees_utr.json',knmiUrl:'data/official/knmi23_debilt.json',setBase,muster:()=>MU,onTool:()=>labUrl(),
-  onOpen(){if(buLayer)map.removeLayer(buLayer);if(selLayer){map.removeLayer(selLayer);selLayer=null;}hover(null);drawPts();map.attributionControl.addAttribution(LAB_ATTR);labUrl();hintLab();document.dispatchEvent(new CustomEvent('nx:view',{detail:'street'}));},
-  onClose(){if(buLayer&&BU)buLayer.addTo(map);drawPts();map.attributionControl.removeAttribution(LAB_ATTR);hintLab();document.dispatchEvent(new CustomEvent('nx:view',{detail:'city'}));
+  onOpen(){if(buLayer)map.removeLayer(buLayer);if(selLayer){map.removeLayer(selLayer);selLayer=null;}hover(null);drawPts();map.attributionControl.addAttribution(LAB_ATTR);labUrl();syncView();document.dispatchEvent(new CustomEvent('nx:view',{detail:'street'}));},
+  onClose(){if(buLayer&&BU)buLayer.addTo(map);drawPts();map.attributionControl.removeAttribution(LAB_ATTR);syncView();document.dispatchEvent(new CustomEvent('nx:view',{detail:'city'}));
     try{const u=new URL(location.href);u.searchParams.delete('lab');u.searchParams.delete('tool');history.replaceState(null,'',u);}catch(e){}}});
 // Zwei Perspektiven: Stadt (Quartiersfarben) und Straße (Labor) — nie beides übereinander
 const vC=document.getElementById('vCity'),vS=document.getElementById('vStreet');
-function hintLab(){const on=!!(window.LAB&&LAB.on);
+function syncView(){const on=!!(window.LAB&&LAB.on);
   [[vC,!on],[vS,on]].forEach(([b,v])=>{b.classList.toggle('on',v);b.setAttribute('aria-pressed',v);});
   vC.querySelector('span').textContent=T('Stadt','City','Stad');vS.querySelector('span').textContent=T('Straße','Street','Straat');
   vC.title=T('Stadtkarte: Klimabelastung je Quartier','City map: climate burden per neighbourhood','Stadskaart: klimaatbelasting per buurt');vS.title=T('Straßenlabor: Schatten, Hitze, Wasser, Querschnitt','Street lab: shade, heat, water, cross-section','Straatlab: schaduw, hitte, water, profiel');
@@ -1371,7 +1360,7 @@ function applyLang(){
   document.getElementById('ldTxt').textContent=T('Utrechts Quartiere werden geladen','Loading Utrecht\'s neighbourhoods','Utrechtse buurten laden');
   const pt=document.getElementById('ptsBtn');if(pt)pt.innerHTML=ptsLbl();
   if(BU){renderLenses();renderLegend();if(sel)renderPanel(sel);}
-  hintLab();if(window.LAB)LAB.relang();
+  syncView();if(window.LAB)LAB.relang();
 }
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();});
 // Hell/Dunkel folgt dem System (HIG: keine app-eigene Darstellungs-Einstellung)
@@ -1414,9 +1403,9 @@ Promise.all([fetch('data/official/buurten_utr.json').then(r=>r.json()),fetch('da
   else if(bq){const b=BU.find(x=>x.code===bq);if(b){map.fitBounds(L.latLngBounds(ll(b.geom).flat(2)).pad(.2),{animate:false});openBuurt(b,false);}}
   else if(at){const [la,lo]=at.split(',').map(Number),b=buurtAt(la,lo);if(b){map.setView([la,lo],14,{animate:false});openBuurt(b,false);}}
   else showIntro();
-  hintLab();drawPts();
+  syncView();drawPts();
 }).catch(()=>{document.getElementById('ldTxt').textContent=T('Daten konnten nicht geladen werden.','Data could not be loaded.','Data kon niet worden geladen.');});
-window.__NX={openLab,hintLab,openBuurt,setTheme,umbau,people,sev,score,grade,parts,over,buurtAt,RISKS,get BU(){return BU},get MU(){return MU},get theme(){return theme},get sel(){return sel},PTS,
+window.__NX={openLab,syncView,openBuurt,setTheme,umbau,people,sev,score,grade,parts,over,buurtAt,RISKS,get BU(){return BU},get MU(){return MU},get theme(){return theme},get sel(){return sel},PTS,
   map,T:(...a)=>T(...a),lang:()=>lang,fmt,nf,rnd,closePanel,flyPad,I,MOBILE,sheet,isDark,scol,gname,GR,center,ALL,tname,FLUT,get KN(){return KN}};
 
 </script>
