@@ -222,6 +222,7 @@ LAB.addTool({id:'street',order:3,grp:'make',
     if(PICK>=0){const s=SEC.segs[PICK],p=pt(s.x0),q=pt(s.x1);g.strokeStyle='#FFD600';g.lineWidth=4*X.sc;g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.stroke();}
   },
   click(e){
+    if(A.tooFar())A.map.setView(e.latlng,17,{animate:false});   // zu weit weg: selbst heranzoomen statt Fehlermeldung
     busy=true;EDIT=null;PICK=-1;A.rerender();
     return section(e.latlng).then(s=>{SEC=s;busy=false;A.rerender();A.req();if(LAB.measures&&!s.err)LAB.measures.context(s).then(()=>A.rerender());return null;}).catch(()=>{busy=false;SEC={err:T('Querschnitt nicht möglich — Daten fehlen hier.','Cross-section not possible — data missing here.','Dwarsprofiel niet mogelijk — data ontbreken hier.')};A.rerender();return null;});
   },
