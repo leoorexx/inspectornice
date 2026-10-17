@@ -553,7 +553,7 @@ body.lab-on .labhint{display:none}
 .sevbar{display:flex;gap:3px;height:44px;margin:4px 0 6px}
 .sevbar button{border:none;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:32px;transition:transform .2s var(--spring),box-shadow .2s}
 .sevbar button b{font:600 15px var(--serif);color:#17151c;line-height:1}
-.sevbar button small{font:700 11px var(--sans);color:rgba(23,21,28,.78)}
+.sevbar button small{font:700 11px var(--sans);color:rgba(23,21,28,.9)}
 .sevbar .lt{color:#fff!important}
 .sevbar button.on,.sevbar button:hover{box-shadow:0 0 0 2.5px var(--ink);transform:translateY(-2px)}
 .legend .big{display:flex;gap:12px;align-items:baseline;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
@@ -713,6 +713,168 @@ body.panel-on .ptsbtn{right:494px}
 /* Kopfzeile bleibt neben dem offenen Panel bedienbar (Desktop) */
 @media (min-width:761px){.top{transition:right .55s var(--ease)}body.panel-on .top{right:468px}}
 @media (min-width:761px) and (max-width:1180px){body.panel-on .brand .wm{display:none}}
+
+/* Zwei Perspektiven: Stadt | Straße (HIG: Segment-Steuerung für Ansichten derselben Sache) */
+.viewseg{display:flex;flex:none;gap:2px;padding:4px;height:52px;border-radius:16px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);box-shadow:var(--sh)}
+.viewseg button{display:flex;align-items:center;gap:7px;border:none;background:none;border-radius:12px;min-height:44px;padding:0 14px;font:700 13.5px var(--sans);color:var(--ink2);transition:background .2s,color .2s}
+.viewseg button:hover{color:var(--ink)}
+.viewseg button.on{background:var(--chrome);color:#f3efe7}
+.viewseg button.on svg{color:var(--accent)}
+@media (max-width:760px){.viewseg{height:var(--tap);padding:0 3px;flex:1 1 auto;min-width:0;max-width:220px}.viewseg button{flex:1;justify-content:center;padding:0 8px;min-width:0}.viewseg svg{display:none}}
+/* Im Labor nur das Labor: Missionen, Meldungen, Punkte, Quartiersfarben weg */
+body.lab-on .act,body.lab-on .pacts{display:none}
+.more-i kbd{margin-left:auto;font:700 11.5px var(--sans);color:var(--mute);border:1px solid var(--line2);border-radius:7px;padding:2px 6px}
+
+/* ── Mehr: Fenster, Begriffe, Alle Quartiere, Befehle, Meldungen, Hitze (js/nx-more.js) ── */
+.nxs-ov{position:fixed;inset:0;z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px 16px;background:rgba(18,16,22,.38);animation:fade .25s var(--ease)}
+.nxs{width:min(680px,100%);max-height:88vh;display:flex;flex-direction:column;background:var(--card);border-radius:24px;box-shadow:var(--sh2);animation:rise .35s var(--ease)}
+.nxs.wide{width:min(1040px,100%)}
+.nxs-h{display:flex;align-items:center;gap:12px;padding:18px 18px 10px 24px;flex:none}
+.nxs-h h2{flex:1;font:600 24px/1.1 var(--serif);letter-spacing:-.02em}
+.nxs-x{position:static}
+.nxs-b{overflow:auto;padding:4px 24px 26px;overscroll-behavior:contain;font-size:14px;line-height:1.55;color:var(--ink2)}
+.nxs-b h3{font:700 16px var(--sans);color:var(--ink);margin:22px 0 6px}
+.nxs-b p{margin-top:6px}.nxs-b a{color:var(--ink);text-underline-offset:2px}
+.nxs-lead{font-size:15px;color:var(--ink)}
+.nxs-tw{overflow-x:auto;margin-top:10px}
+.nxs-t{width:100%;border-collapse:collapse;font-size:13.5px}
+.nxs-t th,.nxs-t td{padding:9px 10px 9px 0;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+.nxs-t thead th{font:800 11.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.nxs-t tbody th{color:var(--ink);font-weight:700}
+.nxs-gr{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px;margin-top:8px}
+.nxs-gr li{display:flex;align-items:center;gap:8px;font-size:13.5px}.nxs-gr b{color:var(--ink);font-variant-numeric:tabular-nums}
+.nxs-ul{margin:6px 0 0 18px}.nxs-ul li{margin-top:4px}
+.nxs-src{margin:6px 0 0 18px;font-size:13px}.nxs-src li{margin-top:5px}.nxs-src small{color:var(--mute);font-size:11.5px}
+.nxs-dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px 18px;margin-top:8px}
+.nxs-dl dt{font-weight:700;color:var(--ink)}.nxs-dl dd{font-size:13px;margin-top:2px}
+.nxs-dl div:target{background:color-mix(in srgb,var(--accent) 22%,transparent);border-radius:10px}
+.nxg{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:7px;background:var(--c);color:#17151c;font:800 12.5px var(--sans)}.nxg.lt{color:#fff}
+.nxtoast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);z-index:2100;max-width:min(520px,calc(100vw - 32px));background:var(--chrome);color:#f3efe7;border-radius:16px;padding:13px 18px;font-size:14px;line-height:1.45;box-shadow:var(--sh2);opacity:0;pointer-events:none;transition:opacity .25s,transform .35s var(--ease)}
+.nxtoast.on{opacity:1;transform:translate(-50%,0)}
+.gl{text-decoration:underline dotted;text-decoration-thickness:1.5px;text-underline-offset:3px;text-decoration-color:var(--mute);cursor:help;position:relative;border-radius:4px}
+.gl::after{content:"";position:absolute;inset:-8px -4px}
+.gl:hover,.gl:focus-visible,.gl[aria-expanded]{text-decoration-color:var(--ink);background:color-mix(in srgb,var(--accent) 25%,transparent)}
+.glpop{position:fixed;z-index:2200;background:var(--card);border:1px solid var(--line2);border-radius:16px;box-shadow:var(--sh2);padding:13px 15px 10px;font-size:13.5px;line-height:1.5;color:var(--ink2);animation:rise .2s var(--ease)}
+.glpop b{display:block;color:var(--ink);font-size:14px;margin-bottom:3px}
+.glall{margin-top:6px;border:none;background:none;padding:0;min-height:32px;font:700 12.5px var(--sans);color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.pacts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}
+.pact{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;border:1px solid var(--line);background:var(--soft);border-radius:14px;font:700 12px var(--sans);color:var(--ink)}
+.pact:hover{background:var(--card)}
+.pact.on{border-color:var(--ink);color:var(--ink)}.pact.on svg{color:#d19a00}
+.nxd-k{display:grid;grid-template-columns:repeat(3,auto) 1fr;gap:10px 22px;align-items:end;margin-bottom:12px}
+.nxd-k>div>b{display:block;font:600 26px/1 var(--serif);color:var(--ink)}.nxd-k>div>span{font-size:12.5px;color:var(--mute)}
+.nxd-dist{display:flex;gap:2px;height:34px;border-radius:10px;overflow:hidden;min-width:180px}
+.nxd-dist i{display:flex;align-items:center;justify-content:center;min-width:0}.nxd-dist b{font:800 11.5px var(--sans);color:#17151c;white-space:nowrap}.nxd-dist b.lt{color:#fff}
+.nxd-tabs{display:flex;gap:2px;padding:4px;background:var(--soft);border-radius:14px;margin:4px 0 12px;width:max-content;max-width:100%}
+.nxd-tabs button{border:none;background:none;border-radius:11px;min-height:40px;padding:0 16px;font:700 13.5px var(--sans);color:var(--ink2)}
+.nxd-tabs button.on{background:var(--chrome);color:#f3efe7}
+.nxd-f{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.nxd-q{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-height:44px;padding:0 12px;border:1px solid var(--line2);border-radius:12px;background:var(--card);color:var(--mute)}
+.nxd-q input{flex:1;border:none;background:none;outline:none;font:500 14px var(--sans);color:var(--ink);min-width:0}
+.nxd-f select,.nxd-cs select{min-height:44px;border:1px solid var(--line2);border-radius:12px;background:var(--card);color:var(--ink);font:600 13.5px var(--sans);padding:0 10px;max-width:100%}
+.nxd-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid var(--line2);border-radius:12px;background:var(--card);font:700 13px var(--sans);color:var(--ink)}
+.nxd-chip.on{border-color:var(--ink)}.nxd-chip.on svg{color:#d19a00}
+.nxd-n{font-size:12.5px;color:var(--mute);margin:8px 0 6px}
+.nxd-tw{overflow:auto;max-height:58vh;border:1px solid var(--line);border-radius:14px}
+.nxd-t{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px;font-variant-numeric:tabular-nums}
+.nxd-t th,.nxd-t td{padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right;background:var(--card)}
+.nxd-t thead th{position:sticky;top:0;z-index:2;background:var(--soft);font:800 11.5px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.nxd-t thead th button{border:none;background:none;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;min-height:32px;padding:0}
+.nxd-t thead th[aria-sort="ascending"] button,.nxd-t thead th[aria-sort="descending"] button{color:var(--ink)}
+.nxd-t .nxd-c0{position:sticky;left:0;z-index:1;text-align:left}.nxd-t thead .nxd-c0{z-index:3}
+.nxd-t tbody th{display:flex;align-items:center;gap:6px;font-weight:600}
+.nxd-ck{display:flex;align-items:center;justify-content:center;width:32px;height:36px;flex:none}.nxd-ck input{width:18px;height:18px;accent-color:var(--chrome)}
+.nxd-open{display:flex;flex-direction:column;align-items:flex-start;border:none;background:none;padding:2px 0;min-height:36px;justify-content:center;text-align:left;font:700 13.5px var(--sans);color:var(--ink)}
+.nxd-open small,.nxd-rn small,.nxd-ct thead small{font:500 11.5px var(--sans);color:var(--mute)}
+.nxd-pin{color:#d19a00;font-style:normal;display:inline-flex;vertical-align:-1px}.nxd-nm{display:inline-flex;align-items:center;gap:4px}
+.nxd-t td.bad{color:var(--neg);font-weight:800}
+.nxd-t tbody tr:hover td,.nxd-t tbody tr:hover th{background:var(--soft)}
+.nxd-ct td.best{background:color-mix(in srgb,#3f7f6a 16%,var(--card));color:var(--pos);font-weight:800}
+.nxd-ct thead th button{display:flex;flex-direction:column;align-items:flex-end;text-transform:none;letter-spacing:0;font:700 13.5px var(--sans);color:var(--ink)}
+.nxd-cs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.nxd-rk{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.nxd-rk section{background:var(--soft);border-radius:16px;padding:12px 12px 8px}
+.nxd-rk h3{margin:0 0 6px;font-size:14px}
+.nxd-rk ol{list-style:none;counter-reset:r}.nxd-rk li{counter-increment:r}
+.nxd-rk li button{display:flex;align-items:center;gap:8px;width:100%;border:none;background:none;min-height:44px;padding:4px 4px;border-radius:10px;text-align:left;color:var(--ink);font:600 13.5px var(--sans)}
+.nxd-rk li button::before{content:counter(r);font:800 12px var(--sans);color:var(--mute);width:18px;flex:none}
+.nxd-rk li button:hover{background:var(--card)}
+.nxd-rn{flex:1;display:flex;flex-direction:column;min-width:0}.nxd-rk li b{font-size:12.5px;color:var(--ink2);white-space:nowrap;text-align:right}.nxd-rk li b small{display:block;font:500 11.5px var(--sans);color:var(--mute)}
+.nxr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.nxr button{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px;border:1px solid var(--line2);border-radius:14px;background:var(--card);text-align:left;font:700 14px var(--sans);color:var(--ink)}
+.nxr button:hover{background:var(--soft)}.nxr i{width:14px;height:14px;border-radius:50%;flex:none}
+body.nx-picking .leaflet-overlay-pane,body.nx-picking .leaflet-marker-pane{pointer-events:none}
+body.nx-picking .leaflet-container{cursor:crosshair}
+.nxpick{position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:1500;display:flex;align-items:center;gap:12px;max-width:min(560px,calc(100vw - 24px));background:var(--chrome);color:#f3efe7;border-radius:18px;padding:8px 8px 8px 16px;font:600 14px/1.4 var(--sans);box-shadow:var(--sh2)}
+.nxpick svg{color:var(--accent);flex:none}.nxpick button{flex:none;min-height:44px;border:none;border-radius:12px;padding:0 14px;background:rgba(255,255,255,.14);color:#f3efe7;font:700 13.5px var(--sans)}
+.heatbtn{gap:6px;padding:0 12px;color:#fff;border:none}
+.heatbtn.l1{background:#c2410c}.heatbtn.l2{background:#b91c1c}.heatbtn.l3{background:#7f1d1d}.heatbtn span{font:800 14px var(--sans)}
+.nxhp{width:320px}
+.nxhp-d{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;align-items:end;margin:4px 0 8px}
+.nxhp-d div{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;color:var(--mute)}
+.nxhp-d b{font:800 12.5px var(--sans);color:var(--ink)}.nxhp-d i{width:100%;border-radius:4px 4px 0 0;background:var(--soft2)}
+.nxhp-d .l1 i{background:#e8964a}.nxhp-d .l2 i{background:#d0583c}.nxhp-d .l3 i{background:#a3283a}.nxhp-d em{color:var(--ink2);line-height:1}
+.nxhp-plan{font-size:13px;color:var(--ink);background:color-mix(in srgb,#d0583c 14%,transparent);border-radius:12px;padding:8px 10px;margin:4px 0 8px}
+.nxhp-tips{margin:0 0 8px 18px;font-size:13px;line-height:1.5;color:var(--ink2)}
+.nxhp-a{display:flex;gap:6px}.nxhp-a button{flex:1;min-height:44px;border:1px solid var(--line2);border-radius:12px;background:var(--soft);font:700 13px var(--sans);color:var(--ink)}
+.nxk-ov{padding-top:12vh}
+.nxk{width:min(600px,100%);background:var(--card);border-radius:20px;box-shadow:var(--sh2);overflow:hidden;animation:rise .25s var(--ease)}
+.nxk-q{display:flex;align-items:center;gap:10px;padding:0 16px;min-height:58px;border-bottom:1px solid var(--line);color:var(--mute)}
+.nxk-q input{flex:1;border:none;background:none;outline:none;font:500 17px var(--sans);color:var(--ink);min-width:0}
+.nxk-l{max-height:52vh;overflow:auto;padding:6px}
+.nxk-l button{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;border:none;background:none;border-radius:12px;padding:4px 10px;text-align:left;color:var(--ink2)}
+.nxk-l button.on,.nxk-l button:hover{background:var(--soft)}
+.nxk-l button span{display:flex;flex-direction:column;min-width:0}.nxk-l b{font:700 14px var(--sans);color:var(--ink)}.nxk-l small{font-size:12px;color:var(--mute)}
+.nxk-e{padding:16px;color:var(--mute)}.nxk-f{padding:8px 16px 10px;font-size:11.5px;color:var(--mute);border-top:1px solid var(--line)}
+@media (max-width:760px){
+  .nxs-ov{padding:0;align-items:flex-end}.nxs,.nxs.wide{width:100%;max-height:92vh;border-radius:24px 24px 0 0}
+  .nxs-b{padding:4px 16px calc(22px + env(safe-area-inset-bottom,0px))}.nxs-h{padding:16px 12px 8px 16px}
+  .nxd-k{grid-template-columns:repeat(3,1fr)}.nxd-dist{grid-column:1/-1}
+  .nxd-cs{grid-template-columns:1fr}.nxr{grid-template-columns:1fr}
+  .nxpick{top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+  .nxk-ov{padding:10px;align-items:flex-start}
+  .heatbtn{padding:0 10px}
+}
+
+@media (min-width:761px) and (max-width:1180px){body.panel-on .search:not(:focus-within){flex:0 0 52px}body.panel-on .search:not(:focus-within) input{color:transparent;padding-right:0}body.panel-on .search:not(:focus-within) input::placeholder{color:transparent}}
+
+/* Werkzeuge in zwei Gruppen: Verstehen | Gestalten */
+.lab-tgs{display:flex;flex-direction:column;gap:6px;margin:0 -4px 12px}
+.lab-tg{display:flex;align-items:center;gap:8px}
+.lab-tgc{flex:0 0 66px;font:700 12px var(--sans);color:var(--mute);padding-left:4px}
+.lab-tg .lab-tools{flex:1;margin:0;grid-template-columns:repeat(var(--n),1fr)}
+@media (max-width:760px){
+  .lab-tgs{order:10;flex-direction:row;overflow-x:auto;margin:8px -4px 0;gap:6px;scrollbar-width:none}.lab-tgs::-webkit-scrollbar{display:none}
+  .lab-tg{flex:none;flex-direction:column;align-items:flex-start;gap:2px}.lab-tgc{flex:none;font-size:11px;padding-left:8px}
+  .lab-tg .lab-tools{order:0;margin:0;overflow:visible;display:flex}
+}
+
+/* Standort-Check (js/lab-standort.js) */
+.sc-top{display:flex;gap:12px;align-items:center;margin:4px 0 10px}
+.sc-top b{display:block;font:700 15px var(--sans);color:var(--ink)}.sc-top span{font-size:12px;color:var(--mute);line-height:1.4}
+.sc-num{font:600 20px var(--serif);fill:var(--ink)}
+.sc-list{display:flex;flex-direction:column}
+.sc-row{display:flex;align-items:center;gap:10px;min-height:46px;border-top:1px solid var(--line)}
+.sc-row>i{width:11px;height:11px;border-radius:50%;flex:none}
+.sc-n{flex:1;min-width:0}.sc-n b{display:block;font:700 13px var(--sans);color:var(--ink)}.sc-n small,.sc-v small{font-size:11.5px;color:var(--mute)}
+.sc-v{text-align:right}.sc-v b{display:block;font:600 18px var(--serif);color:var(--ink);font-variant-numeric:tabular-nums}
+.sc-f{font-style:normal;font-size:12px;color:var(--mute)}
+.sc-h{margin-top:16px}
+.sc-cl{display:flex;flex-direction:column;gap:8px}
+.sc-cl>div{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2)}
+.sc-cl b{min-width:58px;font:700 14px var(--sans);color:var(--ink)}.sc-cl b.bad{color:var(--neg)}
+
+/* Lesbarkeit im Quartiersprofil (gemessen: Jahreszahlen 9,6 px, „stadtweit", „/25", Begründungen unter 4,5 : 1) */
+.rcl .pts small{opacity:1;color:var(--mute)}
+.facts small{opacity:1;font-size:11px;color:var(--mute)}
+.chip2.city{color:#245a8c}
+:root[data-theme="dark"] .chip2.city{color:#9cc4ec}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip2.city{color:#9cc4ec}}
+.mu em{color:#8f3520}
+:root[data-theme="dark"] .mu em{color:#ffb4a3;background:rgba(232,120,96,.16)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mu em{color:#ffb4a3;background:rgba(232,120,96,.16)}}
+
+.wcol{color:#245a8c}:root[data-theme="dark"] .wcol{color:#9cc4ec}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wcol{color:#9cc4ec}}
 </style>
 </head>
 <body>
@@ -726,6 +888,7 @@ body.panel-on .ptsbtn{right:494px}
     <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g transform="translate(13 13)"><path d="M0-2.4 4.2-10.6A11 11 0 0 1 10.6-4.2Z" fill="#d0583c"/><path d="M2.4 0 10.6 4.2A11 11 0 0 1 4.2 10.6Z" fill="#c49a2b"/><path d="M0 2.4-4.2 10.6A11 11 0 0 1-10.6 4.2Z" fill="#4c4ea8"/><path d="M-2.4 0-10.6-4.2A11 11 0 0 1-4.2-10.6Z" fill="#7a8c3a"/><circle r="2.1" fill="#FFD600"/></g></svg>
     <span class="wm"><b>Inspector Nice</b><small id="cityLbl">Utrecht · Klimarisiken</small></span>
   </a>
+  <div class="viewseg" role="group" aria-label="Perspektive"><button id="vCity" class="on" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2Z"/><path d="M9 4v14M15 6v14"/></svg><span>Stadt</span></button><button id="vStreet" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 21V11h6v10M9 21h12l-6-7H9"/><circle cx="17" cy="6" r="3"/></svg><span>Straße</span></button></div>
   <div class="search">
     <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     <input id="q" type="search" autocomplete="off" aria-label="Ort suchen">
@@ -736,8 +899,10 @@ body.panel-on .ptsbtn{right:494px}
     <div class="more" id="moreMenu" hidden>
       <div class="more-h" id="moreLangH">Sprache</div>
       <div class="lang" role="group" aria-labelledby="moreLangH"><button data-l="de" lang="de">Deutsch</button><button data-l="en" lang="en">English</button><button data-l="nl" lang="nl">Nederlands</button></div>
-      <a class="more-i" href="methodik.html" id="methodBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 12h5"/></svg><span><b id="methodTxt">Methodik und Quellen</b><small id="methodSub">Wie die Noten entstehen</small></span></a>
-      <a class="more-i" href="dashboard.html?city=utr" id="dashBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span><b id="dashTxt">Dashboard</b><small id="dashSub">Alle Kennzahlen als Tabelle</small></span></a>
+      <button class="more-i" id="dashBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span><b id="dashTxt">Alle Quartiere</b><small id="dashSub">Tabelle, Ranglisten, Vergleich</small></span></button>
+      <button class="more-i" id="methodBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 12h5"/></svg><span><b id="methodTxt">Methodik und Quellen</b><small id="methodSub">Wie die Noten entstehen</small></span></button>
+      <button class="more-i" id="cmdBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span><b id="cmdTxt">Suchen und Befehle</b><small id="cmdSub">Quartier, Werkzeug, Seite</small></span><kbd id="cmdKey">⌘K</kbd></button>
+      <button class="more-i" id="repBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h11l-1.5 4L16 12H5"/></svg><span><b id="repTxt">Etwas melden</b><small id="repSub">Fehlende Bank, Hitzepunkt, Trittpfad</small></span></button>
       <a class="more-i" href="index.html?classic" id="classicBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M3 10h6"/></svg><span><b id="classicTxt">Klassische Ansicht</b><small id="classicSub">Alle 35 Ebenen, auch Frankfurt</small></span></a>
       <p class="more-f" id="moreFoot">Hell oder dunkel folgt deinen Systemeinstellungen.</p>
     </div>
@@ -746,7 +911,6 @@ body.panel-on .ptsbtn{right:494px}
 
 <nav class="lenses" id="lenses" aria-label="Linse"></nav>
 <aside class="legend" id="legend" aria-live="polite"></aside>
-<button class="labhint" id="labHint"></button>
 
 <section class="panel" id="panel" aria-label="Ort">
   <div class="grab" aria-hidden="true"></div>
@@ -766,6 +930,7 @@ body.panel-on .ptsbtn{right:494px}
 <script src="js/lab-wind.js"></script>
 <script src="js/lab-area.js"></script>
 <script src="js/lab-studio.js"></script>
+<script src="js/lab-standort.js"></script>
 <script src="js/lab-3d.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════════
@@ -934,11 +1099,10 @@ function renderLenses(){
   const t=ALL().find(x=>x.id===theme),g=theme==='alle'?'risiko':t?t.g:'risiko';
   const groups=GROUPS.map(([id,l])=>`<button class="lgrp${id===g?' on':''}" data-g="${id}">${l()}</button>`).join('');
   const chips=(g==='risiko'?[{id:'alle',col:'#d0583c',de:'Alle Risiken',en:'All risks',nl:'Alle risico\'s'}]:[]).concat(ALL().filter(x=>x.g===g)).map(x=>`<button class="lens${theme===x.id?' on':''}" data-id="${x.id}" aria-pressed="${theme===x.id}"><span class="sw" style="background:${x.id==='alle'?`conic-gradient(${SEV.slice(1).join(',')})`:x.col}"></span>${tname(x)}</button>`).join('');
-  document.getElementById('lenses').innerHTML=`<button class="lens labchip" id="labChip">${I.lab}${T('Straßenlabor','Street lab','Straatlab')}</button><button class="lens actchip${window.ACT&&ACT.on?' on':''}" id="actChip"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h11l-1.5 4L15 12H4"/></svg>${T('Handeln','Act','Aanpakken')}</button><div class="lgrps" role="tablist">${groups}</div>${chips}`;
+  document.getElementById('lenses').innerHTML=`<button class="lens actchip${window.ACT&&ACT.on?' on':''}" id="actChip"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h11l-1.5 4L15 12H4"/></svg>${T('Handeln','Act','Aanpakken')}</button><div class="lgrps" role="tablist">${groups}</div>${chips}`;
   const ac=document.getElementById('actChip');if(ac)ac.onclick=()=>window.ACT&&ACT.toggle();
   document.querySelectorAll('.lens[data-id]').forEach(b=>b.onclick=()=>setTheme(b.dataset.id));
   document.querySelectorAll('.lgrp').forEach(b=>b.onclick=()=>setTheme(b.dataset.g==='risiko'?'alle':ALL().find(x=>x.g===b.dataset.g).id));
-  document.getElementById('labChip').onclick=()=>openLab(sel?center(sel):null);
 }
 function setTheme(id){if(id===theme)return;theme=id;STORE.set('nx_theme_r',id);sevFilter=null;renderLenses();renderLegend();restyle();}
 
@@ -950,11 +1114,11 @@ function renderLegend(){
     const hi=ppl[3]+ppl[4],W=RISKS.find(r=>r.city),wv=BU.map(b=>b.v.flut).filter(v=>v!=null&&v>=1),wm=wv.filter(v=>v===4).length,w50=BU.map(b=>b.v.flut2050).filter(v=>v!=null&&v>=1);
     const mode=a=>{const c={};a.forEach(v=>c[v]=(c[v]||0)+1);return +Object.entries(c).sort((x,y)=>y[1]-x[1])[0][0];};
     el.innerHTML=`<h4>${T('Klimabelastung je Quartier','Climate burden per neighbourhood','Klimaatbelasting per buurt')}</h4>
-      <p class="lead">${T('0–100 Punkte. Hitze, Verkehrslärm, Kronendach und Schatten auf Wegen geben je bis zu 25: null Punkte, solange der Richtwert eingehalten ist, volle Punkte bei deutlicher Überschreitung.','0–100 points. Heat, traffic noise, canopy and shade on paths give up to 25 each: zero while the guideline is met, full points when it is clearly exceeded.','0–100 punten. Hitte, verkeerslawaai, kronendak en schaduw op routes geven elk tot 25: nul zolang de richtwaarde gehaald wordt, volle punten bij duidelijke overschrijding.')}</p>
+      <p class="lead">${T('0–100 Punkte. Hitze, Verkehrslärm, Kronendach und Schatten auf Wegen geben je bis zu 25: wenig bei guten Werten, volle Punkte bei deutlicher Überschreitung des Richtwerts.','0–100 points. Heat, traffic noise, canopy and shade on paths give up to 25 each: little for good values, full points when the guideline is clearly exceeded.','0–100 punten. Hitte, verkeerslawaai, kronendak en schaduw op routes geven elk tot 25: weinig bij goede waarden, volle punten bij duidelijke overschrijding van de richtwaarde.')}</p>
       <div class="sevbar">${cnt.map((n,g)=>`<button data-s="${g}" class="${sevFilter===g?'on':''}" style="background:${gcol(g)};flex:${Math.max(n,4)}" title="${gname(g)} · ${n} ${T('Quartiere','neighbourhoods','buurten')} · ${fmt(rnd(ppl[g]))} ${T('Menschen','people','mensen')}"><b class="${g>=3?'lt':''}">${GR[g][1]}</b><small class="${g>=3?'lt':''}">${n}</small></button>`).join('')}</div>
       <div class="rlab"><span>A ${gname(0)} &lt; 15</span><span>E ${gname(4)} ≥ 60</span></div>
       <div class="big"><b>${fmt(rnd(hi))}</b><span>${T('Menschen leben in Quartieren mit hoher oder sehr hoher Klimabelastung (D, E)','people live in neighbourhoods with a high or very high climate burden (D, E)','mensen wonen in buurten met een hoge of zeer hoge klimaatbelasting (D, E)')}</span></div>
-      ${wv.length?`<p class="lead wcity"><b style="color:${W.col}">${tname(W)}</b> ${T(`trifft fast die ganze Stadt gleich: ${wm} von ${wv.length} Quartieren liegen heute in der Klasse „${FLUT(mode(wv))}"${w50.length?`, 2050 — wenn alle Deiche die Norm erfüllen — „${FLUT(mode(w50))}"`:''}. Darum steht sie in jedem Profil, zählt aber nicht in die Punkte.`,`affects almost the whole city alike: ${wm} of ${wv.length} neighbourhoods are in class "${FLUT(mode(wv))}" today${w50.length?`, in 2050 — if all dikes meet the standard — "${FLUT(mode(w50))}"`:''}. So it is shown in every profile but not counted in the points.`,`raakt bijna de hele stad gelijk: ${wm} van ${wv.length} buurten liggen nu in klasse „${FLUT(mode(wv))}"${w50.length?`, in 2050 — als alle dijken aan de norm voldoen — „${FLUT(mode(w50))}"`:''}. Daarom staat het in elk profiel, maar telt het niet mee in de punten.`)}</p>`:''}`;
+      ${wv.length?`<p class="lead wcity"><b class="wcol">${tname(W)}</b> ${T(`trifft fast die ganze Stadt gleich: ${wm} von ${wv.length} Quartieren liegen heute in der Klasse „${FLUT(mode(wv))}"${w50.length?`, 2050 — wenn alle Deiche die Norm erfüllen — „${FLUT(mode(w50))}"`:''}. Darum steht sie in jedem Profil, zählt aber nicht in die Punkte.`,`affects almost the whole city alike: ${wm} of ${wv.length} neighbourhoods are in class "${FLUT(mode(wv))}" today${w50.length?`, in 2050 — if all dikes meet the standard — "${FLUT(mode(w50))}"`:''}. So it is shown in every profile but not counted in the points.`,`raakt bijna de hele stad gelijk: ${wm} van ${wv.length} buurten liggen nu in klasse „${FLUT(mode(wv))}"${w50.length?`, in 2050 — als alle dijken aan de norm voldoen — „${FLUT(mode(w50))}"`:''}. Daarom staat het in elk profiel, maar telt het niet mee in de punten.`)}</p>`:''}`;
     el.querySelectorAll('[data-s]').forEach(x=>x.onclick=()=>{const s=+x.dataset.s;sevFilter=sevFilter===s?null:s;renderLegend();restyle();});
     return;}
   const t=ALL().find(x=>x.id===theme),vals=BU.map(b=>t.v(b)).filter(v=>v!=null).sort((a,b)=>a-b),miss=BU.length-vals.length;
@@ -1063,6 +1227,7 @@ function renderPanel(b){
       <p>${T('Hitze: RIVM-Modell 2022 (Sommer-Mittel Stadt gegen Umland). Lärm: RIVM-Lärmkarte Straßenverkehr 2022 (L<sub>den</sub>, Mittel aus bis zu fünf Punkten); Belästigung und Schlafstörung: GGD-Gezondheidsmonitor 2024, Modellschätzung je Quartier. Kronendach: Luftbildanalyse der Gemeente 2022. Schatten auf Wegen: Gemeente Utrecht 2023. Überflutung: LIWO, Rijkswaterstaat (höchste Klasse an bis zu fünf Punkten). Menschen: CBS 2024 (65+), CBS 2026 (80+); „≈ Menschen" = Anteil × Einwohner, gerundet. Einkommen und Vermögen: CBS 2023. Bauen: Gebäuderegister BAG. Zukunft: KNMI\'23. Eine Hitze-Sterblichkeit je Quartier veröffentlicht niemand; landesweit zählte CBS in der Hitzewelle 2019 rund 400 zusätzliche Todesfälle, vor allem über 80 — ob die Hitze die Ursache war, ist nicht sicher belegt.','Heat: RIVM model 2022 (summer average, city vs countryside). Noise: RIVM road-traffic noise map 2022 (L<sub>den</sub>, mean of up to five points); annoyance and sleep disturbance: GGD health monitor 2024, model estimate per neighbourhood. Canopy: municipal aerial analysis 2022. Shade on paths: Gemeente Utrecht 2023. Flooding: LIWO, Rijkswaterstaat (highest class at up to five points). People: CBS 2024 (65+), CBS 2026 (80+); "≈ people" = share × residents, rounded. Income and wealth: CBS 2023. Building: BAG register. Future: KNMI\'23. Nobody publishes heat mortality per neighbourhood; nationally CBS counted about 400 extra deaths in the 2019 heatwave, mostly over 80 — whether heat was the cause is not proven.','Hitte: RIVM-model 2022 (zomergemiddelde stad t.o.v. buitengebied). Geluid: RIVM-geluidkaart wegverkeer 2022 (L<sub>den</sub>, gemiddelde van tot vijf punten); hinder en slaapverstoring: GGD-Gezondheidsmonitor 2024, modelschatting per buurt. Kronendak: luchtfoto-analyse gemeente 2022. Schaduw op routes: gemeente Utrecht 2023. Overstroming: LIWO, Rijkswaterstaat. Mensen: CBS 2024 (65+), CBS 2026 (80+); „≈ mensen" = aandeel × inwoners, afgerond. Inkomen en vermogen: CBS 2023. Bouwen: BAG. Toekomst: KNMI\'23. Hittesterfte per buurt publiceert niemand; landelijk telde CBS in de hittegolf van 2019 zo\'n 400 extra sterfgevallen, vooral boven 80 — of hitte de oorzaak was, is niet zeker.')}</p></details>`;
   document.querySelectorAll('.rc[data-t]').forEach(x=>x.onclick=()=>setTheme(x.dataset.t));
   document.getElementById('labBtn').onclick=()=>openLab(center(b));
+  document.dispatchEvent(new CustomEvent('nx:panel',{detail:b}));
 }
 const flyPad=()=>MOBILE()?{paddingTopLeft:[16,180],paddingBottomRight:[16,Math.round(innerHeight*(SHEET==='peek'?.3:.55))]}:{paddingTopLeft:[24,140],paddingBottomRight:[document.body.classList.contains('panel-on')?480:24,40]};
 function closePanel(){document.getElementById('panel').classList.remove('on');document.body.classList.remove('panel-on');sel=null;if(selLayer){map.removeLayer(selLayer);selLayer=null;}if(BU)restyle();try{const u=new URL(location.href);u.searchParams.delete('b');u.searchParams.delete('at');history.replaceState(null,'',u);}catch(e){}}
@@ -1116,13 +1281,18 @@ function show(items){
 const LAB_ATTR='3D BAG (TU Delft / 3DGI) · BGT · AHN · LIWO · RIVM · Bomenkaart';
 function openLab(at,toolId){if(!window.LAB)return;if(document.getElementById('panel').classList.contains('on'))closePanel();LAB.open(at?L.latLng(at):null,toolId);}
 if(window.LAB)LAB.init(map,{T,lang:()=>lang,dark:isDark,buurtAt:(la,lo)=>buurtAt(la,lo),treesUrl:'data/official/trees_utr.json',knmiUrl:'data/official/knmi23_debilt.json',setBase,muster:()=>MU,onTool:()=>labUrl(),
-  onOpen(){if(buLayer)map.removeLayer(buLayer);if(selLayer){map.removeLayer(selLayer);selLayer=null;}hover(null);drawPts();map.attributionControl.addAttribution(LAB_ATTR);labUrl();},
-  onClose(){if(buLayer&&BU)buLayer.addTo(map);drawPts();map.attributionControl.removeAttribution(LAB_ATTR);hintLab();
+  onOpen(){if(buLayer)map.removeLayer(buLayer);if(selLayer){map.removeLayer(selLayer);selLayer=null;}hover(null);drawPts();map.attributionControl.addAttribution(LAB_ATTR);labUrl();hintLab();document.dispatchEvent(new CustomEvent('nx:view',{detail:'street'}));},
+  onClose(){if(buLayer&&BU)buLayer.addTo(map);drawPts();map.attributionControl.removeAttribution(LAB_ATTR);hintLab();document.dispatchEvent(new CustomEvent('nx:view',{detail:'city'}));
     try{const u=new URL(location.href);u.searchParams.delete('lab');u.searchParams.delete('tool');history.replaceState(null,'',u);}catch(e){}}});
-const labHint=document.getElementById('labHint');
-function hintLab(){labHint.innerHTML=`${I.lab}${T('Schatten & Hitze hier ansehen','See shade & heat here','Bekijk schaduw & hitte hier')}`;labHint.classList.toggle('on',!!BU&&!!window.LAB&&!LAB.on&&map.getZoom()>=14);}
-labHint.onclick=()=>openLab(null);
-map.on('zoomend',hintLab);
+// Zwei Perspektiven: Stadt (Quartiersfarben) und Straße (Labor) — nie beides übereinander
+const vC=document.getElementById('vCity'),vS=document.getElementById('vStreet');
+function hintLab(){const on=!!(window.LAB&&LAB.on);
+  [[vC,!on],[vS,on]].forEach(([b,v])=>{b.classList.toggle('on',v);b.setAttribute('aria-pressed',v);});
+  vC.querySelector('span').textContent=T('Stadt','City','Stad');vS.querySelector('span').textContent=T('Straße','Street','Straat');
+  vC.title=T('Stadtkarte: Klimabelastung je Quartier','City map: climate burden per neighbourhood','Stadskaart: klimaatbelasting per buurt');vS.title=T('Straßenlabor: Schatten, Hitze, Wasser, Querschnitt','Street lab: shade, heat, water, cross-section','Straatlab: schaduw, hitte, water, profiel');
+  document.getElementById('cityLbl').textContent='Utrecht · '+(on?T('Straßenlabor','Street lab','Straatlab'):T('Klimarisiken','Climate risks','Klimaatrisico\'s'));}
+vC.onclick=()=>{if(window.LAB&&LAB.on)LAB.close();};
+vS.onclick=()=>{if(!(window.LAB&&LAB.on))openLab(sel?center(sel):null);};
 function labUrl(){try{const u=new URL(location.href),c=map.getCenter();u.searchParams.set('lab',c.lat.toFixed(5)+','+c.lng.toFixed(5));u.searchParams.delete('at');u.searchParams.delete('b');if(LAB.tool&&LAB.tool!=='sun')u.searchParams.set('tool',LAB.tool);else u.searchParams.delete('tool');history.replaceState(null,'',u);}catch(e){}}
 map.on('moveend',()=>{if(window.LAB&&LAB.on)labUrl();});
 
@@ -1136,11 +1306,12 @@ function applyLang(){
   const tx=(id,...v)=>{const e=document.getElementById(id);if(e)e.textContent=T(...v);};
   tx('classicSub','Alle 35 Ebenen, auch Frankfurt','All 35 layers, incl. Frankfurt','Alle 35 lagen, ook Frankfurt');
   tx('methodTxt','Methodik und Quellen','Methodology and sources','Methodiek en bronnen');tx('methodSub','Wie die Noten entstehen','How the grades are made','Hoe de cijfers ontstaan');
-  tx('dashTxt','Dashboard','Dashboard','Dashboard');tx('dashSub','Alle Kennzahlen als Tabelle','All indicators as a table','Alle kengetallen als tabel');
+  tx('dashTxt','Alle Quartiere','All neighbourhoods','Alle buurten');tx('dashSub','Tabelle, Ranglisten, Vergleich','Table, rankings, compare','Tabel, ranglijsten, vergelijken');
+  tx('cmdTxt','Suchen und Befehle','Search and commands','Zoeken en opdrachten');tx('cmdSub','Quartier, Werkzeug, Seite','Neighbourhood, tool, page','Buurt, tool, pagina');
+  tx('repTxt','Etwas melden','Flag a spot','Iets melden');tx('repSub','Fehlende Bank, Hitzepunkt, Trittpfad','Missing bench, heat spot, desire path','Ontbrekend bankje, hittepunt, olifantenpaadje');
   tx('moreLangH','Sprache','Language','Taal');tx('moreFoot','Hell oder dunkel folgt deinen Systemeinstellungen.','Light or dark follows your system settings.','Licht of donker volgt je systeeminstellingen.');
   document.getElementById('moreLang').textContent=lang.toUpperCase();
   document.getElementById('moreBtn').setAttribute('aria-label',T('Mehr: Sprache, Methodik, klassische Ansicht','More: language, methodology, classic view','Meer: taal, methodiek, klassieke weergave'));
-  document.getElementById('cityLbl').textContent='Utrecht · '+T('Klimarisiken','Climate risks','Klimaatrisico\'s');
   document.getElementById('ldTxt').textContent=T('Utrechts Quartiere werden geladen','Loading Utrecht\'s neighbourhoods','Utrechtse buurten laden');
   const pt=document.getElementById('ptsBtn');if(pt)pt.innerHTML=ptsLbl();
   if(BU){renderLenses();renderLegend();if(sel)renderPanel(sel);}
@@ -1186,9 +1357,10 @@ Promise.all([fetch('data/official/buurten_utr.json').then(r=>r.json()),fetch('da
   hintLab();drawPts();
 }).catch(()=>{document.getElementById('ldTxt').textContent=T('Daten konnten nicht geladen werden.','Data could not be loaded.','Data kon niet worden geladen.');});
 window.__NX={openLab,hintLab,openBuurt,setTheme,umbau,people,sev,score,grade,parts,over,buurtAt,RISKS,get BU(){return BU},get MU(){return MU},get theme(){return theme},get sel(){return sel},PTS,
-  map,T:(...a)=>T(...a),lang:()=>lang,fmt,nf,rnd,closePanel,flyPad,I,MOBILE,sheet,isDark,scol,gname,GR,center};
+  map,T:(...a)=>T(...a),lang:()=>lang,fmt,nf,rnd,closePanel,flyPad,I,MOBILE,sheet,isDark,scol,gname,GR,center,ALL,tname,FLUT,get KN(){return KN}};
 
 </script>
 <script src="js/act.js"></script>
+<script src="js/nx-more.js"></script>
 </body>
 </html>

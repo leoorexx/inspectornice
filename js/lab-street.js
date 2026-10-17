@@ -166,7 +166,7 @@ function picto(t,c,w,X,Y,sc){
 function canyon(hw){return hw==null?'':hw<.5?T('offener Straßenraum','open street space','open straatruimte'):hw<1?T('mittlere Straßenschlucht','moderate street canyon','matige straatkloof'):T('tiefe Straßenschlucht: viel Schatten am Tag, Wärmestau in der Nacht','deep street canyon: lots of shade by day, trapped heat at night','diepe straatkloof: veel schaduw overdag, warmte blijft hangen in de nacht');}
 
 // ── Werkzeug ──
-LAB.addTool({id:'street',order:3,
+LAB.addTool({id:'street',order:3,grp:'make',
   icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20V9l4-2v13M21 20V9l-4-2v13M3 20h18"/><path d="M12 12v2M12 16.5v2" stroke-width="1.6"/></svg>',
   label:()=>T('Straße','Street','Straat'),
   sub:()=>T('Querschnitt Fassade zu Fassade','Cross-section façade to façade','Dwarsprofiel gevel tot gevel'),

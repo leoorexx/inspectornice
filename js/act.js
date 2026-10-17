@@ -82,8 +82,8 @@ async function ensure(m){
   catch(e){ACT.cases[m.id]={err:true};}
   ACT.busy=false;return ACT.cases[m.id];
 }
-function markers(){
-  const map=NX().map;if(ACT.layer){map.removeLayer(ACT.layer);ACT.layer=null;}if(!ACT.on)return;const cs=ACT.cases[ACT.m];if(!cs||cs.err)return;const m=mis();
+function markers(){                                     // im Straßenlabor keine Fall-Punkte darüber
+  const map=NX().map;if(ACT.layer){map.removeLayer(ACT.layer);ACT.layer=null;}if(!ACT.on||(window.LAB&&LAB.on))return;const cs=ACT.cases[ACT.m];if(!cs||cs.err)return;const m=mis();
   ACT.layer=L.layerGroup();const top=cs.slice(0,ACT.more?cs.length:40);
   top.slice().reverse().forEach(c=>{const r=4+8*c.score/100,mk=L.circleMarker([c.lat,c.lon],{radius:r,color:'#17151c',weight:1.2,fillColor:m.col,fillOpacity:.35+.55*c.score/100});
     mk.bindTooltip(`<b>${c.id}</b> · ${c.name}`,{direction:'top',offset:[0,-r]});mk.on('click',()=>openCase(c));ACT.layer.addLayer(mk);});
@@ -192,6 +192,7 @@ async function brief(c,m){
 ACT.toggle=function(on){ACT.on=on==null?!ACT.on:on;const ch=document.getElementById('actChip');if(ch)ch.classList.toggle('on',ACT.on);
   if(ACT.on){if(window.LAB&&LAB.on)LAB.close();show();if(!ACT.rahmen)fetch('data/rahmen_utr.json').then(r=>r.ok?r.json():null).then(j=>{ACT.rahmen=j;}).catch(()=>{});}
   else{render();markers();}};
+document.addEventListener('nx:view',()=>markers());
 ACT._t={MISSIONS,ensure,openCase,stAll,stGet,stSet,loadWege,loadSchulen,loadWasser,brief};
 try{if(new URLSearchParams(location.search).get('act')){const m=new URLSearchParams(location.search).get('act');if(MISSIONS.some(x=>x.id===m))ACT.m=m;setTimeout(()=>ACT.toggle(true),600);}}catch(e){}
 })();

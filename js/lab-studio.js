@@ -575,7 +575,7 @@ function laserPanel(){
       <button class="cta lab-mini" id="stZip">${T('ZIP herunterladen (SVG + DXF + Anleitung)','Download ZIP (SVG + DXF + guide)','ZIP downloaden (SVG + DXF + handleiding)')}</button>${O.last?`<p class="ex-last">${O.last}</p>`:''}`;}
   return h+'</div>';
 }
-LAB.addTool({id:'studio',order:8,usesSurfaces:true,gate:false,
+LAB.addTool({id:'studio',order:8,grp:'make',usesSurfaces:true,gate:false,
   icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 4.5-9 4.5-9-4.5Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/></svg>',
   label:()=>'Studio',
   sub:()=>T('Diagramme, Explosionszeichnung, Lasercut','Diagrams, exploded view, laser cut','Diagrammen, explosietekening, lasercut'),
