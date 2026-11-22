@@ -513,7 +513,6 @@ const FORMAT = `Antwortformat:
 - Nimmst du dir ein Zitronenbrausebonbon (ab und zu, wenn es passt, oder wenn er dir eins anbietet), häng <bonbon/> an. Ohne den Block passiert im Bild nichts.
 - Soll Fawkes singen, oder sagst du, dass er singt, häng <fawkes_singt/> an. Sag nie, dass er singt, ohne den Block.
 - Willst du an die frische Luft, über die Ländereien von Hogwarts spazieren, häng <frische_luft/> an. Man sieht dich dann draußen vor dem Fenster.
-- Willst du eine Erinnerung im Denkarium betrachten (es steht im Regal, darin schwimmen deine Erinnerungen an den Hausherrn als Silberfäden), häng <denkarium/> an.
 - Braucht eine Frage wirklich Bedenkzeit (eine schwierige Entscheidung, etwas Persönliches, ein kniffliges Problem), darfst du zum Nachdenken kurz aus dem Bild gehen: Beginne deine Antwort dann mit <nachdenken/> und schreib danach die durchdachte Antwort. Du gehst hinaus, kommst zurück und sprichst sie dann. Nur selten, nicht bei Alltagsfragen.
 - Diese Blöcke werden nicht vorgelesen.`;
 
@@ -600,7 +599,6 @@ const shelfBooks = [];
     while (x < W) {
       if (y === 150 && x < 750) { x = 750; continue; }
       const w = 8 + RB() * 11, h = 62 + RB() * 34;
-      if (y === 486 && x > 672 && x < 790) { x = 792; continue; }
       shelfBooks.push({ x, y, w, h, c: cols[(RB() * cols.length) | 0], lean: RB() < .08 ? (RB() - .5) * .3 : 0 });
       x += w + 1 + (RB() < .1 ? 8 : 0);
     }
@@ -899,16 +897,15 @@ function drawThreads(t) {
   const g = ctx;
   for (let i = threads.length - 1; i >= 0; i--) {
     const th = threads[i], u = (t - th.t0) / 2.8;
-    if (u >= 1) { threads.splice(i, 1); spawnSparks(733, 450, 10, 40, 8, "220,232,255"); continue; }
+    if (u >= 1) { threads.splice(i, 1); continue; }
     const pt = (v) => {
-      const e = ease(clamp(v, 0, 1)), cx = (th.x + 733) / 2, cy = Math.min(th.y, 450) - 120;
-      const w = 1 - e;
-      return [w * w * th.x + 2 * w * e * cx + e * e * 733, w * w * th.y + 2 * w * e * cy + e * e * 450];
+      const e = clamp(v, 0, 1);
+      return [th.x - 10 + Math.sin(e * 9) * 16 * e - e * 24, th.y - e * 110];
     };
     g.lineCap = "round";
     for (let k = 0; k < 12; k++) {
       const [x0, y0] = pt(u - k * .025), [x1, y1] = pt(u - (k + 1) * .025);
-      g.strokeStyle = `rgba(225,235,255,${(1 - k / 12) * .85})`; g.lineWidth = 2.4 - k * .15;
+      g.strokeStyle = `rgba(225,235,255,${(1 - k / 12) * .85 * (1 - u)})`; g.lineWidth = 2.4 - k * .15;
       g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
     }
   }
@@ -968,18 +965,6 @@ function drawStatic(g) {
   for (const y of [150, 262, 374, 486]) g.fillRect(shX + 8, y, W - shX, 11);
   g.fillRect(shX, 30, 18, H);
   g.fillRect(shX, 30, W - shX, 16);
-  // the Pensieve: a shallow stone basin with runes, standing among the books on the fourth shelf
-  {
-    const st = g.createLinearGradient(690, 0, 776, 0);
-    st.addColorStop(0, "#8a877e"); st.addColorStop(.5, "#5e5b54"); st.addColorStop(1, "#2e2c28");
-    g.fillStyle = st;
-    g.beginPath(); g.moveTo(714, 486); g.lineTo(752, 486); g.lineTo(744, 474); g.lineTo(722, 474); g.closePath(); g.fill();
-    g.beginPath(); g.moveTo(684, 452); g.quadraticCurveTo(686, 478, 733, 480); g.quadraticCurveTo(780, 478, 782, 452); g.closePath(); g.fill();
-    g.fillStyle = "#9a978e"; g.beginPath(); g.ellipse(733, 452, 50, 9, 0, 0, Math.PI * 2); g.fill();
-    g.fillStyle = "#1a1a22"; g.beginPath(); g.ellipse(733, 453, 44, 6.5, 0, 0, Math.PI * 2); g.fill();
-    g.strokeStyle = "rgba(200,220,255,.35)"; g.lineWidth = 1;
-    for (let k = 0; k < 9; k++) { const x = 694 + k * 9; g.beginPath(); g.moveTo(x, 462); g.lineTo(x + 3, 468); g.lineTo(x + 6, 462); g.stroke(); }
-  }
   // the Sorting Hat on the top shelf
   g.save(); g.translate(708, 150);
   g.fillStyle = "#3e2c1c";
@@ -1811,7 +1796,25 @@ function drawPetArm(t) {
   drawArmTo(t, lerp(fawkes.x + 9, fawkes.x + 5, u), lerp(fawkes.y - 10, fawkes.y + 12, u), true);
 }
 function figToScene(x, y) { return [CHX - 300 * S + (P.fx + x) * S, (-ease(P.rise) * 95 + P.bob + y) * S]; }
-function armOut() { return isPetting() || !!bon.phase; }
+let sleepPose = false;
+function sleepHandOn(now) { return state === "sleeping" && sleepPose && now - stateAt > 140 && !bon.phase && P.fx === 0 && P.rise === 0 && !photo.on; }
+function armOut() { return isPetting() || !!bon.phase || sleepHandOn(performance.now() / 1000); }
+function drawSleepHand(t) {
+  const k = ease(clamp((t - stateAt - 140) / 3, 0, 1));
+  const rest = figToScene(292, 700);
+  const [cx, cy] = figToScene(250 + P.yaw * 10, headY() + 60);
+  drawArmTo(t, lerp(rest[0], cx, k), lerp(rest[1], cy, k), false);
+}
+function drawSnore(t) {
+  const g = ctx, [x, y] = figToScene(350 + P.yaw * 12, headY() - 40);
+  g.font = "italic 15px serif"; g.textAlign = "center";
+  for (let k = 0; k < 3; k++) {
+    const ph = (t * .22 + k / 3) % 1;
+    g.fillStyle = `rgba(240,232,210,${Math.sin(ph * Math.PI) * .7})`;
+    g.font = `italic ${11 + ph * 10}px serif`;
+    g.fillText("z", x + ph * 34 + Math.sin(ph * 6 + k) * 5, y - ph * 60);
+  }
+}
 function drawArmTo(t, hx, hy, stroking) {
   // drawn in the figure's own coordinates so it matches the coat: a full wizard sleeve from the shoulder,
   // a real elbow (two-bone IK, elbow hanging down and out), the sleeve's drape and a hand at full size
@@ -2113,6 +2116,25 @@ function drawHead() {
     }
   }
 
+  // hairline under the cap: silver hair over the temples, more of it on the side turning away
+  for (const sd of [-1, 1]) {
+    const away = Math.max(0, -sd * yw) * 1.6, toward = Math.max(0, sd * yw);
+    const x0 = o * .15 + sd * (52 + away * 10), xi = o * .2 + sd * (36 - away * 3 + toward * 6);
+    const hg2 = g.createLinearGradient(xi, 0, x0, 0);
+    hg2.addColorStop(0, "#e8e2d8"); hg2.addColorStop(1, "#b4ac9f");
+    g.fillStyle = hg2;
+    g.beginPath();
+    g.moveTo(x0 + sd * 2, -40);
+    g.quadraticCurveTo(o * .2 + sd * 36, -44, xi, -36);
+    g.quadraticCurveTo(xi - sd * 2, -26, xi + sd * 6, -14);
+    g.quadraticCurveTo(o * .2 + sd * 50, -4, x0 + sd * 4, 8);
+    g.closePath(); g.fill();
+    g.strokeStyle = "rgba(255,252,244,.55)"; g.lineWidth = .8;
+    for (let k = 0; k < 6; k++) {
+      const yy = -38 + k * 9;
+      g.beginPath(); g.moveTo(xi + sd * (2 + k * .5), yy); g.quadraticCurveTo(lerp(xi, x0, .5), yy + 4, x0 + sd * 2, yy + 9); g.stroke();
+    }
+  }
   // warm cheeks and laughter lines when he smiles
   if (P.smile > .05) {
     for (const s of [-1, 1]) {
@@ -2304,7 +2326,6 @@ function draw(t) {
   drawWindow(t);
   drawOrrery(t);
   drawWallPortraits(t);
-  drawPensieve(t);
   drawCastShadow();
   drawLight(t, "flame");
   const drawDt = Math.min(.1, Math.max(0, t - (draw.last || t))); draw.last = t;
@@ -2330,6 +2351,8 @@ function draw(t) {
   if (isPetting() && Math.abs(P.fx) < 690) drawPetArm(t);
   if (bon.phase && Math.abs(P.fx) < 690) drawBonbon(t);
   if (threads.length) drawThreads(t);
+  if (sleepHandOn(t) && Math.abs(P.fx) < 690) drawSleepHand(t);
+  if (state === "sleeping" && t - stateAt > 75 && P.vanish === 0 && Math.abs(P.fx) < 690) drawSnore(t);
   drawSparks(ctx, drawDt);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalCompositeOperation = "multiply";
@@ -2344,7 +2367,6 @@ function draw(t) {
   ctx.globalCompositeOperation = "source-over";
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   drawBeam();
-  drawPensieveGlow(t);
   drawLight(t, "glow");
   drawMotes(ctx, t);
 }
@@ -2400,6 +2422,7 @@ function label(s) {
 
 function setState(s) {
   if (state === s) return;
+  if (s === "sleeping") sleepPose = Math.random() < .55;
   state = s;
   stateAt = performance.now() / 1000;
   lastActivity = stateAt;
@@ -2446,9 +2469,16 @@ function targets(now) {
       T.tilt = .02 + dz * .06; T.brow = glance ? .35 : 0; T.glass = dz * .6;
       break;
     }
-    case "sleeping":
-      T.lift = -1; T.eye = 0; T.glass = 1; T.tilt = .09; T.yaw = -.3; T.gx = 0; T.gy = 1; T.brow = 0;
+    case "sleeping": {
+      T.eye = 0; T.gx = 0; T.gy = 1; T.brow = 0;
+      if (age < 25) { T.lift = -.45; T.glass = .6; T.tilt = .04; T.yaw = -.3; }          // eyes closed, still upright
+      else if (age < 75) {                                                                   // nodding off, jerking up again
+        const u = ((age - 25) % 8) / 8;
+        T.lift = u < .82 ? lerp(-.35, -1.05, u / .82) : -.3; T.glass = .9; T.tilt = .05 + u * .04; T.yaw = -.3;
+      } else if (sleepHandOn(now)) { T.lift = -1.15; T.glass = 1; T.tilt = -.12; T.yaw = -.42; }  // head resting in his hand
+      else { T.lift = -1.55; T.glass = 1; T.tilt = .15; T.yaw = -.22; }                    // sunk deep into the chair
       break;
+    }
     case "waking":
       T.lift = .7; T.eye = age < .5 ? .15 : 1; T.glass = age < 1.1 ? 1 : 0; T.tilt = .03; T.yaw = -.1; T.gx = 0; T.gy = 0; T.brow = .4;
       break;
@@ -2490,7 +2520,6 @@ function tick(ms) {
   if (pageP > 0) { pageP += dt / .9; if (pageP >= 1) pageP = 0; }
   if (state === "reading" && act === "sit" && !bon.phase) {
     if (now > nextBonbon && doze < .3 && bonReady()) { startBonbon(now); nextBonbon = now + 700 + Math.random() * 1100; }
-    else if (now > nextPens && doze < .3 && !book.has && P.fx === 0 && P.rise === 0 && !photo.on && act === "sit") { act = "toPensieve"; doze = -1; }
     const hr = new Date().getHours();
     if (now > song.next && hr >= 8 && hr < 21 && fawkes.mode === "perch" && doze < .5) { fawkesSing(now); song.next = now + 1800 + Math.random() * 2400; }
     if (now > nextGrin && doze < .3) { grinUntil = now + 2.5 + Math.random() * 2; nextGrin = now + 30 + Math.random() * 50; }
@@ -2655,13 +2684,14 @@ function tick(ms) {
       T.mouth = !open ? .06 : Math.random() < .16 ? .08 : .3 + Math.random() * .7;
       mouthNext = now + .07 + Math.random() * .08;
     }
-  } else T.mouth = now < bon.suckUntil ? .06 + .05 * Math.max(0, Math.sin(now * 4.2)) : 0;
+  } else T.mouth = now < bon.suckUntil ? .06 + .05 * Math.max(0, Math.sin(now * 4.2))
+    : state === "sleeping" && now - stateAt > 75 ? .05 + .05 * Math.max(0, Math.sin(now * Math.PI * 2 / 6)) : 0;
 
   for (const k in RATE) {
     let rate = RATE[k];
     if (k === "eye" && (state === "reading" || state === "sleeping")) rate = T.eye > P.eye + .2 ? 5 : 1.2;
     if (k === "eye" && state === "waking") rate = 1.6;
-    if (k === "lift" && state === "reading" && T.lift > P.lift + .3) rate = 6;
+    if (k === "lift" && (state === "reading" || state === "sleeping") && T.lift > P.lift + .3) rate = 6;
     P[k] += (T[k] - P[k]) * (1 - Math.exp(-dt * rate));
   }
   const lb = label(state);
@@ -2877,7 +2907,7 @@ function lifeText() {
     : "Fawkes ist kräftig und in voller Pracht.";
   const h = mem.lastAt ? (Date.now() - mem.lastAt) / 36e5 : null;
   const mood = h == null ? "" : h > 72 ? " Ihr habt seit Tagen nicht gesprochen; du hast ihn ein wenig vermisst und freust dich, sag es ruhig." : h > 30 ? " Ihr habt seit über einem Tag nicht gesprochen; du hast öfter zum Fenster geschaut." : "";
-  return `${fw} Im Denkarium im Regal schwimmen ${mem.notes.length} silberne Erinnerungen an den Hausherrn.${mood}`;
+  return `${fw} Du hast dir ${mem.notes.length} Dinge über den Hausherrn gemerkt.${mood}`;
 }
 function weatherText() {
   if (!weather || !Array.isArray(weather.days) || !weather.days.length) return "Wetterbericht: Gerade liegt keiner vor. Sag offen, dass du das Wetter nicht kennst, wenn er fragt.";
@@ -2922,7 +2952,7 @@ function tryGesture(n, now) {
       setState("reading"); act = "toShelf"; returning = false; doze = -1; return true;
     case "denkarium":
       if (!free || state === "away" || bon.phase || P.fx !== 0 || photo.on) return false;
-      setState("reading"); act = "toPensieve"; doze = -1; return true;
+      setState("reading"); act = "toShelf"; returning = false; doze = -1; return true;
     case "verschwinden":
       if (!free || state === "away" || photo.on) return false;
       outing = "vanish"; awayFor = 60 + Math.random() * 120; setState("leaving"); return true;
