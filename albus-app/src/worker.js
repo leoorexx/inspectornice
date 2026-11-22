@@ -2,6 +2,7 @@
 // Liefert die Seite aus, hält die API-Schlüssel geheim und speichert Gedächtnis, Bild und Wetter.
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
+import { INDEX_HTML, APP_SHIM_JS } from "./static.js";
 
 // One small storage object holds memory, portrait and weather (SQLite-backed Durable Object).
 export class AlbusStore extends DurableObject {
@@ -24,7 +25,7 @@ const WEATHER_PATH = "weather/bornheim";
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
-    if (!url.pathname.startsWith("/api/")) return env.ASSETS.fetch(req);
+    if (!url.pathname.startsWith("/api/")) return staticFile(url.pathname);
 
     // Uploaded portrait images are addressed by an unguessable id, so <img> and fetch can load them.
     const asset = url.pathname.match(/^\/api\/asset\/([0-9a-f-]{36})$/);
@@ -60,6 +61,16 @@ export default {
     ctx.waitUntil(updateWeather(env));
   },
 };
+
+function staticFile(path) {
+  if (path === "/" || path === "/index.html") {
+    return new Response(INDEX_HTML, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache" } });
+  }
+  if (path === "/app-shim.js") {
+    return new Response(APP_SHIM_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
+  }
+  return new Response("Nicht gefunden", { status: 404 });
+}
 
 /* ------------------------------------------------------------------ */
 /* Claude                                                              */
