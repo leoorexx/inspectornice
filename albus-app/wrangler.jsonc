@@ -11,6 +11,8 @@
   "triggers": { "crons": ["43 4,13 * * *"] },
   "vars": {
     "ALBUS_MODEL": "claude-opus-5-5",
-    "ELEVENLABS_MODEL": "eleven_multilingual_v2"
+    "ELEVENLABS_MODEL": "eleven_multilingual_v2",
+    // Dumbledores Stimme aus ElevenLabs (nicht geheim; der API-Schlüssel ist ein Secret)
+    "ELEVENLABS_VOICE_ID": "5KvpaGteYkNayiswuX2h"
   }
 }

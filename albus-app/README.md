@@ -24,7 +24,7 @@ iPad (Safari) ──► Cloudflare Worker ──► Claude API          (Antwort
 |---|---|---|
 | Anthropic-API-Schlüssel ([console.anthropic.com](https://console.anthropic.com)) | Dumbledores Antworten | nach Verbrauch, bei 20 Gesprächsminuten am Tag grob 10–20 € im Monat mit Claude Opus 5.5 |
 | Cloudflare-Konto ([dash.cloudflare.com](https://dash.cloudflare.com)) | Hosting | kostenloser Tarif reicht |
-| ElevenLabs-Schlüssel und Stimmen-ID (optional) | gute Stimme | je nach Tarif; ohne spricht die iPad-Stimme |
+| ElevenLabs-Schlüssel (optional) | gute Stimme | je nach Tarif; ohne spricht die iPad-Stimme |
 | Ein selbst gewählter Zugangsschlüssel (`APP_TOKEN`) | damit niemand sonst deinen Albus benutzt | – |
 
 ## Einrichten (ohne Terminal, im Browser)
@@ -35,7 +35,7 @@ iPad (Safari) ──► Cloudflare Worker ──► Claude API          (Antwort
 3. Nach dem ersten Deploy unter **Einstellungen → Variablen und Geheimnisse** als *Geheimnis* anlegen:
    - `APP_TOKEN` – ein langes Passwort deiner Wahl
    - `ANTHROPIC_API_KEY` – dein Claude-Schlüssel
-   - optional `ELEVENLABS_API_KEY` und `ELEVENLABS_VOICE_ID` (die ID der Stimme aus der ElevenLabs-Bibliothek)
+   - optional `ELEVENLABS_API_KEY` – für die Stimme. Die Stimme selbst (ID `5KvpaGteYkNayiswuX2h`) steht schon in `wrangler.jsonc`.
 4. Erneut deployen. Die Adresse sieht so aus: `https://albus.<dein-name>.workers.dev`
 
 Den KV-Speicher legt Wrangler beim ersten Deploy selbst an. Klappt das nicht, lege unter
@@ -51,8 +51,7 @@ npx wrangler login
 npx wrangler deploy
 npx wrangler secret put APP_TOKEN
 npx wrangler secret put ANTHROPIC_API_KEY
-npx wrangler secret put ELEVENLABS_API_KEY      # optional
-npx wrangler secret put ELEVENLABS_VOICE_ID     # optional
+npx wrangler secret put ELEVENLABS_API_KEY      # optional, Stimme
 ```
 
 ## Auf dem iPad
