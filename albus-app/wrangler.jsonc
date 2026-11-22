@@ -1,0 +1,16 @@
+{
+  // Albus: Dumbledores lebendes Porträt als eigene Web-App für das iPad.
+  "name": "albus",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  // Gedächtnis, Bild und Wetter. Ohne "id" legt Wrangler den Speicher beim ersten Deploy selbst an.
+  "kv_namespaces": [{ "binding": "ALBUS" }],
+  // Wetter für Bornheim: 5:43 und 14:43 Uhr (Winterzeit; Cron läuft in UTC).
+  "triggers": { "crons": ["43 4,13 * * *"] },
+  "vars": {
+    "ALBUS_MODEL": "claude-opus-5-5",
+    "ELEVENLABS_MODEL": "eleven_multilingual_v2"
+  }
+}

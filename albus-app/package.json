@@ -1,0 +1,16 @@
+{
+  "name": "albus",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:page": "python3 scripts/build_page.py",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.6.0"
+  },
+  "devDependencies": {
+    "wrangler": "4.158.0"
+  }
+}

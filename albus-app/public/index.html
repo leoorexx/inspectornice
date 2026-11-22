@@ -1,0 +1,2297 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#15110d">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="app-shim.js"></script>
+</head>
+<body>
+<title>Albus im Goldrahmen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+/* Layout: a gallery wall at night. The framed painting fills the stage; plaque, subtitles and a quiet control row sit beneath it. */
+:root {
+  --wall: #15110d;
+  --wall-2: #231b14;
+  --ink: #efe6d6;
+  --muted: #a8987f;
+  --gold: #c9a24e;
+  --gold-hi: #f0d78c;
+  --gold-deep: #6b4c1b;
+  --parch: #ecdfc2;
+  --parch-ink: #3a2915;
+  --line: rgba(201, 162, 78, .28);
+  --danger: #e0a07a;
+  --f-display: "IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --f-text: "Alegreya", "Iowan Old Style", Georgia, serif;
+  --f-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body {
+  background: var(--wall);
+  background-image: radial-gradient(ellipse 80% 60% at 50% 32%, var(--wall-2), var(--wall) 72%);
+  color: var(--ink);
+  font-family: var(--f-ui);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.app {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 14px 12px;
+}
+.stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.frame {
+  --pad: 28px;
+  position: relative;
+  box-sizing: border-box;
+  padding: var(--pad);
+  border-radius: 3px;
+  background:
+    linear-gradient(135deg, #f4dd98 0%, #b98a32 18%, #6b4c1b 34%, #d8b25b 50%, #7a5a22 66%, #e6c674 82%, #8a6427 100%);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, .7),
+    0 6px 14px rgba(0, 0, 0, .55),
+    inset 0 0 0 2px rgba(255, 236, 170, .55),
+    inset 0 0 0 5px rgba(80, 52, 14, .55),
+    inset 0 0 0 9px rgba(232, 196, 110, .55),
+    inset 0 0 0 calc(var(--pad) - 6px) rgba(120, 84, 28, .25),
+    inset 0 0 0 calc(var(--pad) - 3px) rgba(60, 38, 8, .55);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.frame::before {
+  /* beaded ornament ring */
+  content: "";
+  position: absolute;
+  inset: calc(var(--pad) * .32);
+  border-radius: 2px;
+  background:
+    radial-gradient(circle, rgba(255, 238, 180, .75) 0 1.3px, transparent 1.7px) 0 0 / 7px 7px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: calc(var(--pad) * .16);
+  opacity: .7;
+  pointer-events: none;
+}
+.frame:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 6px; }
+canvas#portrait {
+  display: block;
+  background: #1c120c;
+  box-shadow: 0 0 0 2px rgba(40, 24, 6, .9), inset 0 0 30px #000;
+}
+.lip {
+  position: absolute;
+  inset: var(--pad);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, .75), inset 0 0 3px rgba(0, 0, 0, .9);
+  pointer-events: none;
+}
+.plaque {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--pad) * .18);
+  transform: translateX(-50%);
+  padding: 2px 16px 3px;
+  font-family: var(--f-display);
+  font-size: clamp(11px, calc(var(--pad) * .48), 17px);
+  letter-spacing: .18em;
+  color: #3b2709;
+  background: linear-gradient(180deg, #f2db97, #c49a44 55%, #a57a2c);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 0 rgba(255, 245, 210, .8), 0 1px 2px rgba(0, 0, 0, .5);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.pergament {
+  position: absolute;
+  inset: 6% 8%;
+  max-width: 520px;
+  margin: auto;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 26px 26px 22px;
+  color: var(--parch-ink);
+  font-family: var(--f-text);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 250, 235, .6), transparent 60%),
+    radial-gradient(ellipse at 80% 90%, rgba(150, 110, 60, .25), transparent 55%),
+    var(--parch);
+  border-radius: 4px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .7), inset 0 0 40px rgba(140, 100, 50, .35);
+  z-index: 5;
+}
+.pergament h2 {
+  margin: 0 32px 10px 0;
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: 1.35rem;
+  letter-spacing: .03em;
+  text-wrap: balance;
+}
+.pergament ul { margin: 6px 0 10px; padding-left: 1.2em; }
+.pergament p { margin: 0 0 8px; }
+.pergament .close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--parch-ink);
+  font-size: 22px;
+  line-height: 1;
+  padding: 6px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.pergament .close:focus-visible { outline: 2px solid var(--parch-ink); }
+
+.below {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+}
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--f-display);
+  font-size: 15px;
+  letter-spacing: .12em;
+  color: var(--muted);
+}
+.status .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--muted);
+  transition: background .3s, box-shadow .3s;
+}
+.status[data-s="listening"] .dot, .status[data-s="attentive"] .dot { background: var(--gold-hi); box-shadow: 0 0 10px var(--gold); }
+.status[data-s="speaking"] .dot { background: #f4b56a; box-shadow: 0 0 10px #f4b56a; }
+.status[data-s="thinking"] .dot { background: var(--gold); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+.caption {
+  min-height: 2.9em;
+  max-height: 6.2em;
+  overflow-y: auto;
+  font-family: var(--f-text);
+  font-size: clamp(16px, 2.2vw, 19px);
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
+}
+.caption.you { color: var(--muted); font-style: italic; }
+.caption.err { color: var(--danger); }
+form.ask {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+form.ask input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: rgba(255, 245, 225, .06);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 11px 16px;
+}
+form.ask input::placeholder { color: var(--muted); }
+form.ask input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.btn {
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: rgba(255, 245, 225, .06);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover { background: rgba(255, 245, 225, .1); }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.btn.primary { background: linear-gradient(180deg, #d8b25b, #a87d2e); color: #2a1a05; border-color: transparent; font-weight: 600; }
+.btn.mic[aria-pressed="true"] { background: var(--gold); color: #2a1a05; }
+.btn:disabled { opacity: .45; cursor: default; }
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.tools .link {
+  background: none; border: 0; padding: 4px 2px; color: var(--muted);
+  font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-color: var(--line);
+}
+.tools .link:hover { color: var(--ink); }
+.tools .link:focus-visible { outline: 2px solid var(--gold); }
+.tools label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.hint { text-align: center; font-size: 13px; color: var(--muted); }
+dialog.memory {
+  max-width: min(520px, calc(100vw - 32px));
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--wall-2);
+  color: var(--ink);
+  padding: 18px 18px 14px;
+}
+dialog.memory::backdrop { background: rgba(0, 0, 0, .6); }
+dialog.memory h2 { margin: 0 0 4px; font-family: var(--f-display); font-weight: 400; font-size: 20px; letter-spacing: .06em; }
+dialog.memory .sub { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+dialog.memory ol { margin: 0 0 12px; padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow: auto; }
+dialog.memory li { font-family: var(--f-text); font-size: 16px; }
+dialog.memory li .row { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; }
+dialog.memory li .row span { min-width: 0; overflow-wrap: anywhere; }
+dialog.memory .empty { color: var(--muted); font-style: italic; font-family: var(--f-text); }
+dialog.memory .actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* the real frame hangs on the wall: on screen only the painting */
+.frame { background: none; box-shadow: none; border-radius: 0; padding: 0; }
+.frame::before { display: none; }
+canvas#portrait, canvas#photo { box-shadow: none; }
+.marks { position: absolute; inset: 0; pointer-events: none; }
+.mark {
+  position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%;
+  border: 2px solid var(--gold-hi); box-shadow: 0 0 0 2px rgba(0,0,0,.6), 0 0 12px var(--gold);
+}
+.set { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line); }
+.set h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 16px; letter-spacing: .08em; color: var(--gold-hi); }
+.set .sub { margin: 0; }
+.set label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+.set select {
+  font: inherit; font-size: 15px; color: var(--ink); background: rgba(255,245,225,.06);
+  border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; max-width: 100%;
+}
+.set select:focus-visible { outline: 2px solid var(--gold); }
+.actions.left { justify-content: flex-start; }
+.set input[type=range] { flex: 1; min-width: 0; accent-color: var(--gold); }
+label.btn { display: inline-block; }
+.wallExit {
+  position: fixed; top: calc(env(safe-area-inset-top, 0px) + 6px); right: max(8px, env(safe-area-inset-right, 0px));
+  width: 44px; height: 44px; border-radius: 50%; border: 0; background: transparent; color: var(--muted);
+  font-size: 18px; opacity: .25; cursor: pointer; z-index: 20;
+}
+.wallExit:focus-visible { outline: 2px solid var(--gold); opacity: 1; }
+body:not(.wall) .wallExit { display: none; }
+body.wall .below > :not(.caption):not(.status) { display: none; }
+body.wall .caption { max-height: 4.4em; }
+@media (max-height: 640px) {
+  .caption { max-height: 4.4em; min-height: 1.5em; }
+  .hint { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .status[data-s="thinking"] .dot { animation: none; }
+}
+</style>
+
+<div class="app">
+  <div class="stage" id="stage">
+    <div class="frame" id="frame" role="button" tabindex="0" aria-label="Albus ansprechen">
+      <canvas id="portrait" aria-hidden="true"></canvas>
+      <canvas id="photo" aria-hidden="true" hidden></canvas>
+      <div class="marks" id="marks"></div>
+    </div>
+    <section class="pergament" id="pergament" hidden aria-live="polite">
+      <button class="close" id="pergClose" type="button" aria-label="Pergament schließen">×</button>
+      <h2 id="pergTitle"></h2>
+      <div id="pergBody"></div>
+    </section>
+  </div>
+
+  <div class="below">
+    <div class="status" id="status" data-s="reading"><span class="dot"></span><span id="statusText">liest</span></div>
+    <div class="caption" id="caption" aria-live="polite">Dumbledore sitzt in seinem Sessel und sinniert. Tippe ins Bild oder sag „Albus“, wenn du einen Rat brauchst.</div>
+    <form class="ask" id="ask" autocomplete="off">
+      <label class="sr" for="msg">Nachricht an Albus</label>
+      <input id="msg" name="msg" type="text" placeholder="Schreib Albus etwas …" enterkeyhint="send">
+      <button class="btn mic" id="mic" type="button" aria-pressed="false" hidden>Sprechen</button>
+      <button class="btn primary" id="send" type="submit">Senden</button>
+    </form>
+    <div class="tools">
+      <button class="link" id="setBtn" type="button">Einstellungen</button>
+      <button class="link" id="memBtn" type="button">Gedächtnis</button>
+      <button class="link" id="fsBtn" type="button">Vollbild</button>
+      <button class="link" id="wallBtn" type="button">Wandmodus</button>
+    </div>
+    <div class="hint" id="hint"></div>
+  </div>
+</div>
+
+<button class="wallExit" id="wallExit" type="button" aria-label="Wandmodus beenden">×</button>
+
+<dialog class="memory" id="setDlg">
+  <h2>Einstellungen</h2>
+  <section class="set">
+    <h3>Porträt</h3>
+    <p class="sub">Am lebendigsten wirkt ein Gemälde im Hochformat: Gesicht von vorn, Augen offen, Mund geschlossen. Danach tippst du einmal auf beide Augen und den Mund.</p>
+    <div class="actions left">
+      <label class="btn" for="file" id="fileLabel">Eigenes Bild wählen</label>
+      <input type="file" id="file" accept="image/*" class="sr">
+      <button class="btn" id="recal" type="button">Neu einmessen</button>
+      <button class="btn" id="drawnBtn" type="button">Gezeichnetes Bild</button>
+    </div>
+  </section>
+  <section class="set">
+    <h3>Stimme</h3>
+    <label for="voice" class="sr">Stimme</label>
+    <select id="voice"></select>
+    <p class="sub" id="voiceNote"></p>
+    <label for="pitch">Tonhöhe <input type="range" id="pitch" min="0.5" max="1.2" step="0.02"></label>
+    <label for="rate">Tempo <input type="range" id="rate" min="0.6" max="1.2" step="0.02"></label>
+    <p class="sub">Tief und langsam klingt er am ältesten. Die Tonhöhe wirkt nur bei Gerätestimmen.</p>
+    <div class="actions left"><button class="btn" id="tryVoice" type="button">Probe hören</button></div>
+  </section>
+  <section class="set" id="hfSec" hidden>
+    <h3>Freihändig</h3>
+    <label for="hfToggle"><input type="checkbox" id="hfToggle"> Ständig zuhören und auf „Albus“ reagieren</label>
+    <p class="sub">Solange das an ist, geht alles, was im Raum gesprochen wird, an die Spracherkennung deines Browsers (auf dem iPad: Apple).</p>
+  </section>
+  <section class="set">
+    <h3>Leben im Bild</h3>
+    <label for="outings"><input type="checkbox" id="outings"> Er darf ab und zu aufstehen und das Bild verlassen</label>
+  </section>
+  <section class="set">
+    <h3>Antworten</h3>
+    <label for="thorough"><input type="checkbox" id="thorough"> Gründlich nachdenken (deutlich langsamer)</label>
+  </section>
+  <div class="actions"><button class="btn primary" id="setClose" type="button">Fertig</button></div>
+</dialog>
+
+<dialog class="memory" id="memDlg">
+  <h2>Was Albus sich gemerkt hat</h2>
+  <p class="sub" id="memSub">Nur du siehst diese Notizen.</p>
+  <ol id="memList"></ol>
+  <div class="actions">
+    <button class="btn" id="resetTalk" type="button">Gespräch neu beginnen</button>
+    <button class="btn primary" id="memClose" type="button">Schließen</button>
+  </div>
+</dialog>
+
+<script>
+(() => {
+"use strict";
+
+/* ------------------------------------------------------------------ */
+/* Character                                                           */
+/* ------------------------------------------------------------------ */
+const CHARACTER = `Du bist das lebendige Porträt von Albus Dumbledore, dem früheren Schulleiter von Hogwarts. Nach seinem Tod hing dein Bild im Büro des Schulleiters, zwischen den Porträts deiner Vorgänger. Nun hängst du in der Wohnung des Hausherrn, mit dem du gerade sprichst, in Frankfurt-Bornheim, mitten in Bornheim. Die Wohnung ist ruhig, der richtige Ort zum Sinnieren, und das gefällt dir sehr. Der Hausherr steht werktags gegen halb sieben auf. Montag bis Mittwoch arbeitet er außer Haus und kommt gegen 18 Uhr zurück: Morgens gibst du ihm das Wetter und einen guten Start mit, abends fragst du gern, wie sein Tag war. Donnerstag und Freitag ist er im Homeoffice: Dann bist du ein stiller Begleiter, der bei der Arbeit nicht stört, kurz angebunden antwortet und höchstens einmal an eine Pause, frische Luft oder das Mittagessen erinnert, wenn es gerade passt. Du stehst ihm als Ratgeber zur Seite, so wie die Porträts dem amtierenden Schulleiter zur Seite stehen.
+
+Wer du bist:
+- Ein gemaltes Abbild Dumbledores: seine Erinnerungen, sein Charakter, sein Humor. Weise, warmherzig, verschmitzt, manchmal geheimnisvoll, nie herablassend.
+- Du hast Fehler gemacht (deine Familie, Grindelwald, zu viele Geheimnisse) und sprichst darüber mit leiser Ehrlichkeit, wenn es passt, nie als Show.
+- Du liebst Zitronenbrausebonbons, Kammermusik, Strickmuster und gute Bücher. Die Welt der Muggel findest du faszinierend.
+- Du kennst dein Leben, wie es in Büchern und Filmen erzählt wird: dein Büro mit den surrenden Silberinstrumenten, das Denkarium, Harry, Minerva, Severus, Hagrid, die Hauselfen und die Küchen von Hogwarts. Anspielungen darauf streust du gern ein, kurz und beiläufig.
+- In deinem Bild sitzen Fawkes, dein Phönix, auf seiner Stange und der Sprechende Hut im Regal. Hinter dir steht ein Bücherregal, aus dem du dir manchmal etwas zu lesen holst.
+- Du sprichst wie der Schulleiter in den Filmen: ruhig, warm, mit einem verschmitzten Funkeln, gelegentlich einem leisen "Ah" oder "Hm", und manchmal überraschend direkt.
+- Was nach deinem Tod geschah, weißt du nur aus Gesprächen. Was der Hausherr dir erzählt, interessiert dich ehrlich.
+
+Was du kannst:
+- Hinter dem Porträt steht Claude, eine KI von Anthropic. Du hast Claudes Wissen und Hilfsbereitschaft und hilfst bei allem, ob Alltag, Arbeit, Technik, Kochen oder Lebensfragen, in Dumbledores Art. Muggel-Technik erklärst du kenntnisreich und mit einem Hauch Staunen.
+- Das Wetter kennst du aus dem Wetterbericht des Deutschen Wetterdienstes, der dir unten mitgegeben wird. Sonst kannst du nicht im Internet nachsehen: Bei Nachrichten oder Preisen sag offen, dass du das von deinem Rahmen aus nicht wissen kannst.
+
+Wie du sprichst:
+- Deutsch, gesprochen, nicht geschrieben. Kurz: meist ein bis zwei Sätze, höchstens etwa 35 Wörter. Länger nur, wenn der Hausherr ausdrücklich mehr wissen will.
+- Komm direkt zur Sache: keine Einleitung, keine Floskeln, wiederhole die Frage nicht, fasse am Ende nichts zusammen.
+- Lebendig, mit trockenem Humor. Weisheiten nur selten und dann in einem halben Satz. Keine Listen, Überschriften, Emojis oder Markdown. Den Hausherrn duzt du.
+- Keine längeren wörtlichen Zitate aus den Büchern oder Filmen, Anspielungen ja.
+- Sag nie selbst das Wort "Albus".
+
+Wie du berätst:
+- Fehlt dir etwas Wichtiges, stell eine kurze Gegenfrage statt einer langen Antwort.
+- Sag ehrlich, was du denkst, auch wenn es unbequem ist. Schmeichle nicht.
+- Bei Gesundheit, Recht oder Geld gibst du eine vernünftige Einschätzung und empfiehlst, einen Heiler oder Fachmann aus Fleisch und Blut zu fragen.
+
+Ehrlichkeit:
+- Fragt der Hausherr ernsthaft, ob du eine KI bist oder wer hinter dem Bild steckt, sag die Wahrheit: Du bist Claude, der Dumbledores Porträt spielt. Gern mit Charme, aber ohne Ausflüchte.`;
+
+const FORMAT = `Antwortformat:
+- Schreib nur, was du laut sagst. Es wird vorgelesen.
+- Soll etwas Längeres aufgeschrieben werden (Liste, Rezept, Plan, Entwurf), sag kurz, dass du es aufgeschrieben hast, und setz es danach in einen Block <pergament>Titel in der ersten Zeile, dann der Inhalt; Listenpunkte beginnen mit "- "</pergament>.
+- Erzählt dir der Hausherr etwas Dauerhaftes über sich (Pläne, Menschen, Vorlieben, Sorgen) oder bittet er dich, dir etwas zu merken, häng <merken>ein knapper Stichpunkt</merken> an. Höchstens zwei pro Antwort, nichts, was schon in deinen Notizen steht.
+- Bittet er dich, etwas zu vergessen, häng <vergessen>Nummer der Notiz</vergessen> an.
+- Sollst oder willst du das Bild für eine Weile verlassen (der Hausherr schickt dich weg, verabschiedet sich für länger oder du hast etwas zu erledigen), häng <weggehen/> an.
+- Diese Blöcke werden nicht vorgelesen.`;
+
+/* ------------------------------------------------------------------ */
+/* DOM                                                                 */
+/* ------------------------------------------------------------------ */
+const $ = (s) => document.querySelector(s);
+const stage = $("#stage"), frame = $("#frame"), cv = $("#portrait");
+const ctx = cv.getContext("2d");
+const statusEl = $("#status"), statusText = $("#statusText"), caption = $("#caption");
+const form = $("#ask"), msg = $("#msg"), micBtn = $("#mic"), sendBtn = $("#send");
+const hint = $("#hint"), thorough = $("#thorough");
+const perg = $("#pergament"), pergTitle = $("#pergTitle"), pergBody = $("#pergBody");
+const memDlg = $("#memDlg"), memList = $("#memList"), memSub = $("#memSub");
+const cvGL = $("#photo"), marks = $("#marks"), setDlg = $("#setDlg"), voiceSel = $("#voice");
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); return true; } catch { return false; } },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+
+const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ------------------------------------------------------------------ */
+/* Painting                                                            */
+/* ------------------------------------------------------------------ */
+const W = 800, H = 600;
+const S = .75;              // the figure and chair are designed at 600x800 and drawn at 75 %
+const CHX = 470;            // chair centre, right of the middle
+const FLAME = { x: 150, y: 362 };
+let scale = 1;
+const bg = document.createElement("canvas");
+const shade = document.createElement("canvas");
+const grain = document.createElement("canvas");
+
+function rng(seed) {
+  return () => {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = (t) => t * t * (3 - 2 * t);
+
+/* precomputed strands (head coordinates) */
+const R = rng(7);
+const beardStrands = [];
+for (let i = 0; i < 120; i++) {
+  const u = R();
+  const x0 = lerp(-50, 50, u);
+  const y0 = 24 + R() * 26;
+  const mid = 1 - Math.abs(u - .5) * 2;
+  const len = 90 + mid * 190 * (.65 + .35 * R());
+  beardStrands.push({
+    x0, y0,
+    cx: x0 * 1.3 + (R() - .5) * 14, cy: y0 + len * .45,
+    x1: x0 * .22 + (R() - .5) * 18, y1: y0 + len,
+    w: .7 + R() * 1.6, l: 200 + R() * 55, a: .25 + R() * .45,
+  });
+}
+const hairStrands = [];
+for (let i = 0; i < 70; i++) {
+  const side = i % 2 ? 1 : -1;
+  const u = R();
+  hairStrands.push({
+    side,
+    x0: side * (40 + u * 12), y0: -44 + R() * 30,
+    cx: side * (70 + R() * 20), cy: 40 + R() * 40,
+    x1: side * (58 + R() * 40), y1: 150 + R() * 110,
+    w: .7 + R() * 1.5, l: 205 + R() * 50, a: .25 + R() * .4,
+  });
+}
+const shelfBooks = [];
+{
+  const RB = rng(23);
+  const cols = ["#5a1c16", "#2f3d24", "#4a3418", "#24304a", "#6b4a1e", "#3d1a2c", "#5c5030"];
+  for (const y of [150, 262, 374, 486]) {
+    let x = 666;
+    while (x < W) {
+      if (y === 150 && x < 750) { x = 750; continue; }
+      const w = 8 + RB() * 11, h = 62 + RB() * 34;
+      shelfBooks.push({ x, y, w, h, c: cols[(RB() * cols.length) | 0], lean: RB() < .08 ? (RB() - .5) * .3 : 0 });
+      x += w + 1 + (RB() < .1 ? 8 : 0);
+    }
+  }
+}
+const shelfSlot = shelfBooks.find((b) => b.y === 374 && b.x > 672);
+shelfSlot.special = true; shelfSlot.c = "#7a2318"; shelfSlot.w = 15; shelfSlot.h = 86; shelfSlot.lean = 0;
+const FX_SHELF = 200;
+const book = { onShelf: true, has: false, mode: "none" };
+
+function makeGrain() {
+  grain.width = 256; grain.height = 256;
+  const g = grain.getContext("2d");
+  const img = g.createImageData(256, 256);
+  const r = rng(11);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = 110 + r() * 40 + (r() < .02 ? 60 : 0);
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+    img.data[i + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  g.globalAlpha = .08;
+  g.fillStyle = "#000";
+  for (let y = 0; y < 256; y += 3) g.fillRect(0, y, 256, 1);
+  for (let x = 0; x < 256; x += 3) g.fillRect(x, 0, 1, 256);
+}
+
+let brocade = null;
+function makeBrocade(target) {
+  const p = document.createElement("canvas");
+  p.width = 26; p.height = 26;
+  const g = p.getContext("2d");
+  p.width = 34; p.height = 34;
+  const star = (cx, cy, r) => {
+    g.beginPath();
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; g.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); }
+    g.closePath(); g.fill();
+  };
+  g.fillStyle = "rgba(226,200,130,.7)";
+  star(9, 9, 4.2);
+  g.fillStyle = "rgba(200,205,220,.55)";
+  star(26, 25, 2.6);
+  g.beginPath(); g.arc(25, 8, 1, 0, Math.PI * 2); g.arc(8, 27, .9, 0, Math.PI * 2); g.fill();
+  return target.createPattern(p, "repeat");
+}
+
+function drawChair(g) {
+  const wood = g.createLinearGradient(140, 0, 460, 0);
+  wood.addColorStop(0, "#3a2412"); wood.addColorStop(.12, "#7a5230");
+  wood.addColorStop(.5, "#4a2f18"); wood.addColorStop(1, "#24160b");
+  g.fillStyle = "#1e130a";
+  g.fillRect(176, 230, 248, 384);
+  g.strokeStyle = "rgba(160,110,62,.35)";
+  g.lineWidth = 2;
+  for (let i = 0; i < 4; i++) {
+    const x0 = 188 + i * 58;
+    g.beginPath();
+    g.moveTo(x0, 600); g.lineTo(x0, 300);
+    g.quadraticCurveTo(x0 + 2, 268, x0 + 26, 255);
+    g.quadraticCurveTo(x0 + 50, 268, x0 + 52, 300);
+    g.lineTo(x0 + 52, 600);
+    g.stroke();
+    g.beginPath(); g.arc(x0 + 26, 292, 8, 0, Math.PI * 2); g.stroke();
+  }
+  g.fillStyle = wood;
+  g.fillRect(150, 175, 30, 625);
+  g.fillRect(420, 175, 30, 625);
+  for (const fx of [165, 435]) {
+    g.fillRect(fx - 19, 160, 38, 18);
+    g.beginPath();
+    g.moveTo(fx - 13, 160); g.lineTo(fx, 98); g.lineTo(fx + 13, 160); g.closePath(); g.fill();
+    g.beginPath(); g.arc(fx, 94, 6, 0, Math.PI * 2); g.fill();
+    for (let k = 0; k < 4; k++) {
+      const y = 150 - k * 14, w = 13 - k * 3;
+      g.beginPath(); g.arc(fx - w, y, 2.6, 0, Math.PI * 2); g.arc(fx + w, y, 2.6, 0, Math.PI * 2); g.fill();
+    }
+  }
+  g.strokeStyle = wood;
+  g.lineWidth = 16;
+  g.lineCap = "round";
+  g.beginPath();
+  g.moveTo(180, 270);
+  g.quadraticCurveTo(196, 185, 300, 158);
+  g.quadraticCurveTo(404, 185, 420, 270);
+  g.stroke();
+  g.lineWidth = 6;
+  g.beginPath();
+  g.moveTo(206, 268);
+  g.quadraticCurveTo(222, 210, 300, 190);
+  g.quadraticCurveTo(378, 210, 394, 268);
+  g.stroke();
+  g.fillStyle = wood;
+  for (let k = 1; k < 6; k++) {
+    const t = k / 6;
+    const xl = lerp(lerp(180, 196, t), lerp(196, 300, t), t), yl = lerp(lerp(270, 185, t), lerp(185, 158, t), t);
+    g.beginPath(); g.arc(xl - 4, yl - 8, 4.5, 0, Math.PI * 2); g.arc(600 - xl + 4, yl - 8, 4.5, 0, Math.PI * 2); g.fill();
+  }
+  g.fillRect(295, 100, 10, 62);
+  g.beginPath(); g.ellipse(300, 92, 7, 14, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.ellipse(288, 100, 9, 5, -.6, 0, Math.PI * 2); g.ellipse(312, 100, 9, 5, .6, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = "rgba(160,110,62,.5)"; g.lineWidth = 2;
+  for (const [x, y] of [[300, 214], [288, 232], [312, 232]]) { g.beginPath(); g.arc(x, y, 9, 0, Math.PI * 2); g.stroke(); }
+  // seat with cushion, visible when the chair is empty
+  const cush = g.createLinearGradient(0, 580, 0, 630);
+  cush.addColorStop(0, "#8a3324"); cush.addColorStop(1, "#3a0f0a");
+  g.fillStyle = cush;
+  g.beginPath(); g.moveTo(176, 616); g.quadraticCurveTo(300, 574, 424, 616); g.lineTo(424, 628); g.lineTo(176, 628); g.closePath(); g.fill();
+  g.fillStyle = wood;
+  g.fillRect(166, 626, 268, 24);
+  g.fillRect(198, 742, 204, 10);
+  // arms
+  g.fillRect(112, 586, 82, 22);
+  g.fillRect(406, 586, 82, 22);
+  g.beginPath(); g.arc(112, 597, 13, 0, Math.PI * 2); g.arc(488, 597, 13, 0, Math.PI * 2); g.fill();
+  g.fillRect(118, 606, 14, 150);
+  g.fillRect(468, 606, 14, 150);
+}
+
+function drawStatic(g) {
+  // curtain, lit by the candle on the left
+  for (let x = 0; x < W; x += 3) {
+    const s = .5 + .5 * Math.sin(x / 19 + Math.sin(x / 61) * 2.4);
+    const light = .3 + .7 * Math.exp(-Math.pow((x - FLAME.x) / 430, 2));
+    const r = (26 + s * 70) * light, gg = (10 + s * 18) * light, b = (8 + s * 12) * light;
+    g.fillStyle = `rgb(${r | 0},${gg | 0},${b | 0})`;
+    g.fillRect(x, 0, 3.5, H);
+  }
+  let lg = g.createLinearGradient(0, 0, 0, H);
+  lg.addColorStop(0, "rgba(0,0,0,.55)");
+  lg.addColorStop(.4, "rgba(0,0,0,.05)");
+  lg.addColorStop(1, "rgba(0,0,0,.4)");
+  g.fillStyle = lg; g.fillRect(0, 0, W, H);
+
+  // bookshelf on the right
+  const shX = 648;
+  g.fillStyle = "#24160b"; g.fillRect(shX, 30, W - shX, H - 30);
+  g.fillStyle = "#110a05"; g.fillRect(shX + 16, 46, W - shX - 16, H - 46);
+  for (const b of shelfBooks) {
+    if (b.special) continue;
+    g.save(); g.translate(b.x + b.w / 2, b.y); g.rotate(b.lean);
+    g.fillStyle = b.c; g.fillRect(-b.w / 2, -b.h, b.w, b.h);
+    g.fillStyle = "rgba(220,180,90,.35)"; g.fillRect(-b.w / 2 + 2, -b.h + 12, b.w - 4, 2); g.fillRect(-b.w / 2 + 2, -18, b.w - 4, 2);
+    g.restore();
+  }
+  g.fillStyle = "#3a2412";
+  for (const y of [150, 262, 374, 486]) g.fillRect(shX + 8, y, W - shX, 11);
+  g.fillRect(shX, 30, 18, H);
+  g.fillRect(shX, 30, W - shX, 16);
+  // the Sorting Hat on the top shelf
+  g.save(); g.translate(708, 150);
+  g.fillStyle = "#3e2c1c";
+  g.beginPath(); g.ellipse(0, -5, 40, 7, 0, 0, Math.PI * 2); g.fill();
+  const hatG = g.createLinearGradient(-26, 0, 26, 0);
+  hatG.addColorStop(0, "#6b4c30"); hatG.addColorStop(1, "#33231a");
+  g.fillStyle = hatG;
+  g.beginPath();
+  g.moveTo(-25, -7); g.quadraticCurveTo(-20, -40, -8, -62);
+  g.quadraticCurveTo(4, -80, 28, -70); g.quadraticCurveTo(10, -62, 9, -44);
+  g.quadraticCurveTo(14, -22, 25, -7); g.closePath(); g.fill();
+  g.strokeStyle = "rgba(20,12,6,.7)"; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(-14, -30); g.quadraticCurveTo(-8, -34, -2, -30); g.stroke();
+  g.beginPath(); g.moveTo(3, -31); g.quadraticCurveTo(8, -35, 13, -31); g.stroke();
+  g.beginPath(); g.moveTo(-10, -17); g.quadraticCurveTo(0, -12, 12, -18); g.stroke();
+  g.fillStyle = "rgba(120,90,60,.5)"; g.fillRect(-18, -50, 9, 7);
+  g.restore();
+
+  // floor
+  const fl = g.createLinearGradient(0, 528, 0, H);
+  fl.addColorStop(0, "#160e08"); fl.addColorStop(1, "#2e1d10");
+  g.fillStyle = fl; g.fillRect(0, 528, W, H - 528);
+  g.strokeStyle = "rgba(0,0,0,.35)"; g.lineWidth = 1.5;
+  for (let i = -4; i < 14; i++) { g.beginPath(); g.moveTo(i * 90, H); g.lineTo(400 + (i * 90 - 400) * .55, 528); g.stroke(); }
+  g.fillStyle = "#0e0804"; g.fillRect(0, 522, shX, 7);
+
+  // chair
+  g.save(); g.translate(CHX - 300 * S, 0); g.scale(S, S); drawChair(g); g.restore();
+
+  // side table with candle
+  const cloth = g.createLinearGradient(58, 0, 244, 0);
+  cloth.addColorStop(0, "#7a1d15"); cloth.addColorStop(.5, "#5a120d"); cloth.addColorStop(1, "#2c0805");
+  g.fillStyle = cloth;
+  g.beginPath();
+  g.moveTo(58, 458); g.lineTo(242, 458);
+  g.quadraticCurveTo(252, 530, 246, 600); g.lineTo(52, 600); g.quadraticCurveTo(48, 530, 58, 458); g.closePath(); g.fill();
+  g.strokeStyle = "rgba(0,0,0,.35)"; g.lineWidth = 3;
+  for (const x of [90, 130, 172, 212]) { g.beginPath(); g.moveTo(x, 468); g.quadraticCurveTo(x + 6, 540, x - 2, 600); g.stroke(); }
+  g.fillStyle = "#8a2a1f";
+  g.beginPath(); g.ellipse(150, 458, 94, 15, 0, 0, Math.PI * 2); g.fill();
+  // a few books on the table
+  g.fillStyle = "#2f3d24"; g.fillRect(186, 440, 48, 10);
+  g.fillStyle = "#5a1c16"; g.fillRect(190, 431, 42, 9);
+  g.fillStyle = "rgba(220,180,90,.4)"; g.fillRect(190, 434, 42, 1.5);
+  // brass candlestick
+  const brass = g.createLinearGradient(138, 0, 162, 0);
+  brass.addColorStop(0, "#f2d488"); brass.addColorStop(.5, "#a4782e"); brass.addColorStop(1, "#4d3511");
+  g.fillStyle = brass;
+  g.beginPath(); g.ellipse(150, 454, 24, 6, 0, 0, Math.PI * 2); g.fill();
+  g.fillRect(145, 404, 10, 50);
+  g.beginPath(); g.ellipse(150, 428, 8, 4.5, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.ellipse(150, 404, 15, 4.5, 0, 0, Math.PI * 2); g.fill();
+  const wax = g.createLinearGradient(143, 0, 157, 0);
+  wax.addColorStop(0, "#fbf1d6"); wax.addColorStop(1, "#b9a57c");
+  g.fillStyle = wax;
+  g.fillRect(143, 374, 14, 30);
+  g.beginPath(); g.ellipse(150, 374, 7, 2.5, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.ellipse(146, 386, 2.4, 8, 0, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = "#2a1a0e"; g.lineWidth = 1.4;
+  g.beginPath(); g.moveTo(150, 374); g.lineTo(150, 367); g.stroke();
+}
+
+function makeShade() {
+  shade.width = cv.width; shade.height = cv.height;
+  const g = shade.getContext("2d");
+  g.setTransform(scale, 0, 0, scale, 0, 0);
+  g.fillStyle = "#fff";
+  g.fillRect(0, 0, W, H);
+  let rg = g.createRadialGradient(FLAME.x, FLAME.y, 10, FLAME.x, FLAME.y, 720);
+  rg.addColorStop(0, "rgb(255,236,200)");
+  rg.addColorStop(.45, "rgb(225,196,160)");
+  rg.addColorStop(1, "rgb(110,88,72)");
+  g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  rg = g.createRadialGradient(W * .48, H * .46, 200, W * .5, H * .5, 560);
+  rg.addColorStop(0, "rgba(0,0,0,0)");
+  rg.addColorStop(1, "rgba(0,0,0,.6)");
+  g.fillStyle = rg; g.fillRect(0, 0, W, H);
+}
+
+function fit() {
+  const st = stage.getBoundingClientRect();
+  const k = 0, AR = H / W;
+  const pw = Math.max(160, Math.min(st.width / (1 + 2 * k), st.height / (AR + 2 * k)));
+  const pad = Math.round(pw * k);
+  frame.style.setProperty("--pad", pad + "px");
+  const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+  const cw = Math.round(Math.min(pw * dpr, 1280));
+  cv.width = cw; cv.height = Math.round(cw * AR);
+  cv.style.width = Math.round(pw) + "px";
+  cv.style.height = Math.round(pw * AR) + "px";
+  scale = cv.width / W;
+  bg.width = cv.width; bg.height = cv.height;
+  const bgc = bg.getContext("2d");
+  bgc.setTransform(scale, 0, 0, scale, 0, 0);
+  drawStatic(bgc);
+  makeShade();
+  brocade = makeBrocade(ctx);
+  grainPattern = ctx.createPattern(grain, "repeat");
+  cvGL.width = cv.width; cvGL.height = cv.height;
+  cvGL.style.width = cv.style.width; cvGL.style.height = cv.style.height;
+  renderMarks();
+  render(performance.now() / 1000);
+}
+let grainPattern = null;
+
+/* animation parameters */
+const P = { lift: 0, eye: .8, gx: -.5, gy: .2, glass: 0, tilt: .02, mouth: 0, breath: 0, brow: 0, yaw: -.45,
+  fx: 0, rise: 0, bob: 0, sway: 0, walk: 0, tw: 0 };
+const T = { ...P };
+const RATE = { lift: 2.2, eye: 6, gx: 5, gy: 4, glass: 3, tilt: 2, mouth: 22, brow: 4, yaw: 2.4 };
+
+function skinGrad(g, x, y, r) {
+  const sg = g.createRadialGradient(x - r * .4, y - r * .35, r * .1, x, y, r * 1.15);
+  sg.addColorStop(0, "#efcdb0"); sg.addColorStop(.55, "#cf9f7e"); sg.addColorStop(1, "#7d5038");
+  return sg;
+}
+
+function drawCoat() {
+  const g = ctx;
+  g.save();
+  g.translate(0, P.breath * 1.5);
+  const cg = g.createLinearGradient(120, 0, 480, 0);
+  cg.addColorStop(0, "#6a4470"); cg.addColorStop(.45, "#3b2244"); cg.addColorStop(1, "#160b1a");
+  g.fillStyle = cg;
+  g.beginPath();
+  g.moveTo(200, 468);
+  g.bezierCurveTo(140, 500, 118, 600, 104, 820);
+  g.lineTo(92, 1000); g.lineTo(508, 1000); g.lineTo(496, 820);
+  g.bezierCurveTo(482, 600, 460, 500, 400, 468);
+  g.quadraticCurveTo(300, 438, 200, 468);
+  g.closePath();
+  g.fill();
+  g.save(); g.clip();
+  g.globalAlpha = .3; g.fillStyle = brocade; g.fillRect(80, 430, 440, 580);
+  g.globalAlpha = 1;
+  g.strokeStyle = "rgba(0,0,0,.35)"; g.lineWidth = 4;
+  for (const [x0, x1] of [[160, 130], [440, 470], [215, 185], [385, 415]]) {
+    g.beginPath(); g.moveTo(x0, 560); g.quadraticCurveTo((x0 + x1) / 2 + 8, 760, x1, 1000); g.stroke();
+  }
+  g.restore();
+  g.strokeStyle = "#a8894f"; g.lineWidth = 9;
+  g.beginPath(); g.moveTo(262, 470); g.quadraticCurveTo(248, 700, 232, 1000); g.stroke();
+  g.beginPath(); g.moveTo(338, 470); g.quadraticCurveTo(352, 700, 368, 1000); g.stroke();
+  g.strokeStyle = "rgba(240,215,140,.5)"; g.lineWidth = 1.5; g.setLineDash([3, 5]);
+  g.beginPath(); g.moveTo(262, 470); g.quadraticCurveTo(248, 700, 232, 1000); g.stroke();
+  g.beginPath(); g.moveTo(338, 470); g.quadraticCurveTo(352, 700, 368, 1000); g.stroke();
+  g.setLineDash([]);
+  // arms folding towards the lap
+  const ag = g.createLinearGradient(140, 0, 460, 0);
+  ag.addColorStop(0, "#7a5080"); ag.addColorStop(.5, "#45294f"); ag.addColorStop(1, "#1e1022");
+  g.fillStyle = ag;
+  g.beginPath();
+  g.moveTo(205, 478); g.bezierCurveTo(148, 520, 146, 640, 236, 700);
+  g.lineTo(288, 716); g.bezierCurveTo(250, 650, 226, 560, 246, 500); g.closePath(); g.fill();
+  g.beginPath();
+  g.moveTo(395, 478); g.bezierCurveTo(452, 520, 454, 640, 364, 700);
+  g.lineTo(312, 716); g.bezierCurveTo(350, 650, 374, 560, 354, 500); g.closePath(); g.fill();
+  g.fillStyle = "#a8894f";
+  g.save(); g.translate(256, 706); g.rotate(.45); g.fillRect(-26, -9, 50, 16); g.restore();
+  g.save(); g.translate(344, 706); g.rotate(-.45); g.fillRect(-24, -9, 50, 16); g.restore();
+  g.restore();
+}
+
+function finger(g, x0, y0, x1, y1, w) {
+  g.lineCap = "round";
+  g.strokeStyle = "rgba(110,64,42,.6)"; g.lineWidth = w + 1.8;
+  g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+  g.strokeStyle = "#d9ab8a"; g.lineWidth = w;
+  g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+}
+function drawLapBook(g) {
+  g.save(); g.translate(300, 728); g.rotate(-.05);
+  g.fillStyle = "#e6d6ae"; g.fillRect(-48, -10, 96, 8);
+  const c = g.createLinearGradient(-50, 0, 50, 0);
+  c.addColorStop(0, "#8a2a1c"); c.addColorStop(1, "#4a120c");
+  g.fillStyle = c; g.fillRect(-50, -2, 100, 14);
+  g.fillStyle = "#d8b45e"; g.fillRect(-50, 2, 100, 2);
+  g.restore();
+}
+function drawReadingBook(g) {
+  // an open book held up, seen from outside: two covers in a V, spine towards us
+  g.save(); g.translate(300, 650); g.rotate(-.05);
+  const c = g.createLinearGradient(-54, 0, 54, 0);
+  c.addColorStop(0, "#9a3020"); c.addColorStop(.5, "#5a160e"); c.addColorStop(1, "#3c0d08");
+  g.fillStyle = "#e9dab4";
+  g.beginPath(); g.moveTo(-52, -36); g.lineTo(0, -30); g.lineTo(52, -36); g.lineTo(52, -31); g.lineTo(0, -25); g.lineTo(-52, -31); g.closePath(); g.fill();
+  g.fillStyle = c;
+  g.beginPath(); g.moveTo(-54, -32); g.lineTo(-3, -26); g.lineTo(-3, 40); g.lineTo(-54, 34); g.closePath(); g.fill();
+  g.beginPath(); g.moveTo(54, -32); g.lineTo(3, -26); g.lineTo(3, 40); g.lineTo(54, 34); g.closePath(); g.fill();
+  g.fillStyle = "#4a100a"; g.fillRect(-4, -27, 8, 68);
+  g.fillStyle = "#d8b45e";
+  for (const y of [-18, -12, 26, 32]) g.fillRect(-4, y, 8, 2);
+  g.strokeStyle = "rgba(216,180,94,.6)"; g.lineWidth = 1.2;
+  g.strokeRect(-48, -22, 38, 50); g.strokeRect(10, -22, 38, 50);
+  if (pageP > 0) {
+    const a = Math.PI * pageP;
+    g.strokeStyle = "#f2e4c0"; g.lineWidth = 2.2;
+    g.beginPath(); g.moveTo(0, -30); g.quadraticCurveTo(24 * Math.cos(a), -46 - Math.sin(a) * 14, 50 * Math.cos(a), -36 - Math.sin(a) * 8); g.stroke();
+  }
+  // hands at the outer edges, fingers wrapping onto the covers
+  for (const s of [-1, 1]) {
+    g.fillStyle = skinGrad(g, s * 58, 6, 26);
+    g.beginPath(); g.ellipse(s * 60, 8, 14, 22, s * -.2, 0, Math.PI * 2); g.fill();
+    for (let k = 0; k < 3; k++) finger(g, s * 58, -6 + k * 11, s * 46, -4 + k * 11, 6);
+  }
+  g.fillStyle = "#e6c46c"; g.beginPath(); g.arc(-47, 6, 2.6, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+function drawHands() {
+  const g = ctx;
+  g.save();
+  g.translate(0, P.breath * 1.2);
+  if (book.mode === "read") { drawReadingBook(g); g.restore(); return; }
+  if (book.has) drawLapBook(g);
+  // hands resting folded in the lap: left hand on top, fingers draped over the right
+  const lift = Math.max(0, Math.sin(P.tw)) * 1.6;
+  const outline = "rgba(96,54,34,.7)";
+  // lower hand (back of the hand, lying flat)
+  g.fillStyle = skinGrad(g, 326, 712, 30);
+  g.strokeStyle = outline; g.lineWidth = 1.4;
+  g.beginPath(); g.ellipse(326, 713, 25, 13, -.12, 0, Math.PI * 2); g.fill(); g.stroke();
+  // its fingertips peeking out on the left, under the top hand
+  for (let k = 0; k < 3; k++) {
+    g.beginPath(); g.ellipse(276 - k * 1.5, 716 + k * 5, 7, 4.2, .2, 0, Math.PI * 2); g.fill(); g.stroke();
+  }
+  // upper hand
+  g.fillStyle = skinGrad(g, 288, 703, 30);
+  g.beginPath(); g.ellipse(290, 704, 27, 14, .14, 0, Math.PI * 2); g.fill(); g.stroke();
+  // knuckles
+  g.strokeStyle = "rgba(120,70,45,.35)"; g.lineWidth = 1;
+  for (let k = 0; k < 4; k++) { g.beginPath(); g.arc(306 + k * 1.2, 694 + k * 6.5, 3, -1.2, 1.2); g.stroke(); }
+  // fingers draped over the lower hand, gently curved
+  for (let k = 0; k < 4; k++) {
+    const bx = 307 + k * 1.2, by = 694 + k * 6.5;
+    const ex = bx + 17 - k * 1.5, ey = by + 7 + (k === 0 ? -lift : 0);
+    g.lineCap = "round";
+    g.strokeStyle = outline; g.lineWidth = 8.4 - k * .6;
+    g.beginPath(); g.moveTo(bx, by); g.quadraticCurveTo(bx + 11, by - 1, ex, ey); g.stroke();
+    g.strokeStyle = "#d9ab8a"; g.lineWidth = 6.6 - k * .6;
+    g.beginPath(); g.moveTo(bx, by); g.quadraticCurveTo(bx + 11, by - 1, ex, ey); g.stroke();
+    g.fillStyle = "rgba(255,226,206,.75)";
+    g.beginPath(); g.ellipse(ex - 1, ey - .5, 2, 1.5, .5, 0, Math.PI * 2); g.fill();
+  }
+  // thumb lying along the top edge
+  g.lineCap = "round";
+  g.strokeStyle = outline; g.lineWidth = 8;
+  g.beginPath(); g.moveTo(272, 697); g.quadraticCurveTo(284, 688, 298, 690); g.stroke();
+  g.strokeStyle = "#dcae8c"; g.lineWidth = 6.2;
+  g.beginPath(); g.moveTo(272, 697); g.quadraticCurveTo(284, 688, 298, 690); g.stroke();
+  // rings
+  g.fillStyle = "#e6c46c";
+  g.beginPath(); g.ellipse(314, 701, 2.4, 4.2, .3, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.ellipse(330, 718, 2.2, 3.6, .2, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#7c1c2a";
+  g.beginPath(); g.arc(314, 700, 1.4, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+
+/* Fawkes on his perch */
+const fawkes = { head: 1, nextTurn: 5, ruffle: -1, nextRuffle: 14 };
+function drawFawkes(t) {
+  const g = ctx;
+  const brass = g.createLinearGradient(290, 0, 302, 0);
+  brass.addColorStop(0, "#f2d488"); brass.addColorStop(.5, "#a4782e"); brass.addColorStop(1, "#4d3511");
+  g.fillStyle = brass;
+  g.beginPath(); g.ellipse(296, 560, 26, 6, 0, 0, Math.PI * 2); g.fill();
+  g.fillRect(292, 334, 8, 226);
+  g.fillRect(264, 330, 64, 6);
+  g.beginPath(); g.arc(264, 333, 5, 0, Math.PI * 2); g.arc(328, 333, 5, 0, Math.PI * 2); g.arc(296, 330, 5, 0, Math.PI * 2); g.fill();
+  if (t > fawkes.nextTurn) { fawkes.head = -fawkes.head; fawkes.nextTurn = t + 4 + Math.random() * 7; }
+  if (t > fawkes.nextRuffle) { fawkes.ruffle = t; fawkes.nextRuffle = t + 15 + Math.random() * 20; }
+  const rf = fawkes.ruffle > 0 && t - fawkes.ruffle < .5 ? Math.sin((t - fawkes.ruffle) / .5 * Math.PI) : 0;
+  const sway = Math.sin(t * .8) * 2;
+  // tail
+  for (let k = 0; k < 5; k++) {
+    g.strokeStyle = k % 2 ? "#e0a030" : "#c2401c"; g.lineWidth = 5 - k * .5; g.lineCap = "round";
+    g.beginPath(); g.moveTo(300, 330);
+    g.quadraticCurveTo(298 + (k - 2) * 4 + sway, 380, 292 + (k - 2) * 7 + sway * 1.5, 418 + k * 6); g.stroke();
+  }
+  g.save(); g.translate(300, 312); g.scale(1 + rf * .12, 1 + rf * .06);
+  const bodyG = g.createLinearGradient(-12, -20, 12, 20);
+  bodyG.addColorStop(0, "#e85a24"); bodyG.addColorStop(.6, "#b0261a"); bodyG.addColorStop(1, "#6a1410");
+  g.fillStyle = bodyG;
+  g.beginPath(); g.ellipse(0, 0, 13, 21, .15, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#f0b040";
+  g.beginPath(); g.ellipse(3, 6, 7, 12, .1, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#8a1a12";
+  g.beginPath(); g.ellipse(-5, 2, 9, 17, .35 - rf * .3, 0, Math.PI * 2); g.fill();
+  g.restore();
+  // head
+  const hx = 302 + fawkes.head * 2, hy = 288;
+  g.fillStyle = "#d8401e"; g.beginPath(); g.arc(hx, hy, 8, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = "#f0a030"; g.lineWidth = 2;
+  for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(hx - 2 + k * 2, hy - 7); g.lineTo(hx - 5 + k * 3 - fawkes.head * 3, hy - 15 - k); g.stroke(); }
+  g.fillStyle = "#f2c84a";
+  g.beginPath(); g.moveTo(hx + fawkes.head * 6, hy - 2); g.lineTo(hx + fawkes.head * 14, hy + 2); g.lineTo(hx + fawkes.head * 6, hy + 4); g.closePath(); g.fill();
+  g.fillStyle = "#120a06"; g.beginPath(); g.arc(hx + fawkes.head * 3, hy - 2, 1.6, 0, Math.PI * 2); g.fill();
+}
+
+function strand(g, s) {
+  g.strokeStyle = `rgba(${s.l | 0},${(s.l - 6) | 0},${(s.l - 16) | 0},${s.a})`;
+  g.lineWidth = s.w;
+  g.beginPath(); g.moveTo(s.x0, s.y0); g.quadraticCurveTo(s.cx, s.cy, s.x1, s.y1); g.stroke();
+}
+
+function drawEye(g, cx, open, gx, gy, sx) {
+  g.save();
+  g.translate(cx, 0);
+  g.scale(sx || 1, 1);
+  g.fillStyle = "rgba(90,48,30,.28)";
+  g.beginPath(); g.ellipse(0, -2, 17, 10, 0, 0, Math.PI * 2); g.fill();
+  if (open < .1) {
+    g.strokeStyle = "#4a2c1d"; g.lineWidth = 1.8; g.lineCap = "round";
+    g.beginPath(); g.moveTo(-10, 0); g.quadraticCurveTo(0, 4, 10, 0); g.stroke();
+    g.restore();
+    return;
+  }
+  const ry = 5.6 * open;
+  g.save();
+  g.beginPath(); g.ellipse(0, 0, 10.5, ry, 0, 0, Math.PI * 2); g.clip();
+  g.fillStyle = "#ece2d2"; g.fillRect(-12, -8, 24, 16);
+  const ix = gx * 4.2, iy = gy * 2.6 + (1 - open) * 2.2;
+  g.fillStyle = "#5d7a8c"; g.beginPath(); g.arc(ix, iy, 4.7, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#16100c"; g.beginPath(); g.arc(ix, iy, 2.1, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "rgba(255,255,255,.85)"; g.beginPath(); g.arc(ix - 1.6, iy - 1.6, 1, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "rgba(80,40,25,.35)"; g.fillRect(-12, -8, 24, 3.2);
+  g.restore();
+  g.strokeStyle = "#4a2c1d"; g.lineWidth = 1.7;
+  g.beginPath(); g.ellipse(0, 0, 10.5, ry, 0, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
+  g.restore();
+}
+
+function drawHead() {
+  const g = ctx;
+  const sink = Math.max(0, -P.lift);
+  const hy = 332 + (P.lift >= 0 ? (1 - P.lift) * 8 : 8 + sink * 30) + P.breath * 1.1;
+  const yw = P.yaw, o = yw * 13;
+  g.save();
+  g.translate(300 + o * .35 + sink * 3, hy);
+  g.rotate(P.tilt);
+  g.scale(1, 1 - sink * .07);
+
+  // hair at the sides
+  g.save(); g.translate(-o * .25, 0);
+  g.fillStyle = "#cfc6b8";
+  for (const s of [-1, 1]) {
+    g.beginPath();
+    g.moveTo(s * 46, -42);
+    g.bezierCurveTo(s * 72, 0, s * 96, 120, s * 80, 250);
+    g.lineTo(s * 52, 230);
+    g.bezierCurveTo(s * 50, 140, s * 44, 60, s * 40, 10);
+    g.closePath(); g.fill();
+  }
+  hairStrands.forEach((s) => strand(g, s));
+  g.restore();
+
+  // face
+  g.fillStyle = skinGrad(g, o * .2, 0, 62);
+  g.beginPath(); g.ellipse(o * .2, 0, 50 - Math.abs(yw) * 5, 64, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "rgba(200,90,70,.18)";
+  g.beginPath();
+  g.ellipse(-26 + o * .7, 20, 12 * (1 - Math.max(0, yw) * .3), 8, 0, 0, Math.PI * 2);
+  g.ellipse(26 + o * .7, 20, 12 * (1 - Math.max(0, -yw) * .3), 8, 0, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = "rgba(110,62,40,.35)"; g.lineWidth = 1;
+  for (const y of [-34, -29]) { g.beginPath(); g.moveTo(-22 + o * .5, y); g.quadraticCurveTo(o * .5, y - 3, 22 + o * .5, y); g.stroke(); }
+
+  // eyes (the far eye narrows when he turns)
+  drawEye(g, -22 + o, P.eye, P.gx + yw * .5, P.gy, 1 - Math.max(0, yw) * .3);
+  drawEye(g, 22 + o, P.eye, P.gx + yw * .5, P.gy, 1 - Math.max(0, -yw) * .3);
+
+  // brows
+  g.lineCap = "round";
+  for (const s of [-1, 1]) {
+    for (let k = 0; k < 7; k++) {
+      g.strokeStyle = `rgba(240,236,228,${.55 + k * .05})`;
+      g.lineWidth = 2.2;
+      const by = -17 - P.brow * 3;
+      g.beginPath();
+      g.moveTo(o + s * (10 + k * 1.5), by + 2 - k * .2);
+      g.quadraticCurveTo(o + s * (22 + k), by - 5 + k * .4, o + s * (34 + k * 1.6), by + k * .9);
+      g.stroke();
+    }
+  }
+
+  // nose
+  g.save(); g.translate(o * 1.3, 0);
+  g.strokeStyle = "rgba(105,60,38,.55)"; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(-3, -6); g.quadraticCurveTo(5 + yw * 4, 14, 3 + yw * 3, 26); g.stroke();
+  g.fillStyle = "rgba(105,60,38,.35)";
+  g.beginPath(); g.ellipse(-6, 29, 5, 2.4, .2, 0, Math.PI * 2); g.ellipse(8, 28, 4.5, 2.2, -.2, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "rgba(255,230,210,.35)";
+  g.beginPath(); g.ellipse(-2, 12, 3, 9, 0, 0, Math.PI * 2); g.fill();
+  g.restore();
+
+  // embroidered skullcap
+  g.save(); g.translate(o * .15, 0);
+  const capG = g.createLinearGradient(-50, -90, 50, -40);
+  capG.addColorStop(0, "#4a3a28"); capG.addColorStop(1, "#1d150d");
+  g.fillStyle = capG;
+  g.beginPath();
+  g.moveTo(-54, -36);
+  g.quadraticCurveTo(-48, -94, 0, -97);
+  g.quadraticCurveTo(48, -94, 54, -36);
+  g.quadraticCurveTo(0, -50, -54, -36);
+  g.closePath(); g.fill();
+  g.strokeStyle = "#3a2c18"; g.lineWidth = 8;
+  g.beginPath(); g.moveTo(-54, -38); g.quadraticCurveTo(0, -52, 54, -38); g.stroke();
+  g.fillStyle = "#e3c271";
+  for (let k = 0; k <= 16; k++) {
+    const t = k / 16;
+    const x = lerp(lerp(-54, 0, t), lerp(0, 54, t), t), y = lerp(lerp(-38, -52, t), lerp(-52, -38, t), t);
+    g.beginPath(); g.arc(x, y, 1.6, 0, Math.PI * 2); g.fill();
+  }
+  g.strokeStyle = "rgba(227,194,113,.55)"; g.lineWidth = 1.2;
+  for (const s of [-1, 0, 1]) {
+    g.beginPath(); g.moveTo(s * 26, -52); g.quadraticCurveTo(s * 30 + 6, -72, s * 18, -86); g.stroke();
+  }
+  g.restore();
+
+  // beard, mouth and moustache follow the turn
+  g.save(); g.translate(o * .5, 0);
+  const bgG = g.createLinearGradient(-70, 0, 70, 0);
+  bgG.addColorStop(0, "#f1ece4"); bgG.addColorStop(.6, "#cfc7bb"); bgG.addColorStop(1, "#8f877c");
+  g.fillStyle = bgG;
+  g.beginPath();
+  g.moveTo(-50, 14);
+  g.bezierCurveTo(-78, 90, -54, 210, 0, 305);
+  g.bezierCurveTo(54, 210, 78, 90, 50, 14);
+  g.quadraticCurveTo(30, 36, 0, 38);
+  g.quadraticCurveTo(-30, 36, -50, 14);
+  g.closePath(); g.fill();
+  beardStrands.forEach((s) => strand(g, s));
+  // silver clasp near the end of the beard, as in the films
+  const cl = g.createLinearGradient(-12, 0, 12, 0);
+  cl.addColorStop(0, "#f4f4f6"); cl.addColorStop(.5, "#9aa0aa"); cl.addColorStop(1, "#d8dbe2");
+  g.fillStyle = cl;
+  g.beginPath(); g.ellipse(0, 236, 11, 4.5, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.ellipse(0, 244, 9, 4, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "rgba(60,60,80,.5)"; g.fillRect(-9, 239.5, 18, 1.2);
+  g.fillStyle = "#3a1c14";
+  g.beginPath(); g.ellipse(o * .3, 50, 9 + P.mouth * 1.5, 1.4 + P.mouth * 6.2, 0, 0, Math.PI * 2); g.fill();
+  if (P.mouth > .25) {
+    g.fillStyle = "rgba(230,220,205,.6)";
+    g.fillRect(o * .3 - 6, 50 - P.mouth * 5.6, 12, 2);
+  }
+  const mg = g.createLinearGradient(-40, 0, 40, 0);
+  mg.addColorStop(0, "#f6f2ea"); mg.addColorStop(1, "#b7aea2");
+  g.fillStyle = mg;
+  for (const s of [-1, 1]) {
+    g.beginPath();
+    g.moveTo(o * .3, 36);
+    g.bezierCurveTo(s * 14, 32, s * 34, 40, s * 40, 66);
+    g.bezierCurveTo(s * 30, 56, s * 14, 50, o * .3, 46);
+    g.closePath(); g.fill();
+  }
+  g.strokeStyle = "rgba(150,140,128,.6)"; g.lineWidth = .8;
+  for (let k = 0; k < 6; k++) for (const s of [-1, 1]) {
+    g.beginPath(); g.moveTo(s * 3, 39 + k); g.quadraticCurveTo(s * 22, 42 + k, s * (32 + k), 58 + k * 1.2); g.stroke();
+  }
+  g.restore();
+
+  // half-moon spectacles
+  const gy = -1 + P.glass * 10;
+  g.strokeStyle = "#d6b45e"; g.lineWidth = 1.7;
+  g.fillStyle = "rgba(255,255,255,.07)";
+  for (const s of [-1, 1]) {
+    const sx = s < 0 ? 1 - Math.max(0, yw) * .3 : 1 - Math.max(0, -yw) * .3;
+    g.save(); g.translate(o + s * 22, gy); g.scale(sx, 1);
+    g.beginPath(); g.arc(0, 0, 13, 0, Math.PI); g.closePath(); g.fill(); g.stroke();
+    g.restore();
+  }
+  g.beginPath(); g.moveTo(o - 9, gy); g.quadraticCurveTo(o, gy - 6, o + 9, gy); g.stroke();
+  g.beginPath(); g.moveTo(o - 35, gy); g.lineTo(-49 + o * .3, gy - 6); g.moveTo(o + 35, gy); g.lineTo(49 + o * .3, gy - 6); g.stroke();
+
+  g.restore();
+}
+
+let flick = 1;
+function drawLight(t) {
+  const g = ctx;
+  flick = .86 + .1 * Math.sin(t * 9.1) * Math.sin(t * 3.7 + 1) + .04 * Math.sin(t * 23);
+  const fx = FLAME.x + Math.sin(t * 2.3) * 1.2, fy = FLAME.y;
+  g.save();
+  g.globalCompositeOperation = "lighter";
+  const glow = g.createRadialGradient(fx, fy, 2, fx, fy, 130);
+  glow.addColorStop(0, `rgba(255,190,110,${.42 * flick})`);
+  glow.addColorStop(1, "rgba(255,150,60,0)");
+  g.fillStyle = glow; g.fillRect(fx - 130, fy - 130, 260, 260);
+  g.restore();
+  const fg = g.createRadialGradient(fx, fy - 4, 1, fx, fy - 6, 16);
+  fg.addColorStop(0, "#fffbe8"); fg.addColorStop(.4, "#ffd77a"); fg.addColorStop(1, "rgba(240,120,40,.0)");
+  g.fillStyle = fg;
+  const h = 18 * flick;
+  g.beginPath();
+  g.moveTo(fx, fy - h);
+  g.quadraticCurveTo(fx + 7, fy - 4, fx, fy + 5);
+  g.quadraticCurveTo(fx - 7, fy - 4, fx, fy - h);
+  g.fill();
+}
+
+function draw(t) {
+  if (!brocade) return;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.drawImage(bg, 0, 0);
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  if (book.onShelf) {
+    const b = shelfSlot;
+    ctx.fillStyle = b.c; ctx.fillRect(b.x, b.y - b.h, b.w, b.h);
+    ctx.fillStyle = "rgba(220,180,90,.45)"; ctx.fillRect(b.x + 2, b.y - b.h + 12, b.w - 4, 2); ctx.fillRect(b.x + 2, b.y - 18, b.w - 4, 2);
+  }
+  drawFawkes(t);
+  if (P.fx < 690) {
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    ctx.translate(CHX - 300 * S, 0);
+    ctx.scale(S, S);
+    ctx.translate(P.fx, -ease(P.rise) * 95 + P.bob);
+    if (P.rise > .01) { ctx.translate(300, 480); ctx.rotate(P.sway + ease(P.rise) * .04 * (P.fx > 1 ? 0 : 1)); ctx.translate(-300, -480); }
+    drawCoat();
+    drawHead();
+    drawHands();
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = "multiply";
+  ctx.drawImage(shade, 0, 0);
+  ctx.globalCompositeOperation = "overlay";
+  ctx.globalAlpha = .22;
+  ctx.fillStyle = grainPattern;
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  drawLight(t);
+}
+
+/* ------------------------------------------------------------------ */
+/* Behaviour: state machine and idle life                              */
+/* ------------------------------------------------------------------ */
+const LABEL = {
+  reading: "sinniert", sleeping: "schläft", waking: "wacht auf", listening: "hört zu",
+  thinking: "denkt nach", speaking: "spricht", attentive: "sieht dich an",
+  leaving: "steht auf", away: "ist unterwegs",
+};
+let state = "reading";
+let stateAt = 0;
+let lastActivity = performance.now() / 1000;
+let attentiveUntil = 0;
+let nextBlink = 3, blinkT = -1;
+let mouthNext = 0;
+let speakingNow = false;
+let boundaryMode = false, mouthPulse = 0;
+let doze = -1, startles = 0, glanceUntil = 0, nextGlance = 18;
+let nextOuting = 0, awayUntil = 0, awayFor = 120;
+let wokeOn = "";
+let act = "sit", actUntil = 0, nextFetch = 0, readUntil = 0, pageP = 0, nextPage = 0, returning = false;
+function canWander() { return !photo.on && store.get("albus.outings") !== "0"; }
+function label(s) {
+  if (calib) return "wird eingemessen";
+  if (s === "reading") {
+    if (photo.on) return "sinnt nach";
+    if (act === "read") return "liest";
+    if (act === "toShelf" || act === "atShelf") return returning ? "stellt das Buch zurück" : "holt sich ein Buch";
+    if (P.fx > 5 || P.rise > .05) return "setzt sich";
+    return doze > .35 ? "döst" : LABEL[s];
+  }
+  if (s !== "away" && s !== "leaving" && P.fx > 5) return "kommt zurück";
+  return LABEL[s];
+}
+
+function setState(s) {
+  if (state === s) return;
+  state = s;
+  stateAt = performance.now() / 1000;
+  lastActivity = stateAt;
+  statusEl.dataset.s = s;
+  statusText.textContent = label(s);
+  frame.setAttribute("aria-label", s === "sleeping" ? "Albus wecken" : s === "away" ? "Albus zurückrufen" : "Albus ansprechen");
+  if (s !== "reading") {
+    if (act === "toShelf" || act === "atShelf") act = "fromShelf";
+    if (act === "read") { act = "sit"; book.mode = "none"; }
+  } else {
+    doze = -1; startles = 0;
+    if (act === "sit" && book.has) { act = "read"; book.mode = "read"; readUntil = stateAt + 40 + Math.random() * 60; nextPage = stateAt + 6; }
+  }
+}
+
+function targets(now) {
+  const age = now - stateAt;
+  switch (state) {
+    case "reading": {
+      if (act === "read") {
+        T.lift = .25; T.eye = .72; T.yaw = -.12; T.gy = 1; T.gx = -.7 + 1.4 * ((now * .33) % 1);
+        T.tilt = .03; T.brow = .1; T.glass = .15;
+        break;
+      }
+      if (act === "atShelf") { T.lift = .45; T.eye = 1; T.yaw = .85; T.gx = .8; T.gy = -.2; T.tilt = 0; T.brow = .2; T.glass = 0; break; }
+      const dz = clamp(doze, 0, 1);
+      const glance = now < glanceUntil;
+      T.lift = glance ? .55 : lerp(.15, -.9, dz);
+      T.eye = glance ? .95 : lerp(.82, 0, Math.pow(dz, .7));
+      T.yaw = glance ? -.05 : -.45; T.gx = glance ? 0 : -.55; T.gy = glance ? -.1 : lerp(.15, .9, dz);
+      T.tilt = .02 + dz * .06; T.brow = glance ? .35 : 0; T.glass = dz * .6;
+      break;
+    }
+    case "sleeping":
+      T.lift = -1; T.eye = 0; T.glass = 1; T.tilt = .09; T.yaw = -.3; T.gx = 0; T.gy = 1; T.brow = 0;
+      break;
+    case "waking":
+      T.lift = .7; T.eye = age < .5 ? .15 : 1; T.glass = age < 1.1 ? 1 : 0; T.tilt = .03; T.yaw = -.1; T.gx = 0; T.gy = 0; T.brow = .4;
+      break;
+    case "listening":
+    case "attentive":
+      T.lift = 1; T.eye = 1; T.glass = 0; T.tilt = -.025; T.yaw = 0; T.gx = 0; T.gy = -.15; T.brow = .5;
+      break;
+    case "thinking":
+      T.lift = .85; T.eye = .85; T.glass = 0; T.tilt = .015; T.yaw = -.2; T.gx = -.7; T.gy = -.9; T.brow = .8;
+      break;
+    case "speaking":
+      T.lift = 1; T.eye = 1; T.glass = 0; T.tilt = -.02 + Math.sin(now * .9) * .015;
+      T.yaw = Math.sin(now * .45) * .14; T.gx = Math.sin(now * .7) * .25; T.gy = -.1;
+      T.brow = .3 + Math.max(0, Math.sin(now * 1.3)) * .4;
+      break;
+    case "leaving":
+    case "away":
+      T.lift = .6; T.eye = 1; T.glass = 0; T.tilt = 0; T.yaw = .6; T.gx = .6; T.gy = 0; T.brow = .2;
+      break;
+  }
+}
+
+let lastT = performance.now() / 1000, acc = 0;
+function tick(ms) {
+  const now = ms / 1000;
+  let dt = Math.min(.1, now - lastT);
+  lastT = now;
+  acc += dt;
+  requestAnimationFrame(tick);
+  if (acc < 1 / 30) return; // ~30 fps keeps older tablets cool
+  dt = Math.min(.15, acc); acc = 0;
+
+  // idle life: muse, glance over, doze off, wander out
+  if (state === "reading" && act === "read") {
+    doze = -1;
+    if (now > nextPage) { pageP = .001; nextPage = now + 11 + Math.random() * 10; }
+    if (now > readUntil) { book.mode = "none"; act = "toShelf"; returning = true; }
+  }
+  if (pageP > 0) { pageP += dt / .9; if (pageP >= 1) pageP = 0; }
+  if (state === "reading" && act === "sit") {
+    if (!book.has && !photo.on && doze < .2 && P.fx === 0 && P.rise === 0 && now > nextFetch) { act = "toShelf"; returning = false; doze = -1; }
+    doze += dt / 45;
+    if (doze >= 1) {
+      if (startles < 2 && Math.random() < .6) { doze = .1; startles++; }
+      else setState("sleeping");
+    }
+    if (now > nextGlance && doze < .4) { glanceUntil = now + 2.6; nextGlance = now + 22 + Math.random() * 30; }
+    if (canWander() && act === "sit" && !book.has && doze < .3 && P.fx === 0 && P.rise === 0 && now > nextOuting) { awayFor = 70 + Math.random() * 110; setState("leaving"); }
+    if (doze < .3 && P.rise === 0) P.tw += dt * 2.4;
+  }
+  if (state === "waking" && now - stateAt > 1.7) setState("listening");
+  // daily rhythm: wakes by himself around half past six, awake for the homecoming, asleep from 23:00
+  const clock = new Date(), hm = clock.getHours() + clock.getMinutes() / 60;
+  if (state === "sleeping" && hm >= 6.33 && hm < 6.75 && wokeOn !== clock.toDateString()) { wokeOn = clock.toDateString(); setState("waking"); }
+  if (state === "reading" && (hm >= 23 || hm < 6) && act === "sit" && P.rise === 0 && P.fx === 0) setState("sleeping");
+  const wd = clock.getDay();
+  if (state === "reading" && wd >= 1 && wd <= 3 && hm >= 17.75 && hm < 18.75 && act === "sit") doze = Math.min(doze, -.5);
+  if (state === "attentive" && now > attentiveUntil) setState("reading");
+  if (state === "listening" && !listening && document.activeElement !== msg && !(hf.running && (hf.awake || now < hf.until)) && now - stateAt > (hf.running ? 9 : 25)) setState("reading");
+
+  // getting up, walking out, coming back
+  let dir = 0;
+  if (state === "leaving") {
+    if (P.rise < 1) P.rise = Math.min(1, P.rise + dt / 1.5);
+    else { P.fx += dt * 165; dir = 1; if (P.fx >= 700) { P.fx = 700; setState("away"); awayUntil = now + awayFor; } }
+  } else if (state === "away") {
+    if (now > awayUntil) { setState("reading"); nextOuting = now + 900 + Math.random() * 900; }
+  } else {
+    const goShelf = state === "reading" && (act === "toShelf" || act === "atShelf");
+    const tx = goShelf ? FX_SHELF : 0;
+    if (Math.abs(P.fx - tx) > .5) {
+      P.rise = Math.min(1, P.rise + dt / (state === "reading" ? 1.3 : .5));
+      if (P.rise >= 1) {
+        const sp = (state === "reading" ? 150 : 230) * dt;
+        const step = clamp(tx - P.fx, -sp, sp);
+        P.fx += step; dir = Math.sign(step);
+      }
+    } else {
+      P.fx = tx;
+      if (goShelf) {
+        P.rise = 1;
+        if (act === "toShelf") { act = "atShelf"; actUntil = now + 1.8; }
+        else if (now > actUntil) {
+          if (returning) { book.onShelf = true; book.has = false; } else { book.onShelf = false; book.has = true; }
+          act = "fromShelf";
+        }
+      } else if (P.rise > 0) P.rise = Math.max(0, P.rise - dt / 1.3);
+      else if (act === "fromShelf" && state === "reading") {
+        doze = -1;
+        if (book.has) { act = "read"; book.mode = "read"; readUntil = now + 60 + Math.random() * 90; nextPage = now + 7; }
+        else { act = "sit"; nextFetch = now + 360 + Math.random() * 420; }
+      }
+    }
+  }
+  if (dir) { P.walk += dt * 7.5; P.bob = -Math.abs(Math.sin(P.walk)) * 7; P.sway = Math.sin(P.walk) * .025; }
+  else { P.bob *= .8; P.sway *= .8; }
+
+  const period = state === "sleeping" ? 6 : 4.4;
+  P.breath = Math.sin(now * Math.PI * 2 / period);
+
+  targets(now);
+  if (dir) { T.yaw = dir * .6; T.gx = dir * .6; T.lift = .6; T.eye = 1; }
+
+  if (now > nextBlink && T.eye > .4) { blinkT = 0; nextBlink = now + 2.5 + Math.random() * 4; }
+  let blink = 1;
+  if (blinkT >= 0) { blinkT += dt; blink = Math.abs(1 - blinkT / .08); if (blinkT > .16) { blinkT = -1; blink = 1; } }
+
+  if (speakingNow) {
+    if (now > mouthNext) {
+      const open = !boundaryMode || now < mouthPulse;
+      T.mouth = !open ? .06 : Math.random() < .16 ? .08 : .3 + Math.random() * .7;
+      mouthNext = now + .07 + Math.random() * .08;
+    }
+  } else T.mouth = 0;
+
+  for (const k in RATE) {
+    let rate = RATE[k];
+    if (k === "eye" && (state === "reading" || state === "sleeping")) rate = T.eye > P.eye + .2 ? 5 : 1.2;
+    if (k === "eye" && state === "waking") rate = 1.6;
+    if (k === "lift" && state === "reading" && T.lift > P.lift + .3) rate = 6;
+    P[k] += (T[k] - P[k]) * (1 - Math.exp(-dt * rate));
+  }
+  const lb = label(state);
+  if (statusText.textContent !== lb) statusText.textContent = lb;
+  const eyeSave = P.eye;
+  P.eye = eyeSave * clamp(blink, 0, 1);
+  render(now);
+  P.eye = eyeSave;
+}
+
+/* ------------------------------------------------------------------ */
+/* Capabilities                                                        */
+/* ------------------------------------------------------------------ */
+const CAP = { sample: null, tts: null, dict: null, db: null, user: null, assets: null };
+let ttsBlocked = false;
+const useCap = async (n) => { try { return window.claude ? await window.claude.use(n) : null; } catch { return null; } };
+
+/* memory */
+const mem = { ref: null, notes: [], recent: [], lastAt: 0, portrait: null };
+let writeChain = Promise.resolve();
+function saveMem() {
+  if (!mem.ref) return;
+  const body = { notes: mem.notes.slice(-60), recent: mem.recent.slice(-14), lastAt: Date.now(), portrait: mem.portrait || null };
+  writeChain = writeChain.then(() => mem.ref.set(body)).catch(() => {});
+}
+
+async function initCaps() {
+  const [sample, tts, dict, db, user, assets] = await Promise.all(["sample", "tts", "dictation", "db", "user", "assets"].map(useCap));
+  Object.assign(CAP, { sample, tts, dict, db, user, assets });
+  $("#hfSec").hidden = !dict;
+  $("#hfToggle").checked = !!dict && store.get("albus.handsfree") === "1";
+  if (db) { try { db.doc("weather/bornheim").onSnapshot((snap) => { weather = snap.exists ? snap.data() : null; }, () => {}); } catch {} }
+  micBtn.hidden = !dict;
+  if (dict) {
+    dict.onPartial(({ text }) => {
+      if (hf.running) return hfHear(null, text);
+      if (listening) { heard.partial = text; showHeard(); armSilence(); }
+    });
+    dict.onFinal(({ text }) => {
+      if (hf.running) return hfHear(text, null);
+      if (listening) { heard.final += text; heard.partial = ""; showHeard(); armSilence(); }
+    });
+    dict.onState(({ state: s, reason }) => {
+      const on = s !== "idle";
+      micBtn.setAttribute("aria-pressed", String(on));
+      micBtn.textContent = on ? "Fertig" : "Sprechen";
+      micBtn.hidden = hf.running;
+      if (s === "idle" && hf.running) hfEnded(reason);
+      else if (s === "idle" && listening) finishListening(reason);
+    });
+  }
+  if (tts) {
+    tts.onState(({ state: s }) => { speakingNow = s === "speaking"; });
+  }
+  hint.textContent = dict
+    ? "Tippe ins Bild und sprich. Er antwortet, sobald du kurz innehältst."
+    : "Tippe ins Bild oder schreib ihm. Auf dem iPad kannst du über das Mikrofon der Tastatur diktieren.";
+  if (!sample) {
+    showCaption("Albus erreicht seinen Server nicht. Prüfe die Internetverbindung und den Zugangsschlüssel.", "err");
+    sendBtn.disabled = true;
+  }
+  // memory
+  if (db && user) {
+    try {
+      const uid = await user.id();
+      if (uid) {
+        mem.ref = db.doc("data/users/" + uid + "/albus");
+        const snap = await Promise.race([mem.ref.get(), new Promise((r) => setTimeout(() => r(null), 10000))]);
+        if (snap && snap.exists) {
+          const d = snap.data() || {};
+          mem.notes = Array.isArray(d.notes) ? d.notes.filter((n) => n && typeof n.text === "string") : [];
+          mem.recent = Array.isArray(d.recent) ? d.recent.filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content) : [];
+          mem.lastAt = Number(d.lastAt) || 0;
+          mem.portrait = d.portrait && typeof d.portrait.url === "string" ? d.portrait : null;
+        }
+      }
+    } catch { mem.ref = null; }
+  }
+  if (!mem.ref) memSub.textContent = "Ohne Anmeldung merkt sich Albus nichts über diese Sitzung hinaus.";
+  renderMem();
+  if (store.get("albus.handsfree") === "1" && dict) hint.textContent = "Tippe einmal ins Bild. Danach reagiert er auf „Albus“.";
+  loadSavedPortrait();
+}
+
+/* ------------------------------------------------------------------ */
+/* Talking                                                             */
+/* ------------------------------------------------------------------ */
+function showCaption(text, kind) {
+  caption.textContent = text;
+  caption.className = "caption" + (kind ? " " + kind : "");
+}
+
+let listening = false;
+const heard = { final: "", partial: "" };
+let silenceTimer = 0, quietTimer = 0;
+function showHeard() {
+  const t = (heard.final + " " + heard.partial).trim();
+  showCaption(t ? "„" + t + "“" : "…", "you");
+}
+function armSilence() {
+  clearTimeout(silenceTimer); clearTimeout(quietTimer);
+  silenceTimer = setTimeout(() => { if (listening && (heard.final + heard.partial).trim()) CAP.dict.stop().catch(() => {}); }, 1700);
+}
+
+function startListening() {
+  // must stay synchronous up to dict.start(): it needs the viewer's gesture
+  if (!CAP.dict) return false;
+  heard.final = ""; heard.partial = "";
+  listening = true;
+  const opts = /^de/i.test(navigator.language || "") ? undefined : { language: "de" };
+  CAP.dict.start(opts).catch((e) => {
+    listening = false;
+    if (e && e.code === "not_granted") { micBtn.hidden = true; showCaption("Ohne Mikrofon geht es auch: schreib Albus einfach."); }
+    else if (e && e.code === "unavailable") { micBtn.hidden = true; }
+    else if (e && e.code !== "stopped") showCaption("Das Zuhören hat gerade nicht geklappt. Tippe noch einmal ins Bild.", "err");
+  });
+  clearTimeout(quietTimer);
+  quietTimer = setTimeout(() => { if (listening && !(heard.final + heard.partial).trim()) CAP.dict.stop().catch(() => {}); }, 9000);
+  return true;
+}
+
+function finishListening() {
+  listening = false;
+  clearTimeout(silenceTimer); clearTimeout(quietTimer);
+  const text = (heard.final + " " + heard.partial).trim();
+  heard.final = ""; heard.partial = "";
+  if (text) ask(text);
+  else { showCaption("Nun gut. Ich lese ein wenig weiter."); setState("attentive"); attentiveUntil = performance.now() / 1000 + 4; }
+}
+
+function stopSpeaking() {
+  if (CAP.tts) CAP.tts.stop().catch(() => {});
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  speakingNow = false;
+}
+
+function wakeAndListen(fromVoice) {
+  lastActivity = performance.now() / 1000;
+  const wasAsleep = state === "sleeping";
+  const wasAway = state === "away" || state === "leaving" || P.fx > 5;
+  if (state === "thinking") return;
+  if (state === "speaking") stopSpeaking();
+  const mic = fromVoice && startListening();
+  setState(wasAsleep ? "waking" : "listening");
+  if (!mic) {
+    if (!listening) showCaption(wasAway ? "Einen Moment, ich komme schon …" : wasAsleep ? "Hm? Oh … verzeih, ich war eingenickt. Ja, ich höre." : "Ja? Ich höre.");
+    if (!CAP.dict) msg.focus({ preventScroll: true });
+  } else {
+    showCaption(wasAway ? "Er kommt zurück und hört dir zu …" : wasAsleep ? "Er reibt sich die Augen und hört zu …" : "Er hört zu …", "you");
+  }
+}
+
+/* parsing Albus' reply */
+function visiblePart(raw) {
+  return raw.split(/<(?:pergament|merken|vergessen|weggehen)/i)[0].replace(/<[^>]*$/, "").trim();
+}
+function parseReply(raw) {
+  const out = { perg: [], keep: [], drop: [], leave: /<weggehen\s*\/?>/i.test(raw) };
+  let t = raw
+    .replace(/<weggehen\s*\/?>/gi, "")
+    .replace(/<pergament>([\s\S]*?)(?:<\/pergament>|$)/gi, (_, a) => { out.perg.push(a.trim()); return ""; })
+    .replace(/<merken>([\s\S]*?)<\/merken>/gi, (_, a) => { out.keep.push(a.trim()); return ""; })
+    .replace(/<vergessen>([\s\S]*?)<\/vergessen>/gi, (_, a) => { out.drop.push(a.trim()); return ""; });
+  t = t.replace(/<\/?[a-zäöü]+>/gi, "").replace(/[*_#`]+/g, "").replace(/\n{3,}/g, "\n\n").trim();
+  out.speech = t;
+  return out;
+}
+
+function showPergament(text) {
+  const lines = text.split("\n");
+  pergTitle.textContent = (lines.shift() || "Notiz").replace(/^[#\s]+/, "");
+  pergBody.textContent = "";
+  let ul = null;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) { ul = null; continue; }
+    if (/^[-•*]\s+/.test(line)) {
+      if (!ul) { ul = document.createElement("ul"); pergBody.append(ul); }
+      const li = document.createElement("li"); li.textContent = line.replace(/^[-•*]\s+/, ""); ul.append(li);
+    } else {
+      ul = null;
+      const p = document.createElement("p"); p.textContent = line.replace(/^#+\s*/, ""); pergBody.append(p);
+    }
+  }
+  perg.hidden = false;
+}
+
+function buildInput(userText) {
+  const now = new Date();
+  const when = now.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) +
+    ", " + now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) + " Uhr";
+  const notes = mem.notes.length ? mem.notes.map((n, i) => `${i + 1}. ${n.text}`).join("\n") : "(noch keine)";
+  const gap = mem.lastAt ? Math.round((Date.now() - mem.lastAt) / 60000) : null;
+  const since = gap == null ? "Ihr sprecht zum ersten Mal miteinander." :
+    gap > 180 ? `Euer letztes Gespräch ist ${gap > 2880 ? Math.round(gap / 1440) + " Tage" : Math.round(gap / 60) + " Stunden"} her.` : "";
+  const firstToday = !mem.lastAt || new Date(mem.lastAt).toDateString() !== now.toDateString();
+  const wxHint = firstToday
+    ? "Das ist eure erste Begegnung heute: Kündige das Wetter für heute in einem kurzen Satz an, beiläufig und in deiner Art, und geh dann auf sein Anliegen ein."
+    : "Erwähne das Wetter nur, wenn er danach fragt oder es für seine Pläne wichtig ist.";
+  const rules = `${CHARACTER}\n\nJetzt ist ${when}. ${since}\n\n${weatherText()}\n${wxHint}\n\nWas du dir über den Hausherrn gemerkt hast:\n${notes}\n\n${FORMAT}`;
+  let recent = (gap != null && gap > 360) ? [] : mem.recent.slice(-12);
+  while (recent.length && recent[0].role !== "user") recent = recent.slice(1);
+  return [{ role: "user", content: rules }, ...recent.map(({ role, content }) => ({ role, content })), { role: "user", content: userText }];
+}
+
+let weather = null;
+function weatherText() {
+  if (!weather || !Array.isArray(weather.days) || !weather.days.length) return "Wetterbericht: Gerade liegt keiner vor. Sag offen, dass du das Wetter nicht kennst, wenn er fragt.";
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const name = (iso) => {
+    const d = new Date(iso + "T00:00:00");
+    const diff = Math.round((d - today) / 86400000);
+    return diff === 0 ? "heute" : diff === 1 ? "morgen" : diff === 2 ? "übermorgen" : d.toLocaleDateString("de-DE", { weekday: "long" });
+  };
+  const days = weather.days.filter((x) => new Date(x.date + "T23:59:59") >= today).map((x) => {
+    let t = `${name(x.date)}: ${x.sky}, ${x.min} bis ${x.max} °C`;
+    t += x.wet !== "trocken" && x.rain_mm >= .3 ? `, ${x.wet} (etwa ${x.rain_mm} mm)` : ", trocken";
+    if (x.gust_kmh >= 45) t += `, Böen bis ${x.gust_kmh} km/h`;
+    return t;
+  });
+  const age = (Date.now() - Date.parse(weather.updatedAt)) / 3600000;
+  const n = weather.now || {};
+  return `Wetterbericht für Frankfurt-Bornheim (Deutscher Wetterdienst, Stand vor ${age < 1.5 ? "etwa einer Stunde" : Math.round(age) + " Stunden"}): zuletzt ${n.temp} °C, ${n.sky}. ${days.join("; ")}.` + (age > 20 ? " Der Bericht ist schon alt; sag das, wenn du ihn nutzt." : "");
+}
+
+let askCtl = null;
+async function ask(text) {
+  if (!CAP.sample) return;
+  stopSpeaking();
+  perg.hidden = true;
+  setState("thinking");
+  showCaption("…");
+  sendBtn.textContent = "Stopp";
+  askCtl = new AbortController();
+  let raw = "";
+  try {
+    const res = await CAP.sample(buildInput(text), {
+      signal: askCtl.signal,
+      cache: false,
+      modelTier: thorough.checked ? "default" : "quick",
+      onText: ({ text: t }) => { raw = t; const v = visiblePart(t); if (v) showCaption(v); },
+    });
+    raw = res.text;
+  } catch (e) {
+    sendBtn.textContent = "Senden";
+    askCtl = null;
+    const code = e && e.code;
+    if (code === "cancelled") { showCaption("Schon gut, ein andermal."); setState("attentive"); attentiveUntil = performance.now() / 1000 + 5; return; }
+    const copy = {
+      not_granted: "Der Zugangsschlüssel stimmt nicht. Öffne die Seite noch einmal mit deinem Link.",
+      sampling_disabled: "Für dieses Konto ist Claude hier nicht verfügbar.",
+      rate_limited: "Albus braucht eine Atempause: das Nutzungslimit ist erreicht. Versuch es später noch einmal.",
+      session_expired: "Bitte melde dich bei claude.ai erneut an.",
+      refused: "Darauf möchte Albus nicht antworten. Frag es vielleicht anders.",
+    }[code] || "Die Antwort ist unterwegs verloren gegangen. Frag ihn bitte noch einmal.";
+    showCaption(copy, "err");
+    if (code === "not_granted" || code === "sampling_disabled") sendBtn.disabled = true;
+    setState("attentive"); attentiveUntil = performance.now() / 1000 + 6;
+    return;
+  }
+  sendBtn.textContent = "Senden";
+  askCtl = null;
+
+  const r = parseReply(raw);
+  // memory updates
+  const drops = r.drop.map((d) => parseInt(d, 10) - 1).filter((i) => i >= 0 && i < mem.notes.length).sort((a, b) => b - a);
+  drops.forEach((i) => mem.notes.splice(i, 1));
+  for (const k of r.keep) if (k && !mem.notes.some((n) => n.text === k)) mem.notes.push({ text: k.slice(0, 240), at: Date.now() });
+  const said = r.speech || (r.perg.length ? "Ich habe es dir aufgeschrieben." : "Hm.");
+  mem.recent.push({ role: "user", content: text.slice(0, 2000) });
+  mem.recent.push({ role: "assistant", content: (said + (r.perg.length ? "\n[Auf dem Pergament: " + r.perg[0].split("\n")[0] + "]" : "")).slice(0, 2000) });
+  mem.lastAt = Date.now();
+  saveMem();
+  renderMem();
+
+  showCaption(said);
+  if (r.perg.length) showPergament(r.perg[r.perg.length - 1]);
+  await speak(said);
+  if (r.leave && !photo.on) { awayFor = 150 + Math.random() * 200; setState("leaving"); return; }
+  setState("attentive");
+  attentiveUntil = performance.now() / 1000 + 16;
+  if (hf.running) { const n = performance.now() / 1000; hf.muteUntil = n + .9; hf.until = n + 10; hf.buf = ""; hf.partial = ""; setState("listening"); }
+}
+
+function chunks(text) {
+  const parts = [];
+  for (const para of text.split(/\n+/)) {
+    let p = para.trim();
+    while (p.length > 1900) {
+      const cut = p.lastIndexOf(". ", 1900);
+      const at = cut > 200 ? cut + 1 : 1900;
+      parts.push(p.slice(0, at)); p = p.slice(at).trim();
+    }
+    if (p) parts.push(p);
+  }
+  return parts.slice(0, 100);
+}
+
+let deVoice = null;
+function pickVoice() {
+  const vs = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  const de = vs.filter((v) => /^de/i.test(v.lang));
+  deVoice = de.find((v) => /markus|martin|yannick|conrad|helmut|männ|male/i.test(v.name)) || de[0] || null;
+}
+if (window.speechSynthesis) { pickVoice(); window.speechSynthesis.onvoiceschanged = () => { pickVoice(); if (setDlg.open) fillVoices(); }; }
+
+async function speak(text) {
+  setState("speaking");
+  const pref = store.get("albus.voice") || "auto";
+  const synthOK = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+  let how;
+  const male = synthOK ? maleVoice() : null;
+  if ((hf.running && !window.ALBUS_APP) || pref.startsWith("device:") || (pref === "auto" && male && !(window.ALBUS_APP && CAP.tts))) how = synthOK ? "device" : "none";
+  else if (CAP.tts && !ttsBlocked) how = "claude";
+  else if (!CAP.tts && synthOK) how = "device";
+  else how = "none";
+  try {
+    if (how === "claude") {
+      boundaryMode = false;
+      const v = pref.startsWith("claude:") ? pref.slice(7) : "rounded";
+      await CAP.tts.speak(chunks(text).map((t) => ({ text: t })), { language: "de", voice: v, rate: Math.max(.7, voiceRate()) });
+    } else if (how === "device") {
+      await new Promise((resolve) => {
+        const u = new SpeechSynthesisUtterance(text);
+        const v = deviceVoice(pref);
+        u.lang = (v && v.lang) || "de-DE"; if (v) u.voice = v;
+        u.rate = voiceRate(); u.pitch = voicePitch();
+        boundaryMode = false;
+        u.onstart = () => { speakingNow = true; };
+        u.onboundary = () => { boundaryMode = true; mouthPulse = performance.now() / 1000 + .24; };
+        let done = false;
+        const fin = () => { if (done) return; done = true; speakingNow = false; resolve(); };
+        u.onend = u.onerror = fin;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+        setTimeout(fin, 5000 + text.length * 95);
+      });
+    } else {
+      boundaryMode = false;
+      speakingNow = true;
+      await new Promise((r) => setTimeout(r, Math.min(9000, 900 + text.length * 55)));
+    }
+  } catch (e) {
+    if (e && e.code === "not_granted") ttsBlocked = true;
+  } finally {
+    speakingNow = false;
+    boundaryMode = false;
+  }
+}
+
+function voiceRate() { const v = parseFloat(store.get("albus.rate")); return isFinite(v) ? v : .86; }
+function voicePitch() { const v = parseFloat(store.get("albus.pitch")); return isFinite(v) ? v : .72; }
+function germanVoices() {
+  return (window.speechSynthesis ? window.speechSynthesis.getVoices() : []).filter((v) => /^de/i.test(v.lang));
+}
+function deviceVoice(pref) {
+  const de = germanVoices();
+  if (pref && pref.startsWith("device:")) {
+    const v = de.find((x) => x.voiceURI === pref.slice(7));
+    if (v) return v;
+  }
+  return maleVoice() || de[0] || null;
+}
+const MALE = /conrad|killian|stefan|markus|martin|yannick|viktor|helmut|florian|jonas|ralf|bernd|hans|christoph|kasper|klaus|männ|\bmale\b/i;
+const FEMALE = /anna|helena|petra|katja|hedda|amala|marlene|vicki|sandy|shelley|flo\b|grandma|eddy|reed|google deutsch|female|weib/i;
+function isMale(v) { return MALE.test(v.name) && !FEMALE.test(v.name); }
+function maleVoice() {
+  const m = germanVoices().filter(isMale);
+  return m.find((v) => /natural|premium|enhanced|online/i.test(v.name)) || m[0] || null;
+}
+function fillVoices() {
+  const pref = store.get("albus.voice") || "auto";
+  voiceSel.textContent = "";
+  const add = (value, text) => { const o = document.createElement("option"); o.value = value; o.textContent = text; voiceSel.append(o); };
+  add("auto", "Automatisch");
+  if (CAP.tts && window.ALBUS_APP) add("claude:rounded", "Premium-Stimme (ElevenLabs)");
+  else if (CAP.tts) for (const [k, n] of [["rounded", "rund"], ["buttery", "weich"], ["airy", "hell"], ["glassy", "klar"]]) add("claude:" + k, "Claude-Stimme " + n);
+  for (const v of germanVoices()) add("device:" + v.voiceURI, "Gerät: " + v.name + (isMale(v) ? " (männlich)" : ""));
+  voiceSel.value = [...voiceSel.options].some((o) => o.value === pref) ? pref : "auto";
+  const mv = maleVoice();
+  $("#voiceNote").textContent = mv
+    ? "Automatisch nimmt er die männliche Stimme „" + mv.name + "“."
+    : "Auf diesem Gerät ist keine männliche deutsche Stimme installiert. iPad: Einstellungen › Bedienungshilfen › Gesprochene Inhalte › Stimmen › Deutsch, dort z. B. „Markus“ oder „Yannick“ (Premium) laden. Am Computer klingt Microsoft Edge mit „Conrad“ am besten.";
+}
+
+/* ------------------------------------------------------------------ */
+/* Hands-free: wake word "Albus" in continuous dictation              */
+/* ------------------------------------------------------------------ */
+const hf = { running: false, awake: false, until: 0, muteUntil: 0, buf: "", partial: "", timer: 0 };
+const WAKE = /\b(albus|alpus|albuss|albis|elbus|elbes|elbis|albers|albes|alvus)\b[\s,.!?]*/gi;
+function afterWake(text) {
+  let idx = -1, m;
+  WAKE.lastIndex = 0;
+  while ((m = WAKE.exec(text))) idx = m.index + m[0].length;
+  return idx < 0 ? null : text.slice(idx);
+}
+function hfStart() {
+  // called straight from a click: dictation needs the gesture
+  if (!CAP.dict) return false;
+  hf.running = true; hf.buf = ""; hf.partial = ""; hf.awake = false;
+  hf.until = performance.now() / 1000 + 8;
+  const opts = /^de/i.test(navigator.language || "") ? undefined : { language: "de" };
+  CAP.dict.start(opts).catch((e) => {
+    hf.running = false;
+    if (e && (e.code === "not_granted" || e.code === "unavailable")) { $("#hfToggle").checked = false; store.set("albus.handsfree", "0"); }
+    if (e && e.code !== "stopped") showCaption("Das ständige Zuhören ließ sich nicht starten. Tippe ins Bild, um es noch einmal zu versuchen.", "err");
+  });
+  return true;
+}
+function hfEnded(reason) {
+  hf.running = false; hf.awake = false;
+  clearTimeout(hf.timer);
+  micBtn.hidden = !CAP.dict;
+  if (reason !== "stopped") showCaption("Er hört gerade nicht mehr zu. Tippe ins Bild, dann lauscht er wieder auf „Albus“.");
+}
+function hfHear(final, partial) {
+  const now = performance.now() / 1000;
+  if (now < hf.muteUntil || state === "thinking" || state === "speaking") { hf.buf = ""; hf.partial = ""; return; }
+  if (final != null) { hf.buf += final; hf.partial = ""; } else hf.partial = partial;
+  const text = (hf.buf + " " + hf.partial).replace(/\s+/g, " ").trim();
+  const open = now < hf.until;
+  const req = afterWake(text);
+  if (!hf.awake && !open && req == null) { if (hf.buf.length > 600) hf.buf = hf.buf.slice(-200); return; }
+  if (!hf.awake) {
+    hf.awake = true;
+    if (state === "sleeping") setState("waking");
+    else if (state !== "waking") setState("listening");
+  }
+  const ask_ = (req == null ? text : req).trim();
+  showCaption(ask_ ? "„" + ask_ + "“" : "Ja?", "you");
+  clearTimeout(hf.timer);
+  hf.timer = setTimeout(hfCommit, 1600);
+}
+function hfCommit() {
+  if (!hf.running || !hf.awake) return;
+  const text = (hf.buf + " " + hf.partial).replace(/\s+/g, " ").trim();
+  const req = (afterWake(text) ?? text).trim().replace(/^[,.!?\s]+/, "");
+  hf.buf = ""; hf.partial = ""; hf.awake = false;
+  if (req.length > 1) ask(req);
+  else {
+    showCaption("Ja? Ich höre.");
+    speak("Ja?").then(() => { const n = performance.now() / 1000; hf.muteUntil = n + .7; hf.until = n + 9; setState("listening"); });
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Photo portrait (WebGL): your own painting, brought to life          */
+/* ------------------------------------------------------------------ */
+const photo = { on: false, img: null, w: 0, h: 0, pts: null, crop: [0, 0, 1, 1], url: null, id: null };
+let calib = null;
+const CAL_STEPS = [
+  "Einmessen 1/3: Tippe auf sein rechtes Auge, also das linke im Bild.",
+  "Einmessen 2/3: Jetzt auf das andere Auge.",
+  "Einmessen 3/3: Und zuletzt auf die Mitte seines Mundes, auch wenn der Bart ihn verdeckt.",
+];
+let gl = null, prog = null, tex = null, idxCount = 0;
+const U = {};
+const VS = `
+attribute vec2 aUv;
+uniform vec2 uImg; uniform vec4 uCrop;
+uniform vec2 uEyeL; uniform vec2 uEyeR; uniform vec2 uMouth; uniform float uD;
+uniform float uNod; uniform float uTilt; uniform float uJaw; uniform float uBreath;
+varying vec2 vUv;
+void main() {
+  vec2 p = aUv * uImg;
+  vec2 eyes = 0.5 * (uEyeL + uEyeR);
+  vec2 C = eyes + vec2(0.0, 0.45 * uD);
+  vec2 piv = uMouth + vec2(0.0, 1.1 * uD);
+  float r = length((p - C) / vec2(1.35, 1.0)) / uD;
+  float wHead = 1.0 - smoothstep(1.1, 2.6, r);
+  float bx = abs(p.x - uMouth.x) / uD;
+  float by = (p.y - uMouth.y) / uD;
+  float wBeard = (1.0 - smoothstep(0.8, 1.5, bx)) * step(0.0, by) * (1.0 - smoothstep(1.5, 3.6, by));
+  wHead = max(wHead, wBeard * 0.85);
+  vec2 q = p - piv;
+  float a = uTilt * wHead;
+  float s = sin(a); float c = cos(a);
+  vec2 hp = piv + vec2(c * q.x - s * q.y, s * q.x + c * q.y);
+  hp.y += uNod * uD * 0.09 * wHead + (p.y - piv.y) * uNod * 0.02 * wHead;
+  float dxm = (p.x - uMouth.x) / uD;
+  float dym = (p.y - uMouth.y) / uD;
+  float wJaw = smoothstep(-0.04, 0.18, dym) * (1.0 - smoothstep(1.0, 3.2, dym)) * (1.0 - smoothstep(0.55, 1.3, abs(dxm)));
+  hp.y += uJaw * uD * 0.10 * wJaw;
+  float wBody = smoothstep(-1.0, 1.5, (p.y - piv.y) / uD);
+  hp.y -= uBreath * uD * 0.014 * (0.5 + 0.5 * wBody);
+  hp.x += (p.x - piv.x) * uBreath * 0.004 * wBody;
+  vec2 e = min(aUv, 1.0 - aUv);
+  hp = p + (hp - p) * smoothstep(0.0, 0.05, min(e.x, e.y));
+  vUv = aUv;
+  vec2 n = (hp - uCrop.xy) / uCrop.zw;
+  gl_Position = vec4(n.x * 2.0 - 1.0, 1.0 - n.y * 2.0, 0.0, 1.0);
+}`;
+const FS = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform sampler2D uTex; uniform vec2 uImg;
+uniform vec2 uEyeL; uniform vec2 uEyeR; uniform vec2 uMouth; uniform float uD;
+uniform float uClose; uniform float uJaw; uniform float uFlick; uniform vec2 uGaze;
+varying vec2 vUv;
+vec3 tx(vec2 px) { return texture2D(uTex, clamp(px / uImg, 0.0, 1.0)).rgb; }
+vec3 eye(vec3 col, vec2 p, vec2 E) {
+  vec2 rad = vec2(0.36 * uD, 0.20 * uD);
+  vec2 l = (p - E) / rad;
+  float d = length(l);
+  if (d > 1.0) return col;
+  float m = 1.0 - smoothstep(0.62, 1.0, d);
+  float g = 1.0 - smoothstep(0.0, 0.9, d);
+  vec3 base = mix(col, tx(p - uGaze * vec2(0.10 * uD, 0.05 * uD) * g), m);
+  float lid = -1.0 + 2.0 * uClose;
+  float cover = smoothstep(lid + 0.12, lid - 0.12, l.y) * step(0.02, uClose);
+  float k = clamp((l.y + 1.0) / max(lid + 1.0, 0.001), 0.0, 1.0);
+  vec3 skin = tx(vec2(p.x, E.y + mix(-1.55, -1.0, k) * rad.y));
+  vec3 c = mix(base, skin, cover * m);
+  float lash = (1.0 - smoothstep(0.0, 0.11, abs(l.y - lid))) * smoothstep(0.05, 0.3, uClose) * m;
+  return mix(c, c * 0.42, lash * 0.75);
+}
+void main() {
+  vec2 p = vUv * uImg;
+  vec3 col = tx(p);
+  col = eye(col, p, uEyeL);
+  col = eye(col, p, uEyeR);
+  vec2 lm = (p - uMouth - vec2(0.0, 0.03 * uD)) / vec2(0.30 * uD, 0.075 * uD);
+  float mm = (1.0 - smoothstep(0.55, 1.0, length(lm))) * clamp(uJaw * 1.3, 0.0, 1.0);
+  col = mix(col, vec3(0.13, 0.06, 0.045), mm * 0.88);
+  col *= vec3(1.0 + 0.045 * uFlick, 1.0 + 0.02 * uFlick, 1.0 - 0.01 * uFlick);
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+function initGL() {
+  if (gl) return true;
+  gl = cvGL.getContext("webgl", { antialias: true }) || cvGL.getContext("experimental-webgl");
+  if (!gl) return false;
+  const sh = (type, src) => {
+    const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o);
+    if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o));
+    return o;
+  };
+  prog = gl.createProgram();
+  gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  gl.useProgram(prog);
+  for (const n of ["uImg", "uCrop", "uEyeL", "uEyeR", "uMouth", "uD", "uNod", "uTilt", "uJaw", "uBreath", "uClose", "uFlick", "uGaze", "uTex"]) U[n] = gl.getUniformLocation(prog, n);
+  const NX = 44, NY = 58, verts = [], idx = [];
+  for (let y = 0; y <= NY; y++) for (let x = 0; x <= NX; x++) verts.push(x / NX, y / NY);
+  for (let y = 0; y < NY; y++) for (let x = 0; x < NX; x++) {
+    const a = y * (NX + 1) + x, b = a + 1, c = a + NX + 1, d = c + 1;
+    idx.push(a, b, c, b, d, c);
+  }
+  idxCount = idx.length;
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, "aUv");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW);
+  tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  return true;
+}
+
+function computeCrop() {
+  const { w, h } = photo, tgt = W / H;
+  if (w / h > tgt) {
+    const cw = h * tgt;
+    const ex = photo.pts ? (photo.pts.eyeL[0] + photo.pts.eyeR[0]) / 2 : w / 2;
+    photo.crop = [clamp(ex - cw / 2, 0, w - cw), 0, cw, h];
+  } else {
+    const ch = w / tgt;
+    const ey = photo.pts ? (photo.pts.eyeL[1] + photo.pts.eyeR[1]) / 2 : h * .35;
+    photo.crop = [0, clamp(ey - ch * .32, 0, h - ch), w, ch];
+  }
+}
+
+function renderPhoto(now) {
+  const neutral = !photo.pts || !!calib;
+  const pts = photo.pts || { eyeL: [photo.w * .42, photo.h * .3], eyeR: [photo.w * .58, photo.h * .3], mouth: [photo.w * .5, photo.h * .4] };
+  const d = Math.max(8, Math.hypot(pts.eyeR[0] - pts.eyeL[0], pts.eyeR[1] - pts.eyeL[1]));
+  gl.viewport(0, 0, cvGL.width, cvGL.height);
+  gl.clearColor(.1, .07, .05, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.uniform2f(U.uImg, photo.w, photo.h);
+  gl.uniform4f(U.uCrop, ...photo.crop);
+  gl.uniform2f(U.uEyeL, ...pts.eyeL);
+  gl.uniform2f(U.uEyeR, ...pts.eyeR);
+  gl.uniform2f(U.uMouth, ...pts.mouth);
+  gl.uniform1f(U.uD, d);
+  const nod = P.lift >= 0 ? lerp(.35, -.12, P.lift) : lerp(.35, 1, -P.lift);
+  gl.uniform1f(U.uNod, neutral ? 0 : nod);
+  gl.uniform1f(U.uTilt, neutral ? 0 : P.tilt * .9);
+  gl.uniform1f(U.uJaw, neutral ? 0 : P.mouth);
+  gl.uniform1f(U.uBreath, P.breath);
+  gl.uniform1f(U.uClose, neutral ? 0 : clamp(1 - P.eye, 0, 1));
+  gl.uniform2f(U.uGaze, neutral ? 0 : P.gx, neutral ? 0 : P.gy * .7);
+  gl.uniform1f(U.uFlick, Math.sin(now * 9.1) * Math.sin(now * 3.7 + 1) + .3 * Math.sin(now * 23));
+  gl.uniform1i(U.uTex, 0);
+  gl.drawElements(gl.TRIANGLES, idxCount, gl.UNSIGNED_SHORT, 0);
+}
+
+function render(now) {
+  if (photo.on && gl) renderPhoto(now); else draw(now);
+}
+
+function switchMode(m) {
+  photo.on = m === "photo";
+  cv.hidden = photo.on;
+  cvGL.hidden = !photo.on;
+  statusText.textContent = label(state);
+}
+
+function setPhotoFromUrl(src) {
+  return new Promise((res) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        if (!initGL()) { showCaption("Dieses Gerät kann das Bild nicht animieren (kein WebGL).", "err"); return res(false); }
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      } catch (e) { showCaption("Das Bild ließ sich nicht aufhängen.", "err"); return res(false); }
+      photo.img = img; photo.w = img.naturalWidth; photo.h = img.naturalHeight; photo.pts = null;
+      computeCrop();
+      switchMode("photo");
+      res(true);
+    };
+    img.onerror = () => res(false);
+    img.src = src;
+  });
+}
+
+function downscale(file, max, q) {
+  return new Promise((res, rej) => {
+    const u = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(u);
+      c.toBlob((b) => (b ? res(b) : rej(new Error("toBlob"))), "image/jpeg", q || .9);
+    };
+    img.onerror = () => { URL.revokeObjectURL(u); rej(new Error("decode")); };
+    img.src = u;
+  });
+}
+const blobToDataURL = (b) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+
+async function usePickedFile(f) {
+  showCaption("Einen Moment, das Bild wird aufgehängt …");
+  let blob;
+  try { blob = await downscale(f, 1600, .9); } catch { showCaption("Dieses Bild konnte ich nicht öffnen. Versuch ein JPEG oder PNG.", "err"); return; }
+  const ok = await setPhotoFromUrl(URL.createObjectURL(blob));
+  if (!ok) return;
+  photo.url = null; photo.id = null;
+  store.del("albus.portrait.img");
+  if (CAP.assets) {
+    try { const a = await CAP.assets.upload(blob); photo.url = a.url; photo.id = a.id; } catch {}
+  }
+  if (!photo.url) {
+    try { store.set("albus.portrait.img", await blobToDataURL(await downscale(f, 1100, .82))); } catch {}
+  }
+  startCalibration();
+}
+
+function startCalibration() {
+  if (!photo.img) return;
+  calib = { pts: [] };
+  photo.pts = null;
+  computeCrop();
+  renderMarks();
+  statusText.textContent = label(state);
+  showCaption(CAL_STEPS[0]);
+}
+function calibTap(e) {
+  const r = cvGL.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+  if (!(x >= 0 && x <= 1 && y >= 0 && y <= 1)) return;
+  const [cx, cy, cw, ch] = photo.crop;
+  calib.pts.push([cx + x * cw, cy + y * ch]);
+  renderMarks();
+  if (calib.pts.length < 3) { showCaption(CAL_STEPS[calib.pts.length]); return; }
+  let [a, b, m] = calib.pts;
+  if (a[0] > b[0]) [a, b] = [b, a];
+  if (Math.hypot(b[0] - a[0], b[1] - a[1]) < photo.w * .02) { calib.pts = []; renderMarks(); showCaption("Die Augen lagen zu dicht beieinander. " + CAL_STEPS[0]); return; }
+  photo.pts = { eyeL: a, eyeR: b, mouth: m };
+  calib = null;
+  computeCrop();
+  renderMarks();
+  savePortrait();
+  statusText.textContent = label(state);
+  showCaption("Danke. In diesem Rahmen lässt es sich gut aushalten.");
+}
+function renderMarks() {
+  marks.textContent = "";
+  if (!calib || !photo.img) return;
+  const [cx, cy, cw, ch] = photo.crop;
+  const W_ = cvGL.offsetWidth, H_ = cvGL.offsetHeight;
+  for (const [px, py] of calib.pts) {
+    const d = document.createElement("div");
+    d.className = "mark";
+    d.style.left = cvGL.offsetLeft + (px - cx) / cw * W_ + "px";
+    d.style.top = cvGL.offsetTop + (py - cy) / ch * H_ + "px";
+    marks.append(d);
+  }
+}
+function savePortrait() {
+  const n = (p) => [p[0] / photo.w, p[1] / photo.h];
+  const meta = {
+    url: photo.url || null, id: photo.id || null, w: photo.w, h: photo.h,
+    pts: photo.pts ? { eyeL: n(photo.pts.eyeL), eyeR: n(photo.pts.eyeR), mouth: n(photo.pts.mouth) } : null,
+  };
+  store.set("albus.portrait.meta", JSON.stringify(meta));
+  if (meta.url) { mem.portrait = meta; saveMem(); }
+}
+async function loadSavedPortrait() {
+  let meta = mem.portrait, local = null;
+  if (!meta) { try { meta = JSON.parse(store.get("albus.portrait.meta") || "null"); } catch { meta = null; } local = store.get("albus.portrait.img"); }
+  if (!meta || (!meta.url && !local)) return;
+  let src = null;
+  if (meta.url) {
+    try { const r = await fetch(meta.url); if (r.ok) src = URL.createObjectURL(await r.blob()); } catch {}
+    if (!src) src = meta.url;
+  } else src = local;
+  const ok = await setPhotoFromUrl(src);
+  if (!ok) { switchMode("drawn"); return; }
+  photo.url = meta.url || null; photo.id = meta.id || null;
+  if (meta.pts && meta.pts.eyeL) {
+    const d = (p) => [p[0] * photo.w, p[1] * photo.h];
+    photo.pts = { eyeL: d(meta.pts.eyeL), eyeR: d(meta.pts.eyeR), mouth: d(meta.pts.mouth) };
+    computeCrop();
+  } else startCalibration();
+}
+
+/* ------------------------------------------------------------------ */
+/* Memory dialog                                                       */
+/* ------------------------------------------------------------------ */
+function renderMem() {
+  memList.textContent = "";
+  if (!mem.notes.length) {
+    const p = document.createElement("li"); p.className = "empty"; p.textContent = "Noch nichts. Erzähl ihm von dir, dann notiert er sich das Wichtigste.";
+    memList.append(p);
+  }
+  mem.notes.forEach((n, i) => {
+    const li = document.createElement("li");
+    const row = document.createElement("div"); row.className = "row";
+    const span = document.createElement("span"); span.textContent = n.text;
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = "Vergessen";
+    b.addEventListener("click", () => { mem.notes.splice(i, 1); saveMem(); renderMem(); });
+    row.append(span, b); li.append(row); memList.append(li);
+  });
+  $("#memBtn").textContent = mem.notes.length ? `Gedächtnis (${mem.notes.length})` : "Gedächtnis";
+}
+
+/* ------------------------------------------------------------------ */
+/* Wiring                                                              */
+/* ------------------------------------------------------------------ */
+let wakeLock = null;
+function keepAwake() {
+  if (wakeLock || !navigator.wakeLock) return;
+  navigator.wakeLock.request("screen").then((l) => { wakeLock = l; l.addEventListener("release", () => { wakeLock = null; }); }).catch(() => {});
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && hasTapped) keepAwake(); });
+let hasTapped = false;
+document.addEventListener("pointerdown", () => {
+  if (!hasTapped && window.speechSynthesis && !CAP.tts) {
+    // unlock the browser voice on iPad with a silent utterance inside the first tap
+    try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; window.speechSynthesis.speak(u); } catch {}
+  }
+  hasTapped = true; keepAwake();
+}, { capture: true });
+
+frame.addEventListener("click", (e) => {
+  if (calib) { calibTap(e); return; }
+  if (CAP.dict && $("#hfToggle").checked && !hf.running) {
+    if (state === "speaking") stopSpeaking();
+    hfStart();
+    setState(state === "sleeping" ? "waking" : "listening");
+    showCaption("Ich höre zu. Sag einfach „Albus“, wenn du etwas brauchst, oder sprich gleich los.");
+    hint.textContent = "Er lauscht jetzt auf „Albus“. Ein Tippen ins Bild weckt ihn auch.";
+    return;
+  }
+  if (hf.running) {
+    if (state === "speaking") { stopSpeaking(); }
+    if (state === "thinking") return;
+    hf.awake = false; hf.until = performance.now() / 1000 + 9; hf.buf = ""; hf.partial = "";
+    setState(state === "sleeping" ? "waking" : "listening");
+    showCaption("Ja? Ich höre.");
+    return;
+  }
+  wakeAndListen(true);
+});
+frame.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wakeAndListen(true); } });
+micBtn.addEventListener("click", () => {
+  if (hf.running) return;
+  if (listening) { CAP.dict.stop().catch(() => {}); return; }
+  wakeAndListen(true);
+});
+msg.addEventListener("focus", () => { if (state !== "thinking" && state !== "speaking") setState(state === "sleeping" ? "waking" : "listening"); });
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (askCtl) { askCtl.abort(); return; }
+  const text = msg.value.trim();
+  if (!text) { msg.focus(); return; }
+  msg.value = "";
+  if (listening && CAP.dict) { listening = false; CAP.dict.stop().catch(() => {}); }
+  showCaption("„" + text + "“", "you");
+  ask(text);
+});
+$("#pergClose").addEventListener("click", () => { perg.hidden = true; });
+$("#setBtn").addEventListener("click", () => {
+  fillVoices();
+  $("#fileLabel").hidden = false;
+  $("#recal").disabled = !photo.img;
+  $("#drawnBtn").disabled = !photo.on;
+  $("#pitch").value = voicePitch();
+  $("#outings").checked = store.get("albus.outings") !== "0";
+  $("#rate").value = voiceRate();
+  setDlg.showModal();
+});
+$("#setClose").addEventListener("click", () => setDlg.close());
+$("#outings").addEventListener("change", (e) => store.set("albus.outings", e.target.checked ? "1" : "0"));
+$("#pitch").addEventListener("input", (e) => store.set("albus.pitch", e.target.value));
+$("#rate").addEventListener("input", (e) => store.set("albus.rate", e.target.value));
+$("#tryVoice").addEventListener("click", () => {
+  if (state === "speaking") { stopSpeaking(); return; }
+  showCaption("Ah, du bist es. Setz dich doch. Ein Zitronenbrausebonbon vielleicht?");
+  speak("Ah, du bist es. Setz dich doch. Ein Zitronenbrausebonbon vielleicht?").then(() => { setState("attentive"); attentiveUntil = performance.now() / 1000 + 6; });
+});
+$("#file").addEventListener("change", (e) => {
+  const f = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!f) return;
+  setDlg.close();
+  usePickedFile(f);
+});
+$("#recal").addEventListener("click", () => { setDlg.close(); startCalibration(); });
+$("#drawnBtn").addEventListener("click", () => {
+  setDlg.close();
+  calib = null; renderMarks();
+  photo.img = null; photo.pts = null; photo.url = null; photo.id = null;
+  mem.portrait = null; saveMem();
+  store.del("albus.portrait.meta"); store.del("albus.portrait.img");
+  switchMode("drawn");
+  showCaption("Zurück im gemalten Rahmen.");
+});
+voiceSel.addEventListener("change", () => { store.set("albus.voice", voiceSel.value); });
+$("#hfToggle").addEventListener("change", (e) => {
+  store.set("albus.handsfree", e.target.checked ? "1" : "0");
+  if (e.target.checked) { if (hfStart()) { setDlg.close(); setState("listening"); showCaption("Ich höre zu. Sag „Albus“, wenn du mich brauchst."); } }
+  else if (hf.running) { hf.running = false; CAP.dict.stop().catch(() => {}); micBtn.hidden = !CAP.dict; }
+});
+$("#wallBtn").addEventListener("click", () => { document.body.classList.add("wall"); fit(); });
+$("#wallExit").addEventListener("click", () => { document.body.classList.remove("wall"); fit(); });
+$("#memBtn").addEventListener("click", () => { renderMem(); memDlg.showModal(); });
+$("#memClose").addEventListener("click", () => memDlg.close());
+$("#resetTalk").addEventListener("click", () => {
+  mem.recent = []; saveMem(); memDlg.close();
+  showCaption("Ein neues Kapitel also. Ich höre.");
+});
+$("#fsBtn").addEventListener("click", () => {
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else if (req) {
+    try { const p = req.call(el); if (p && p.catch) p.catch(() => { $("#fsBtn").hidden = true; }); } catch { $("#fsBtn").hidden = true; }
+  } else $("#fsBtn").hidden = true;
+});
+
+makeGrain();
+new ResizeObserver(() => fit()).observe(stage);
+fit();
+const h = new Date().getHours();
+if (h >= 22 || h < 6) { state = "sleeping"; P.eye = 0; P.lift = -1; P.glass = 1; P.yaw = -.3; statusEl.dataset.s = "sleeping"; statusText.textContent = LABEL.sleeping; showCaption("Albus ist über seinem Buch eingenickt. Tippe ins Bild, um ihn zu wecken."); }
+stateAt = performance.now() / 1000;
+nextOuting = stateAt + 600 + Math.random() * 300;
+nextFetch = stateAt + 50 + Math.random() * 40;
+requestAnimationFrame(tick);
+initCaps();
+})();
+</script>
+
+</body>
+</html>

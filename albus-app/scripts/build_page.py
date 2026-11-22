@@ -1,0 +1,41 @@
+"""Build public/index.html from the claude.ai artifact page (scripts/portrait.html).
+
+The artifact is the source of truth for the portrait. This script wraps it in a full
+HTML document, loads the app shim (our own server instead of claude.ai) and applies the
+few wording/behaviour changes the standalone app needs. Run: python3 scripts/build_page.py
+"""
+from pathlib import Path
+
+root = Path(__file__).resolve().parent.parent
+src = (root / "scripts" / "portrait.html").read_text(encoding="utf-8")
+
+def rep(s, old, new):
+    assert s.count(old) == 1, f"pattern not found exactly once: {old[:70]!r}"
+    return s.replace(old, new)
+
+# Own server voice works together with listening, unlike claude.ai's.
+src = rep(src, 'if (hf.running || pref.startsWith("device:") || (pref === "auto" && male)) how',
+               'if ((hf.running && !window.ALBUS_APP) || pref.startsWith("device:") || (pref === "auto" && male && !(window.ALBUS_APP && CAP.tts))) how')
+src = rep(src, 'if (CAP.tts) for (const [k, n] of',
+               'if (CAP.tts && window.ALBUS_APP) add("claude:rounded", "Premium-Stimme (ElevenLabs)");\n  else if (CAP.tts) for (const [k, n] of')
+src = rep(src, '"Hier kann Albus nicht antworten: Claude ist in dieser Ansicht nicht verfügbar. Öffne die Seite auf claude.ai, angemeldet."',
+               '"Albus erreicht seinen Server nicht. Prüfe die Internetverbindung und den Zugangsschlüssel."')
+src = rep(src, 'geht alles, was im Raum gesprochen wird, an die Spracherkennung von Claude, höchstens 60 Minuten am Stück. Danach einmal ins Bild tippen.',
+               'geht alles, was im Raum gesprochen wird, an die Spracherkennung deines Browsers (auf dem iPad: Apple).')
+src = rep(src, 'not_granted: "Albus darf nur antworten, wenn du Claude für diese Seite erlaubst. Das geht im Berechtigungsmenü des Artefakts.",',
+               'not_granted: "Der Zugangsschlüssel stimmt nicht. Öffne die Seite noch einmal mit deinem Link.",')
+
+head = """<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#15110d">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="app-shim.js"></script>
+</head>
+<body>
+"""
+out = head + src + "\n</body>\n</html>\n"
+(root / "public" / "index.html").write_text(out, encoding="utf-8")
+print("public/index.html written,", len(out), "bytes")
