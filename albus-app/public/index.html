@@ -592,80 +592,110 @@ function makeBrocade(target) {
     for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; g.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); }
     g.closePath(); g.fill();
   };
-  g.fillStyle = "rgba(226,200,130,.7)";
-  star(9, 9, 4.2);
-  g.fillStyle = "rgba(200,205,220,.55)";
-  star(26, 25, 2.6);
+  // gold embroidered vines instead of stars
+  g.strokeStyle = "rgba(226,196,120,.75)"; g.lineWidth = 1.3;
+  g.beginPath(); g.moveTo(0, 17); g.bezierCurveTo(8, 6, 14, 28, 22, 17); g.bezierCurveTo(27, 10, 31, 14, 34, 17); g.stroke();
+  g.fillStyle = "rgba(226,196,120,.7)";
+  for (const [x, y] of [[8, 9], [22, 26], [30, 11]]) { g.beginPath(); g.ellipse(x, y, 3.2, 1.6, .8, 0, Math.PI * 2); g.fill(); }
+  g.fillStyle = "rgba(200,205,180,.5)";
+  star(15, 4, 1.8);
   g.beginPath(); g.arc(25, 8, 1, 0, Math.PI * 2); g.arc(8, 27, .9, 0, Math.PI * 2); g.fill();
   return target.createPattern(p, "repeat");
 }
 
 function drawChair(g) {
-  const velvet = (x0, x1) => {
-    const v = g.createLinearGradient(x0, 0, x1, 0);
-    v.addColorStop(0, "#8a2c38"); v.addColorStop(.35, "#6a1d29"); v.addColorStop(1, "#3a0c14");
-    return v;
+  // a carved gothic chair of dark oak with pinnacles and a pointed arch, its back and seat padded in old velvet
+  const wood = (x0, x1) => {
+    const w = g.createLinearGradient(x0, 0, x1, 0);
+    w.addColorStop(0, "#7a5530"); w.addColorStop(.4, "#4a3018"); w.addColorStop(1, "#1e1208");
+    return w;
   };
-  const wood = g.createLinearGradient(120, 0, 480, 0);
-  wood.addColorStop(0, "#6b4524"); wood.addColorStop(1, "#2a190b");
-  // short carved legs with ball-and-claw feet
-  g.fillStyle = wood;
-  for (const x of [150, 432]) {
-    g.beginPath(); g.moveTo(x, 690); g.quadraticCurveTo(x - 6, 740, x + 4, 780); g.lineTo(x + 20, 780); g.quadraticCurveTo(x + 26, 740, x + 18, 690); g.closePath(); g.fill();
-    g.beginPath(); g.ellipse(x + 12, 784, 16, 9, 0, 0, Math.PI * 2); g.fill();
+  const hi = "rgba(255,214,150,.32)", lo = "rgba(0,0,0,.45)";
+  // legs
+  g.fillStyle = wood(140, 470);
+  for (const x of [146, 430]) { g.fillRect(x, 690, 24, 100); g.fillRect(x - 4, 776, 32, 12); }
+  // padded back inside the pointed arch
+  const arch = () => {
+    g.beginPath();
+    g.moveTo(176, 640); g.lineTo(176, 330);
+    g.quadraticCurveTo(186, 222, 300, 176);
+    g.quadraticCurveTo(414, 222, 424, 330);
+    g.lineTo(424, 640); g.closePath();
+  };
+  const vel = g.createLinearGradient(180, 0, 420, 0);
+  vel.addColorStop(0, "#7a2a30"); vel.addColorStop(.5, "#5a1a22"); vel.addColorStop(1, "#2c0a10");
+  g.fillStyle = vel; arch(); g.fill();
+  g.save(); arch(); g.clip();
+  g.strokeStyle = "rgba(0,0,0,.25)"; g.lineWidth = 2;
+  for (let x = 196; x < 420; x += 22) { g.beginPath(); g.moveTo(x, 640); g.quadraticCurveTo(x + 4, 420, x - 2, 200); g.stroke(); }
+  g.restore();
+  // the carved arch frame
+  g.lineJoin = "round";
+  g.strokeStyle = wood(170, 430); g.lineWidth = 18; arch(); g.stroke();
+  g.strokeStyle = hi; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(170, 640); g.lineTo(170, 330); g.quadraticCurveTo(180, 214, 300, 166); g.stroke();
+  g.strokeStyle = lo; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(184, 640); g.lineTo(184, 332); g.quadraticCurveTo(194, 230, 300, 186); g.quadraticCurveTo(406, 230, 416, 332); g.lineTo(416, 640); g.stroke();
+  // tracery under the apex: a carved trefoil
+  g.strokeStyle = wood(250, 350); g.lineWidth = 6;
+  for (const [x, y] of [[300, 214], [286, 236], [314, 236]]) { g.beginPath(); g.arc(x, y, 12, 0, Math.PI * 2); g.stroke(); }
+  // side posts with pinnacles, crockets and little spires
+  for (const s2 of [-1, 1]) {
+    const x = 300 + s2 * 148;
+    g.fillStyle = wood(x - 18, x + 18);
+    g.fillRect(x - 16, 196, 32, 500);
+    g.fillStyle = hi; g.fillRect(x - 16, 196, 3, 500);
+    g.fillStyle = lo; g.fillRect(x + 12, 196, 4, 500);
+    // carved panels on the posts
+    g.strokeStyle = "rgba(0,0,0,.4)"; g.lineWidth = 2;
+    for (const y of [250, 360, 470]) {
+      g.beginPath(); g.moveTo(x - 8, y + 60); g.lineTo(x - 8, y + 10); g.quadraticCurveTo(x, y, x + 8, y + 10); g.lineTo(x + 8, y + 60); g.stroke();
+      g.beginPath(); g.arc(x, y + 22, 4, 0, Math.PI * 2); g.stroke();
+    }
+    // pinnacle: little gabled tower, a spire and a ball
+    g.fillStyle = wood(x - 22, x + 22);
+    g.fillRect(x - 22, 176, 44, 24);
+    g.beginPath(); g.moveTo(x - 24, 178); g.lineTo(x, 132); g.lineTo(x + 24, 178); g.closePath(); g.fill();
+    g.fillRect(x - 3, 96, 6, 40);
+    g.beginPath(); g.arc(x, 94, 6, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = hi; g.lineWidth = 1.6;
+    g.beginPath(); g.moveTo(x - 24, 178); g.lineTo(x, 132); g.stroke();
+    g.fillStyle = "rgba(0,0,0,.5)";
+    g.beginPath(); g.moveTo(x - 7, 198); g.lineTo(x - 7, 186); g.quadraticCurveTo(x, 178, x + 7, 186); g.lineTo(x + 7, 198); g.closePath(); g.fill();
+    for (let k = 0; k < 3; k++) {                                   // crockets along the gable
+      const t = .25 + k * .25;
+      g.fillStyle = wood(x - 20, x + 20);
+      g.beginPath(); g.arc(x - 24 * (1 - t) - 4, 178 - 46 * t, 3.4, 0, Math.PI * 2); g.arc(x + 24 * (1 - t) + 4, 178 - 46 * t, 3.4, 0, Math.PI * 2); g.fill();
+    }
   }
-  // high back with wings
-  g.fillStyle = velvet(140, 460);
-  g.beginPath();
-  g.moveTo(150, 640);
-  g.bezierCurveTo(126, 520, 118, 330, 160, 262);
-  g.bezierCurveTo(186, 210, 236, 186, 300, 184);
-  g.bezierCurveTo(364, 186, 414, 210, 440, 262);
-  g.bezierCurveTo(482, 330, 474, 520, 450, 640);
-  g.closePath(); g.fill();
-  // inner back panel, slightly lighter, with button tufting
-  const inner = g.createLinearGradient(190, 0, 410, 0);
-  inner.addColorStop(0, "#9a3442"); inner.addColorStop(.5, "#7a2532"); inner.addColorStop(1, "#4a111b");
-  g.fillStyle = inner;
-  g.beginPath();
-  g.moveTo(196, 610); g.bezierCurveTo(186, 480, 186, 320, 214, 262);
-  g.bezierCurveTo(236, 222, 268, 210, 300, 210);
-  g.bezierCurveTo(332, 210, 364, 222, 386, 262);
-  g.bezierCurveTo(414, 320, 414, 480, 404, 610); g.closePath(); g.fill();
-  for (let r = 0; r < 6; r++) for (let c = 0; c < 4; c++) {
-    const x = 228 + c * 48 + (r % 2) * 24, y = 250 + r * 56;
-    if (x > 400) continue;
-    g.fillStyle = "rgba(20,4,8,.55)"; g.beginPath(); g.arc(x, y, 3.4, 0, Math.PI * 2); g.fill();
-    g.fillStyle = "rgba(255,190,190,.12)"; g.beginPath(); g.arc(x - 1, y - 1, 1.4, 0, Math.PI * 2); g.fill();
-    g.strokeStyle = "rgba(20,4,8,.18)"; g.lineWidth = 1.2;
-    g.beginPath(); g.moveTo(x, y); g.lineTo(x + 24, y + 28); g.moveTo(x, y); g.lineTo(x - 24, y + 28); g.stroke();
-  }
-  // gold piping along the back
-  g.strokeStyle = "rgba(214,170,90,.75)"; g.lineWidth = 3;
-  g.beginPath();
-  g.moveTo(150, 640); g.bezierCurveTo(126, 520, 118, 330, 160, 262);
-  g.bezierCurveTo(186, 210, 236, 186, 300, 184); g.bezierCurveTo(364, 186, 414, 210, 440, 262);
-  g.bezierCurveTo(482, 330, 474, 520, 450, 640); g.stroke();
+  // the finial above the arch: a carved fleur-de-lis
+  g.fillStyle = wood(280, 320);
+  g.fillRect(296, 120, 8, 60);
+  g.beginPath(); g.moveTo(300, 70); g.quadraticCurveTo(314, 92, 300, 116); g.quadraticCurveTo(286, 92, 300, 70); g.fill();
+  for (const s2 of [-1, 1]) { g.beginPath(); g.moveTo(300, 112); g.quadraticCurveTo(300 + s2 * 26, 104, 300 + s2 * 20, 84); g.quadraticCurveTo(300 + s2 * 12, 102, 300, 118); g.fill(); }
+  g.fillRect(288, 114, 24, 7);
+  g.strokeStyle = hi; g.lineWidth = 1.4;
+  g.beginPath(); g.moveTo(300, 72); g.quadraticCurveTo(290, 92, 300, 114); g.stroke();
   // seat cushion
   const cush = g.createLinearGradient(0, 590, 0, 660);
-  cush.addColorStop(0, "#a03848"); cush.addColorStop(1, "#4a1018");
+  cush.addColorStop(0, "#8a3038"); cush.addColorStop(1, "#3a0c14");
   g.fillStyle = cush;
   g.beginPath(); g.moveTo(170, 618); g.quadraticCurveTo(300, 586, 430, 618); g.lineTo(440, 664); g.quadraticCurveTo(300, 680, 160, 664); g.closePath(); g.fill();
-  g.fillStyle = velvet(150, 450);
-  g.fillRect(156, 660, 288, 34);
-  g.strokeStyle = "rgba(214,170,90,.6)"; g.lineWidth = 2.5;
-  g.beginPath(); g.moveTo(156, 662); g.lineTo(444, 662); g.stroke();
-  // rolled arms
-  for (const s of [-1, 1]) {
-    const x = 300 + s * 168;
-    g.fillStyle = velvet(x - 40, x + 40);
-    g.beginPath(); g.moveTo(x - 36, 700); g.lineTo(x - 34, 590); g.quadraticCurveTo(x, 566, x + 34, 590); g.lineTo(x + 36, 700); g.closePath(); g.fill();
-    const roll = g.createRadialGradient(x - 8 * s, 584, 4, x, 592, 40);
-    roll.addColorStop(0, "#b04454"); roll.addColorStop(1, "#4a1018");
-    g.fillStyle = roll;
-    g.beginPath(); g.ellipse(x, 594, 40, 26, 0, 0, Math.PI * 2); g.fill();
-    g.strokeStyle = "rgba(214,170,90,.55)"; g.lineWidth = 2;
-    g.beginPath(); g.ellipse(x, 594, 30, 18, 0, 0, Math.PI * 2); g.stroke();
+  g.fillStyle = wood(150, 450); g.fillRect(150, 660, 300, 34);
+  g.strokeStyle = hi; g.lineWidth = 2; g.beginPath(); g.moveTo(150, 662); g.lineTo(450, 662); g.stroke();
+  g.strokeStyle = "rgba(0,0,0,.4)"; g.lineWidth = 2;
+  for (let x = 170; x < 440; x += 34) { g.beginPath(); g.arc(x + 17, 690, 12, Math.PI, 0); g.stroke(); }
+  // carved armrests with scrolled ends on turned supports
+  for (const s2 of [-1, 1]) {
+    const x = 300 + s2 * 172;
+    g.fillStyle = wood(x - 30, x + 30);
+    g.fillRect(x - 8, 600, 16, 96);
+    for (const y of [624, 652, 676]) { g.beginPath(); g.ellipse(x, y, 11, 5, 0, 0, Math.PI * 2); g.fill(); }
+    g.beginPath(); g.moveTo(x - 30, 588); g.lineTo(x + 30, 588); g.lineTo(x + 30, 604); g.lineTo(x - 30, 604); g.closePath(); g.fill();
+    g.beginPath(); g.arc(x + s2 * 30, 596, 11, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = "rgba(0,0,0,.45)"; g.lineWidth = 2;
+    g.beginPath(); g.arc(x + s2 * 30, 596, 6, 0, Math.PI * 1.6); g.stroke();
+    g.strokeStyle = hi; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x - 30, 589); g.lineTo(x + 30, 589); g.stroke();
   }
 }
 
@@ -678,7 +708,7 @@ for (const [x, n] of [[262, 5], [606, 7], [628, 4], [12, 6]]) {
   for (let k = 0; k < n; k++) { const h = 8 + CR() * 6; st.push({ w: 40 + CR() * 22, h, y, dx: (CR() - .5) * 8, c: ["#5a2a1a", "#2b3d2a", "#3c2a52", "#6a4a1e", "#2a3550", "#702c24"][(CR() * 6) | 0] }); y -= h; }
   STACKS.push({ x, st });
 }
-for (const [x, y, w, h] of [[206, 52, 40, 52], [252, 70, 34, 44], [214, 116, 50, 34], [292, 44, 30, 40], [270, 128, 28, 36], [598, 52, 36, 44]]) WALLNOTES.push({ x, y, w, h, r: (CR() - .5) * .24, ink: CR() });
+for (const [x, y, w, h] of [[206, 52, 40, 52], [252, 70, 34, 44], [210, 118, 46, 32], [292, 44, 30, 40], [596, 112, 40, 48], [598, 176, 36, 40]]) WALLNOTES.push({ x, y, w, h, r: (CR() - .5) * .24, ink: CR() });
 function paper(g, x, y, w, h, r, ink, tone) {
   g.save(); g.translate(x, y); g.rotate(r);
   g.fillStyle = "rgba(0,0,0,.25)"; g.fillRect(-w / 2 + 2, -h / 2 + 2, w, h);
@@ -692,7 +722,8 @@ function paper(g, x, y, w, h, r, ink, tone) {
   g.restore();
 }
 function drawClutterBack(g) {
-  // a little shelf on the wall above the chair: jars, an hourglass, instruments
+  // a little shelf on the wall beside the chair: jars, an hourglass, instruments
+  g.save(); g.translate(204, 186); g.scale(.74, .74); g.translate(-392, -96);
   g.fillStyle = "#3a2412"; g.fillRect(392, 96, 190, 8);
   g.fillStyle = "#24160b"; g.fillRect(400, 104, 6, 14); g.fillRect(568, 104, 6, 14);
   for (const [x, w, h, c] of [[404, 14, 26, "rgba(120,170,120,.55)"], [422, 12, 20, "rgba(170,120,60,.6)"], [438, 16, 30, "rgba(110,130,190,.5)"]]) {
@@ -705,6 +736,7 @@ function drawClutterBack(g) {
   g.fillStyle = "#d8c08a"; g.beginPath(); g.moveTo(473, 93); g.lineTo(485, 93); g.lineTo(479, 86); g.closePath(); g.fill();
   for (let k = 0; k < 6; k++) { g.fillStyle = ["#5a2a1a", "#2b3d2a", "#3c2a52", "#6a4a1e", "#2a3550", "#702c24"][k]; g.fillRect(500 + k * 9, 96 - (22 + (k % 3) * 4), 8, 22 + (k % 3) * 4); }
   g.save(); g.translate(566, 80); g.rotate(-.5); g.fillStyle = "#e1cc9c"; g.fillRect(-20, -4, 40, 8); g.fillStyle = "#b8975e"; g.beginPath(); g.ellipse(20, 0, 3, 4, 0, 0, Math.PI * 2); g.fill(); g.restore();
+  g.restore();
   // pinned notes, star charts and sketches on the wall between window and chair
   for (const n of WALLNOTES) paper(g, n.x + n.w / 2, n.y + n.h / 2, n.w, n.h, n.r, n.ink, "#ead9b0");
   g.fillStyle = "#b02a2a"; for (const n of WALLNOTES) { g.beginPath(); g.arc(n.x + n.w / 2, n.y + 3, 1.8, 0, Math.PI * 2); g.fill(); }
@@ -738,7 +770,7 @@ function drawStatic(g) {
   for (let x = 0; x < W; x += 3) {
     const s = .5 + .5 * Math.sin(x / 19 + Math.sin(x / 61) * 2.4);
     const light = .3 + .7 * Math.exp(-Math.pow((x - FLAME.x) / 430, 2));
-    const r = (26 + s * 70) * light, gg = (10 + s * 18) * light, b = (8 + s * 12) * light;
+    const r = (24 + s * 50) * light, gg = (15 + s * 30) * light, b = (9 + s * 16) * light;
     g.fillStyle = `rgb(${r | 0},${gg | 0},${b | 0})`;
     g.fillRect(x, 0, 3.5, H);
   }
@@ -1154,7 +1186,7 @@ function drawCoat() {
   g.save();
   g.translate(0, P.breath * 1.5);
   const cg = g.createLinearGradient(120, 0, 480, 0);
-  cg.addColorStop(0, "#6a4470"); cg.addColorStop(.45, "#3b2244"); cg.addColorStop(1, "#160b1a");
+  cg.addColorStop(0, "#56705e"); cg.addColorStop(.45, "#26392f"); cg.addColorStop(1, "#0a130e");
   g.fillStyle = cg;
   g.beginPath();
   g.moveTo(200, 468);
@@ -1192,7 +1224,7 @@ function drawCoat() {
   g.restore();
   // arms folding towards the lap
   const ag = g.createLinearGradient(140, 0, 460, 0);
-  ag.addColorStop(0, "#7a5080"); ag.addColorStop(.5, "#45294f"); ag.addColorStop(1, "#1e1022");
+  ag.addColorStop(0, "#5f7a68"); ag.addColorStop(.5, "#2e4438"); ag.addColorStop(1, "#101b15");
   g.fillStyle = ag;
   const pet = armOut();
   if (!pet) {
@@ -1327,7 +1359,7 @@ function drawHands() {
 }
 
 /* Fawkes: perch, flights through the room, landing on the chair, being stroked */
-const PERCH = { x: 300, y: 312 }, CHAIRTOP = { x: 470, y: 120 };
+const PERCH = { x: 300, y: 312 }, CHAIRTOP = { x: CHX + 148 * S, y: 132 * S };
 const fawkes = { head: 1, nextTurn: 5, ruffle: -1, nextRuffle: 14, mode: "perch", x: 300, y: 312, facing: 1,
   path: null, t0: 0, dur: 3, dest: PERCH, nextFly: 240, sitUntil: 0, petUntil: 0 };
 const bez = (p, u) => {
@@ -1554,12 +1586,12 @@ function drawArmTo(t, hx, hy, stroking) {
   const a1 = Math.atan2(E.y - SH.y, E.x - SH.x);
   const Wr = { x: X + 16, y: Y + 6 };                                // wrist
   const ag = g.createLinearGradient(SH.x - 60, 0, SH.x + 40, 0);
-  ag.addColorStop(0, "#7a5080"); ag.addColorStop(1, "#3b2244");
+  ag.addColorStop(0, "#5f7a68"); ag.addColorStop(1, "#26392f");
   g.lineCap = "round"; g.lineJoin = "round";
   // the sleeve's drape hanging under the forearm
   const fa = Math.atan2(Wr.y - E.y, Wr.x - E.x);
   const nx = -Math.sin(fa), ny = Math.cos(fa), side = ny > 0 ? 1 : -1;
-  g.fillStyle = "#4a2c55";
+  g.fillStyle = "#2e4438";
   g.beginPath();
   g.moveTo(E.x, E.y);
   g.lineTo(Wr.x - Math.cos(fa) * 8, Wr.y - Math.sin(fa) * 8);
