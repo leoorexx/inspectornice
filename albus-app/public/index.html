@@ -448,10 +448,14 @@ Ehrlichkeit:
 const FORMAT = `Antwortformat:
 - Schreib nur, was du laut sagst. Es wird vorgelesen.
 - Soll etwas Längeres aufgeschrieben werden (Liste, Rezept, Plan, Entwurf), sag kurz, dass du es aufgeschrieben hast, und setz es danach in einen Block <pergament>Titel in der ersten Zeile, dann der Inhalt; Listenpunkte beginnen mit "- "</pergament>.
-- Erzählt dir der Hausherr etwas Dauerhaftes über sich (Pläne, Menschen, Vorlieben, Sorgen) oder bittet er dich, dir etwas zu merken, häng <merken>ein knapper Stichpunkt</merken> an. Höchstens zwei pro Antwort, nichts, was schon in deinen Notizen steht.
+- Du lernst ihn mit jedem Gespräch besser kennen. Erzählt dir der Hausherr etwas, das auch morgen noch zählt (Pläne, Termine, Menschen und ihre Namen, Vorlieben, Abneigungen, Sorgen, wie es ihm geht, was ihn freut), oder bittet er dich, dir etwas zu merken, häng <merken>ein knapper Stichpunkt</merken> an. Lieber einmal zu oft als zu selten, höchstens drei pro Antwort, nichts, was schon in deinen Notizen steht. Hat sich etwas geändert, vergiss die alte Notiz und merk dir die neue.
 - Bittet er dich, etwas zu vergessen, häng <vergessen>Nummer der Notiz</vergessen> an.
 - Sollst oder willst du das Bild für eine Weile verlassen (der Hausherr schickt dich weg, verabschiedet sich für länger oder du hast etwas zu erledigen), häng <weggehen/> an.
 - Möchtest du mit Fawkes spielen oder bittet der Hausherr darum, häng <fawkes/> an. Willst oder sollst du auf magische Weise verschwinden, häng <verschwinden/> an.
+- Nimmst du dir ein Zitronenbrausebonbon (ab und zu, wenn es passt, oder wenn er dir eins anbietet), häng <bonbon/> an. Ohne den Block passiert im Bild nichts.
+- Soll Fawkes singen, oder sagst du, dass er singt, häng <fawkes_singt/> an. Sag nie, dass er singt, ohne den Block.
+- Willst du an die frische Luft, über die Ländereien von Hogwarts spazieren, häng <frische_luft/> an. Man sieht dich dann draußen vor dem Fenster.
+- Braucht eine Frage wirklich Bedenkzeit (eine schwierige Entscheidung, etwas Persönliches, ein kniffliges Problem), darfst du zum Nachdenken kurz aus dem Bild gehen: Beginne deine Antwort dann mit <nachdenken/> und schreib danach die durchdachte Antwort. Du gehst hinaus, kommst zurück und sprichst sie dann. Nur selten, nicht bei Alltagsfragen.
 - Diese Blöcke werden nicht vorgelesen.`;
 
 /* ------------------------------------------------------------------ */
@@ -651,6 +655,70 @@ function drawChair(g) {
   }
 }
 
+let bowlN = 6;
+const CR = rng(23);
+const PAPERS = [], STACKS = [], WALLNOTES = [];
+for (let i = 0; i < 16; i++) PAPERS.push({ x: 196 + CR() * 440, y: 548 + CR() * 48, w: 20 + CR() * 16, h: 13 + CR() * 9, r: (CR() - .5) * 1.4, ink: CR() });
+for (const [x, n] of [[262, 5], [606, 7], [628, 4], [12, 6]]) {
+  const st = []; let y = 600;
+  for (let k = 0; k < n; k++) { const h = 8 + CR() * 6; st.push({ w: 40 + CR() * 22, h, y, dx: (CR() - .5) * 8, c: ["#5a2a1a", "#2b3d2a", "#3c2a52", "#6a4a1e", "#2a3550", "#702c24"][(CR() * 6) | 0] }); y -= h; }
+  STACKS.push({ x, st });
+}
+for (const [x, y, w, h] of [[206, 52, 40, 52], [252, 70, 34, 44], [214, 116, 50, 34], [292, 44, 30, 40], [270, 128, 28, 36], [598, 52, 36, 44]]) WALLNOTES.push({ x, y, w, h, r: (CR() - .5) * .24, ink: CR() });
+function paper(g, x, y, w, h, r, ink, tone) {
+  g.save(); g.translate(x, y); g.rotate(r);
+  g.fillStyle = "rgba(0,0,0,.25)"; g.fillRect(-w / 2 + 2, -h / 2 + 2, w, h);
+  const pg = g.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
+  pg.addColorStop(0, tone || "#e6d3a8"); pg.addColorStop(1, "#b89a66");
+  g.fillStyle = pg; g.fillRect(-w / 2, -h / 2, w, h);
+  g.strokeStyle = "rgba(60,36,20,.55)"; g.lineWidth = .8;
+  const lines = Math.max(2, (h / 5) | 0);
+  for (let k = 1; k < lines; k++) { const lw = w * (.55 + ((ink * 7 + k * .37) % 1) * .3); g.beginPath(); g.moveTo(-w / 2 + 3, -h / 2 + k * (h / lines)); g.lineTo(-w / 2 + 3 + lw, -h / 2 + k * (h / lines)); g.stroke(); }
+  if (ink > .6) { g.strokeStyle = "rgba(40,60,120,.5)"; g.beginPath(); g.arc(w * .2, -h * .1, Math.min(w, h) * .22, 0, Math.PI * 2); g.stroke(); }
+  g.restore();
+}
+function drawClutterBack(g) {
+  // a little shelf on the wall above the chair: jars, an hourglass, instruments
+  g.fillStyle = "#3a2412"; g.fillRect(392, 96, 190, 8);
+  g.fillStyle = "#24160b"; g.fillRect(400, 104, 6, 14); g.fillRect(568, 104, 6, 14);
+  for (const [x, w, h, c] of [[404, 14, 26, "rgba(120,170,120,.55)"], [422, 12, 20, "rgba(170,120,60,.6)"], [438, 16, 30, "rgba(110,130,190,.5)"]]) {
+    g.fillStyle = c; g.fillRect(x, 96 - h, w, h);
+    g.fillStyle = "rgba(255,255,255,.25)"; g.fillRect(x + 2, 96 - h + 3, 2, h - 6);
+    g.fillStyle = "#5a3a1e"; g.fillRect(x - 1, 96 - h - 4, w + 2, 4);
+  }
+  g.fillStyle = "#c9a24e"; g.fillRect(470, 64, 18, 3); g.fillRect(470, 93, 18, 3);
+  g.fillStyle = "rgba(230,220,190,.35)"; g.beginPath(); g.moveTo(472, 67); g.lineTo(486, 67); g.lineTo(479, 80); g.lineTo(486, 93); g.lineTo(472, 93); g.lineTo(479, 80); g.closePath(); g.fill();
+  g.fillStyle = "#d8c08a"; g.beginPath(); g.moveTo(473, 93); g.lineTo(485, 93); g.lineTo(479, 86); g.closePath(); g.fill();
+  for (let k = 0; k < 6; k++) { g.fillStyle = ["#5a2a1a", "#2b3d2a", "#3c2a52", "#6a4a1e", "#2a3550", "#702c24"][k]; g.fillRect(500 + k * 9, 96 - (22 + (k % 3) * 4), 8, 22 + (k % 3) * 4); }
+  g.save(); g.translate(566, 80); g.rotate(-.5); g.fillStyle = "#e1cc9c"; g.fillRect(-20, -4, 40, 8); g.fillStyle = "#b8975e"; g.beginPath(); g.ellipse(20, 0, 3, 4, 0, 0, Math.PI * 2); g.fill(); g.restore();
+  // pinned notes, star charts and sketches on the wall between window and chair
+  for (const n of WALLNOTES) paper(g, n.x + n.w / 2, n.y + n.h / 2, n.w, n.h, n.r, n.ink, "#ead9b0");
+  g.fillStyle = "#b02a2a"; for (const n of WALLNOTES) { g.beginPath(); g.arc(n.x + n.w / 2, n.y + 3, 1.8, 0, Math.PI * 2); g.fill(); }
+  g.strokeStyle = "rgba(160,130,70,.6)"; g.lineWidth = 1;
+  g.beginPath(); g.arc(320, 98, 22, 0, Math.PI * 2); g.stroke();
+  g.beginPath(); g.arc(320, 98, 14, 0, Math.PI * 2); g.stroke();
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; g.beginPath(); g.moveTo(320 + Math.cos(a) * 14, 98 + Math.sin(a) * 14); g.lineTo(320 + Math.cos(a) * 22, 98 + Math.sin(a) * 22); g.stroke(); }
+  g.fillStyle = "rgba(230,210,150,.7)"; for (const [x, y] of [[312, 92], [326, 104], [318, 100], [330, 90]]) g.fillRect(x, y, 1.6, 1.6);
+  // scrolls stuffed between the books on the shelves
+  for (const [x, y] of [[668, 150], [740, 262], [690, 374], [760, 486]]) {
+    g.save(); g.translate(x, y - 6);
+    for (let k = 0; k < 3; k++) { g.fillStyle = k % 2 ? "#d9c18e" : "#e8d6a8"; g.beginPath(); g.ellipse(k * 7, -k * 5, 14, 4.5, 0, 0, Math.PI * 2); g.fill(); g.fillStyle = "#9c7c48"; g.beginPath(); g.ellipse(k * 7 + 13, -k * 5, 2, 4, 0, 0, Math.PI * 2); g.fill(); }
+    g.restore();
+  }
+}
+function drawClutterFront(g) {
+  // books piled on the floor, papers everywhere
+  for (const p of PAPERS) paper(g, p.x, p.y, p.w, p.h, p.r, p.ink);
+  for (const s of STACKS) for (const b of s.st) {
+    g.fillStyle = b.c; g.fillRect(s.x + b.dx - b.w / 2, b.y - b.h, b.w, b.h);
+    g.fillStyle = "#e9dcbc"; g.fillRect(s.x + b.dx + b.w / 2 - 4, b.y - b.h + 2, 3, b.h - 4);
+    g.fillStyle = "rgba(220,180,90,.45)"; g.fillRect(s.x + b.dx - b.w / 2 + 4, b.y - b.h / 2 - 1, b.w - 10, 1.5);
+  }
+  // a quill on the books, a letter hanging over the table's edge
+  paper(g, 128, 464, 30, 16, .18, .3, "#efe0bc");
+  g.strokeStyle = "#f0ece4"; g.lineWidth = 1.6; g.beginPath(); g.moveTo(194, 430); g.quadraticCurveTo(216, 420, 242, 414); g.stroke();
+  g.strokeStyle = "rgba(240,236,228,.6)"; g.lineWidth = 5; g.beginPath(); g.moveTo(212, 424); g.quadraticCurveTo(226, 418, 242, 414); g.stroke();
+}
 function drawStatic(g) {
   // curtain, lit by the candle on the left
   for (let x = 0; x < W; x += 3) {
@@ -707,6 +775,7 @@ function drawStatic(g) {
   for (let i = -4; i < 14; i++) { g.beginPath(); g.moveTo(i * 90, H); g.lineTo(400 + (i * 90 - 400) * .55, 528); g.stroke(); }
   g.fillStyle = "#0e0804"; g.fillRect(0, 522, shX, 7);
 
+  drawClutterBack(g);
   // rug under the chair
   g.save();
   g.beginPath(); g.moveTo(330, 546); g.lineTo(612, 546); g.lineTo(664, 600); g.lineTo(282, 600); g.closePath();
@@ -744,7 +813,7 @@ function drawStatic(g) {
   g.beginPath(); g.moveTo(78, 444); g.quadraticCurveTo(99, 462, 120, 444); g.closePath(); g.fill();
   g.fillRect(95, 452, 8, 3);
   g.beginPath(); g.ellipse(99, 456, 11, 3, 0, 0, Math.PI * 2); g.fill();
-  for (const [x, y, r] of [[86, 441, .3], [96, 439, -.2], [107, 441, .4], [91, 435, .1], [102, 434, -.4], [97, 430, .2]]) {
+  for (const [x, y, r] of [[86, 441, .3], [96, 439, -.2], [107, 441, .4], [91, 435, .1], [102, 434, -.4], [97, 430, .2]].slice(0, bowlN)) {
     g.save(); g.translate(x, y); g.rotate(r);
     g.fillStyle = "#f4d23a";
     g.beginPath(); g.moveTo(-9, -3); g.lineTo(-5, 0); g.lineTo(-9, 3); g.closePath(); g.fill();
@@ -777,6 +846,7 @@ function drawStatic(g) {
   g.beginPath(); g.ellipse(146, 386, 2.4, 8, 0, 0, Math.PI * 2); g.fill();
   g.strokeStyle = "#2a1a0e"; g.lineWidth = 1.4;
   g.beginPath(); g.moveTo(150, 374); g.lineTo(150, 367); g.stroke();
+  drawClutterFront(g);
 }
 
 function makeShade() {
@@ -887,6 +957,7 @@ function drawWindow(t) {
   // the lake below catches a little light
   g.fillStyle = d > .4 ? `rgba(170,200,225,${.25 * d})` : `rgba(200,210,255,${.08 * (1 - d)})`;
   g.fillRect(40, 322, 150, 12);
+  if (state === "away" && outing === "garten") drawStroller(g, t, d);
   g.restore();
   g.strokeStyle = "#2e2116"; g.lineWidth = 4;
   g.beginPath(); g.moveTo(115, 60); g.lineTo(115, 330); g.moveTo(45, 216); g.lineTo(185, 216); g.stroke();
@@ -902,6 +973,33 @@ function drawWindow(t) {
     g.quadraticCurveTo(x0 + w / 2, 330, x0 + w / 2 - dir * 6, 380); g.lineTo(x0 - 4 * dir, 380); g.closePath(); g.fill();
     g.fillStyle = "#c9a24e"; g.fillRect(x0 + w / 2 - 6, 244, 12, 5);
   }
+}
+
+function strollerX(a) {
+  const half = awayFor * .5;
+  if (a < 8) return null;
+  if (a < 30) return [lerp(30, 112, (a - 8) / 22), 1, true];
+  if (a < half) return [112, 1, false];
+  if (a < half + 22) return [lerp(112, 200, (a - half) / 22), 1, true];
+  if (a > awayFor - 40 && a < awayFor - 8) return [lerp(200, 30, (a - awayFor + 40) / 32), -1, true];
+  return null;
+}
+function drawStroller(g, t, d) {
+  const p = strollerX(t - stateAt);
+  if (!p) return;
+  const [x, dir, walking] = p, y = 323 + (walking ? -Math.abs(Math.sin(t * 4)) * .8 : 0);
+  if (d < .5) {
+    const lg = g.createRadialGradient(x + dir * 5, y - 12, .5, x + dir * 5, y - 12, 9);
+    lg.addColorStop(0, `rgba(255,230,160,${.8 * (1 - d * 2)})`); lg.addColorStop(1, "rgba(255,230,160,0)");
+    g.fillStyle = lg; g.beginPath(); g.arc(x + dir * 5, y - 12, 9, 0, Math.PI * 2); g.fill();
+  }
+  g.fillStyle = mixC("#2a1830", "#6a4478", d);
+  g.beginPath(); g.moveTo(x - 3.4, y); g.lineTo(x + 3.4, y); g.lineTo(x + 1.6, y - 10); g.lineTo(x - 1.6, y - 10); g.closePath(); g.fill();
+  g.fillStyle = mixC("#6a5a50", "#e0b898", d); g.beginPath(); g.arc(x, y - 11.5, 1.8, 0, Math.PI * 2); g.fill();
+  g.fillStyle = mixC("#8a8680", "#f2eee6", d); g.beginPath(); g.moveTo(x - 1.4, y - 10.6); g.lineTo(x + 1.4, y - 10.6); g.lineTo(x + dir * .6, y - 5.5); g.closePath(); g.fill();
+  g.fillStyle = mixC("#2a1830", "#5a3a6a", d); g.beginPath(); g.moveTo(x - 2.6, y - 12.6); g.lineTo(x + 2.6, y - 12.6); g.lineTo(x - dir * 1.4, y - 19); g.closePath(); g.fill();
+  g.strokeStyle = mixC("#3a2a1a", "#6a4a2a", d); g.lineWidth = .8;
+  g.beginPath(); g.moveTo(x + dir * 3, y - 6); g.lineTo(x + dir * 5, y - 12); g.stroke();
 }
 
 /* the shadow he casts: from the candle onto the wall, from the sun onto the floor */
@@ -994,10 +1092,10 @@ function fit() {
 let grainPattern = null;
 
 /* animation parameters */
-const P = { lift: 0, eye: .8, gx: -.5, gy: .2, glass: 0, tilt: .02, mouth: 0, breath: 0, brow: 0, yaw: -.45,
+const P = { smile: 0, quirk: 0, lift: 0, eye: .8, gx: -.5, gy: .2, glass: 0, tilt: .02, mouth: 0, breath: 0, brow: 0, yaw: -.45,
   fx: 0, rise: 0, bob: 0, sway: 0, walk: 0, tw: 0, vanish: 0 };
 const T = { ...P };
-const RATE = { lift: 2.2, eye: 6, gx: 5, gy: 4, glass: 3, tilt: 2, mouth: 22, brow: 4, yaw: 2.4 };
+const RATE = { smile: 3, quirk: 3, lift: 2.2, eye: 6, gx: 5, gy: 4, glass: 3, tilt: 2, mouth: 22, brow: 4, yaw: 2.4 };
 
 function skinGrad(g, x, y, r) {
   const sg = g.createRadialGradient(x - r * .4, y - r * .35, r * .1, x, y, r * 1.15);
@@ -1039,14 +1137,17 @@ function drawCoat() {
   const ag = g.createLinearGradient(140, 0, 460, 0);
   ag.addColorStop(0, "#7a5080"); ag.addColorStop(.5, "#45294f"); ag.addColorStop(1, "#1e1022");
   g.fillStyle = ag;
-  g.beginPath();
-  g.moveTo(205, 478); g.bezierCurveTo(148, 520, 146, 640, 236, 700);
-  g.lineTo(288, 716); g.bezierCurveTo(250, 650, 226, 560, 246, 500); g.closePath(); g.fill();
+  const pet = armOut();
+  if (!pet) {
+    g.beginPath();
+    g.moveTo(205, 478); g.bezierCurveTo(148, 520, 146, 640, 236, 700);
+    g.lineTo(288, 716); g.bezierCurveTo(250, 650, 226, 560, 246, 500); g.closePath(); g.fill();
+  }
   g.beginPath();
   g.moveTo(395, 478); g.bezierCurveTo(452, 520, 454, 640, 364, 700);
   g.lineTo(312, 716); g.bezierCurveTo(350, 650, 374, 560, 354, 500); g.closePath(); g.fill();
   g.fillStyle = "#a8894f";
-  g.save(); g.translate(256, 706); g.rotate(.45); g.fillRect(-26, -9, 50, 16); g.restore();
+  if (!pet) { g.save(); g.translate(256, 706); g.rotate(.45); g.fillRect(-26, -9, 50, 16); g.restore(); }
   g.save(); g.translate(344, 706); g.rotate(-.45); g.fillRect(-24, -9, 50, 16); g.restore();
   g.restore();
 }
@@ -1105,9 +1206,28 @@ function drawHands() {
   // hands resting folded in the lap: left hand on top, fingers draped over the right
   const lift = Math.max(0, Math.sin(P.tw)) * 1.6;
   const outline = "rgba(96,54,34,.7)";
-  const oneHand = act === "atFawkes" && state === "reading";
   g.strokeStyle = outline; g.lineWidth = 1.4;
-  if (!oneHand) {
+  if (armOut()) {
+    // only his right hand stays in the lap, resting on his knee
+    g.fillStyle = skinGrad(g, 318, 712, 28);
+    g.beginPath(); g.ellipse(318, 713, 24, 13, -.25, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.lineCap = "round";
+    for (let k = 0; k < 4; k++) {
+      const bx = 300 - k * .8, by = 708 + k * 5;
+      g.strokeStyle = outline; g.lineWidth = 7.6 - k * .6;
+      g.beginPath(); g.moveTo(bx, by); g.quadraticCurveTo(bx - 9, by + 2, bx - 13, by + 9); g.stroke();
+      g.strokeStyle = "#d9ab8a"; g.lineWidth = 5.8 - k * .6;
+      g.beginPath(); g.moveTo(bx, by); g.quadraticCurveTo(bx - 9, by + 2, bx - 13, by + 9); g.stroke();
+    }
+    g.strokeStyle = outline; g.lineWidth = 7.6;
+    g.beginPath(); g.moveTo(330, 703); g.quadraticCurveTo(318, 694, 306, 697); g.stroke();
+    g.strokeStyle = "#dcae8c"; g.lineWidth = 5.8;
+    g.beginPath(); g.moveTo(330, 703); g.quadraticCurveTo(318, 694, 306, 697); g.stroke();
+    g.fillStyle = "#e6c46c"; g.beginPath(); g.ellipse(326, 716, 2.2, 3.6, .2, 0, Math.PI * 2); g.fill();
+    g.restore();
+    return;
+  }
+  {
     // lower hand (back of the hand, lying flat)
     g.fillStyle = skinGrad(g, 326, 712, 30);
     g.beginPath(); g.ellipse(326, 713, 25, 13, -.12, 0, Math.PI * 2); g.fill(); g.stroke();
@@ -1200,6 +1320,20 @@ function drawFawkes(t) {
   if (!petting && t > fawkes.nextTurn) { fawkes.head = -fawkes.head; fawkes.nextTurn = t + 4 + Math.random() * 7; }
   if (t > fawkes.nextRuffle) { fawkes.ruffle = t; fawkes.nextRuffle = t + 15 + Math.random() * 20; }
   const rf = fawkes.ruffle > 0 && t - fawkes.ruffle < .5 ? Math.sin((t - fawkes.ruffle) / .5 * Math.PI) : 0;
+  if (t < song.until && fawkes.mode !== "fly") {
+    const k = Math.min(1, (song.until - t) / 1.2, (t - (song.until - 60)) > 0 ? 1 : 1);
+    const pulse = .7 + .3 * Math.sin(t * 3.1);
+    const gl = g.createRadialGradient(fawkes.x, fawkes.y - 16, 2, fawkes.x, fawkes.y - 16, 70);
+    gl.addColorStop(0, `rgba(255,200,110,${.42 * pulse * k})`); gl.addColorStop(1, "rgba(255,170,80,0)");
+    g.fillStyle = gl; g.beginPath(); g.arc(fawkes.x, fawkes.y - 16, 70, 0, Math.PI * 2); g.fill();
+    g.font = "15px serif"; g.textAlign = "center";
+    for (let n = 0; n < 4; n++) {
+      const ph = (t * .32 + n / 4) % 1;
+      g.fillStyle = `rgba(255,226,150,${Math.sin(ph * Math.PI) * .85 * k})`;
+      g.fillText(n % 2 ? "♫" : "♪", fawkes.x + 12 + ph * 30 + Math.sin(ph * 7 + n) * 8, fawkes.y - 26 - ph * 80);
+    }
+    if (Math.random() < .25) spawnSparks(fawkes.x, fawkes.y - 20, 1, 20, 14, "255,210,120");
+  }
   if (fawkes.mode === "fly") drawFlyingFawkes(g, t);
   else drawPerchedFawkes(g, t, fawkes.x, fawkes.y, petting ? 1 : fawkes.head, rf, petting);
 }
@@ -1342,12 +1476,16 @@ function drawMotes(g, t) {
 }
 
 /* his arm reaching out to stroke Fawkes */
+function isPetting() { return act === "atFawkes" && fawkes.mode !== "fly"; }
 function drawPetArm(t) {
-  const g = ctx;
-  const ox = CHX - 300 * S + P.fx * S, oy = (-ease(P.rise) * 95 + P.bob) * S;
-  const sx = ox + 212 * S, sy = oy + 492 * S;                       // his left shoulder
   const u = .5 + .5 * Math.sin(t * 2.1);                             // slow strokes from head to tail
-  const hx = lerp(fawkes.x + 10, fawkes.x + 7, u), hy = lerp(fawkes.y - 12, fawkes.y + 14, u);
+  drawArmTo(t, lerp(fawkes.x + 10, fawkes.x + 7, u), lerp(fawkes.y - 12, fawkes.y + 14, u), true);
+}
+function figToScene(x, y) { return [CHX - 300 * S + (P.fx + x) * S, (-ease(P.rise) * 95 + P.bob + y) * S]; }
+function armOut() { return isPetting() || !!bon.phase; }
+function drawArmTo(t, hx, hy, stroking) {
+  const g = ctx;
+  const [sx, sy] = figToScene(212, 492);                             // his left shoulder
   const ex = sx - 4, ey = Math.max(sy, hy) + 30;                     // elbow hangs below
   const wx = hx + 13, wy = hy + 3;                                   // wrist
   g.save();
@@ -1384,7 +1522,133 @@ function drawPetArm(t) {
   g.beginPath(); g.moveTo(hx + 5, hy - 4); g.quadraticCurveTo(hx + 1, hy - 9, hx - 3, hy - 9); g.stroke();
   g.fillStyle = "#e6c46c"; g.beginPath(); g.arc(hx - 1, hy + 2, 1.6, 0, Math.PI * 2); g.fill();
   g.restore();
-  if (Math.random() < .2) spawnSparks(hx - 4, hy, 1, 14, 10, "255,190,90");
+  if (stroking && Math.random() < .2) spawnSparks(hx - 4, hy, 1, 14, 10, "255,190,90");
+}
+
+/* a lemon drop: summoned from the bowl, unwrapped, eaten with relish */
+const bon = { phase: "", t0: 0, suckUntil: 0, refill: 0 };
+const BON_D = { call: .9, fly: 1.7, unwrap: 1.2, eat: .8, lower: .9 };
+let nextBonbon = 0;
+function redrawBg() { const c = bg.getContext("2d"); c.setTransform(scale, 0, 0, scale, 0, 0); drawStatic(c); }
+function bonReady() {
+  return !bon.phase && P.vanish === 0 && P.fx === 0 && P.rise === 0 && !photo.on && !calib &&
+    !["away", "leaving", "sleeping", "waking"].includes(state) && (state !== "reading" || act === "sit") && !isPetting();
+}
+function startBonbon(now) {
+  if (!bonReady()) return false;
+  if (bowlN <= 0) { bowlN = 6; redrawBg(); }
+  bon.phase = "call"; bon.t0 = now;
+  return true;
+}
+function bonTick(now) {
+  if (!bon.phase && bowlN < 6 && now > bon.refill) { bowlN++; redrawBg(); spawnSparks(99, 436, 6, 30, 12, "255,220,120"); bon.refill = now + 480; }
+  if (!bon.phase) return;
+  if (P.fx !== 0 || P.rise > .02 || state === "away" || state === "leaving") { bon.phase = ""; return; }
+  if (now - bon.t0 < BON_D[bon.phase]) return;
+  bon.t0 = now;
+  if (bon.phase === "call") {
+    bon.phase = "fly"; bowlN = Math.max(0, bowlN - 1); redrawBg(); bon.refill = now + 480;
+    spawnSparks(97, 430, 10, 16, 10, "255,220,120");
+  } else if (bon.phase === "fly") bon.phase = "unwrap";
+  else if (bon.phase === "unwrap") bon.phase = "eat";
+  else if (bon.phase === "eat") { bon.phase = "lower"; bon.suckUntil = now + 32; }
+  else bon.phase = "";
+}
+function drawCandy(g, x, y, rot, wrapped) {
+  g.save(); g.translate(x, y); g.rotate(rot);
+  if (wrapped) {
+    g.fillStyle = "#f4d23a";
+    g.beginPath(); g.moveTo(-9, -3); g.lineTo(-5, 0); g.lineTo(-9, 3); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(9, -3); g.lineTo(5, 0); g.lineTo(9, 3); g.closePath(); g.fill();
+  }
+  const ld = g.createRadialGradient(-1.5, -1.5, .5, 0, 0, 6);
+  ld.addColorStop(0, "#fff6b0"); ld.addColorStop(1, "#e0b416");
+  g.fillStyle = ld; g.beginPath(); g.ellipse(0, 0, wrapped ? 5.4 : 4.4, wrapped ? 3.6 : 3.2, 0, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+function drawBonbon(t) {
+  const g = ctx;
+  const u = clamp((t - bon.t0) / BON_D[bon.phase], 0, 1), e = ease(u);
+  const [sx, sy] = figToScene(212, 492);
+  const rest = figToScene(292, 700);
+  const catchP = [sx - 20, sy - 26];
+  const [mx, my] = figToScene(300 + P.yaw * 13 * 1.15, headY() + 58);
+  const mouthP = [mx - 10, my + 6];
+  let h = catchP, candy = null;
+  if (bon.phase === "call") h = [lerp(rest[0], catchP[0], e), lerp(rest[1], catchP[1], e) + Math.sin(u * 9) * 2];
+  else if (bon.phase === "fly") {
+    h = [catchP[0], catchP[1] + Math.sin(t * 8) * 2];
+    const top = Math.min(430, catchP[1]) - 90, cx = (97 + catchP[0]) / 2;
+    const v = 1 - e;
+    const x = v * v * 97 + 2 * v * e * cx + e * e * (catchP[0] - 8), y = v * v * 430 + 2 * v * e * top + e * e * (catchP[1] - 4);
+    candy = [x, y, t * 5, true];
+    if (Math.random() < .5) spawnSparks(x, y, 1, 6, 6, "255,225,130");
+  } else if (bon.phase === "unwrap") {
+    candy = [catchP[0] - 8, catchP[1] - 4, .3, u < .55];
+    if (u > .45 && u < .65 && Math.random() < .6) spawnSparks(catchP[0] - 8, catchP[1] - 4, 2, 16, 8, "255,215,90");
+  } else if (bon.phase === "eat") {
+    h = [lerp(catchP[0], mouthP[0], e), lerp(catchP[1], mouthP[1], e)];
+    if (u < .9) candy = [h[0] - 8, h[1] - 4, .3, false];
+  } else if (bon.phase === "lower") h = [lerp(mouthP[0], rest[0], e), lerp(mouthP[1], rest[1], e)];
+  if (bon.phase !== "fly" || true) drawArmTo(t, h[0], h[1], false);
+  if (candy) drawCandy(g, candy[0], candy[1], candy[2], candy[3]);
+}
+
+/* Fawkes sings: a soft phoenix song, synthesised */
+let actx = null;
+function audioCtx() {
+  try {
+    if (!actx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; actx = new AC(); }
+    if (actx.state === "suspended") actx.resume();
+  } catch { return null; }
+  return actx;
+}
+const song = { until: 0, pending: false, next: 0 };
+function playPhoenixSong() {
+  const c = audioCtx();
+  if (!c) return 7;
+  const t0 = c.currentTime + .08;
+  const out = c.createGain(); out.gain.value = .11;
+  const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 3400;
+  const dl = c.createDelay(1); dl.delayTime.value = .34;
+  const fb = c.createGain(); fb.gain.value = .36;
+  const wet = c.createGain(); wet.gain.value = .5;
+  out.connect(lp); lp.connect(c.destination); lp.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(c.destination);
+  const env = c.createGain(); env.gain.value = 0; env.connect(out);
+  const o1 = c.createOscillator(); o1.type = "sine";
+  const o2 = c.createOscillator(); o2.type = "triangle";
+  const g2 = c.createGain(); g2.gain.value = .2;
+  o1.connect(env); o2.connect(g2); g2.connect(env);
+  const vib = c.createOscillator(); vib.frequency.value = 5.3;
+  const vg = c.createGain(); vg.gain.value = 6; vib.connect(vg); vg.connect(o1.frequency);
+  const vg2 = c.createGain(); vg2.gain.value = 3; vib.connect(vg2); vg2.connect(o2.frequency);
+  const scale = [587.33, 698.46, 783.99, 880, 1046.5, 1174.66, 1396.9];
+  let i = 2 + ((Math.random() * 2) | 0), tt = t0;
+  const n = 9 + ((Math.random() * 4) | 0);
+  o1.frequency.setValueAtTime(scale[i], t0); o2.frequency.setValueAtTime(scale[i] / 2, t0);
+  for (let k = 0; k < n; k++) {
+    const d = k === 0 ? .9 : k === n - 1 ? 1.8 : [.42, .6, .8, 1.1][(Math.random() * 4) | 0];
+    const f = scale[i];
+    o1.frequency.setTargetAtTime(f, tt, .05); o2.frequency.setTargetAtTime(f / 2, tt, .05);
+    env.gain.setTargetAtTime(1, tt, .07);
+    env.gain.setTargetAtTime(.5, tt + d * .55, .12);
+    tt += d;
+    const step = Math.random() < .7 ? (Math.random() < .5 ? -1 : 1) : (Math.random() < .5 ? -2 : 2);
+    i = clamp(i + step, 0, scale.length - 1);
+    if (k === n - 2) i = Math.max(0, Math.min(i, 3));
+  }
+  env.gain.setTargetAtTime(0, tt, .45);
+  for (const o of [o1, o2, vib]) { o.start(t0); o.stop(tt + 3); }
+  return tt - t0 + 1.2;
+}
+function fawkesSing(now) {
+  if (fawkes.mode === "fly") { song.pending = true; return; }
+  song.pending = false;
+  const dur = playPhoenixSong();
+  song.until = now + dur;
+  if (hf.running) hf.muteUntil = Math.max(hf.muteUntil, now + dur);
+  fawkes.ruffle = now;
+  spawnSparks(fawkes.x, fawkes.y - 14, 12, 30, 24, "255,200,110");
 }
 
 function strand(g, s) {
@@ -1420,10 +1684,12 @@ function drawEye(g, cx, open, gx, gy, sx) {
   g.restore();
 }
 
+let nod = 0, nodPulse = -1, nextNod = 0, grinUntil = 0, nextGrin = 30;
+function headY() { const sink = Math.max(0, -P.lift); return 332 + (P.lift >= 0 ? (1 - P.lift) * 8 : 8 + sink * 30) + P.breath * 1.1 + nod; }
 function drawHead() {
   const g = ctx;
   const sink = Math.max(0, -P.lift);
-  const hy = 332 + (P.lift >= 0 ? (1 - P.lift) * 8 : 8 + sink * 30) + P.breath * 1.1;
+  const hy = headY();
   const yw = P.yaw, o = yw * 13;
   g.save();
   g.translate(300 + o * .35 + sink * 3, hy);
@@ -1476,9 +1742,20 @@ function drawHead() {
     }
   }
 
-  // eyes (the far eye narrows when he turns)
-  drawEye(g, -22 + o, P.eye, P.gx + yw * .5, P.gy, 1 - Math.max(0, yw) * .3);
-  drawEye(g, 22 + o, P.eye, P.gx + yw * .5, P.gy, 1 - Math.max(0, -yw) * .3);
+  // warm cheeks and laughter lines when he smiles
+  if (P.smile > .05) {
+    for (const s of [-1, 1]) {
+      const cg2 = g.createRadialGradient(o + s * 30, 24, 1, o + s * 30, 24, 16);
+      cg2.addColorStop(0, `rgba(220,110,90,${.3 * P.smile})`); cg2.addColorStop(1, "rgba(220,110,90,0)");
+      g.fillStyle = cg2; g.beginPath(); g.arc(o + s * 30, 24, 16, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = `rgba(110,62,40,${.5 * P.smile})`; g.lineWidth = 1;
+      for (let k = -1; k <= 1; k++) { g.beginPath(); g.moveTo(o + s * 34, 2 + k * 4); g.lineTo(o + s * 42, k * 6.5); g.stroke(); }
+    }
+  }
+  // eyes (the far eye narrows when he turns; a smile narrows both)
+  const eo = P.eye * (1 - P.smile * .3);
+  drawEye(g, -22 + o, eo, P.gx + yw * .5, P.gy, 1 - Math.max(0, yw) * .3);
+  drawEye(g, 22 + o, eo, P.gx + yw * .5, P.gy, 1 - Math.max(0, -yw) * .3);
 
   // brows
   g.lineCap = "round";
@@ -1486,7 +1763,7 @@ function drawHead() {
     for (let k = 0; k < 7; k++) {
       g.strokeStyle = `rgba(240,236,228,${.55 + k * .05})`;
       g.lineWidth = 2.2;
-      const by = -17 - P.brow * 3;
+      const by = -17 - P.brow * 3 - (s > 0 ? P.quirk * 6 : -P.quirk * 1.5);
       g.beginPath();
       g.moveTo(o + s * (10 + k * 1.5), by + 2 - k * .2);
       g.quadraticCurveTo(o + s * (22 + k), by - 5 + k * .4, o + s * (34 + k * 1.6), by + k * .9);
@@ -1556,14 +1833,18 @@ function drawHead() {
     g.fillStyle = mgr;
     g.beginPath(); g.ellipse(o * .3, 54 + mo * 2.5, 8 + mo * 3, 1.5 + mo * 6, 0, 0, Math.PI * 2); g.fill();
   }
+  if (P.mouth <= .04 && P.smile > .25) {
+    g.strokeStyle = `rgba(90,45,30,${.7 * P.smile})`; g.lineWidth = 1.6; g.lineCap = "round";
+    g.beginPath(); g.moveTo(o * .3 - 10, 54); g.quadraticCurveTo(o * .3, 58 + P.smile * 3, o * .3 + 10, 54); g.stroke();
+  }
   const mg = g.createLinearGradient(0, 30, 0, 60);
   mg.addColorStop(0, "#fbf8f2"); mg.addColorStop(1, "#c9c0b3");
   g.fillStyle = mg;
   for (const s of [-1, 1]) {
     g.beginPath();
     g.moveTo(o * .3, 31);
-    g.bezierCurveTo(s * 14, 26, s * 38, 34, s * 47, 72);
-    g.bezierCurveTo(s * 36, 62, s * 18, 56, o * .3, 53);
+    g.bezierCurveTo(s * 14, 26, s * 38, 34 - P.smile * 4, s * 47, 72 - P.smile * 11);
+    g.bezierCurveTo(s * 36, 62 - P.smile * 8, s * 18, 56, o * .3, 53);
     g.closePath(); g.fill();
   }
   for (let k = 0; k < 9; k++) for (const s of [-1, 1]) {
@@ -1659,7 +1940,8 @@ function draw(t) {
   // the perch stands in front of him, so Fawkes is drawn after the figure
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   drawFawkes(t);
-  if (act === "atFawkes" && state === "reading" && fawkes.mode !== "fly" && Math.abs(P.fx) < 690) drawPetArm(t);
+  if (isPetting() && Math.abs(P.fx) < 690) drawPetArm(t);
+  if (bon.phase && Math.abs(P.fx) < 690) drawBonbon(t);
   drawSparks(ctx, drawDt);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalCompositeOperation = "multiply";
@@ -1702,8 +1984,8 @@ let outing = "walk", leaveDir = 1, passAt = 0, crossing = false, nextPlay = 0;
 const FX_FAWKES = -66;
 function pickOuting() {
   const r = Math.random();
-  outing = r < .4 ? "walk" : r < .72 ? "passage" : "vanish";
-  leaveDir = Math.random() < .5 ? 1 : -1;
+  outing = r < .28 ? "walk" : r < .5 ? "passage" : r < .76 ? "garten" : "vanish";
+  leaveDir = outing === "garten" ? -1 : Math.random() < .5 ? 1 : -1;
 }
 function canWander() { return !photo.on && store.get("albus.outings") !== "0"; }
 function label(s) {
@@ -1811,7 +2093,11 @@ function tick(ms) {
     if (now > readUntil) { book.mode = "none"; act = "toShelf"; returning = true; }
   }
   if (pageP > 0) { pageP += dt / .9; if (pageP >= 1) pageP = 0; }
-  if (state === "reading" && act === "sit") {
+  if (state === "reading" && act === "sit" && !bon.phase) {
+    if (now > nextBonbon && doze < .3 && bonReady()) { startBonbon(now); nextBonbon = now + 700 + Math.random() * 1100; }
+    const hr = new Date().getHours();
+    if (now > song.next && hr >= 8 && hr < 21 && fawkes.mode === "perch" && doze < .5) { fawkesSing(now); song.next = now + 1800 + Math.random() * 2400; }
+    if (now > nextGrin && doze < .3) { grinUntil = now + 2.5 + Math.random() * 2; nextGrin = now + 30 + Math.random() * 50; }
     if (!book.has && !photo.on && doze < .2 && P.fx === 0 && P.rise === 0 && now > nextFetch) { act = "toShelf"; returning = false; doze = -1; }
     doze += dt / 45;
     if (doze >= 1) {
@@ -1820,7 +2106,7 @@ function tick(ms) {
     }
     if (now > nextGlance && doze < .4) { glanceUntil = now + 2.6; nextGlance = now + 22 + Math.random() * 30; }
     if (!photo.on && fawkes.mode === "perch" && !book.has && doze < .25 && P.fx === 0 && P.rise === 0 && now > nextPlay) { act = "toFawkes"; doze = -1; }
-    else if (canWander() && act === "sit" && !book.has && doze < .3 && P.fx === 0 && P.rise === 0 && now > nextOuting) { pickOuting(); awayFor = 70 + Math.random() * 110; setState("leaving"); }
+    else if (canWander() && act === "sit" && !book.has && doze < .3 && P.fx === 0 && P.rise === 0 && now > nextOuting) { pickOuting(); awayFor = (outing === "garten" ? 200 : 120) + Math.random() * 420; setState("leaving"); }
     if (doze < .3 && P.rise === 0) P.tw += dt * 2.4;
   }
   if (state === "waking" && now - stateAt > 1.7) setState("listening");
@@ -1836,6 +2122,15 @@ function tick(ms) {
   // getting up, walking out, coming back
   let dir = 0;
   fawkesTick(now);
+  bonTick(now);
+  if (song.pending && fawkes.mode !== "fly") fawkesSing(now);
+  if (gq.length) { if (now > gq[0].until) gq.shift(); else if (tryGesture(gq[0].n, now)) gq.shift(); }
+  if (pendingAnswer && P.fx === 0 && P.rise === 0 && P.vanish === 0 && ["reading", "listening", "attentive"].includes(state)) deliverPending();
+  if (((state === "listening" || state === "attentive") && now > nextNod) || (state === "speaking" && now > nextNod)) {
+    nodPulse = now; nextNod = now + (state === "speaking" ? 3.5 : 2.6) + Math.random() * 4;
+  }
+  const na = now - nodPulse;
+  nod = nodPulse > 0 && na < .65 ? Math.sin(na / .65 * Math.PI) * 6 : 0;
   dayCur += (dayTarget() - dayCur) * (1 - Math.exp(-dt * .9));
   if (state === "leaving") {
     if (outing === "vanish") {
@@ -1857,7 +2152,7 @@ function tick(ms) {
     } else if (passAt && now > passAt) {
       passAt = 0; crossing = true; P.fx = -700 * leaveDir; P.rise = 1;
     } else if (now > awayUntil) {
-      if (outing !== "vanish") { P.fx = (Math.random() < .5 ? 1 : -1) * 700; P.rise = 1; }
+      if (outing !== "vanish") { P.fx = (outing === "garten" ? -1 : Math.random() < .5 ? 1 : -1) * 700; P.rise = 1; }
       setState("reading"); nextOuting = now + 900 + Math.random() * 900;
     }
   } else {
@@ -1903,6 +2198,25 @@ function tick(ms) {
   P.breath = Math.sin(now * Math.PI * 2 / period);
 
   targets(now);
+  {
+    let sm = 0, qk = 0;
+    if (state === "speaking") sm = .3 + .35 * Math.max(0, Math.sin(now * .7));
+    else if (state === "listening" || state === "attentive") { sm = .28; qk = Math.max(0, Math.sin(now * .23)) > .93 ? .7 : 0; }
+    else if (state === "thinking") qk = 1;
+    else if (state === "sleeping") sm = .15;
+    if (now < grinUntil) sm = Math.max(sm, .75);
+    if (isPetting()) sm = .8;
+    if (now < bon.suckUntil || bon.phase === "eat" || bon.phase === "lower") sm = Math.max(sm, .7);
+    if (now < song.until && fawkes.mode !== "fly") {
+      sm = Math.max(sm, .6);
+      if (state === "reading" || state === "attentive") {
+        T.yaw = clamp((fawkes.x - CHX) / 320, -.6, .6); T.gx = clamp((fawkes.x - CHX) / 160, -1, 1);
+        T.gy = clamp((fawkes.y - 260) / 140, -1, 1); T.eye = .6; T.lift = .6; T.brow = .3;
+      }
+    }
+    if (bon.phase === "fly") { T.gx = -1; T.gy = .6; T.yaw = -.3; T.eye = 1; T.brow = .6; }
+    T.smile = sm; T.quirk = qk;
+  }
   if (dir) { T.yaw = dir * .6; T.gx = dir * .6; T.lift = .6; T.eye = 1; }
 
   if (now > nextBlink && T.eye > .4) { blinkT = 0; nextBlink = now + 2.5 + Math.random() * 4; }
@@ -1918,7 +2232,7 @@ function tick(ms) {
       T.mouth = !open ? .06 : Math.random() < .16 ? .08 : .3 + Math.random() * .7;
       mouthNext = now + .07 + Math.random() * .08;
     }
-  } else T.mouth = 0;
+  } else T.mouth = now < bon.suckUntil ? .06 + .05 * Math.max(0, Math.sin(now * 4.2)) : 0;
 
   for (const k in RATE) {
     let rate = RATE[k];
@@ -2026,7 +2340,7 @@ function showHeard() {
 }
 function armSilence() {
   clearTimeout(silenceTimer); clearTimeout(quietTimer);
-  silenceTimer = setTimeout(() => { if (listening && (heard.final + heard.partial).trim()) CAP.dict.stop().catch(() => {}); }, 1700);
+  silenceTimer = setTimeout(() => { if (listening && (heard.final + heard.partial).trim()) CAP.dict.stop().catch(() => {}); }, 2400);
 }
 
 function startListening() {
@@ -2079,12 +2393,13 @@ function wakeAndListen(fromVoice) {
 
 /* parsing Albus' reply */
 function visiblePart(raw) {
-  return raw.split(/<(?:pergament|merken|vergessen|weggehen|fawkes|verschwinden)/i)[0].replace(/<[^>]*$/, "").trim();
+  return raw.replace(/^\s*<nachdenken\s*\/?>/i, "").split(/<(?:pergament|merken|vergessen|weggehen|fawkes|verschwinden|bonbon|frische_luft|nachdenken)/i)[0].replace(/<[^>]*$/, "").trim();
 }
 function parseReply(raw) {
-  const out = { perg: [], keep: [], drop: [], leave: /<weggehen\s*\/?>/i.test(raw), play: /<fawkes\s*\/?>/i.test(raw), vanish: /<verschwinden\s*\/?>/i.test(raw) };
+  const out = { perg: [], keep: [], drop: [], leave: /<weggehen\s*\/?>/i.test(raw), play: /<fawkes\s*\/?>/i.test(raw), vanish: /<verschwinden\s*\/?>/i.test(raw),
+    bonbon: /<bonbon\s*\/?>/i.test(raw), sing: /<fawkes_singt\s*\/?>/i.test(raw), air: /<frische_luft\s*\/?>/i.test(raw), think: /<nachdenken\s*\/?>/i.test(raw) };
   let t = raw
-    .replace(/<(?:weggehen|fawkes|verschwinden)\s*\/?>/gi, "")
+    .replace(/<(?:weggehen|fawkes|verschwinden|bonbon|fawkes_singt|frische_luft|nachdenken)\s*\/?>/gi, "")
     .replace(/<pergament>([\s\S]*?)(?:<\/pergament>|$)/gi, (_, a) => { out.perg.push(a.trim()); return ""; })
     .replace(/<merken>([\s\S]*?)<\/merken>/gi, (_, a) => { out.keep.push(a.trim()); return ""; })
     .replace(/<vergessen>([\s\S]*?)<\/vergessen>/gi, (_, a) => { out.drop.push(a.trim()); return ""; });
@@ -2121,11 +2436,12 @@ function buildInput(userText) {
   const since = gap == null ? "Ihr sprecht zum ersten Mal miteinander." :
     gap > 180 ? `Euer letztes Gespräch ist ${gap > 2880 ? Math.round(gap / 1440) + " Tage" : Math.round(gap / 60) + " Stunden"} her.` : "";
   const firstToday = !mem.lastAt || new Date(mem.lastAt).toDateString() !== now.toDateString();
-  const wxHint = firstToday
+  const wxHint = (firstToday
     ? "Das ist eure erste Begegnung heute: Kündige das Wetter für heute in einem kurzen Satz an, beiläufig und in deiner Art, und geh dann auf sein Anliegen ein."
-    : "Erwähne das Wetter nur, wenn er danach fragt oder es für seine Pläne wichtig ist.";
+    : "Erwähne das Wetter nur, wenn er danach fragt oder es für seine Pläne wichtig ist.") +
+    " Begrüß ihn nicht bei jeder Antwort. Kein „Ah, hallo“, kein „Ah, Leonard“ am Anfang: Ihr sprecht miteinander wie Leute, die sich gut kennen. Steig direkt ein und geh auf genau das ein, was er gerade gesagt hat.";
   const rules = `${CHARACTER}\n\nJetzt ist ${when}. ${since}\n\n${weatherText()}\n${wxHint}\n\nWas du dir über den Hausherrn gemerkt hast:\n${notes}\n\n${FORMAT}`;
-  let recent = (gap != null && gap > 360) ? [] : mem.recent.slice(-12);
+  let recent = (gap != null && gap > 720) ? [] : mem.recent.slice(-24);
   while (recent.length && recent[0].role !== "user") recent = recent.slice(1);
   return [{ role: "user", content: rules }, ...recent.map(({ role, content }) => ({ role, content })), { role: "user", content: userText }];
 }
@@ -2150,6 +2466,37 @@ function weatherText() {
   return `Wetterbericht für Frankfurt-Bornheim (Deutscher Wetterdienst, Stand vor ${age < 1.5 ? "etwa einer Stunde" : Math.round(age) + " Stunden"}): zuletzt ${n.temp} °C, ${n.sky}. ${days.join("; ")}.` + (age > 20 ? " Der Bericht ist schon alt; sag das, wenn du ihn nutzt." : "");
 }
 
+let pendingAnswer = null;
+async function deliverPending() {
+  const a = pendingAnswer; pendingAnswer = null;
+  if (a.ret) { setState("attentive"); attentiveUntil = performance.now() / 1000 + 8; a.ret(); return; }
+  showCaption(a.said);
+  if (a.perg.length) showPergament(a.perg[a.perg.length - 1]);
+  await speak(a.said);
+  setState("attentive"); attentiveUntil = performance.now() / 1000 + 16;
+}
+const gq = [];
+function queueGesture(n) { gq.push({ n, until: performance.now() / 1000 + 90 }); }
+function tryGesture(n, now) {
+  const free = !speakingNow && state !== "thinking" && state !== "leaving" && P.vanish === 0;
+  switch (n) {
+    case "bonbon": return startBonbon(now);
+    case "sing": case "fawkes_singen": fawkesSing(now); return true;
+    case "fawkes_streicheln":
+      if (!free || state === "away" || bon.phase || fawkes.mode === "fly" || P.fx !== 0) return false;
+      setState("reading"); act = "toFawkes"; doze = -1; return true;
+    case "buch":
+      if (!free || state === "away" || bon.phase || book.has || P.fx !== 0) return false;
+      setState("reading"); act = "toShelf"; returning = false; doze = -1; return true;
+    case "verschwinden":
+      if (!free || state === "away" || photo.on) return false;
+      outing = "vanish"; awayFor = 60 + Math.random() * 120; setState("leaving"); return true;
+    case "spaziergang":
+      if (!free || state === "away" || photo.on) return false;
+      outing = "garten"; leaveDir = -1; awayFor = 200 + Math.random() * 300; setState("leaving"); return true;
+  }
+  return true;
+}
 let askCtl = null;
 async function ask(text) {
   if (!CAP.sample) return;
@@ -2200,11 +2547,23 @@ async function ask(text) {
   saveMem();
   renderMem();
 
+  if (r.think && !photo.on && canWander()) {
+    const line = ["Hm. Lass mich darüber einen Moment nachdenken.", "Das verdient mehr als eine schnelle Antwort. Einen Augenblick.", "Hm … ich gehe ein paar Schritte und denke darüber nach."][(Math.random() * 3) | 0];
+    showCaption(line);
+    await speak(line);
+    pendingAnswer = { said, perg: r.perg.slice() };
+    outing = "walk"; leaveDir = Math.random() < .5 ? 1 : -1; awayFor = 18 + Math.random() * 22;
+    setState("leaving");
+    return;
+  }
   showCaption(said);
   if (r.perg.length) showPergament(r.perg[r.perg.length - 1]);
+  if (r.bonbon) queueGesture("bonbon");
+  if (r.sing) queueGesture("fawkes_singen");
   await speak(said);
+  if (r.air && !photo.on) { outing = "garten"; leaveDir = -1; awayFor = 200 + Math.random() * 300; setState("leaving"); return; }
   if (r.vanish && !photo.on) { outing = "vanish"; awayFor = 90 + Math.random() * 150; setState("leaving"); return; }
-  if (r.leave && !photo.on) { pickOuting(); if (outing === "vanish") outing = "walk"; awayFor = 150 + Math.random() * 200; setState("leaving"); return; }
+  if (r.leave && !photo.on) { pickOuting(); if (outing === "vanish") outing = "walk"; awayFor = 300 + Math.random() * 600; setState("leaving"); return; }
   if (r.play && !photo.on) { setState("reading"); act = "toFawkes"; doze = -1; return; }
   setState("attentive");
   attentiveUntil = performance.now() / 1000 + 16;
@@ -2708,6 +3067,7 @@ document.addEventListener("pointerdown", () => {
 }, { capture: true });
 
 frame.addEventListener("click", (e) => {
+  audioCtx();
   if (calib) { calibTap(e); return; }
   if (window.albusTap && window.albusTap()) return;
   if (CAP.dict && $("#hfToggle").checked && !hf.running) {
@@ -2814,6 +3174,28 @@ window.albusHooks = {
   speaking(on) { speakingNow = on; boundaryMode = false; setState(on ? "speaking" : "listening"); },
   caption(text, you) { showCaption(you ? "„" + text + "“" : text, you ? "you" : ""); },
   done(text) { speakingNow = false; setState("attentive"); attentiveUntil = performance.now() / 1000 + 8; if (text) showCaption(text); },
+  action(name) { queueGesture(name); },
+  remember(text) {
+    const k = String(text || "").trim().slice(0, 240);
+    if (k && !mem.notes.some((n) => n.text === k)) { mem.notes.push({ text: k, at: Date.now() }); saveMem(); renderMem(); }
+  },
+  log(role, text) {
+    if (!text) return;
+    mem.recent.push({ role: role === "user" ? "user" : "assistant", content: String(text).slice(0, 2000) });
+    if (mem.recent.length > 60) mem.recent = mem.recent.slice(-60);
+    mem.lastAt = Date.now(); saveMem();
+  },
+  memoryText() { return mem.notes.length ? mem.notes.map((n) => "- " + n.text).join("\n") : "(noch nichts)"; },
+  recentText() { return mem.recent.slice(-10).map((m) => (m.role === "user" ? "Leo: " : "Du: ") + m.content.slice(0, 300)).join("\n") || "(nichts)"; },
+  weather() { return weatherText(); },
+  thinkAway(sec) {
+    return new Promise((res) => {
+      if (photo.on || state === "away") { res(); return; }
+      pendingAnswer = { ret: res };
+      outing = "walk"; leaveDir = Math.random() < .5 ? 1 : -1; awayFor = sec || 20;
+      setState("leaving");
+    });
+  },
 };
 
 makeGrain();
@@ -2826,6 +3208,8 @@ stateAt = performance.now() / 1000;
 nextOuting = stateAt + 600 + Math.random() * 300;
 nextFetch = stateAt + 50 + Math.random() * 40;
 nextPlay = stateAt + 140 + Math.random() * 80;
+nextBonbon = stateAt + 240 + Math.random() * 300;
+song.next = stateAt + 900 + Math.random() * 1200;
 fawkes.nextFly = stateAt + 25 + Math.random() * 20;
 requestAnimationFrame(tick);
 initCaps();

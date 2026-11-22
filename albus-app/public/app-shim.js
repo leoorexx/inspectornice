@@ -250,11 +250,11 @@
   };
 
   /* ---------- ElevenLabs voice agent: tap the portrait, then just talk ---------- */
-  let conv = null, idleTimer = 0, agentId = null;
+  let conv = null, idleTimer = 0, agentId = null, toolBusy = 0;
   config.then((c) => { agentId = (c && c.agentId) || null; });
   function bump() {
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => { if (conv) conv.endSession().catch(() => {}); }, 40000);
+    idleTimer = setTimeout(() => { if (conv && !toolBusy) conv.endSession().catch(() => {}); else if (conv) bump(); }, 60000);
   }
   window.albusTap = () => {
     const H = window.albusHooks;
@@ -263,8 +263,24 @@
     window.albusSessionActive = true;
     H.listening();
     H.caption("Einen Moment …");
+    const safe = (f, d) => { try { return f() || d; } catch { return d; } };
     window.ElevenLabsClient.Conversation.startSession({
       agentId,
+      dynamicVariables: {
+        gedaechtnis: safe(() => H.memoryText(), "(noch nichts)").slice(0, 6000),
+        zuletzt: safe(() => H.recentText(), "(nichts)").slice(0, 3000),
+        wetter: safe(() => H.weather(), "unbekannt").slice(0, 1500),
+      },
+      clientTools: {
+        merken: ({ notiz }) => { safe(() => H.remember(notiz)); return "gemerkt"; },
+        geste: ({ was }) => { safe(() => H.action(was)); return "ok"; },
+        nachdenken: async ({ sekunden }) => {
+          toolBusy++;
+          try { await H.thinkAway(Math.max(12, Math.min(45, +sekunden || 25))); }
+          finally { toolBusy--; bump(); }
+          return "Du bist zurück im Sessel und hast nachgedacht. Gib jetzt deine durchdachte Antwort, kurz.";
+        },
+      },
       onConnect: () => { bump(); },
       onDisconnect: () => {
         conv = null; window.albusSessionActive = false; window.albusMouthLevel = null;
@@ -272,7 +288,11 @@
       },
       onError: () => { H.caption("Meine Stimme hakt gerade. Tippe gleich noch einmal ins Bild."); },
       onModeChange: ({ mode }) => { H.speaking(mode === "speaking"); bump(); },
-      onMessage: (m) => { if (m && m.message) { H.caption(m.message, (m.role || m.source) === "user"); bump(); } },
+      onMessage: (m) => {
+        if (!m || !m.message) return;
+        const you = (m.role || m.source) === "user";
+        H.caption(m.message, you); safe(() => H.log(you ? "user" : "assistant", m.message)); bump();
+      },
     }).then((c) => {
       conv = c;
       window.albusMouthLevel = () => { try { return c.getOutputVolume(); } catch { return 0; } };
