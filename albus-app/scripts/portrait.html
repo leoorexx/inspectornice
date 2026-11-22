@@ -491,10 +491,10 @@ const ease = (t) => t * t * (3 - 2 * t);
 /* precomputed strands (head coordinates) */
 const R = rng(7);
 const beardStrands = [];
-for (let i = 0; i < 120; i++) {
+for (let i = 0; i < 170; i++) {
   const u = R();
   const x0 = lerp(-50, 50, u);
-  const y0 = 24 + R() * 26;
+  const y0 = (Math.abs(x0) < 28 ? 46 : 22) + R() * 22;
   const mid = 1 - Math.abs(u - .5) * 2;
   const len = 90 + mid * 190 * (.65 + .35 * R());
   beardStrands.push({
@@ -1383,7 +1383,28 @@ function drawHead() {
   g.ellipse(26 + o * .7, 20, 12 * (1 - Math.max(0, -yw) * .3), 8, 0, 0, Math.PI * 2);
   g.fill();
   g.strokeStyle = "rgba(110,62,40,.35)"; g.lineWidth = 1;
-  for (const y of [-34, -29]) { g.beginPath(); g.moveTo(-22 + o * .5, y); g.quadraticCurveTo(o * .5, y - 3, 22 + o * .5, y); g.stroke(); }
+  g.strokeStyle = "rgba(110,62,40,.22)";
+  for (const y of [-23]) { g.beginPath(); g.moveTo(-18 + o * .5, y); g.quadraticCurveTo(o * .5, y - 3, 18 + o * .5, y); g.stroke(); }
+
+  // white hair falling from under the cap at the temples, framing the face
+  for (const s of [-1, 1]) {
+    const hx = -o * .1;
+    const hg = g.createLinearGradient(s * 30, 0, s * 58, 0);
+    hg.addColorStop(0, "#ece7de"); hg.addColorStop(1, "#bab2a5");
+    g.fillStyle = hg;
+    g.beginPath();
+    g.moveTo(hx + s * 27, -32);
+    g.bezierCurveTo(hx + s * 46, -38, hx + s * 60, -8, hx + s * 56, 44);
+    g.lineTo(hx + s * 45, 50);
+    g.bezierCurveTo(hx + s * 44, 12, hx + s * 41, -12, hx + s * 30, -22);
+    g.closePath(); g.fill();
+    for (let k = 0; k < 9; k++) {
+      g.strokeStyle = `rgba(${k % 2 ? 255 : 170},${k % 2 ? 252 : 162},${k % 2 ? 245 : 150},.55)`;
+      g.lineWidth = .9;
+      g.beginPath(); g.moveTo(hx + s * (29 + k * 2.4), -31 + k * .4);
+      g.quadraticCurveTo(hx + s * (46 + k * 1.2), -10, hx + s * (46 + k * 1.1), 40 + k * 1.2); g.stroke();
+    }
+  }
 
   // eyes (the far eye narrows when he turns)
   drawEye(g, -22 + o, P.eye, P.gx + yw * .5, P.gy, 1 - Math.max(0, yw) * .3);
@@ -1413,8 +1434,8 @@ function drawHead() {
   g.beginPath(); g.ellipse(-2, 12, 3, 9, 0, 0, Math.PI * 2); g.fill();
   g.restore();
 
-  // embroidered skullcap
-  g.save(); g.translate(o * .15, 0);
+  // embroidered skullcap, worn low on the brow
+  g.save(); g.translate(o * .15, 8);
   const capG = g.createLinearGradient(-50, -90, 50, -40);
   capG.addColorStop(0, "#4a3a28"); capG.addColorStop(1, "#1d150d");
   g.fillStyle = capG;
@@ -1444,11 +1465,11 @@ function drawHead() {
   bgG.addColorStop(0, "#f1ece4"); bgG.addColorStop(.6, "#cfc7bb"); bgG.addColorStop(1, "#8f877c");
   g.fillStyle = bgG;
   g.beginPath();
-  g.moveTo(-50, 14);
-  g.bezierCurveTo(-78, 90, -54, 210, 0, 305);
-  g.bezierCurveTo(54, 210, 78, 90, 50, 14);
-  g.quadraticCurveTo(30, 36, 0, 38);
-  g.quadraticCurveTo(-30, 36, -50, 14);
+  g.moveTo(-50, 12);
+  g.bezierCurveTo(-80, 90, -56, 210, 0, 305);
+  g.bezierCurveTo(56, 210, 80, 90, 50, 12);
+  g.quadraticCurveTo(30, 34, 0, 40);
+  g.quadraticCurveTo(-30, 34, -50, 12);
   g.closePath(); g.fill();
   beardStrands.forEach((s) => strand(g, s));
   // silver clasp near the end of the beard, as in the films
@@ -1458,25 +1479,27 @@ function drawHead() {
   g.beginPath(); g.ellipse(0, 236, 11, 4.5, 0, 0, Math.PI * 2); g.fill();
   g.beginPath(); g.ellipse(0, 244, 9, 4, 0, 0, Math.PI * 2); g.fill();
   g.fillStyle = "rgba(60,60,80,.5)"; g.fillRect(-9, 239.5, 18, 1.2);
-  g.fillStyle = "#3a1c14";
-  g.beginPath(); g.ellipse(o * .3, 50, 9 + P.mouth * 1.5, 1.4 + P.mouth * 6.2, 0, 0, Math.PI * 2); g.fill();
-  if (P.mouth > .25) {
-    g.fillStyle = "rgba(230,220,205,.6)";
-    g.fillRect(o * .3 - 6, 50 - P.mouth * 5.6, 12, 2);
+  if (P.mouth > .04) {
+    const mo = P.mouth;
+    const mgr = g.createRadialGradient(o * .3, 56, 1, o * .3, 56, 10 + mo * 4);
+    mgr.addColorStop(0, "rgba(58,22,14,.95)"); mgr.addColorStop(1, "rgba(90,45,30,0)");
+    g.fillStyle = mgr;
+    g.beginPath(); g.ellipse(o * .3, 54 + mo * 2.5, 8 + mo * 3, 1.5 + mo * 6, 0, 0, Math.PI * 2); g.fill();
   }
-  const mg = g.createLinearGradient(-40, 0, 40, 0);
-  mg.addColorStop(0, "#f6f2ea"); mg.addColorStop(1, "#b7aea2");
+  const mg = g.createLinearGradient(0, 30, 0, 60);
+  mg.addColorStop(0, "#fbf8f2"); mg.addColorStop(1, "#c9c0b3");
   g.fillStyle = mg;
   for (const s of [-1, 1]) {
     g.beginPath();
-    g.moveTo(o * .3, 36);
-    g.bezierCurveTo(s * 14, 32, s * 34, 40, s * 40, 66);
-    g.bezierCurveTo(s * 30, 56, s * 14, 50, o * .3, 46);
+    g.moveTo(o * .3, 31);
+    g.bezierCurveTo(s * 14, 26, s * 38, 34, s * 47, 72);
+    g.bezierCurveTo(s * 36, 62, s * 18, 56, o * .3, 53);
     g.closePath(); g.fill();
   }
-  g.strokeStyle = "rgba(150,140,128,.6)"; g.lineWidth = .8;
-  for (let k = 0; k < 6; k++) for (const s of [-1, 1]) {
-    g.beginPath(); g.moveTo(s * 3, 39 + k); g.quadraticCurveTo(s * 22, 42 + k, s * (32 + k), 58 + k * 1.2); g.stroke();
+  for (let k = 0; k < 9; k++) for (const s of [-1, 1]) {
+    g.strokeStyle = k % 3 === 0 ? "rgba(255,255,255,.7)" : "rgba(150,140,128,.5)";
+    g.lineWidth = .8;
+    g.beginPath(); g.moveTo(o * .3 + s * 2, 33 + k * 2.2); g.quadraticCurveTo(s * 24, 36 + k * 2.2, s * (38 + k), 60 + k * 1.4); g.stroke();
   }
   g.restore();
 
