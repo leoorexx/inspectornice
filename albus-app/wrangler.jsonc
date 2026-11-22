@@ -5,8 +5,9 @@
   "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat"],
   "assets": { "directory": "./public", "binding": "ASSETS" },
-  // Gedächtnis, Bild und Wetter. Ohne "id" legt Wrangler den Speicher beim ersten Deploy selbst an.
-  "kv_namespaces": [{ "binding": "ALBUS" }],
+  // Gedächtnis, Bild und Wetter liegen in einem Durable Object (SQLite), das zum Worker gehört.
+  "durable_objects": { "bindings": [{ "name": "STORE", "class_name": "AlbusStore" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["AlbusStore"] }],
   // Wetter für Bornheim: 5:43 und 14:43 Uhr (Winterzeit; Cron läuft in UTC).
   "triggers": { "crons": ["43 4,13 * * *"] },
   "vars": {

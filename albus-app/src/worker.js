@@ -1,6 +1,15 @@
 // Albus – Server für Dumbledores Porträt.
 // Liefert die Seite aus, hält die API-Schlüssel geheim und speichert Gedächtnis, Bild und Wetter.
 import Anthropic from "@anthropic-ai/sdk";
+import { DurableObject } from "cloudflare:workers";
+
+// One small storage object holds memory, portrait and weather (SQLite-backed Durable Object).
+export class AlbusStore extends DurableObject {
+  async getValue(key) { return (await this.ctx.storage.get(key)) ?? null; }
+  async putValue(key, value) { await this.ctx.storage.put(key, value); }
+  async deleteValue(key) { await this.ctx.storage.delete(key); }
+}
+const store = (env) => env.STORE.get(env.STORE.idFromName("albus"));
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -137,7 +146,7 @@ async function doc(req, env, url) {
   if (!PATH_OK.test(path)) return json({ error: "bad path" }, 400);
   const key = "doc:" + path;
   if (req.method === "GET") {
-    let data = await env.ALBUS.get(key, "json");
+    let data = await store(env).getValue(key);
     if (path === WEATHER_PATH && (!data || Date.now() - Date.parse(data.updatedAt) > 12 * 3600e3)) {
       data = (await updateWeather(env).catch((e) => (console.error("weather", e), null))) || data;
     }
@@ -148,11 +157,11 @@ async function doc(req, env, url) {
     if (text.length > 256 * 1024) return json({ error: "too large" }, 413);
     const data = JSON.parse(text);
     if (!data || typeof data !== "object" || Array.isArray(data)) return json({ error: "bad body" }, 400);
-    await env.ALBUS.put(key, JSON.stringify(data));
+    await store(env).putValue(key, data);
     return json({ ok: true });
   }
   if (req.method === "DELETE") {
-    await env.ALBUS.delete(key);
+    await store(env).deleteValue(key);
     return json({ ok: true });
   }
   return json({ error: "method" }, 405);
@@ -162,17 +171,17 @@ async function assetPut(req, env) {
   const type = (req.headers.get("content-type") || "").split(";")[0];
   if (!/^image\/(jpeg|png|webp|gif)$/.test(type)) return json({ error: "unsupported type" }, 415);
   const buf = await req.arrayBuffer();
-  if (buf.byteLength > 8 * 1024 * 1024) return json({ error: "too large" }, 413);
+  if (buf.byteLength > 1.9 * 1024 * 1024) return json({ error: "too large" }, 413);
   const id = crypto.randomUUID();
-  await env.ALBUS.put("asset:" + id, buf, { metadata: { type } });
+  await store(env).putValue("asset:" + id, { type, bytes: new Uint8Array(buf) });
   return json({ id, url: "/api/asset/" + id, sizeBytes: buf.byteLength, contentType: type });
 }
 
 async function assetGet(env, id) {
-  const { value, metadata } = await env.ALBUS.getWithMetadata("asset:" + id, "arrayBuffer");
-  if (!value) return new Response("not found", { status: 404 });
-  return new Response(value, {
-    headers: { "content-type": metadata?.type || "image/jpeg", "cache-control": "private, max-age=31536000, immutable" },
+  const v = await store(env).getValue("asset:" + id);
+  if (!v) return new Response("not found", { status: 404 });
+  return new Response(v.bytes, {
+    headers: { "content-type": v.type || "image/jpeg", "cache-control": "private, max-age=31536000, immutable" },
   });
 }
 
@@ -192,7 +201,7 @@ export async function updateWeather(env) {
   );
   if (!r.ok) throw new Error("brightsky " + r.status);
   const doc = summarizeWeather((await r.json()).weather || [], new Date());
-  await env.ALBUS.put("doc:" + WEATHER_PATH, JSON.stringify(doc));
+  await store(env).putValue("doc:" + WEATHER_PATH, doc);
   return doc;
 }
 
