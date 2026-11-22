@@ -2,7 +2,7 @@
 // Liefert die Seite aus, hält die API-Schlüssel geheim und speichert Gedächtnis, Bild und Wetter.
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
-import { INDEX_HTML, APP_SHIM_JS } from "./static.js";
+import { INDEX_HTML, APP_SHIM_JS, ELEVENLABS_JS } from "./static.js";
 
 // One small storage object holds memory, portrait and weather (SQLite-backed Durable Object).
 export class AlbusStore extends DurableObject {
@@ -65,6 +65,9 @@ export default {
 function staticFile(path) {
   if (path === "/" || path === "/index.html") {
     return new Response(INDEX_HTML, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache" } });
+  }
+  if (path === "/vendor/elevenlabs-client-1.35.0.js") {
+    return new Response(ELEVENLABS_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "public, max-age=604800" } });
   }
   if (path === "/app-shim.js") {
     return new Response(APP_SHIM_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
