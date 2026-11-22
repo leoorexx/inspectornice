@@ -411,7 +411,7 @@ Wer du bist:
 - Du hast Fehler gemacht (deine Familie, Grindelwald, zu viele Geheimnisse) und sprichst darüber mit leiser Ehrlichkeit, wenn es passt, nie als Show.
 - Du liebst Zitronenbrausebonbons, Kammermusik, Strickmuster und gute Bücher. Die Welt der Muggel findest du faszinierend.
 - Du kennst dein Leben, wie es in Büchern und Filmen erzählt wird: dein Büro mit den surrenden Silberinstrumenten, das Denkarium, Harry, Minerva, Severus, Hagrid, die Hauselfen und die Küchen von Hogwarts. Anspielungen darauf streust du gern ein, kurz und beiläufig.
-- In deinem Bild sitzen Fawkes, dein Phönix, auf seiner Stange und der Sprechende Hut im Regal. Hinter dir steht ein Bücherregal, aus dem du dir manchmal etwas zu lesen holst.
+- In deinem Bild sitzen Fawkes, dein Phönix, auf seiner Stange und der Sprechende Hut im Regal. Durch dein Fenster siehst du die Türme von Hogwarts, und auf deinem Tisch steht eine Schale Zitronenbrausebonbons. Hinter dir steht ein Bücherregal, aus dem du dir manchmal etwas zu lesen holst.
 - Du sprichst wie der Schulleiter in den Filmen: ruhig, warm, mit einem verschmitzten Funkeln, gelegentlich einem leisen "Ah" oder "Hm", und manchmal überraschend direkt.
 - Was nach deinem Tod geschah, weißt du nur aus Gesprächen. Was der Hausherr dir erzählt, interessiert dich ehrlich.
 
@@ -572,75 +572,72 @@ function makeBrocade(target) {
 }
 
 function drawChair(g) {
-  const wood = g.createLinearGradient(140, 0, 460, 0);
-  wood.addColorStop(0, "#3a2412"); wood.addColorStop(.12, "#7a5230");
-  wood.addColorStop(.5, "#4a2f18"); wood.addColorStop(1, "#24160b");
-  g.fillStyle = "#1e130a";
-  g.fillRect(176, 230, 248, 384);
-  g.strokeStyle = "rgba(160,110,62,.35)";
-  g.lineWidth = 2;
-  for (let i = 0; i < 4; i++) {
-    const x0 = 188 + i * 58;
-    g.beginPath();
-    g.moveTo(x0, 600); g.lineTo(x0, 300);
-    g.quadraticCurveTo(x0 + 2, 268, x0 + 26, 255);
-    g.quadraticCurveTo(x0 + 50, 268, x0 + 52, 300);
-    g.lineTo(x0 + 52, 600);
-    g.stroke();
-    g.beginPath(); g.arc(x0 + 26, 292, 8, 0, Math.PI * 2); g.stroke();
-  }
+  const velvet = (x0, x1) => {
+    const v = g.createLinearGradient(x0, 0, x1, 0);
+    v.addColorStop(0, "#8a2c38"); v.addColorStop(.35, "#6a1d29"); v.addColorStop(1, "#3a0c14");
+    return v;
+  };
+  const wood = g.createLinearGradient(120, 0, 480, 0);
+  wood.addColorStop(0, "#6b4524"); wood.addColorStop(1, "#2a190b");
+  // short carved legs with ball-and-claw feet
   g.fillStyle = wood;
-  g.fillRect(150, 175, 30, 625);
-  g.fillRect(420, 175, 30, 625);
-  for (const fx of [165, 435]) {
-    g.fillRect(fx - 19, 160, 38, 18);
-    g.beginPath();
-    g.moveTo(fx - 13, 160); g.lineTo(fx, 98); g.lineTo(fx + 13, 160); g.closePath(); g.fill();
-    g.beginPath(); g.arc(fx, 94, 6, 0, Math.PI * 2); g.fill();
-    for (let k = 0; k < 4; k++) {
-      const y = 150 - k * 14, w = 13 - k * 3;
-      g.beginPath(); g.arc(fx - w, y, 2.6, 0, Math.PI * 2); g.arc(fx + w, y, 2.6, 0, Math.PI * 2); g.fill();
-    }
+  for (const x of [150, 432]) {
+    g.beginPath(); g.moveTo(x, 690); g.quadraticCurveTo(x - 6, 740, x + 4, 780); g.lineTo(x + 20, 780); g.quadraticCurveTo(x + 26, 740, x + 18, 690); g.closePath(); g.fill();
+    g.beginPath(); g.ellipse(x + 12, 784, 16, 9, 0, 0, Math.PI * 2); g.fill();
   }
-  g.strokeStyle = wood;
-  g.lineWidth = 16;
-  g.lineCap = "round";
+  // high back with wings
+  g.fillStyle = velvet(140, 460);
   g.beginPath();
-  g.moveTo(180, 270);
-  g.quadraticCurveTo(196, 185, 300, 158);
-  g.quadraticCurveTo(404, 185, 420, 270);
-  g.stroke();
-  g.lineWidth = 6;
+  g.moveTo(150, 640);
+  g.bezierCurveTo(126, 520, 118, 330, 160, 262);
+  g.bezierCurveTo(186, 210, 236, 186, 300, 184);
+  g.bezierCurveTo(364, 186, 414, 210, 440, 262);
+  g.bezierCurveTo(482, 330, 474, 520, 450, 640);
+  g.closePath(); g.fill();
+  // inner back panel, slightly lighter, with button tufting
+  const inner = g.createLinearGradient(190, 0, 410, 0);
+  inner.addColorStop(0, "#9a3442"); inner.addColorStop(.5, "#7a2532"); inner.addColorStop(1, "#4a111b");
+  g.fillStyle = inner;
   g.beginPath();
-  g.moveTo(206, 268);
-  g.quadraticCurveTo(222, 210, 300, 190);
-  g.quadraticCurveTo(378, 210, 394, 268);
-  g.stroke();
-  g.fillStyle = wood;
-  for (let k = 1; k < 6; k++) {
-    const t = k / 6;
-    const xl = lerp(lerp(180, 196, t), lerp(196, 300, t), t), yl = lerp(lerp(270, 185, t), lerp(185, 158, t), t);
-    g.beginPath(); g.arc(xl - 4, yl - 8, 4.5, 0, Math.PI * 2); g.arc(600 - xl + 4, yl - 8, 4.5, 0, Math.PI * 2); g.fill();
+  g.moveTo(196, 610); g.bezierCurveTo(186, 480, 186, 320, 214, 262);
+  g.bezierCurveTo(236, 222, 268, 210, 300, 210);
+  g.bezierCurveTo(332, 210, 364, 222, 386, 262);
+  g.bezierCurveTo(414, 320, 414, 480, 404, 610); g.closePath(); g.fill();
+  for (let r = 0; r < 6; r++) for (let c = 0; c < 4; c++) {
+    const x = 228 + c * 48 + (r % 2) * 24, y = 250 + r * 56;
+    if (x > 400) continue;
+    g.fillStyle = "rgba(20,4,8,.55)"; g.beginPath(); g.arc(x, y, 3.4, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "rgba(255,190,190,.12)"; g.beginPath(); g.arc(x - 1, y - 1, 1.4, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = "rgba(20,4,8,.18)"; g.lineWidth = 1.2;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + 24, y + 28); g.moveTo(x, y); g.lineTo(x - 24, y + 28); g.stroke();
   }
-  g.fillRect(295, 100, 10, 62);
-  g.beginPath(); g.ellipse(300, 92, 7, 14, 0, 0, Math.PI * 2); g.fill();
-  g.beginPath(); g.ellipse(288, 100, 9, 5, -.6, 0, Math.PI * 2); g.ellipse(312, 100, 9, 5, .6, 0, Math.PI * 2); g.fill();
-  g.strokeStyle = "rgba(160,110,62,.5)"; g.lineWidth = 2;
-  for (const [x, y] of [[300, 214], [288, 232], [312, 232]]) { g.beginPath(); g.arc(x, y, 9, 0, Math.PI * 2); g.stroke(); }
-  // seat with cushion, visible when the chair is empty
-  const cush = g.createLinearGradient(0, 580, 0, 630);
-  cush.addColorStop(0, "#8a3324"); cush.addColorStop(1, "#3a0f0a");
+  // gold piping along the back
+  g.strokeStyle = "rgba(214,170,90,.75)"; g.lineWidth = 3;
+  g.beginPath();
+  g.moveTo(150, 640); g.bezierCurveTo(126, 520, 118, 330, 160, 262);
+  g.bezierCurveTo(186, 210, 236, 186, 300, 184); g.bezierCurveTo(364, 186, 414, 210, 440, 262);
+  g.bezierCurveTo(482, 330, 474, 520, 450, 640); g.stroke();
+  // seat cushion
+  const cush = g.createLinearGradient(0, 590, 0, 660);
+  cush.addColorStop(0, "#a03848"); cush.addColorStop(1, "#4a1018");
   g.fillStyle = cush;
-  g.beginPath(); g.moveTo(176, 616); g.quadraticCurveTo(300, 574, 424, 616); g.lineTo(424, 628); g.lineTo(176, 628); g.closePath(); g.fill();
-  g.fillStyle = wood;
-  g.fillRect(166, 626, 268, 24);
-  g.fillRect(198, 742, 204, 10);
-  // arms
-  g.fillRect(112, 586, 82, 22);
-  g.fillRect(406, 586, 82, 22);
-  g.beginPath(); g.arc(112, 597, 13, 0, Math.PI * 2); g.arc(488, 597, 13, 0, Math.PI * 2); g.fill();
-  g.fillRect(118, 606, 14, 150);
-  g.fillRect(468, 606, 14, 150);
+  g.beginPath(); g.moveTo(170, 618); g.quadraticCurveTo(300, 586, 430, 618); g.lineTo(440, 664); g.quadraticCurveTo(300, 680, 160, 664); g.closePath(); g.fill();
+  g.fillStyle = velvet(150, 450);
+  g.fillRect(156, 660, 288, 34);
+  g.strokeStyle = "rgba(214,170,90,.6)"; g.lineWidth = 2.5;
+  g.beginPath(); g.moveTo(156, 662); g.lineTo(444, 662); g.stroke();
+  // rolled arms
+  for (const s of [-1, 1]) {
+    const x = 300 + s * 168;
+    g.fillStyle = velvet(x - 40, x + 40);
+    g.beginPath(); g.moveTo(x - 36, 700); g.lineTo(x - 34, 590); g.quadraticCurveTo(x, 566, x + 34, 590); g.lineTo(x + 36, 700); g.closePath(); g.fill();
+    const roll = g.createRadialGradient(x - 8 * s, 584, 4, x, 592, 40);
+    roll.addColorStop(0, "#b04454"); roll.addColorStop(1, "#4a1018");
+    g.fillStyle = roll;
+    g.beginPath(); g.ellipse(x, 594, 40, 26, 0, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = "rgba(214,170,90,.55)"; g.lineWidth = 2;
+    g.beginPath(); g.ellipse(x, 594, 30, 18, 0, 0, Math.PI * 2); g.stroke();
+  }
 }
 
 function drawStatic(g) {
@@ -729,6 +726,26 @@ function drawStatic(g) {
   for (const x of [90, 130, 172, 212]) { g.beginPath(); g.moveTo(x, 468); g.quadraticCurveTo(x + 6, 540, x - 2, 600); g.stroke(); }
   g.fillStyle = "#8a2a1f";
   g.beginPath(); g.ellipse(150, 458, 94, 15, 0, 0, Math.PI * 2); g.fill();
+  // a silver bowl of lemon drops (Zitronenbrausebonbons)
+  const bowl = g.createLinearGradient(78, 0, 120, 0);
+  bowl.addColorStop(0, "#e9e9ef"); bowl.addColorStop(.5, "#9ea1aa"); bowl.addColorStop(1, "#d4d6dd");
+  g.fillStyle = bowl;
+  g.beginPath(); g.moveTo(78, 444); g.quadraticCurveTo(99, 462, 120, 444); g.closePath(); g.fill();
+  g.fillRect(95, 452, 8, 3);
+  g.beginPath(); g.ellipse(99, 456, 11, 3, 0, 0, Math.PI * 2); g.fill();
+  for (const [x, y, r] of [[86, 441, .3], [96, 439, -.2], [107, 441, .4], [91, 435, .1], [102, 434, -.4], [97, 430, .2]]) {
+    g.save(); g.translate(x, y); g.rotate(r);
+    g.fillStyle = "#f4d23a";
+    g.beginPath(); g.moveTo(-9, -3); g.lineTo(-5, 0); g.lineTo(-9, 3); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(9, -3); g.lineTo(5, 0); g.lineTo(9, 3); g.closePath(); g.fill();
+    const ld = g.createRadialGradient(-1.5, -1.5, .5, 0, 0, 6);
+    ld.addColorStop(0, "#fff6b0"); ld.addColorStop(1, "#e0b416");
+    g.fillStyle = ld; g.beginPath(); g.ellipse(0, 0, 5.4, 3.6, 0, 0, Math.PI * 2); g.fill();
+    g.restore();
+  }
+  g.strokeStyle = "rgba(255,255,255,.7)"; g.lineWidth = 1;
+  g.beginPath(); g.ellipse(99, 444, 21, 4, 0, Math.PI, Math.PI * 2); g.stroke();
+
   // a few books on the table
   g.fillStyle = "#2f3d24"; g.fillRect(186, 440, 48, 10);
   g.fillStyle = "#5a1c16"; g.fillRect(190, 431, 42, 9);
@@ -799,7 +816,8 @@ const hexRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 const mixC = (a, b, f) => { const x = hexRgb(a), y = hexRgb(b); return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * f)).join(",")})`; };
 const STARS = [];
 { const RS = rng(77); for (let i = 0; i < 26; i++) STARS.push({ x: 48 + RS() * 134, y: 56 + RS() * 200, s: RS() < .2 ? 2 : 1.2, p: RS() * 6.3 }); }
-const LIT = [[52, 306], [70, 312], [100, 314], [124, 304], [146, 296], [166, 308], [176, 316]];
+const HOGWARTS = [[56, 12, 262, 24], [76, 9, 248, 30], [96, 15, 226, 38], [117, 8, 252, 26], [134, 14, 238, 32], [156, 9, 258, 24], [170, 12, 270, 20]];
+const HOGWARTS_LIT = [[60, 272], [60, 286], [79, 262], [100, 240], [104, 258], [100, 276], [120, 266], [138, 252], [142, 270], [158, 272], [174, 282], [70, 304], [110, 304], [150, 306]];
 
 function drawWindow(t) {
   const g = ctx, d = dayCur, tw = Math.max(0, 1 - Math.abs(d * 2 - 1) * 1.4);
@@ -836,15 +854,28 @@ function drawWindow(t) {
       g.beginPath(); g.ellipse(cx, cy, 22, 6, 0, 0, Math.PI * 2); g.ellipse(cx + 12, cy - 4, 14, 6, 0, 0, Math.PI * 2); g.fill();
     }
   }
-  // the rooftops of Bornheim
-  g.fillStyle = mixC("#090b16", "#6f6a70", d);
-  g.beginPath(); g.moveTo(40, 334); g.lineTo(40, 294); g.lineTo(60, 294); g.lineTo(60, 282); g.lineTo(76, 268); g.lineTo(92, 282);
-  g.lineTo(92, 300); g.lineTo(116, 300); g.lineTo(116, 288); g.lineTo(138, 288); g.lineTo(138, 276); g.lineTo(150, 266);
-  g.lineTo(162, 276); g.lineTo(162, 296); g.lineTo(190, 296); g.lineTo(190, 334); g.closePath(); g.fill();
-  g.fillRect(126, 272, 5, 16);
-  if (d < .5) {
-    for (const [x, y] of LIT) { g.fillStyle = `rgba(255,205,120,${(1 - d * 2) * (.6 + .4 * Math.sin(x + t * .2))})`; g.fillRect(x, y, 4, 5); }
+  // the towers of Hogwarts on the horizon
+  const stone = mixC("#0a0c1a", "#6a7080", d);
+  g.fillStyle = stone;
+  g.beginPath(); g.moveTo(40, 334); g.lineTo(40, 318); g.quadraticCurveTo(115, 306, 190, 316); g.lineTo(190, 334); g.closePath(); g.fill();
+  g.fillRect(52, 296, 128, 24);
+  for (let x = 52; x < 180; x += 8) g.fillRect(x, 291, 4, 6);
+  for (const [x, w, top, roof] of HOGWARTS) {
+    g.fillStyle = stone;
+    g.fillRect(x, top, w, 300 - top);
+    g.beginPath(); g.moveTo(x - 2, top); g.lineTo(x + w / 2, top - roof); g.lineTo(x + w + 2, top); g.closePath();
+    g.fillStyle = mixC("#0c0e22", "#4a5468", d); g.fill();
+    g.fillStyle = stone; g.fillRect(x + w / 2 - .5, top - roof - 5, 1, 5);
   }
+  if (d < .55) {
+    for (const [x, y] of HOGWARTS_LIT) {
+      g.fillStyle = `rgba(255,205,120,${(1 - d / .55) * (.55 + .45 * Math.sin(x * 1.7 + t * .3))})`;
+      g.fillRect(x, y, 2.4, 3.6);
+    }
+  }
+  // the lake below catches a little light
+  g.fillStyle = d > .4 ? `rgba(170,200,225,${.25 * d})` : `rgba(200,210,255,${.08 * (1 - d)})`;
+  g.fillRect(40, 322, 150, 12);
   g.restore();
   g.strokeStyle = "#2e2116"; g.lineWidth = 4;
   g.beginPath(); g.moveTo(115, 60); g.lineTo(115, 330); g.moveTo(45, 216); g.lineTo(185, 216); g.stroke();
@@ -1063,13 +1094,16 @@ function drawHands() {
   // hands resting folded in the lap: left hand on top, fingers draped over the right
   const lift = Math.max(0, Math.sin(P.tw)) * 1.6;
   const outline = "rgba(96,54,34,.7)";
-  // lower hand (back of the hand, lying flat)
-  g.fillStyle = skinGrad(g, 326, 712, 30);
+  const oneHand = act === "atFawkes" && state === "reading";
   g.strokeStyle = outline; g.lineWidth = 1.4;
-  g.beginPath(); g.ellipse(326, 713, 25, 13, -.12, 0, Math.PI * 2); g.fill(); g.stroke();
-  // its fingertips peeking out on the left, under the top hand
-  for (let k = 0; k < 3; k++) {
-    g.beginPath(); g.ellipse(276 - k * 1.5, 716 + k * 5, 7, 4.2, .2, 0, Math.PI * 2); g.fill(); g.stroke();
+  if (!oneHand) {
+    // lower hand (back of the hand, lying flat)
+    g.fillStyle = skinGrad(g, 326, 712, 30);
+    g.beginPath(); g.ellipse(326, 713, 25, 13, -.12, 0, Math.PI * 2); g.fill(); g.stroke();
+    // its fingertips peeking out on the left, under the top hand
+    for (let k = 0; k < 3; k++) {
+      g.beginPath(); g.ellipse(276 - k * 1.5, 716 + k * 5, 7, 4.2, .2, 0, Math.PI * 2); g.fill(); g.stroke();
+    }
   }
   // upper hand
   g.fillStyle = skinGrad(g, 288, 703, 30);
@@ -1105,7 +1139,7 @@ function drawHands() {
 }
 
 /* Fawkes: perch, flights through the room, landing on the chair, being stroked */
-const PERCH = { x: 300, y: 312 }, CHAIRTOP = { x: 470, y: 98 };
+const PERCH = { x: 300, y: 312 }, CHAIRTOP = { x: 470, y: 120 };
 const fawkes = { head: 1, nextTurn: 5, ruffle: -1, nextRuffle: 14, mode: "perch", x: 300, y: 312, facing: 1,
   path: null, t0: 0, dur: 3, dest: PERCH, nextFly: 240, sitUntil: 0, petUntil: 0 };
 const bez = (p, u) => {
@@ -1300,21 +1334,46 @@ function drawMotes(g, t) {
 function drawPetArm(t) {
   const g = ctx;
   const ox = CHX - 300 * S + P.fx * S, oy = (-ease(P.rise) * 95 + P.bob) * S;
-  const sx = ox + 214 * S, sy = oy + 500 * S;
-  const hx = fawkes.x + 16 + Math.sin(t * 4.5) * 3, hy = fawkes.y + 2 + Math.cos(t * 4.5) * 2;
-  const ex = (sx + hx) / 2 + 6, ey = Math.max(sy, hy) + 22;
+  const sx = ox + 212 * S, sy = oy + 492 * S;                       // his left shoulder
+  const u = .5 + .5 * Math.sin(t * 2.1);                             // slow strokes from head to tail
+  const hx = lerp(fawkes.x + 10, fawkes.x + 7, u), hy = lerp(fawkes.y - 12, fawkes.y + 14, u);
+  const ex = sx - 4, ey = Math.max(sy, hy) + 30;                     // elbow hangs below
+  const wx = hx + 13, wy = hy + 3;                                   // wrist
   g.save();
   g.lineCap = "round"; g.lineJoin = "round";
-  g.strokeStyle = "#3b2244"; g.lineWidth = 19;
-  g.beginPath(); g.moveTo(sx, sy); g.quadraticCurveTo(ex, ey, hx + 12, hy + 4); g.stroke();
-  g.strokeStyle = "#6a4470"; g.lineWidth = 12;
-  g.beginPath(); g.moveTo(sx - 2, sy - 3); g.quadraticCurveTo(ex - 2, ey - 4, hx + 12, hy + 2); g.stroke();
-  g.strokeStyle = "#a8894f"; g.lineWidth = 15;
-  g.beginPath(); g.moveTo(hx + 16, hy + 5); g.lineTo(hx + 9, hy + 3); g.stroke();
-  g.fillStyle = skinGrad(g, hx + 2, hy, 10);
-  g.beginPath(); g.ellipse(hx + 2, hy + 1, 8, 5.5, -.3, 0, Math.PI * 2); g.fill();
+  // sleeve: upper arm and forearm, wide wizard sleeve
+  const sl = g.createLinearGradient(sx, sy, wx, wy);
+  sl.addColorStop(0, "#5a3762"); sl.addColorStop(1, "#3b2244");
+  g.strokeStyle = sl;
+  g.lineWidth = 17; g.beginPath(); g.moveTo(sx, sy); g.lineTo(ex, ey); g.stroke();
+  g.lineWidth = 14; g.beginPath(); g.moveTo(ex, ey); g.lineTo(wx + 4, wy + 2); g.stroke();
+  g.strokeStyle = "rgba(255,230,255,.12)"; g.lineWidth = 3;
+  g.beginPath(); g.moveTo(sx - 4, sy - 2); g.lineTo(ex - 5, ey - 2); g.lineTo(wx + 2, wy - 3); g.stroke();
+  // bell cuff with gold trim
+  g.save(); g.translate(wx + 4, wy + 2); g.rotate(Math.atan2(wy - ey, wx - ex));
+  g.fillStyle = "#3b2244";
+  g.beginPath(); g.moveTo(-6, -8); g.lineTo(4, -11); g.lineTo(4, 11); g.lineTo(-6, 8); g.closePath(); g.fill();
+  g.fillStyle = "#a8894f"; g.fillRect(2, -11, 3, 22);
   g.restore();
-  if (Math.random() < .25) spawnSparks(fawkes.x + 4, fawkes.y - 6, 1, 18, 14, "255,190,90");
+  // hand resting on his back, fingers curving over the feathers
+  g.fillStyle = skinGrad(g, hx + 4, hy, 10);
+  g.strokeStyle = "rgba(96,54,34,.6)"; g.lineWidth = 1;
+  g.beginPath(); g.ellipse(hx + 5, hy + 1, 7.5, 5.5, -.5, 0, Math.PI * 2); g.fill(); g.stroke();
+  for (let k = 0; k < 4; k++) {
+    const fx0 = hx + 1 - k * .5, fy0 = hy - 3 + k * 2.6;
+    const bend = Math.sin(t * 2.1 + k * .4) * .8;
+    g.strokeStyle = "rgba(96,54,34,.6)"; g.lineWidth = 4.2;
+    g.beginPath(); g.moveTo(fx0, fy0); g.quadraticCurveTo(fx0 - 5, fy0 + bend, fx0 - 8, fy0 + 3); g.stroke();
+    g.strokeStyle = "#d9ab8a"; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(fx0, fy0); g.quadraticCurveTo(fx0 - 5, fy0 + bend, fx0 - 8, fy0 + 3); g.stroke();
+  }
+  g.strokeStyle = "rgba(96,54,34,.6)"; g.lineWidth = 4.4;
+  g.beginPath(); g.moveTo(hx + 5, hy - 4); g.quadraticCurveTo(hx + 1, hy - 9, hx - 3, hy - 9); g.stroke();
+  g.strokeStyle = "#dcae8c"; g.lineWidth = 3.2;
+  g.beginPath(); g.moveTo(hx + 5, hy - 4); g.quadraticCurveTo(hx + 1, hy - 9, hx - 3, hy - 9); g.stroke();
+  g.fillStyle = "#e6c46c"; g.beginPath(); g.arc(hx - 1, hy + 2, 1.6, 0, Math.PI * 2); g.fill();
+  g.restore();
+  if (Math.random() < .2) spawnSparks(hx - 4, hy, 1, 14, 10, "255,190,90");
 }
 
 function strand(g, s) {
@@ -1629,7 +1688,7 @@ let nextOuting = 0, awayUntil = 0, awayFor = 120;
 let wokeOn = "";
 let act = "sit", actUntil = 0, nextFetch = 0, readUntil = 0, pageP = 0, nextPage = 0, returning = false;
 let outing = "walk", leaveDir = 1, passAt = 0, crossing = false, nextPlay = 0;
-const FX_FAWKES = -112;
+const FX_FAWKES = -66;
 function pickOuting() {
   const r = Math.random();
   outing = r < .4 ? "walk" : r < .72 ? "passage" : "vanish";
