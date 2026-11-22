@@ -1,6 +1,6 @@
 {
   // Albus: Dumbledores lebendes Porträt als eigene Web-App für das iPad.
-  "name": "albus",
+  "name": "twilight-smoke-94ba",
   "main": "src/worker.js",
   "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat"],
