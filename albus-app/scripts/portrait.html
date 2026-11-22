@@ -1468,48 +1468,73 @@ function drawMotes(g, t) {
 function isPetting() { return act === "atFawkes" && fawkes.mode !== "fly"; }
 function drawPetArm(t) {
   const u = .5 + .5 * Math.sin(t * 2.1);                             // slow strokes from head to tail
-  drawArmTo(t, lerp(fawkes.x + 10, fawkes.x + 7, u), lerp(fawkes.y - 12, fawkes.y + 14, u), true);
+  drawArmTo(t, lerp(fawkes.x + 9, fawkes.x + 5, u), lerp(fawkes.y - 10, fawkes.y + 12, u), true);
 }
 function figToScene(x, y) { return [CHX - 300 * S + (P.fx + x) * S, (-ease(P.rise) * 95 + P.bob + y) * S]; }
 function armOut() { return isPetting() || !!bon.phase; }
 function drawArmTo(t, hx, hy, stroking) {
+  // drawn in the figure's own coordinates so it matches the coat: a full wizard sleeve from the shoulder,
+  // a real elbow (two-bone IK, elbow hanging down and out), the sleeve's drape and a hand at full size
   const g = ctx;
-  const [sx, sy] = figToScene(212, 492);                             // his left shoulder
-  const ex = sx - 4, ey = Math.max(sy, hy) + 30;                     // elbow hangs below
-  const wx = hx + 13, wy = hy + 3;                                   // wrist
+  const oyF = -ease(P.rise) * 95 + P.bob;
+  const X = (hx - (CHX - 300 * S)) / S - P.fx, Y = hy / S - oyF;
   g.save();
+  g.translate(CHX - 300 * S, 0); g.scale(S, S); g.translate(P.fx, oyF + P.breath * 1.5);
+  const SH = { x: 200, y: 492 };
+  // the elbow hangs loosely at his side, the forearm rises to the hand
+  const E = { x: SH.x - 16 + (X - SH.x) * .18, y: SH.y + 96 + Math.max(0, Y - SH.y) * .25 };
+  const a1 = Math.atan2(E.y - SH.y, E.x - SH.x);
+  const Wr = { x: X + 16, y: Y + 6 };                                // wrist
+  const ag = g.createLinearGradient(SH.x - 60, 0, SH.x + 40, 0);
+  ag.addColorStop(0, "#7a5080"); ag.addColorStop(1, "#3b2244");
   g.lineCap = "round"; g.lineJoin = "round";
-  // sleeve: upper arm and forearm, wide wizard sleeve
-  const sl = g.createLinearGradient(sx, sy, wx, wy);
-  sl.addColorStop(0, "#5a3762"); sl.addColorStop(1, "#3b2244");
-  g.strokeStyle = sl;
-  g.lineWidth = 17; g.beginPath(); g.moveTo(sx, sy); g.lineTo(ex, ey); g.stroke();
-  g.lineWidth = 14; g.beginPath(); g.moveTo(ex, ey); g.lineTo(wx + 4, wy + 2); g.stroke();
-  g.strokeStyle = "rgba(255,230,255,.12)"; g.lineWidth = 3;
-  g.beginPath(); g.moveTo(sx - 4, sy - 2); g.lineTo(ex - 5, ey - 2); g.lineTo(wx + 2, wy - 3); g.stroke();
-  // bell cuff with gold trim
-  g.save(); g.translate(wx + 4, wy + 2); g.rotate(Math.atan2(wy - ey, wx - ex));
-  g.fillStyle = "#3b2244";
-  g.beginPath(); g.moveTo(-6, -8); g.lineTo(4, -11); g.lineTo(4, 11); g.lineTo(-6, 8); g.closePath(); g.fill();
-  g.fillStyle = "#a8894f"; g.fillRect(2, -11, 3, 22);
+  // the sleeve's drape hanging under the forearm
+  const fa = Math.atan2(Wr.y - E.y, Wr.x - E.x);
+  const nx = -Math.sin(fa), ny = Math.cos(fa), side = ny > 0 ? 1 : -1;
+  g.fillStyle = "#4a2c55";
+  g.beginPath();
+  g.moveTo(E.x, E.y);
+  g.lineTo(Wr.x - Math.cos(fa) * 8, Wr.y - Math.sin(fa) * 8);
+  g.quadraticCurveTo(Wr.x + nx * side * 30, Wr.y + ny * side * 34 + 18, Wr.x - Math.cos(fa) * 46 + nx * side * 20, Wr.y - Math.sin(fa) * 46 + ny * side * 42);
+  g.closePath(); g.fill();
+  // upper arm and forearm
+  g.strokeStyle = "rgba(20,8,24,.55)"; g.lineWidth = 50;
+  g.beginPath(); g.moveTo(SH.x, SH.y); g.lineTo(E.x, E.y); g.lineTo(Wr.x, Wr.y); g.stroke();
+  g.strokeStyle = ag; g.lineWidth = 46;
+  g.beginPath(); g.moveTo(SH.x, SH.y); g.lineTo(E.x, E.y); g.stroke();
+  g.lineWidth = 40;
+  g.beginPath(); g.moveTo(E.x, E.y); g.lineTo(Wr.x, Wr.y); g.stroke();
+  g.save();
+  g.beginPath(); g.moveTo(SH.x, SH.y); g.lineTo(E.x, E.y); g.lineTo(Wr.x, Wr.y); g.lineWidth = 46; g.strokeStyle = "#000"; 
   g.restore();
-  // hand resting on his back, fingers curving over the feathers
-  g.fillStyle = skinGrad(g, hx + 4, hy, 10);
-  g.strokeStyle = "rgba(96,54,34,.6)"; g.lineWidth = 1;
-  g.beginPath(); g.ellipse(hx + 5, hy + 1, 7.5, 5.5, -.5, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.strokeStyle = "rgba(255,230,255,.13)"; g.lineWidth = 6;
+  g.beginPath(); g.moveTo(SH.x - 10, SH.y - 12); g.lineTo(E.x - 12, E.y - 10); g.lineTo(Wr.x - 6, Wr.y - 14); g.stroke();
+  // folds at the elbow
+  g.strokeStyle = "rgba(0,0,0,.3)"; g.lineWidth = 3;
+  for (let k = -1; k <= 1; k++) { g.beginPath(); g.arc(E.x, E.y, 10 + k * 6, a1 - .6, a1 + .4); g.stroke(); }
+  // gold cuff
+  g.save(); g.translate(Wr.x, Wr.y); g.rotate(fa);
+  g.fillStyle = "#a8894f"; g.fillRect(-10, -24, 13, 48);
+  g.fillStyle = "rgba(240,215,140,.45)"; g.fillRect(-6, -22, 2, 44);
+  g.restore();
+  // the hand: palm on his back, fingers curving over the feathers
+  const hxF = X, hyF = Y;
+  g.fillStyle = skinGrad(g, hxF + 4, hyF, 16);
+  g.strokeStyle = "rgba(96,54,34,.65)"; g.lineWidth = 1.3;
+  g.beginPath(); g.ellipse(hxF + 8, hyF + 2, 13, 9.5, fa - .3, 0, Math.PI * 2); g.fill(); g.stroke();
   for (let k = 0; k < 4; k++) {
-    const fx0 = hx + 1 - k * .5, fy0 = hy - 3 + k * 2.6;
-    const bend = Math.sin(t * 2.1 + k * .4) * .8;
-    g.strokeStyle = "rgba(96,54,34,.6)"; g.lineWidth = 4.2;
-    g.beginPath(); g.moveTo(fx0, fy0); g.quadraticCurveTo(fx0 - 5, fy0 + bend, fx0 - 8, fy0 + 3); g.stroke();
-    g.strokeStyle = "#d9ab8a"; g.lineWidth = 3;
-    g.beginPath(); g.moveTo(fx0, fy0); g.quadraticCurveTo(fx0 - 5, fy0 + bend, fx0 - 8, fy0 + 3); g.stroke();
+    const fx0 = hxF + 1 - k * .6, fy0 = hyF - 5 + k * 4.2;
+    const bend = stroking ? Math.sin(t * 2.1 + k * .4) * 1.2 : 0;
+    for (const [col, w] of [["rgba(96,54,34,.65)", 7.4 - k * .5], ["#d9ab8a", 5.6 - k * .5]]) {
+      g.strokeStyle = col; g.lineWidth = w;
+      g.beginPath(); g.moveTo(fx0, fy0); g.quadraticCurveTo(fx0 - 9, fy0 + bend, fx0 - 13, fy0 + 6); g.stroke();
+    }
   }
-  g.strokeStyle = "rgba(96,54,34,.6)"; g.lineWidth = 4.4;
-  g.beginPath(); g.moveTo(hx + 5, hy - 4); g.quadraticCurveTo(hx + 1, hy - 9, hx - 3, hy - 9); g.stroke();
-  g.strokeStyle = "#dcae8c"; g.lineWidth = 3.2;
-  g.beginPath(); g.moveTo(hx + 5, hy - 4); g.quadraticCurveTo(hx + 1, hy - 9, hx - 3, hy - 9); g.stroke();
-  g.fillStyle = "#e6c46c"; g.beginPath(); g.arc(hx - 1, hy + 2, 1.6, 0, Math.PI * 2); g.fill();
+  for (const [col, w] of [["rgba(96,54,34,.65)", 7.6], ["#dcae8c", 5.8]]) {
+    g.strokeStyle = col; g.lineWidth = w;
+    g.beginPath(); g.moveTo(hxF + 10, hyF - 7); g.quadraticCurveTo(hxF + 3, hyF - 15, hxF - 4, hyF - 14); g.stroke();
+  }
+  g.fillStyle = "#e6c46c"; g.beginPath(); g.ellipse(hxF + 1, hyF + 3, 2.2, 3.4, .3, 0, Math.PI * 2); g.fill();
   g.restore();
   if (stroking && Math.random() < .2) spawnSparks(hx - 4, hy, 1, 14, 10, "255,190,90");
 }
