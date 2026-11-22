@@ -270,6 +270,7 @@
         gedaechtnis: safe(() => H.memoryText(), "(noch nichts)").slice(0, 6000),
         zuletzt: safe(() => H.recentText(), "(nichts)").slice(0, 3000),
         wetter: safe(() => H.weather(), "unbekannt").slice(0, 1500),
+        zustand: safe(() => H.life(), "Fawkes ist kräftig und in voller Pracht.").slice(0, 800),
       },
       clientTools: {
         merken: ({ notiz }) => { safe(() => H.remember(notiz)); return "gemerkt"; },

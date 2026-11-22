@@ -455,6 +455,7 @@ const FORMAT = `Antwortformat:
 - Nimmst du dir ein Zitronenbrausebonbon (ab und zu, wenn es passt, oder wenn er dir eins anbietet), häng <bonbon/> an. Ohne den Block passiert im Bild nichts.
 - Soll Fawkes singen, oder sagst du, dass er singt, häng <fawkes_singt/> an. Sag nie, dass er singt, ohne den Block.
 - Willst du an die frische Luft, über die Ländereien von Hogwarts spazieren, häng <frische_luft/> an. Man sieht dich dann draußen vor dem Fenster.
+- Willst du eine Erinnerung im Denkarium betrachten (es steht im Regal, darin schwimmen deine Erinnerungen an den Hausherrn als Silberfäden), häng <denkarium/> an.
 - Braucht eine Frage wirklich Bedenkzeit (eine schwierige Entscheidung, etwas Persönliches, ein kniffliges Problem), darfst du zum Nachdenken kurz aus dem Bild gehen: Beginne deine Antwort dann mit <nachdenken/> und schreib danach die durchdachte Antwort. Du gehst hinaus, kommst zurück und sprichst sie dann. Nur selten, nicht bei Alltagsfragen.
 - Diese Blöcke werden nicht vorgelesen.`;
 
@@ -540,6 +541,7 @@ const shelfBooks = [];
     while (x < W) {
       if (y === 150 && x < 750) { x = 750; continue; }
       const w = 8 + RB() * 11, h = 62 + RB() * 34;
+      if (y === 486 && x > 672 && x < 790) { x = 792; continue; }
       shelfBooks.push({ x, y, w, h, c: cols[(RB() * cols.length) | 0], lean: RB() < .08 ? (RB() - .5) * .3 : 0 });
       x += w + 1 + (RB() < .1 ? 8 : 0);
     }
@@ -708,7 +710,7 @@ for (const [x, n] of [[262, 5], [606, 7], [628, 4], [12, 6]]) {
   for (let k = 0; k < n; k++) { const h = 8 + CR() * 6; st.push({ w: 40 + CR() * 22, h, y, dx: (CR() - .5) * 8, c: ["#5a2a1a", "#2b3d2a", "#3c2a52", "#6a4a1e", "#2a3550", "#702c24"][(CR() * 6) | 0] }); y -= h; }
   STACKS.push({ x, st });
 }
-for (const [x, y, w, h] of [[206, 52, 40, 52], [252, 70, 34, 44], [210, 118, 46, 32], [292, 44, 30, 40], [596, 112, 40, 48], [598, 176, 36, 40]]) WALLNOTES.push({ x, y, w, h, r: (CR() - .5) * .24, ink: CR() });
+for (const [x, y, w, h] of [[206, 52, 40, 52], [252, 62, 32, 44], [210, 118, 46, 32], [262, 112, 30, 36], [596, 112, 40, 48], [598, 176, 36, 40]]) WALLNOTES.push({ x, y, w, h, r: (CR() - .5) * .24, ink: CR() });
 function paper(g, x, y, w, h, r, ink, tone) {
   g.save(); g.translate(x, y); g.rotate(r);
   g.fillStyle = "rgba(0,0,0,.25)"; g.fillRect(-w / 2 + 2, -h / 2 + 2, w, h);
@@ -741,10 +743,12 @@ function drawClutterBack(g) {
   for (const n of WALLNOTES) paper(g, n.x + n.w / 2, n.y + n.h / 2, n.w, n.h, n.r, n.ink, "#ead9b0");
   g.fillStyle = "#b02a2a"; for (const n of WALLNOTES) { g.beginPath(); g.arc(n.x + n.w / 2, n.y + 3, 1.8, 0, Math.PI * 2); g.fill(); }
   g.strokeStyle = "rgba(160,130,70,.6)"; g.lineWidth = 1;
+  g.save(); g.translate(18, 40);
   g.beginPath(); g.arc(320, 98, 22, 0, Math.PI * 2); g.stroke();
   g.beginPath(); g.arc(320, 98, 14, 0, Math.PI * 2); g.stroke();
   for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; g.beginPath(); g.moveTo(320 + Math.cos(a) * 14, 98 + Math.sin(a) * 14); g.lineTo(320 + Math.cos(a) * 22, 98 + Math.sin(a) * 22); g.stroke(); }
   g.fillStyle = "rgba(230,210,150,.7)"; for (const [x, y] of [[312, 92], [326, 104], [318, 100], [330, 90]]) g.fillRect(x, y, 1.6, 1.6);
+  g.restore();
   // scrolls stuffed between the books on the shelves
   for (const [x, y] of [[668, 150], [740, 262], [690, 374], [760, 486]]) {
     g.save(); g.translate(x, y - 6);
@@ -752,6 +756,116 @@ function drawClutterBack(g) {
     g.restore();
   }
 }
+const PORTRAITS = [
+  { x: 288, y: 22, w: 52, h: 66, bg: "#2a3a2e", robe: "#5a1e2a", skin: "#d8b090", hair: "#7a7470", hat: "witch", awake: true },
+  { x: 592, y: 36, w: 46, h: 62, bg: "#3a2e20", robe: "#22304a", skin: "#d4a888", hair: "#c8c4bc", hat: "cap", awake: false },
+];
+function drawWallPortraits(t) {
+  const g = ctx;
+  for (let i = 0; i < PORTRAITS.length; i++) {
+    const p = PORTRAITS[i];
+    const fr = g.createLinearGradient(p.x, p.y, p.x + p.w, p.y + p.h);
+    fr.addColorStop(0, "#e8c870"); fr.addColorStop(.5, "#8a6a2a"); fr.addColorStop(1, "#c8a050");
+    g.fillStyle = "rgba(0,0,0,.4)"; g.fillRect(p.x + 3, p.y + 4, p.w, p.h);
+    g.fillStyle = fr; g.fillRect(p.x, p.y, p.w, p.h);
+    const ix = p.x + 5, iy = p.y + 5, iw = p.w - 10, ih = p.h - 10;
+    g.save(); g.beginPath(); g.rect(ix, iy, iw, ih); g.clip();
+    const bgg = g.createRadialGradient(ix + iw / 2, iy + ih * .4, 2, ix + iw / 2, iy + ih * .5, ih);
+    bgg.addColorStop(0, p.bg); bgg.addColorStop(1, "#0a0806");
+    g.fillStyle = bgg; g.fillRect(ix, iy, iw, ih);
+    // who is awake: the witch watches, the old wizard dozes and wakes up when you talk to Albus
+    const talk = state === "listening" || state === "speaking" || state === "thinking";
+    const ph = t * .5 + i * 7;
+    const awake = p.awake ? !(state === "sleeping") : (talk && Math.sin(ph * .7) > .2);
+    const nodY = awake ? 0 : Math.max(0, Math.sin(ph * .9)) * 3;
+    const look = awake ? (state === "speaking" || state === "listening" ? (i === 0 ? 1.4 : -1.4) : Math.sin(ph * .31) > .6 ? 1.2 : -.3) : 0;
+    const cx = ix + iw / 2, cy = iy + ih * .44 + nodY;
+    g.fillStyle = p.robe; g.beginPath(); g.ellipse(cx, iy + ih + 4, iw * .52, ih * .38, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = p.hair;
+    if (p.hat === "cap") { g.beginPath(); g.moveTo(cx - 8, cy + 4); g.quadraticCurveTo(cx, cy + 28, cx + 8, cy + 4); g.closePath(); g.fill(); }
+    g.fillStyle = p.skin; g.beginPath(); g.ellipse(cx, cy, 7.5, 9, 0, 0, Math.PI * 2); g.fill();
+    if (p.hat === "cap") {
+      g.fillStyle = p.hair; g.beginPath(); g.moveTo(cx - 6, cy + 4); g.quadraticCurveTo(cx, cy + 22, cx + 6, cy + 4); g.quadraticCurveTo(cx, cy + 7, cx - 6, cy + 4); g.fill();
+      g.fillStyle = "#3a2a4a"; g.beginPath(); g.ellipse(cx, cy - 6, 8, 5, 0, Math.PI, Math.PI * 2); g.fill();
+    } else {
+      g.fillStyle = "#1a1418"; g.beginPath(); g.moveTo(cx - 13, cy - 6); g.lineTo(cx + 13, cy - 6); g.lineTo(cx + 3, cy - 30); g.closePath(); g.fill();
+      g.fillStyle = p.hair; g.fillRect(cx - 8, cy - 5, 3, 10); g.fillRect(cx + 5, cy - 5, 3, 10);
+    }
+    g.fillStyle = "#1a0e08"; g.strokeStyle = "#1a0e08"; g.lineWidth = .9;
+    const blink = awake && ((t * .9 + i * 3) % 4.2) < .14;
+    for (const sx of [-3, 3]) {
+      if (awake && !blink) { g.beginPath(); g.arc(cx + sx + look, cy - 1, 1, 0, Math.PI * 2); g.fill(); }
+      else { g.beginPath(); g.moveTo(cx + sx - 1.6, cy - 1); g.lineTo(cx + sx + 1.6, cy - 1); g.stroke(); }
+    }
+    if (p.hat === "witch") { g.strokeStyle = "rgba(220,200,140,.8)"; g.lineWidth = .6; for (const sx of [-3, 3]) { g.beginPath(); g.arc(cx + sx, cy - 1, 2.2, 0, Math.PI * 2); g.stroke(); } }
+    g.restore();
+    if (!awake && !p.awake) {                                          // he snores
+      const z = (t * .35 + i) % 1;
+      g.fillStyle = `rgba(230,220,190,${Math.sin(z * Math.PI) * .7})`; g.font = "italic 9px serif";
+      g.fillText("z", p.x + p.w - 6 + z * 8, p.y + 14 - z * 14);
+    }
+  }
+}
+
+/* the Pensieve's surface: silver memories swirling, one thread for each thing he has learnt about you */
+const threads = [];
+let lastThread = -9;
+function memoryThread() {
+  if (photo.on) return;
+  const [x, y] = figToScene(262 + P.yaw * 10, headY() - 14);
+  threads.push({ t0: performance.now() / 1000, x, y });
+  lastThread = performance.now() / 1000;
+}
+function drawPensieve(t) {
+  const g = ctx, n = clamp(3 + mem.notes.length, 3, 18);
+  g.save();
+  g.beginPath(); g.ellipse(733, 453, 44, 6.5, 0, 0, Math.PI * 2); g.clip();
+  const sv = g.createRadialGradient(733, 453, 2, 733, 453, 46);
+  sv.addColorStop(0, "rgba(235,242,255,.95)"); sv.addColorStop(1, "rgba(120,140,190,.7)");
+  g.fillStyle = sv; g.fillRect(686, 444, 94, 18);
+  g.strokeStyle = "rgba(255,255,255,.75)"; g.lineWidth = .8;
+  for (let k = 0; k < n; k++) {
+    const a = t * (.25 + (k % 5) * .06) + k * 2.1, r = 6 + (k * 7.3) % 36;
+    g.beginPath(); g.ellipse(733, 453, r, r * .15, 0, a, a + 1.6 + (k % 3) * .4); g.stroke();
+  }
+  g.restore();
+  // mist rising from it
+  for (let k = 0; k < 4; k++) {
+    const ph = (t * .12 + k / 4) % 1;
+    g.fillStyle = `rgba(210,225,255,${Math.sin(ph * Math.PI) * .22})`;
+    g.beginPath(); g.ellipse(733 + Math.sin(t * .7 + k * 2) * 18, 448 - ph * 46, 12 + ph * 14, 4 + ph * 4, 0, 0, Math.PI * 2); g.fill();
+  }
+}
+function drawThreads(t) {
+  const g = ctx;
+  for (let i = threads.length - 1; i >= 0; i--) {
+    const th = threads[i], u = (t - th.t0) / 2.8;
+    if (u >= 1) { threads.splice(i, 1); spawnSparks(733, 450, 10, 40, 8, "220,232,255"); continue; }
+    const pt = (v) => {
+      const e = ease(clamp(v, 0, 1)), cx = (th.x + 733) / 2, cy = Math.min(th.y, 450) - 120;
+      const w = 1 - e;
+      return [w * w * th.x + 2 * w * e * cx + e * e * 733, w * w * th.y + 2 * w * e * cy + e * e * 450];
+    };
+    g.lineCap = "round";
+    for (let k = 0; k < 12; k++) {
+      const [x0, y0] = pt(u - k * .025), [x1, y1] = pt(u - (k + 1) * .025);
+      g.strokeStyle = `rgba(225,235,255,${(1 - k / 12) * .85})`; g.lineWidth = 2.4 - k * .15;
+      g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+    }
+  }
+}
+function drawPensieveGlow(t) {
+  const g = ctx, k = .55 + .15 * Math.sin(t * .9) + Math.min(.3, mem.notes.length * .015);
+  g.save(); g.globalCompositeOperation = "lighter";
+  const gl = g.createRadialGradient(733, 450, 4, 733, 435, 120);
+  gl.addColorStop(0, `rgba(150,180,240,${.55 * k})`); gl.addColorStop(.4, `rgba(110,140,220,${.22 * k})`); gl.addColorStop(1, "rgba(100,130,220,0)");
+  g.fillStyle = gl; g.fillRect(610, 315, 190, 205);
+  const sf = g.createRadialGradient(733, 453, 2, 733, 453, 44);
+  sf.addColorStop(0, `rgba(220,232,255,${.5 * k})`); sf.addColorStop(1, "rgba(200,215,255,0)");
+  g.fillStyle = sf; g.beginPath(); g.ellipse(733, 453, 46, 8, 0, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+
 function drawClutterFront(g) {
   // books piled on the floor, papers everywhere
   for (const p of PAPERS) paper(g, p.x, p.y, p.w, p.h, p.r, p.ink);
@@ -795,6 +909,18 @@ function drawStatic(g) {
   for (const y of [150, 262, 374, 486]) g.fillRect(shX + 8, y, W - shX, 11);
   g.fillRect(shX, 30, 18, H);
   g.fillRect(shX, 30, W - shX, 16);
+  // the Pensieve: a shallow stone basin with runes, standing among the books on the fourth shelf
+  {
+    const st = g.createLinearGradient(690, 0, 776, 0);
+    st.addColorStop(0, "#8a877e"); st.addColorStop(.5, "#5e5b54"); st.addColorStop(1, "#2e2c28");
+    g.fillStyle = st;
+    g.beginPath(); g.moveTo(714, 486); g.lineTo(752, 486); g.lineTo(744, 474); g.lineTo(722, 474); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(684, 452); g.quadraticCurveTo(686, 478, 733, 480); g.quadraticCurveTo(780, 478, 782, 452); g.closePath(); g.fill();
+    g.fillStyle = "#9a978e"; g.beginPath(); g.ellipse(733, 452, 50, 9, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "#1a1a22"; g.beginPath(); g.ellipse(733, 453, 44, 6.5, 0, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = "rgba(200,220,255,.35)"; g.lineWidth = 1;
+    for (let k = 0; k < 9; k++) { const x = 694 + k * 9; g.beginPath(); g.moveTo(x, 462); g.lineTo(x + 3, 468); g.lineTo(x + 6, 462); g.stroke(); }
+  }
   // the Sorting Hat on the top shelf
   g.save(); g.translate(708, 150);
   g.fillStyle = "#3e2c1c";
@@ -1191,7 +1317,7 @@ function drawCoat() {
   g.beginPath();
   g.moveTo(200, 468);
   g.bezierCurveTo(140, 500, 118, 600, 104, 820);
-  g.lineTo(92, 1000); g.lineTo(508, 1000); g.lineTo(496, 820);
+  g.lineTo(92 + hemSwing, 1000); g.lineTo(508 + hemSwing, 1000); g.lineTo(496 + hemSwing * .3, 820);
   g.bezierCurveTo(482, 600, 460, 500, 400, 468);
   g.quadraticCurveTo(300, 438, 200, 468);
   g.closePath();
@@ -1375,7 +1501,29 @@ function planFlight(to, now) {
     { x: to.x + swing + (Math.random() - .5) * 120, y: top - 20 }, to];
   fawkes.t0 = now; fawkes.dur = 3 + Math.random() * 1.2; fawkes.dest = to; fawkes.mode = "fly";
 }
+const PHOENIX_DAYS = 24;
+function phoenixBorn() {
+  let b = parseFloat(store.get("albus.fawkesBorn"));
+  if (!isFinite(b)) { b = Date.now() - 6 * 864e5; store.set("albus.fawkesBorn", String(b)); }
+  return b;
+}
+function phoenixAge() { return (Date.now() - phoenixBorn()) / 864e5; }
+function phoenixStage() {
+  if (fawkes.burn > 0) return "burn";
+  const d = phoenixAge();
+  return d < 2.5 ? "chick" : d < PHOENIX_DAYS - 6 ? "adult" : "old";
+}
 function fawkesTick(now) {
+  if (fawkes.burn > 0) {
+    const u = (now - fawkes.burn) / 9;
+    if (u < .75 && Math.random() < .8) spawnSparks(fawkes.x, fawkes.y - 6, 3, 34, 40, Math.random() < .5 ? "255,160,60" : "255,220,120");
+    if (u >= 1) { fawkes.burn = 0; store.set("albus.fawkesBorn", String(Date.now())); spawnSparks(fawkes.x, fawkes.y, 16, 30, 20, "255,200,120"); }
+    return;
+  }
+  if (fawkes.mode === "perch" && phoenixAge() >= PHOENIX_DAYS && !photo.on && (state === "reading" || state === "attentive")) {
+    const hr = new Date().getHours();
+    if (hr >= 8 && hr < 22) { fawkes.burn = now; return; }
+  }
   if (fawkes.mode === "fly") {
     const u = (now - fawkes.t0) / fawkes.dur;
     if (u >= 1) {
@@ -1390,7 +1538,7 @@ function fawkesTick(now) {
     }
   } else if (fawkes.mode === "chair") {
     if (now > fawkes.sitUntil || P.rise > .05 || act === "toFawkes") planFlight(PERCH, now);
-  } else if (!photo.on && now > fawkes.nextFly && P.rise === 0 &&
+  } else if (!photo.on && now > fawkes.nextFly && P.rise === 0 && phoenixStage() !== "chick" &&
              ((state === "reading" && act === "sit") || (state === "away" && outing !== "vanish"))) {
     planFlight(CHAIRTOP, now);
     fawkes.nextFly = now + 360 + Math.random() * 480;
@@ -1424,29 +1572,62 @@ function drawFawkes(t) {
     if (Math.random() < .25) spawnSparks(fawkes.x, fawkes.y - 20, 1, 20, 14, "255,210,120");
   }
   if (fawkes.mode === "fly") drawFlyingFawkes(g, t);
+  else if (fawkes.burn > 0) drawBurningFawkes(g, t);
   else drawPerchedFawkes(g, t, fawkes.x, fawkes.y, petting ? 1 : fawkes.head, rf, petting);
 }
-function drawPerchedFawkes(g, t, x, y, head, rf, petting) {
-  g.save(); g.translate(x - 300, y - 312);
-  const sway = Math.sin(t * .8) * 2;
-  for (let k = 0; k < 5; k++) {
-    g.strokeStyle = k % 2 ? "#e0a030" : "#c2401c"; g.lineWidth = 5 - k * .5; g.lineCap = "round";
-    g.beginPath(); g.moveTo(300, 330);
-    g.quadraticCurveTo(298 + (k - 2) * 4 + sway, 380, 292 + (k - 2) * 7 + sway * 1.5, 418 + k * 6); g.stroke();
+const FAWKES_PAL = {
+  adult: { b: ["#e85a24", "#b0261a", "#6a1410"], belly: "#f0b040", wing: "#8a1a12", head: "#d8401e", crest: "#f0a030", tail: ["#e0a030", "#c2401c"], tl: 1 },
+  old: { b: ["#b8643c", "#8a3a24", "#4a1a10"], belly: "#c89a58", wing: "#6a2a1a", head: "#a8502e", crest: "#b88a48", tail: ["#a88048", "#8a4a2a"], tl: .8 },
+  chick: { b: ["#8a6a5a", "#6a4a40", "#3a2a24"], belly: "#a88a70", wing: "#5a3a30", head: "#8a6050", crest: "#a07050", tail: ["#7a5a48", "#6a4a3a"], tl: .3 },
+};
+function drawBurningFawkes(g, t) {
+  const u = (t - fawkes.burn) / 9, x = fawkes.x, y = fawkes.y;
+  if (u < .55) { g.save(); g.globalAlpha = 1 - u / .55; drawPerchedFawkes(g, t, x, y, 1, 0, false); g.restore(); }
+  const f = u < .2 ? u / .2 : u < .7 ? 1 : 1 - (u - .7) / .3;
+  const gl = g.createRadialGradient(x, y - 8, 2, x, y - 8, 70 * f + 10);
+  gl.addColorStop(0, `rgba(255,236,170,${.85 * f})`); gl.addColorStop(.5, `rgba(255,140,40,${.45 * f})`); gl.addColorStop(1, "rgba(200,60,10,0)");
+  g.fillStyle = gl; g.beginPath(); g.arc(x, y - 8, 70 * f + 10, 0, Math.PI * 2); g.fill();
+  for (let k = 0; k < 9; k++) {
+    const fl = Math.sin(t * 9 + k * 1.7) * .25 + .75, hgt = (30 + (k % 3) * 12) * f * fl;
+    const fx = x - 16 + k * 4;
+    g.fillStyle = k % 2 ? `rgba(255,200,80,${.8 * f})` : `rgba(255,110,30,${.75 * f})`;
+    g.beginPath(); g.moveTo(fx - 5, y + 10); g.quadraticCurveTo(fx - 6, y - hgt * .5, fx + Math.sin(t * 7 + k) * 3, y + 10 - hgt); g.quadraticCurveTo(fx + 6, y - hgt * .5, fx + 5, y + 10); g.fill();
   }
-  g.save(); g.translate(300, 312); g.rotate(petting ? .12 : 0); g.scale(1 + rf * .12, 1 + rf * .06);
+  if (u > .55) {                                                     // ash, and a chick rising from it
+    g.fillStyle = "#5a5450"; g.beginPath(); g.ellipse(x, y + 16, 12, 4, 0, Math.PI, Math.PI * 2); g.fill();
+    if (u > .7) { g.save(); g.globalAlpha = (u - .7) / .3; drawPerchedFawkes(g, t, x, y, 1, 0, false, "chick"); g.restore(); }
+  }
+}
+function drawPerchedFawkes(g, t, x, y, head, rf, petting, forceStage) {
+  const stage = forceStage || phoenixStage();
+  const pal = FAWKES_PAL[stage === "burn" ? "old" : stage] || FAWKES_PAL.adult;
+  const sc = stage === "chick" ? .62 : 1;
+  g.save(); g.translate(x - 300, y - 312);
+  g.translate(300, 330); g.scale(sc, sc); g.translate(-300, -330);
+  const sway = Math.sin(t * .8) * 2;
+  const tails = stage === "old" ? 4 : stage === "chick" ? 3 : 5;
+  for (let k = 0; k < tails; k++) {
+    g.strokeStyle = pal.tail[k % 2]; g.lineWidth = 5 - k * .5; g.lineCap = "round";
+    g.beginPath(); g.moveTo(300, 330);
+    g.quadraticCurveTo(298 + (k - 2) * 4 + sway, 330 + 50 * pal.tl, 292 + (k - 2) * 7 + sway * 1.5 + (stage === "old" ? (k - 2) * 3 : 0), 330 + (88 + k * 6) * pal.tl); g.stroke();
+  }
+  g.save(); g.translate(300, 312); g.rotate((petting ? .12 : 0) + (stage === "old" ? .1 : 0)); g.scale(1 + rf * .12, 1 + rf * .06);
   const bodyG = g.createLinearGradient(-12, -20, 12, 20);
-  bodyG.addColorStop(0, "#e85a24"); bodyG.addColorStop(.6, "#b0261a"); bodyG.addColorStop(1, "#6a1410");
+  bodyG.addColorStop(0, pal.b[0]); bodyG.addColorStop(.6, pal.b[1]); bodyG.addColorStop(1, pal.b[2]);
   g.fillStyle = bodyG;
-  g.beginPath(); g.ellipse(0, 0, 13, 21, .15, 0, Math.PI * 2); g.fill();
-  g.fillStyle = "#f0b040";
+  g.beginPath(); g.ellipse(0, 0, 13, stage === "chick" ? 17 : 21, .15, 0, Math.PI * 2); g.fill();
+  g.fillStyle = pal.belly;
   g.beginPath(); g.ellipse(3, 6, 7, 12, .1, 0, Math.PI * 2); g.fill();
-  g.fillStyle = "#8a1a12";
-  g.beginPath(); g.ellipse(-5, 2, 9, 17, .35 - rf * .3, 0, Math.PI * 2); g.fill();
+  g.fillStyle = pal.wing;
+  g.beginPath(); g.ellipse(-5, 2, 9, 17, .35 - rf * .3 + (stage === "old" ? .2 : 0), 0, Math.PI * 2); g.fill();
+  if (stage === "old") {                                            // ruffled, a few feathers sticking out
+    g.strokeStyle = pal.b[0]; g.lineWidth = 1.4;
+    for (const [a, b2] of [[-10, -6], [-12, 4], [8, -12], [10, 10]]) { g.beginPath(); g.moveTo(a * .8, b2 * .8); g.lineTo(a * 1.3, b2 * 1.3 - 2); g.stroke(); }
+  }
   g.restore();
-  const hx = 302 + head * 2 + (petting ? 3 : 0), hy = 288 + (petting ? 2 : 0);
-  g.fillStyle = "#d8401e"; g.beginPath(); g.arc(hx, hy, 8, 0, Math.PI * 2); g.fill();
-  g.strokeStyle = "#f0a030"; g.lineWidth = 2;
+  const hx = 302 + head * 2 + (petting ? 3 : 0), hy = 288 + (petting ? 2 : 0) + (stage === "old" ? 4 : stage === "chick" ? 6 : 0);
+  g.fillStyle = pal.head; g.beginPath(); g.arc(hx, hy, stage === "chick" ? 9.5 : 8, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = pal.crest; g.lineWidth = 2;
   for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(hx - 2 + k * 2, hy - 7); g.lineTo(hx - 5 + k * 3 - head * 3, hy - 15 - k); g.stroke(); }
   g.fillStyle = "#f2c84a";
   g.beginPath(); g.moveTo(hx + head * 6, hy - 2); g.lineTo(hx + head * 14, hy + 2); g.lineTo(hx + head * 6, hy + 4); g.closePath(); g.fill();
@@ -1937,8 +2118,9 @@ function drawHead() {
   }
   g.restore();
 
-  // beard, mouth and moustache follow the turn
+  // beard, mouth and moustache follow the turn, and the beard swings a little
   g.save(); g.translate(o * .5, 0);
+  g.translate(0, 20); g.rotate(beard.a); g.translate(0, -20);
   const bgG = g.createLinearGradient(-70, 0, 70, 0);
   bgG.addColorStop(0, "#f1ece4"); bgG.addColorStop(.6, "#cfc7bb"); bgG.addColorStop(1, "#8f877c");
   g.fillStyle = bgG;
@@ -2062,6 +2244,8 @@ function draw(t) {
   }
   drawWindow(t);
   drawOrrery(t);
+  drawWallPortraits(t);
+  drawPensieve(t);
   drawCastShadow();
   drawLight(t, "flame");
   const drawDt = Math.min(.1, Math.max(0, t - (draw.last || t))); draw.last = t;
@@ -2086,6 +2270,7 @@ function draw(t) {
   drawFawkes(t);
   if (isPetting() && Math.abs(P.fx) < 690) drawPetArm(t);
   if (bon.phase && Math.abs(P.fx) < 690) drawBonbon(t);
+  if (threads.length) drawThreads(t);
   drawSparks(ctx, drawDt);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalCompositeOperation = "multiply";
@@ -2100,6 +2285,7 @@ function draw(t) {
   ctx.globalCompositeOperation = "source-over";
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   drawBeam();
+  drawPensieveGlow(t);
   drawLight(t, "glow");
   drawMotes(ctx, t);
 }
@@ -2123,6 +2309,8 @@ let boundaryMode = false, mouthPulse = 0;
 let doze = -1, startles = 0, glanceUntil = 0, nextGlance = 18;
 let nextOuting = 0, awayUntil = 0, awayFor = 120;
 let wokeOn = "";
+let walkV = 0, hemSwing = 0, nextPens = 0;
+const beard = { a: 0, v: 0, lx: 0, lv: 0 };
 let act = "sit", actUntil = 0, nextFetch = 0, readUntil = 0, pageP = 0, nextPage = 0, returning = false;
 let outing = "walk", leaveDir = 1, passAt = 0, crossing = false, nextPlay = 0;
 const FX_FAWKES = -66;
@@ -2139,6 +2327,7 @@ function label(s) {
   if (s !== "away" && s !== "leaving" && P.vanish > .02) return "taucht auf";
   if (s === "reading") {
     if (photo.on) return "sinnt nach";
+    if (act === "toPensieve" || act === "atPensieve") return "blickt ins Denkarium";
     if (act === "toFawkes" || act === "atFawkes") return "spielt mit Fawkes";
     if (fawkes.mode === "fly" && act === "sit") return "sieht Fawkes nach";
     if (act === "read") return "liest";
@@ -2162,6 +2351,7 @@ function setState(s) {
   if (s !== "reading") {
     if (act === "toShelf" || act === "atShelf") act = "fromShelf";
     if (act === "toFawkes" || act === "atFawkes") act = "fromFawkes";
+    if (act === "toPensieve" || act === "atPensieve") act = "fromPensieve";
     if (act === "read") { act = "sit"; book.mode = "none"; }
   } else {
     doze = -1; startles = 0;
@@ -2186,12 +2376,14 @@ function targets(now) {
         doze = Math.min(doze, .05);
         break;
       }
+      if (act === "atPensieve") { T.lift = .2; T.eye = .75; T.yaw = .75; T.gx = .9; T.gy = 1; T.tilt = .05; T.brow = .5; T.glass = 0; break; }
       if (act === "atShelf") { T.lift = .45; T.eye = 1; T.yaw = .85; T.gx = .8; T.gy = -.2; T.tilt = 0; T.brow = .2; T.glass = 0; break; }
       const dz = clamp(doze, 0, 1);
       const glance = now < glanceUntil;
       T.lift = glance ? .55 : lerp(.15, -.9, dz);
       T.eye = glance ? .95 : lerp(.82, 0, Math.pow(dz, .7));
-      T.yaw = glance ? -.05 : -.45; T.gx = glance ? 0 : -.55; T.gy = glance ? -.1 : lerp(.15, .9, dz);
+      const lonely = mem.lastAt && Date.now() - mem.lastAt > 30 * 36e5;
+      T.yaw = glance ? (lonely ? -.6 : -.05) : -.45; T.gx = glance ? (lonely ? -1 : 0) : -.55; T.gy = glance ? (lonely ? -.6 : -.1) : lerp(.15, .9, dz);
       T.tilt = .02 + dz * .06; T.brow = glance ? .35 : 0; T.glass = dz * .6;
       break;
     }
@@ -2239,6 +2431,7 @@ function tick(ms) {
   if (pageP > 0) { pageP += dt / .9; if (pageP >= 1) pageP = 0; }
   if (state === "reading" && act === "sit" && !bon.phase) {
     if (now > nextBonbon && doze < .3 && bonReady()) { startBonbon(now); nextBonbon = now + 700 + Math.random() * 1100; }
+    else if (now > nextPens && doze < .3 && !book.has && P.fx === 0 && P.rise === 0 && !photo.on && act === "sit") { act = "toPensieve"; doze = -1; }
     const hr = new Date().getHours();
     if (now > song.next && hr >= 8 && hr < 21 && fawkes.mode === "perch" && doze < .5) { fawkesSing(now); song.next = now + 1800 + Math.random() * 2400; }
     if (now > nextGrin && doze < .3) { grinUntil = now + 2.5 + Math.random() * 2; nextGrin = now + 30 + Math.random() * 50; }
@@ -2283,7 +2476,7 @@ function tick(ms) {
       if (P.vanish >= 1) { setState("away"); awayUntil = now + awayFor; }
     } else if (P.rise < 1) P.rise = Math.min(1, P.rise + dt / 1.5);
     else {
-      P.fx += leaveDir * dt * 165; dir = leaveDir;
+      walkV += (165 - walkV) * (1 - Math.exp(-dt * 2.6)); P.fx += leaveDir * dt * walkV; dir = leaveDir;
       if (Math.abs(P.fx) >= 700) {
         P.fx = 700 * leaveDir; setState("away"); awayUntil = now + awayFor;
         if (outing === "passage") passAt = now + 6 + Math.random() * 8;
@@ -2303,11 +2496,14 @@ function tick(ms) {
     if (P.vanish > 0) { P.vanish = Math.max(0, P.vanish - dt / 1.5); spawnSparks(CHX, 330, 4, 170, 340); }
     const goShelf = state === "reading" && (act === "toShelf" || act === "atShelf");
     const goFawkes = state === "reading" && (act === "toFawkes" || act === "atFawkes");
-    const tx = goShelf ? FX_SHELF : goFawkes ? FX_FAWKES : 0;
+    const goPens = state === "reading" && (act === "toPensieve" || act === "atPensieve");
+    const tx = goShelf || goPens ? FX_SHELF : goFawkes ? FX_FAWKES : 0;
     if (Math.abs(P.fx - tx) > .5) {
       P.rise = Math.min(1, P.rise + dt / (state === "reading" ? 1.3 : .5));
       if (P.rise >= 1) {
-        const sp = (state === "reading" ? 150 : 230) * dt;
+        const vmax = (state === "reading" ? 150 : 230) * clamp(Math.abs(tx - P.fx) / 80, .28, 1);
+        walkV += (vmax - walkV) * (1 - Math.exp(-dt * 3.2));
+        const sp = Math.max(walkV, 22) * dt;
         const step = clamp(tx - P.fx, -sp, sp);
         P.fx += step; dir = Math.sign(step);
       }
@@ -2326,7 +2522,12 @@ function tick(ms) {
           if (fawkes.mode === "chair") planFlight(PERCH, now);
           if (fawkes.mode === "perch") { act = "atFawkes"; actUntil = now + 7; fawkes.petUntil = now + 7; }
         } else if (now > actUntil) { act = "fromFawkes"; fawkes.ruffle = now; spawnSparks(fawkes.x, fawkes.y - 10, 14, 30, 30, "255,190,90"); }
+      } else if (goPens) {
+        P.rise = 1;
+        if (act === "toPensieve") { act = "atPensieve"; actUntil = now + 9 + Math.random() * 6; memoryThread(); }
+        else if (now > actUntil) act = "fromPensieve";
       } else if (P.rise > 0) P.rise = Math.max(0, P.rise - dt / 1.3);
+      else if (act === "fromPensieve" && state === "reading") { act = "sit"; doze = -1; nextPens = now + 900 + Math.random() * 1200; }
       else if (act === "fromFawkes" && state === "reading") { act = "sit"; doze = -1; nextPlay = now + 420 + Math.random() * 480; }
       else if (act === "fromShelf" && state === "reading") {
         doze = -1;
@@ -2335,8 +2536,25 @@ function tick(ms) {
       }
     }
   }
-  if (dir) { P.walk += dt * 7.5; P.bob = -Math.abs(Math.sin(P.walk)) * 7; P.sway = Math.sin(P.walk) * .025; }
-  else { P.bob *= .8; P.sway *= .8; }
+  if (dir) {
+    const vf = clamp(walkV / 155, .3, 1.2);
+    P.walk += dt * 7.2 * vf;
+    P.bob = -Math.abs(Math.sin(P.walk)) * 6 * vf;
+    P.sway = Math.sin(P.walk) * .02 + dir * .03 * vf;               // a slight lean into the walk
+    hemSwing += (Math.sin(P.walk) * 12 - dir * 14 * vf - hemSwing) * (1 - Math.exp(-dt * 8));
+  } else {
+    walkV *= .85; P.bob *= .8; P.sway *= .8;
+    hemSwing += (0 - hemSwing) * (1 - Math.exp(-dt * 3));
+  }
+  // the beard is a pendulum: it lags behind turns and steps and settles slowly
+  {
+    const hx = P.fx * 1 + P.yaw * 14 + P.bob * 0;
+    const v = (hx - beard.lx) / Math.max(dt, .001);
+    const acc = clamp((v - beard.lv) / Math.max(dt, .001), -4000, 4000);
+    beard.lx = hx; beard.lv = v;
+    beard.v += (-38 * beard.a - 5 * beard.v - acc * .00006 - P.bob * .004 * (dir ? 1 : 0)) * dt;
+    beard.a = clamp(beard.a + beard.v * dt, -.11, .11);
+  }
 
   const period = state === "sleeping" ? 6 : 4.4;
   P.breath = Math.sin(now * Math.PI * 2 / period);
@@ -2349,6 +2567,7 @@ function tick(ms) {
     else if (state === "thinking") qk = 1;
     else if (state === "sleeping") sm = .15;
     if (now < grinUntil) sm = Math.max(sm, .75);
+    if (state === "reading" && mem.lastAt && Date.now() - mem.lastAt < 2 * 36e5) sm = Math.max(sm, .22);   // still pleased after your talk
     if (isPetting()) sm = .8;
     if (now < bon.suckUntil || bon.phase === "eat" || bon.phase === "lower") sm = Math.max(sm, .7);
     if (now < song.until && fawkes.mode !== "fly") {
@@ -2359,6 +2578,7 @@ function tick(ms) {
       }
     }
     if (bon.phase === "fly") { T.gx = -1; T.gy = .6; T.yaw = -.3; T.eye = 1; T.brow = .6; }
+    if (now - lastThread < 1.6) { T.eye = .15; T.lift = .8; T.tilt = .05; sm = Math.max(sm, .3); }
     T.smile = sm; T.quirk = qk;
   }
   if (dir) { T.yaw = dir * .6; T.gx = dir * .6; T.lift = .6; T.eye = 1; }
@@ -2537,13 +2757,13 @@ function wakeAndListen(fromVoice) {
 
 /* parsing Albus' reply */
 function visiblePart(raw) {
-  return raw.replace(/^\s*<nachdenken\s*\/?>/i, "").split(/<(?:pergament|merken|vergessen|weggehen|fawkes|verschwinden|bonbon|frische_luft|nachdenken)/i)[0].replace(/<[^>]*$/, "").trim();
+  return raw.replace(/^\s*<nachdenken\s*\/?>/i, "").split(/<(?:pergament|merken|vergessen|weggehen|fawkes|verschwinden|bonbon|frische_luft|nachdenken|denkarium)/i)[0].replace(/<[^>]*$/, "").trim();
 }
 function parseReply(raw) {
   const out = { perg: [], keep: [], drop: [], leave: /<weggehen\s*\/?>/i.test(raw), play: /<fawkes\s*\/?>/i.test(raw), vanish: /<verschwinden\s*\/?>/i.test(raw),
-    bonbon: /<bonbon\s*\/?>/i.test(raw), sing: /<fawkes_singt\s*\/?>/i.test(raw), air: /<frische_luft\s*\/?>/i.test(raw), think: /<nachdenken\s*\/?>/i.test(raw) };
+    bonbon: /<bonbon\s*\/?>/i.test(raw), pens: /<denkarium\s*\/?>/i.test(raw), sing: /<fawkes_singt\s*\/?>/i.test(raw), air: /<frische_luft\s*\/?>/i.test(raw), think: /<nachdenken\s*\/?>/i.test(raw) };
   let t = raw
-    .replace(/<(?:weggehen|fawkes|verschwinden|bonbon|fawkes_singt|frische_luft|nachdenken)\s*\/?>/gi, "")
+    .replace(/<(?:weggehen|fawkes|verschwinden|bonbon|fawkes_singt|frische_luft|nachdenken|denkarium)\s*\/?>/gi, "")
     .replace(/<pergament>([\s\S]*?)(?:<\/pergament>|$)/gi, (_, a) => { out.perg.push(a.trim()); return ""; })
     .replace(/<merken>([\s\S]*?)<\/merken>/gi, (_, a) => { out.keep.push(a.trim()); return ""; })
     .replace(/<vergessen>([\s\S]*?)<\/vergessen>/gi, (_, a) => { out.drop.push(a.trim()); return ""; });
@@ -2583,14 +2803,23 @@ function buildInput(userText) {
   const wxHint = (firstToday
     ? "Das ist eure erste Begegnung heute: Kündige das Wetter für heute in einem kurzen Satz an, beiläufig und in deiner Art, und geh dann auf sein Anliegen ein."
     : "Erwähne das Wetter nur, wenn er danach fragt oder es für seine Pläne wichtig ist.") +
-    " Begrüß ihn nicht bei jeder Antwort. Kein „Ah, hallo“, kein „Ah, Leonard“ am Anfang: Ihr sprecht miteinander wie Leute, die sich gut kennen. Steig direkt ein und geh auf genau das ein, was er gerade gesagt hat.";
-  const rules = `${CHARACTER}\n\nJetzt ist ${when}. ${since}\n\n${weatherText()}\n${wxHint}\n\nWas du dir über den Hausherrn gemerkt hast:\n${notes}\n\n${FORMAT}`;
+    " Begrüß ihn nicht bei jeder Antwort. Kein „Ah, hallo“, und sprich ihn so gut wie nie mit seinem Namen an, weder mit Vor- noch mit Spitznamen, höchstens ganz selten in einem besonders herzlichen oder ernsten Moment. Ihr sprecht miteinander wie Leute, die sich gut kennen. Steig direkt ein und geh auf genau das ein, was er gerade gesagt hat.";
+  const rules = `${CHARACTER}\n\nJetzt ist ${when}. ${since}\n\n${lifeText()}\n\n${weatherText()}\n${wxHint}\n\nWas du dir über den Hausherrn gemerkt hast:\n${notes}\n\n${FORMAT}`;
   let recent = (gap != null && gap > 720) ? [] : mem.recent.slice(-24);
   while (recent.length && recent[0].role !== "user") recent = recent.slice(1);
   return [{ role: "user", content: rules }, ...recent.map(({ role, content }) => ({ role, content })), { role: "user", content: userText }];
 }
 
 let weather = null;
+function lifeText() {
+  const st = phoenixStage(), d = Math.floor(phoenixAge());
+  const fw = st === "chick" ? "Fawkes ist gerade frisch aus der Asche wiedergeboren, ein zerzaustes Küken, das noch nicht fliegt."
+    : st === "old" ? `Fawkes wird alt und zerzaust, er verliert Federn; in ${Math.max(0, PHOENIX_DAYS - d)} Tagen ist sein Feuertag.`
+    : "Fawkes ist kräftig und in voller Pracht.";
+  const h = mem.lastAt ? (Date.now() - mem.lastAt) / 36e5 : null;
+  const mood = h == null ? "" : h > 72 ? " Ihr habt seit Tagen nicht gesprochen; du hast ihn ein wenig vermisst und freust dich, sag es ruhig." : h > 30 ? " Ihr habt seit über einem Tag nicht gesprochen; du hast öfter zum Fenster geschaut." : "";
+  return `${fw} Im Denkarium im Regal schwimmen ${mem.notes.length} silberne Erinnerungen an den Hausherrn.${mood}`;
+}
 function weatherText() {
   if (!weather || !Array.isArray(weather.days) || !weather.days.length) return "Wetterbericht: Gerade liegt keiner vor. Sag offen, dass du das Wetter nicht kennst, wenn er fragt.";
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -2632,6 +2861,9 @@ function tryGesture(n, now) {
     case "buch":
       if (!free || state === "away" || bon.phase || book.has || P.fx !== 0) return false;
       setState("reading"); act = "toShelf"; returning = false; doze = -1; return true;
+    case "denkarium":
+      if (!free || state === "away" || bon.phase || P.fx !== 0 || photo.on) return false;
+      setState("reading"); act = "toPensieve"; doze = -1; return true;
     case "verschwinden":
       if (!free || state === "away" || photo.on) return false;
       outing = "vanish"; awayFor = 60 + Math.random() * 120; setState("leaving"); return true;
@@ -2683,7 +2915,7 @@ async function ask(text) {
   // memory updates
   const drops = r.drop.map((d) => parseInt(d, 10) - 1).filter((i) => i >= 0 && i < mem.notes.length).sort((a, b) => b - a);
   drops.forEach((i) => mem.notes.splice(i, 1));
-  for (const k of r.keep) if (k && !mem.notes.some((n) => n.text === k)) mem.notes.push({ text: k.slice(0, 240), at: Date.now() });
+  for (const k of r.keep) if (k && !mem.notes.some((n) => n.text === k)) { mem.notes.push({ text: k.slice(0, 240), at: Date.now() }); memoryThread(); }
   const said = r.speech || (r.perg.length ? "Ich habe es dir aufgeschrieben." : "Hm.");
   mem.recent.push({ role: "user", content: text.slice(0, 2000) });
   mem.recent.push({ role: "assistant", content: (said + (r.perg.length ? "\n[Auf dem Pergament: " + r.perg[0].split("\n")[0] + "]" : "")).slice(0, 2000) });
@@ -2704,6 +2936,7 @@ async function ask(text) {
   if (r.perg.length) showPergament(r.perg[r.perg.length - 1]);
   if (r.bonbon) queueGesture("bonbon");
   if (r.sing) queueGesture("fawkes_singen");
+  if (r.pens) queueGesture("denkarium");
   await speak(said);
   if (r.air && !photo.on) { outing = "garten"; leaveDir = -1; awayFor = 200 + Math.random() * 300; setState("leaving"); return; }
   if (r.vanish && !photo.on) { outing = "vanish"; awayFor = 90 + Math.random() * 150; setState("leaving"); return; }
@@ -3321,7 +3554,7 @@ window.albusHooks = {
   action(name) { queueGesture(name); },
   remember(text) {
     const k = String(text || "").trim().slice(0, 240);
-    if (k && !mem.notes.some((n) => n.text === k)) { mem.notes.push({ text: k, at: Date.now() }); saveMem(); renderMem(); }
+    if (k && !mem.notes.some((n) => n.text === k)) { mem.notes.push({ text: k, at: Date.now() }); saveMem(); renderMem(); memoryThread(); }
   },
   log(role, text) {
     if (!text) return;
@@ -3330,8 +3563,9 @@ window.albusHooks = {
     mem.lastAt = Date.now(); saveMem();
   },
   memoryText() { return mem.notes.length ? mem.notes.map((n) => "- " + n.text).join("\n") : "(noch nichts)"; },
-  recentText() { return mem.recent.slice(-10).map((m) => (m.role === "user" ? "Leo: " : "Du: ") + m.content.slice(0, 300)).join("\n") || "(nichts)"; },
+  recentText() { return mem.recent.slice(-10).map((m) => (m.role === "user" ? "Er: " : "Du: ") + m.content.slice(0, 300)).join("\n") || "(nichts)"; },
   weather() { return weatherText(); },
+  life() { return lifeText(); },
   thinkAway(sec) {
     return new Promise((res) => {
       if (photo.on || state === "away") { res(); return; }
@@ -3353,6 +3587,7 @@ nextOuting = stateAt + 600 + Math.random() * 300;
 nextFetch = stateAt + 50 + Math.random() * 40;
 nextPlay = stateAt + 140 + Math.random() * 80;
 nextBonbon = stateAt + 240 + Math.random() * 300;
+nextPens = stateAt + 400 + Math.random() * 500;
 song.next = stateAt + 900 + Math.random() * 1200;
 fawkes.nextFly = stateAt + 25 + Math.random() * 20;
 requestAnimationFrame(tick);
