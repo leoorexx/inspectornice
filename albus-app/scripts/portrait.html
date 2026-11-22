@@ -862,6 +862,55 @@ function drawWindow(t) {
   }
 }
 
+/* the shadow he casts: from the candle onto the wall, from the sun onto the floor */
+function silhouette(g, cx, top, shoulder, sc, alpha, blur, skew) {
+  const OFF = 4000;
+  const P_ = (x, y) => [cx + (x - cx) * sc + (600 - y) * skew, 600 - (600 - y) * sc];
+  g.save();
+  // shadows fall on the wall, not on the window glass
+  g.beginPath(); g.rect(0, 0, W, H);
+  g.moveTo(45, 330); g.lineTo(45, 125); g.quadraticCurveTo(48, 70, 115, 52); g.quadraticCurveTo(182, 70, 185, 125); g.lineTo(185, 330); g.closePath();
+  g.clip("evenodd");
+  g.shadowColor = `rgba(10,5,2,${alpha})`;
+  g.shadowBlur = blur * scale;
+  g.shadowOffsetX = OFF * scale;
+  g.translate(-OFF, 0);
+  g.fillStyle = "#000";
+  g.beginPath();
+  const hc = P_(cx, top + 40), hr = 40 * sc;
+  g.ellipse(hc[0], hc[1], hr * .95, hr * 1.25, 0, 0, Math.PI * 2);
+  const pts = [[cx - 30, top + 70], [cx - 80, shoulder], [cx - 118, 600], [cx + 118, 600], [cx + 80, shoulder], [cx + 30, top + 70]].map(([x, y]) => P_(x, y));
+  g.moveTo(pts[0][0], pts[0][1]);
+  for (const p of pts.slice(1)) g.lineTo(p[0], p[1]);
+  g.closePath();
+  g.fill();
+  g.restore();
+}
+function drawCastShadow() {
+  if (Math.abs(P.fx) > 700 || P.vanish >= .99) return;
+  const g = ctx, vis = 1 - P.vanish;
+  const cx = CHX + P.fx * S;
+  const top = (235 - ease(P.rise) * 95 + P.bob) * S;
+  const shoulder = (468 - ease(P.rise) * 95) * S;
+  const lit = clamp(1 - dayCur * 1.25, 0, 1);
+  if (lit > .02) {
+    const dist = cx - FLAME.x;
+    const near = clamp(1 - Math.abs(dist) / 620, 0, 1);
+    const sx = cx + dist * .34;
+    const sc = 1.08 + near * near * .55;
+    const a = (.36 + .4 * near) * lit * vis;
+    silhouette(g, sx, top, shoulder, sc, a, 22 - near * 8, 0);
+  }
+  if (dayCur > .05) {
+    // low sun from the window throws a long soft shadow across the floor to the right
+    silhouette(g, cx + 30, top, shoulder, .15, .42 * dayCur * vis, 10, .6);
+  }
+  g.save();
+  g.fillStyle = `rgba(10,5,2,${.32 * vis})`;
+  g.beginPath(); g.ellipse(cx, 600, 110 * (1 - P.rise * .2), 9, 0, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+
 function drawBeam() {
   const g = ctx, d = dayCur;
   g.save();
@@ -1448,24 +1497,33 @@ function drawHead() {
 }
 
 let flick = 1;
-function drawLight(t) {
+function candleHidden() {
+  if (Math.abs(P.fx) > 700 || P.vanish > .5) return false;
+  const cx = CHX + P.fx * S, top = (235 - ease(P.rise) * 95 + P.bob) * S;
+  return Math.abs(cx - FLAME.x) < 105 && top < FLAME.y;
+}
+function drawLight(t, part) {
   const g = ctx;
-  flick = .86 + .1 * Math.sin(t * 9.1) * Math.sin(t * 3.7 + 1) + .04 * Math.sin(t * 23);
+  if (part === "flame") flick = .86 + .1 * Math.sin(t * 9.1) * Math.sin(t * 3.7 + 1) + .04 * Math.sin(t * 23);
   const fx = FLAME.x + Math.sin(t * 2.3) * 1.2, fy = FLAME.y;
   const lit = clamp(1 - dayCur * 1.25, 0, 1);
   if (lit < .02) return;
-  flick *= lit;
-  g.save();
-  g.globalCompositeOperation = "lighter";
-  const glow = g.createRadialGradient(fx, fy, 2, fx, fy, 130);
-  glow.addColorStop(0, `rgba(255,190,110,${.42 * flick})`);
-  glow.addColorStop(1, "rgba(255,150,60,0)");
-  g.fillStyle = glow; g.fillRect(fx - 130, fy - 130, 260, 260);
-  g.restore();
+  const f = flick * lit;
+  if (part === "glow") {
+    const occ = candleHidden() ? .28 : 1;
+    g.save();
+    g.globalCompositeOperation = "lighter";
+    const glow = g.createRadialGradient(fx, fy, 2, fx, fy, 130);
+    glow.addColorStop(0, `rgba(255,190,110,${.42 * f * occ})`);
+    glow.addColorStop(1, "rgba(255,150,60,0)");
+    g.fillStyle = glow; g.fillRect(fx - 130, fy - 130, 260, 260);
+    g.restore();
+    return;
+  }
   const fg = g.createRadialGradient(fx, fy - 4, 1, fx, fy - 6, 16);
   fg.addColorStop(0, "#fffbe8"); fg.addColorStop(.4, "#ffd77a"); fg.addColorStop(1, "rgba(240,120,40,.0)");
   g.fillStyle = fg;
-  const h = 18 * flick;
+  const h = 18 * f;
   g.beginPath();
   g.moveTo(fx, fy - h);
   g.quadraticCurveTo(fx + 7, fy - 4, fx, fy + 5);
@@ -1486,6 +1544,8 @@ function draw(t) {
   }
   drawWindow(t);
   drawOrrery(t);
+  drawCastShadow();
+  drawLight(t, "flame");
   const drawDt = Math.min(.1, Math.max(0, t - (draw.last || t))); draw.last = t;
   if (Math.abs(P.fx) < 690 && P.vanish < .995) {
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
@@ -1521,7 +1581,7 @@ function draw(t) {
   ctx.globalCompositeOperation = "source-over";
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   drawBeam();
-  drawLight(t);
+  drawLight(t, "glow");
   drawMotes(ctx, t);
 }
 
