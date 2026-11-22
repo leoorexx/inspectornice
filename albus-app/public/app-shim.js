@@ -249,6 +249,41 @@
     },
   };
 
+  /* ---------- ElevenLabs voice agent: tap the portrait, then just talk ---------- */
+  let conv = null, idleTimer = 0, agentId = null;
+  config.then((c) => { agentId = (c && c.agentId) || null; });
+  function bump() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => { if (conv) conv.endSession().catch(() => {}); }, 40000);
+  }
+  window.albusTap = () => {
+    const H = window.albusHooks;
+    if (!agentId || !window.ElevenLabsClient || !H) return false;
+    if (conv || window.albusSessionActive) { if (conv) conv.endSession().catch(() => {}); return true; }
+    window.albusSessionActive = true;
+    H.listening();
+    H.caption("Einen Moment …");
+    window.ElevenLabsClient.Conversation.startSession({
+      agentId,
+      onConnect: () => { bump(); },
+      onDisconnect: () => {
+        conv = null; window.albusSessionActive = false; window.albusMouthLevel = null;
+        clearTimeout(idleTimer); H.done();
+      },
+      onError: () => { H.caption("Meine Stimme hakt gerade. Tippe gleich noch einmal ins Bild."); },
+      onModeChange: ({ mode }) => { H.speaking(mode === "speaking"); bump(); },
+      onMessage: (m) => { if (m && m.message) { H.caption(m.message, (m.role || m.source) === "user"); bump(); } },
+    }).then((c) => {
+      conv = c;
+      window.albusMouthLevel = () => { try { return c.getOutputVolume(); } catch { return 0; } };
+    }).catch(() => {
+      window.albusSessionActive = false;
+      H.caption("Mikrofon oder Verbindung haben nicht geklappt. Tippe noch einmal ins Bild.");
+      H.done();
+    });
+    return true;
+  };
+
   window.claude = {
     async use(name) {
       switch (name) {

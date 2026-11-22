@@ -13,6 +13,8 @@
     "ALBUS_MODEL": "claude-opus-5-5",
     "ELEVENLABS_MODEL": "eleven_multilingual_v2",
     // Dumbledores Stimme aus ElevenLabs (nicht geheim; der API-Schlüssel ist ein Secret)
-    "ELEVENLABS_VOICE_ID": "5KvpaGteYkNayiswuX2h"
+    "ELEVENLABS_VOICE_ID": "VjWOqc90NMYAnt5VlDD8",
+    // ElevenLabs-Sprachagent "Albus Dumbledore – Porträt": Zuhören, Antworten und Stimme in einem
+    "ELEVENLABS_AGENT_ID": "agent_2901m82dmth1ffcvmf33v49pr4b6"
   }
 }

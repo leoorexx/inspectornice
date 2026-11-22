@@ -37,7 +37,7 @@ export default {
     try {
       switch (url.pathname) {
         case "/api/config":
-          return json({ tts: !!(env.ELEVENLABS_API_KEY && env.ELEVENLABS_VOICE_ID), chat: !!env.ANTHROPIC_API_KEY });
+          return json({ tts: !!(env.ELEVENLABS_API_KEY && env.ELEVENLABS_VOICE_ID), chat: !!env.ANTHROPIC_API_KEY, agentId: env.ELEVENLABS_AGENT_ID || null });
         case "/api/chat":
           if (req.method === "POST") return chat(req, env, ctx);
           break;

@@ -1761,7 +1761,7 @@ function tick(ms) {
   const wd = clock.getDay();
   if (state === "reading" && wd >= 1 && wd <= 3 && hm >= 17.75 && hm < 18.75 && act === "sit") doze = Math.min(doze, -.5);
   if (state === "attentive" && now > attentiveUntil) setState("reading");
-  if (state === "listening" && !listening && document.activeElement !== msg && !(hf.running && (hf.awake || now < hf.until)) && now - stateAt > (hf.running ? 9 : 25)) setState("reading");
+  if (state === "listening" && !listening && !window.albusSessionActive && document.activeElement !== msg && !(hf.running && (hf.awake || now < hf.until)) && now - stateAt > (hf.running ? 9 : 25)) setState("reading");
 
   // getting up, walking out, coming back
   let dir = 0;
@@ -1839,7 +1839,10 @@ function tick(ms) {
   let blink = 1;
   if (blinkT >= 0) { blinkT += dt; blink = Math.abs(1 - blinkT / .08); if (blinkT > .16) { blinkT = -1; blink = 1; } }
 
-  if (speakingNow) {
+  const lvl = speakingNow && window.albusMouthLevel ? window.albusMouthLevel() : null;
+  if (lvl != null) {
+    T.mouth = clamp(lvl * 2.4, 0, 1);
+  } else if (speakingNow) {
     if (now > mouthNext) {
       const open = !boundaryMode || now < mouthPulse;
       T.mouth = !open ? .06 : Math.random() < .16 ? .08 : .3 + Math.random() * .7;
@@ -2635,6 +2638,7 @@ document.addEventListener("pointerdown", () => {
 
 frame.addEventListener("click", (e) => {
   if (calib) { calibTap(e); return; }
+  if (window.albusTap && window.albusTap()) return;
   if (CAP.dict && $("#hfToggle").checked && !hf.running) {
     if (state === "speaking") stopSpeaking();
     hfStart();
@@ -2732,6 +2736,14 @@ $("#fsBtn").addEventListener("click", () => {
     try { const p = req.call(el); if (p && p.catch) p.catch(() => { $("#fsBtn").hidden = true; }); } catch { $("#fsBtn").hidden = true; }
   } else $("#fsBtn").hidden = true;
 });
+
+// hooks used by the standalone app's voice agent (no effect on claude.ai)
+window.albusHooks = {
+  listening() { if (state === "sleeping") setState("waking"); else if (state !== "waking") setState("listening"); },
+  speaking(on) { speakingNow = on; boundaryMode = false; setState(on ? "speaking" : "listening"); },
+  caption(text, you) { showCaption(you ? "„" + text + "“" : text, you ? "you" : ""); },
+  done(text) { speakingNow = false; setState("attentive"); attentiveUntil = performance.now() / 1000 + 8; if (text) showCaption(text); },
+};
 
 makeGrain();
 new ResizeObserver(() => fit()).observe(stage);
