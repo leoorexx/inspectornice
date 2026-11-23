@@ -275,8 +275,15 @@
     const H = window.albusHooks;
     if (H && H.presence) H.presence(here, PLACES[other].name);
   }
+  let inboxCache = [];
+  async function prefetch() {
+    const [box, bef] = await Promise.all([world.get("inbox-" + place), world.get("befinden")]);
+    inboxCache = box && Array.isArray(box.items) ? box.items : [];
+    befindenCache = bef && bef.text ? bef.text : "";
+  }
   async function presenceTick() {
     if (!token) return;
+    prefetch();
     world.set("seen-" + place, { at: Date.now() });
     const pr = await world.get("presence");
     const where = pr && PLACES[pr.where] ? pr.where : "bornheim";
@@ -309,11 +316,12 @@
   }
   setTimeout(presenceTick, 2500);
   setInterval(presenceTick, 20000);
-  async function takeInbox() {
+  async function markDelivered(items) {
+    if (!items.length) return;
     const box = await world.get("inbox-" + place);
-    const items = box && Array.isArray(box.items) ? box.items : [];
-    if (items.length) await world.set("inbox-" + place, { items: [] });
-    return items;
+    const left = (box && Array.isArray(box.items) ? box.items : []).filter((m) => !items.some((d) => d.at === m.at && d.text === m.text));
+    await world.set("inbox-" + place, { items: left });
+    inboxCache = left;
   }
   async function sendMessage(text) {
     const box = (await world.get("inbox-" + other)) || { items: [] };
@@ -322,7 +330,7 @@
     await world.set("inbox-" + other, { items: items.slice(-10) });
   }
   // context for typed questions answered by Claude (the page appends it to its instructions)
-  let befindenCache = "", pendingCache = [];
+  let befindenCache = "";
   window.albusPlaceNote = () => place === "bornheim" ? "" :
     `WICHTIG, gilt vor allem anderen: Du hängst gerade nicht in Bornheim, sondern im zweiten Rahmen bei Leonards Eltern in Bad Driburg, und sprichst mit ihnen. Du bist Leonard gegenüber loyal und diskret: Über ihn sagst du nur, wie es ihm allgemein geht${befindenCache ? " (" + befindenCache + ")" : ""}, und überbringst Botschaften, die er dir ausdrücklich mitgegeben hat. Alles andere bleibt vertraulich, auch auf Nachfrage; das soll er selbst erzählen. Sprich deine Gesprächspartner nicht als Hausherrn an.`;
 
@@ -352,23 +360,21 @@
     H.listening();
     H.caption(wasAway ? "Albus kommt herüber …" : "Einen Moment …");
     const safe = (f, d) => { try { return f() || d; } catch { return d; } };
-    start(wasAway).catch(() => {
+    // he comes over at the same time; the call itself must start right here, inside the tap
+    if (wasAway) claimPresence();
+    else world.get("presence").then((pr) => { if (pr && PLACES[pr.where] && pr.where !== place) claimPresence(); });
+    start().catch(() => {
       window.albusSessionActive = false;
       H.caption("Mikrofon oder Verbindung haben nicht geklappt. Tippe noch einmal ins Bild.");
       H.done();
     });
     return true;
 
-    async function start(fromAway) {
-    // ask the shared state, not our possibly stale copy, whether he is here
-    const pr = await world.get("presence");
-    const isHere = pr && PLACES[pr.where] ? pr.where === place : place === "bornheim";
-    if (fromAway || !isHere) { setHere(false); H.caption("Albus kommt herüber …"); await claimPresence(); await new Promise((r) => setTimeout(r, 1200)); }
-    const [inbox, bef] = await Promise.all([takeInbox(), world.get("befinden")]);
-    befindenCache = bef && bef.text ? bef.text : "";
+    async function start() {
+    const inbox = inboxCache.slice();
     const msgs = inbox.map((m) => `Botschaft aus ${PLACES[m.from] ? PLACES[m.from].name : "dem anderen Rahmen"} (${new Date(m.at).toLocaleDateString("de-DE", { weekday: "long", hour: "2-digit", minute: "2-digit" })}): ${m.text}`).join("\n");
     const opener = inbox.length ? (place === "bornheim" ? "Bevor ich es vergesse: Ich habe eine Botschaft aus Bad Driburg für dich." : "Ich bringe eine Botschaft aus Frankfurt mit.") : "";
-    const c = await window.ElevenLabsClient.Conversation.startSession({
+    const pending = window.ElevenLabsClient.Conversation.startSession({
       agentId,
       overrides: opener ? { agent: { firstMessage: opener } } : undefined,
       dynamicVariables: {
@@ -425,7 +431,9 @@
         H.caption(m.message, you); safe(() => H.log(you ? "user" : "assistant", m.message)); bump();
       },
     });
+    const c = await pending;
     conv = c;
+    markDelivered(inbox);
     window.albusMouthLevel = () => { try { return c.getOutputVolume(); } catch { return 0; } };
     }
   };
