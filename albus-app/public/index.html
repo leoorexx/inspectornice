@@ -2408,7 +2408,7 @@ let boundaryMode = false, mouthPulse = 0;
 let doze = -1, startles = 0, glanceUntil = 0, nextGlance = 18;
 let nextOuting = 0, awayUntil = 0, awayFor = 120;
 let wokeOn = "";
-let standUntil = 0;
+let standUntil = 0, commanded = false;
 let walkV = 0, hemSwing = 0, nextPens = 0, nextStroll = 0, nextIdle = 0, napLen = 240, napWake = false;
 const appar = { phase: "", t0: 0, to: 0, seat: false, then: null };
 function crackSound() {
@@ -2509,7 +2509,7 @@ function setState(s) {
   if (s === "sleeping") { sleepPose = Math.random() < .55; napLen = 150 + Math.random() * 270; }
   if (["listening", "waking", "attentive", "speaking", "thinking"].includes(s) && !appar.phase && !photo.on) {
     if (state === "away" && outing !== "vanish") { setTimeout(() => apparateIn(0, true), 0); }
-    else if (Math.abs(P.fx) > 260 && Math.abs(P.fx) < 690 && state !== "leaving") apparate(0, true, null);
+    else if (!commanded && Math.abs(P.fx) > 260 && Math.abs(P.fx) < 690 && state !== "leaving") apparate(0, true, null);
   }
   state = s;
   stateAt = performance.now() / 1000;
@@ -2518,7 +2518,8 @@ function setState(s) {
   statusText.textContent = label(s);
   frame.setAttribute("aria-label", s === "sleeping" ? "Albus wecken" : s === "away" ? "Albus zurückrufen" : "Albus ansprechen");
   if (s !== "away") { crossing = false; passAt = 0; }
-  if (s !== "reading") {
+  const keep = commanded && !["sleeping", "away", "leaving"].includes(s);
+  if (s !== "reading" && !keep) {
     if (act === "toShelf" || act === "atShelf") act = "fromShelf";
     if (act === "toFawkes" || act === "atFawkes") act = "fromFawkes";
     if (act === "toPensieve" || act === "atPensieve") act = "fromPensieve";
@@ -2670,6 +2671,7 @@ function tick(ms) {
   let dir = 0;
   fawkesTick(now);
   bonTick(now);
+  if (act === "sit" && P.fx === 0 && P.rise === 0) commanded = false;
   if (song.pending && fawkes.mode !== "fly") fawkesSing(now);
   if (gq.length) { if (now > gq[0].until) gq.shift(); else if (tryGesture(gq[0].n, now)) gq.shift(); }
   if (pendingAnswer && P.fx === 0 && P.rise === 0 && P.vanish === 0 && ["reading", "listening", "attentive"].includes(state)) deliverPending();
@@ -2710,10 +2712,11 @@ function tick(ms) {
     }
   } else {
     if (P.vanish > 0) { P.vanish = Math.max(0, P.vanish - dt / 1.5); spawnSparks(CHX, 330, 4, 170, 340); }
-    const goShelf = state === "reading" && (act === "toShelf" || act === "atShelf");
-    const goFawkes = state === "reading" && (act === "toFawkes" || act === "atFawkes");
+    const busy = state === "reading" || commanded;
+    const goShelf = busy && (act === "toShelf" || act === "atShelf");
+    const goFawkes = busy && (act === "toFawkes" || act === "atFawkes");
     const goPens = state === "reading" && (act === "toPensieve" || act === "atPensieve");
-    const goStroll = state === "reading" && act === "stroll";
+    const goStroll = busy && act === "stroll";
     const goStand = act === "stand";
     const tx = goStroll ? stroll.pts[stroll.i] : goShelf || goPens ? FX_SHELF : goFawkes ? FX_FAWKES : 0;
     if (Math.abs(P.fx - tx) > .5) {
@@ -2758,8 +2761,8 @@ function tick(ms) {
       } else if (P.rise > 0) P.rise = Math.max(0, P.rise - dt / 1.3);
       else if (act === "fromStroll" && state !== "away") { act = "sit"; doze = -1; nextStroll = now + 600 + Math.random() * 900; }
       else if (act === "fromPensieve" && state === "reading") { act = "sit"; doze = -1; nextPens = now + 900 + Math.random() * 1200; }
-      else if (act === "fromFawkes" && state === "reading") { act = "sit"; doze = -1; nextPlay = now + 420 + Math.random() * 480; }
-      else if (act === "fromShelf" && state === "reading") {
+      else if (act === "fromFawkes" && busy) { act = "sit"; doze = -1; nextPlay = now + 420 + Math.random() * 480; }
+      else if (act === "fromShelf" && busy) {
         doze = -1;
         if (book.has) { act = "read"; book.mode = "read"; readUntil = now + 35 + Math.random() * 50; nextPage = now + 7; }
         else { act = "sit"; nextFetch = now + 360 + Math.random() * 420; }
@@ -3082,39 +3085,39 @@ async function deliverPending() {
 const gq = [];
 function queueGesture(n) { gq.push({ n, until: performance.now() / 1000 + 90 }); }
 function tryGesture(n, now) {
-  const free = !speakingNow && state !== "thinking" && state !== "leaving" && P.vanish === 0;
+  // movements asked for in conversation happen at once and keep going while he talks or listens
+  const gone = state === "away" || state === "leaving" || P.vanish > 0 || photo.on;
+  const wake = () => { if (state === "sleeping") { napWake = false; setState("waking"); } };
   switch (n) {
-    case "bonbon": return startBonbon(now);
+    case "bonbon": return startBonbon(now) || (bon.phase ? true : false);
     case "sing": case "fawkes_singen": fawkesSing(now); return true;
     case "fawkes_streicheln":
-      if (!free || state === "away" || bon.phase || fawkes.mode === "fly" || P.fx !== 0) return false;
-      setState("reading"); act = "toFawkes"; doze = -1; return true;
-    case "buch":
-      if (!free || state === "away" || bon.phase || book.has || P.fx !== 0) return false;
-      setState("reading"); act = "toShelf"; returning = false; doze = -1; return true;
-    case "denkarium":
-      if (!free || state === "away" || bon.phase || P.fx !== 0 || photo.on) return false;
-      setState("reading"); act = "toShelf"; returning = false; doze = -1; return true;
+      if (gone || bon.phase || appar.phase || fawkes.mode === "fly") return false;
+      wake(); commanded = true; act = "toFawkes"; doze = -1; return true;
+    case "buch": case "denkarium":
+      if (gone || bon.phase || appar.phase) return false;
+      wake(); commanded = true; act = "toShelf"; returning = book.has; doze = -1; return true;
     case "apparieren":
-      if (!free || state === "away" || bon.phase || photo.on || appar.phase) return false;
-      { const sp = SPOTS[(Math.random() * SPOTS.length) | 0]; setState("reading"); startStroll(1); stroll.pts = [sp]; apparate(sp, false, null); }
+      if (gone || bon.phase || appar.phase) return false;
+      { let sp; do { sp = SPOTS[(Math.random() * SPOTS.length) | 0]; } while (Math.abs(sp - P.fx) < 60);
+        wake(); commanded = true; startStroll(1); stroll.pts = [sp]; apparate(sp, false, null); }
       return true;
     case "aufstehen":
-      if (state === "away" || state === "leaving" || bon.phase || photo.on || appar.phase) return false;
-      if (P.fx !== 0) return true;
-      if (state === "sleeping") setState("waking");
-      act = "stand"; standUntil = now + 45 + Math.random() * 45; doze = -1; return true;
+      if (gone || bon.phase || appar.phase) return false;
+      wake(); commanded = true;
+      if (act !== "stroll") { act = "stand"; standUntil = now + 45 + Math.random() * 45; }
+      doze = -1; return true;
     case "hinsetzen":
       if (act === "stand" || act === "stroll") act = "fromStroll";
       return true;
     case "umhergehen":
-      if (!free || state === "away" || bon.phase || photo.on || P.fx !== 0) return false;
-      setState("reading"); startStroll(); return true;
+      if (gone || bon.phase || appar.phase) return false;
+      wake(); commanded = true; startStroll(); return true;
     case "verschwinden":
-      if (!free || state === "away" || photo.on) return false;
+      if (speakingNow || gone || state === "thinking") return false;
       outing = "vanish"; awayFor = 60 + Math.random() * 120; setState("leaving"); return true;
     case "spaziergang":
-      if (!free || state === "away" || photo.on) return false;
+      if (speakingNow || gone || state === "thinking") return false;
       outing = "garten"; leaveDir = -1; awayFor = 200 + Math.random() * 300; setState("leaving"); return true;
   }
   return true;
