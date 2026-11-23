@@ -2407,7 +2407,7 @@ let boundaryMode = false, mouthPulse = 0;
 let doze = -1, startles = 0, glanceUntil = 0, nextGlance = 18;
 let nextOuting = 0, awayUntil = 0, awayFor = 120;
 let wokeOn = "";
-let walkV = 0, hemSwing = 0, nextPens = 0, nextStroll = 0;
+let walkV = 0, hemSwing = 0, nextPens = 0, nextStroll = 0, nextIdle = 0, napLen = 240, napWake = false;
 const appar = { phase: "", t0: 0, to: 0, seat: false, then: null };
 function crackSound() {
   const c = audioCtx(); if (!c) return;
@@ -2503,7 +2503,7 @@ function label(s) {
 
 function setState(s) {
   if (state === s) return;
-  if (s === "sleeping") sleepPose = Math.random() < .55;
+  if (s === "sleeping") { sleepPose = Math.random() < .55; napLen = 150 + Math.random() * 270; }
   if (["listening", "waking", "attentive", "speaking", "thinking"].includes(s) && !appar.phase && !photo.on) {
     if (state === "away" && outing !== "vanish") { setTimeout(() => apparateIn(0, true), 0); }
     else if (Math.abs(P.fx) > 260 && Math.abs(P.fx) < 690 && state !== "leaving") apparate(0, true, null);
@@ -2619,7 +2619,7 @@ function tick(ms) {
     if (now > song.next && hr >= 8 && hr < 21 && fawkes.mode === "perch" && doze < .5) { fawkesSing(now); song.next = now + 1800 + Math.random() * 2400; }
     if (now > nextGrin && doze < .3) { grinUntil = now + 2.5 + Math.random() * 2; nextGrin = now + 30 + Math.random() * 50; }
     if (!book.has && !photo.on && doze < .2 && P.fx === 0 && P.rise === 0 && now > nextFetch) { act = "toShelf"; returning = false; doze = -1; }
-    doze += dt / 45;
+    doze += dt / 160;
     if (doze >= 1) {
       if (startles < 2 && Math.random() < .6) { doze = .1; startles++; }
       else setState("sleeping");
@@ -2629,10 +2629,34 @@ function tick(ms) {
     else if (canWander() && act === "sit" && !book.has && doze < .3 && P.fx === 0 && P.rise === 0 && now > nextOuting) { pickOuting(); awayFor = (outing === "garten" ? 200 : 120) + Math.random() * 420; setState("leaving"); }
     if (doze < .3 && P.rise === 0) P.tw += dt * 2.4;
   }
-  if (state === "waking" && now - stateAt > 1.7) setState("listening");
+  if (state === "waking" && now - stateAt > 1.7) { setState(napWake ? "reading" : "listening"); napWake = false; }
   // daily rhythm: wakes by himself around half past six, awake for the homecoming, asleep from 23:00
   const clock = new Date(), hm = clock.getHours() + clock.getMinutes() / 60;
   if (state === "sleeping" && hm >= 6.33 && hm < 6.75 && wokeOn !== clock.toDateString()) { wokeOn = clock.toDateString(); setState("waking"); }
+  // by day a doze is only a nap: he wakes by himself after a few minutes
+  if (state === "sleeping" && hm >= 6.75 && hm < 23 && now - stateAt > napLen) { napWake = true; setState("waking"); nextIdle = now + 8; }
+  // a daily rhythm of small things, so he never just sits there for long
+  if (state === "reading" && act === "sit" && now > nextIdle && P.fx === 0 && P.rise === 0 && !bon.phase && !photo.on && !(hm >= 23 || hm < 6)) {
+    nextIdle = now + 25 + Math.random() * 45;
+    doze = Math.min(doze, 0);
+    const opts = [];
+    if (canWander()) opts.push(["stroll", 3], ["outing", 1]);
+    if (!book.has) opts.push(["book", 3]);
+    if (fawkes.mode === "perch" && !book.has) opts.push(["fawkes", 2]);
+    if (bowlN > 0) opts.push(["bonbon", 2]);
+    opts.push(["grin", 1], ["glance", 2]);
+    if (hm >= 8 && hm < 21) opts.push(["song", .5]);
+    let r = Math.random() * opts.reduce((a, o) => a + o[1], 0), pickd = opts[0][0];
+    for (const [n, w] of opts) { if ((r -= w) <= 0) { pickd = n; break; } }
+    if (pickd === "stroll") nextStroll = now;
+    else if (pickd === "outing") nextOuting = now;
+    else if (pickd === "book") nextFetch = now;
+    else if (pickd === "fawkes") nextPlay = now;
+    else if (pickd === "bonbon") nextBonbon = now;
+    else if (pickd === "song") song.next = now;
+    else if (pickd === "grin") grinUntil = now + 3;
+    else { glanceUntil = now + 3; }
+  }
   if (state === "reading" && (hm >= 23 || hm < 6) && act === "sit" && P.rise === 0 && P.fx === 0) setState("sleeping");
   const wd = clock.getDay();
   if (state === "reading" && wd >= 1 && wd <= 3 && hm >= 17.75 && hm < 18.75 && act === "sit") doze = Math.min(doze, -.5);
@@ -2730,7 +2754,7 @@ function tick(ms) {
       else if (act === "fromFawkes" && state === "reading") { act = "sit"; doze = -1; nextPlay = now + 420 + Math.random() * 480; }
       else if (act === "fromShelf" && state === "reading") {
         doze = -1;
-        if (book.has) { act = "read"; book.mode = "read"; readUntil = now + 60 + Math.random() * 90; nextPage = now + 7; }
+        if (book.has) { act = "read"; book.mode = "read"; readUntil = now + 35 + Math.random() * 50; nextPage = now + 7; }
         else { act = "sit"; nextFetch = now + 360 + Math.random() * 420; }
       }
     }
@@ -3800,6 +3824,7 @@ nextPlay = stateAt + 140 + Math.random() * 80;
 nextBonbon = stateAt + 240 + Math.random() * 300;
 nextPens = stateAt + 400 + Math.random() * 500;
 nextStroll = stateAt + 180 + Math.random() * 300;
+nextIdle = stateAt + 12 + Math.random() * 15;
 song.next = stateAt + 900 + Math.random() * 1200;
 fawkes.nextFly = stateAt + 25 + Math.random() * 20;
 requestAnimationFrame(tick);
