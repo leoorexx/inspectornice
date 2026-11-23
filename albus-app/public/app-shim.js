@@ -285,7 +285,8 @@
     // Bornheim is his home: if the other frame has gone quiet or the visit is over, he comes back by himself
     if (!here && place === "bornheim" && pr) {
       const seen = await world.get("seen-" + other);
-      if ((pr.until && now > pr.until + 60 * 1000) || !seen || now - seen.at > 3 * 60 * 1000) {
+      const quiet = !seen || now - seen.at > 3 * 60 * 1000;
+      if ((pr.until && now > pr.until + 60 * 1000) || (quiet && now - (pr.since || 0) > 15 * 60 * 1000)) {
         await world.set("presence", { where: "bornheim", since: now, until: 0 }); setHere(true); return;
       }
     }
@@ -375,7 +376,19 @@
           if (place !== "bornheim") return "Nur in Bornheim möglich.";
           await world.set("befinden", { text: String(text || "").slice(0, 300), at: Date.now() }); return "ok";
         },
-        geste: ({ was }) => { safe(() => H.action(was)); return "ok"; },
+        geste: ({ was }) => {
+          if (was === "rueber") {
+            // finish the sentence, then walk out of this frame and into the other one
+            setTimeout(async () => {
+              const now = Date.now();
+              await world.set("presence", { where: other, since: now, until: other === "bornheim" ? 0 : now + 45 * 60 * 1000 });
+              setHere(false);
+              setTimeout(() => { if (conv) conv.endSession().catch(() => {}); }, 2500);
+            }, 3500);
+            return "Du gehst gleich hinüber nach " + PLACES[other].name + ". Verabschiede dich kurz.";
+          }
+          safe(() => H.action(was)); return "ok";
+        },
         nachdenken: async ({ sekunden }) => {
           toolBusy++;
           try { await H.thinkAway(Math.max(12, Math.min(45, +sekunden || 25))); }
