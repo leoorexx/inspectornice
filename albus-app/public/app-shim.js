@@ -360,7 +360,10 @@
     return true;
 
     async function start(fromAway) {
-    if (fromAway) { await claimPresence(); await new Promise((r) => setTimeout(r, 1200)); }
+    // ask the shared state, not our possibly stale copy, whether he is here
+    const pr = await world.get("presence");
+    const isHere = pr && PLACES[pr.where] ? pr.where === place : place === "bornheim";
+    if (fromAway || !isHere) { setHere(false); H.caption("Albus kommt herüber …"); await claimPresence(); await new Promise((r) => setTimeout(r, 1200)); }
     const [inbox, bef] = await Promise.all([takeInbox(), world.get("befinden")]);
     befindenCache = bef && bef.text ? bef.text : "";
     const msgs = inbox.map((m) => `Botschaft aus ${PLACES[m.from] ? PLACES[m.from].name : "dem anderen Rahmen"} (${new Date(m.at).toLocaleDateString("de-DE", { weekday: "long", hour: "2-digit", minute: "2-digit" })}): ${m.text}`).join("\n");
@@ -409,7 +412,9 @@
       onDisconnect: () => {
         conv = null; window.albusSessionActive = false; window.albusMouthLevel = null; lastTalk = Date.now();
         // after a talk in the other frame he lingers a few minutes, then goes home
-        if (place !== "bornheim") world.set("presence", { where: place, since: Date.now(), until: Date.now() + 5 * 60 * 1000 });
+        if (place !== "bornheim") world.get("presence").then((pr) => {
+          if (pr && pr.where === place) world.set("presence", { where: place, since: pr.since || Date.now(), until: Math.max(pr.until || 0, Date.now() + 5 * 60 * 1000) });
+        });
         clearTimeout(idleTimer); H.done();
       },
       onError: () => { H.caption("Meine Stimme hakt gerade. Tippe gleich noch einmal ins Bild."); },

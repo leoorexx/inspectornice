@@ -2497,7 +2497,7 @@ function setState(s) {
   if (state === s) return;
   if (s === "sleeping") { sleepPose = Math.random() < .55; napLen = 150 + Math.random() * 270; }
   if (["listening", "waking", "attentive", "speaking", "thinking"].includes(s) && !appar.phase && !photo.on) {
-    if (state === "away" && outing !== "vanish") { setTimeout(() => apparateIn(0, true), 0); }
+    if (state === "away" && outing !== "vanish" && outing !== "visit") { setTimeout(() => apparateIn(0, true), 0); }
     else if (!commanded && Math.abs(P.fx) > 260 && Math.abs(P.fx) < 690 && state !== "leaving") apparate(0, true, null);
   }
   state = s;
@@ -3792,10 +3792,14 @@ $("#fsBtn").addEventListener("click", () => {
 
 // hooks used by the standalone app's voice agent (no effect on claude.ai)
 window.albusHooks = {
-  listening() { if (state === "sleeping") setState("waking"); else if (state !== "waking") setState("listening"); },
-  speaking(on) { speakingNow = on; boundaryMode = false; setState(on ? "speaking" : "listening"); },
+  listening() {
+    if ((state === "away" || state === "leaving") && outing === "visit") return;   // he is in the other frame until called over
+    if (state === "sleeping") setState("waking"); else if (state !== "waking") setState("listening");
+  },
+  speaking(on) {
+    if ((state === "away" || state === "leaving") && outing === "visit") { speakingNow = on; return; } speakingNow = on; boundaryMode = false; setState(on ? "speaking" : "listening"); },
   caption(text, you) { showCaption(you ? "„" + text + "“" : text, you ? "you" : ""); },
-  done(text) { speakingNow = false; setState("attentive"); attentiveUntil = performance.now() / 1000 + 8; if (text) showCaption(text); },
+  done(text) { speakingNow = false; if ((state === "away" || state === "leaving") && outing === "visit") return; setState("attentive"); attentiveUntil = performance.now() / 1000 + 8; if (text) showCaption(text); },
   action(name) { queueGesture(name); },
   remember(text) {
     const k = String(text || "").trim().slice(0, 240);
