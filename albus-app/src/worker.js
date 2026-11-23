@@ -2,7 +2,7 @@
 // Liefert die Seite aus, hält die API-Schlüssel geheim und speichert Gedächtnis, Bild und Wetter.
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
-import { INDEX_HTML, APP_SHIM_JS, ELEVENLABS_JS } from "./static.js";
+import { INDEX_HTML, APP_SHIM_JS, ELEVENLABS_JS, BUILD_ID } from "./static.js";
 
 // One small storage object holds memory, portrait and weather (SQLite-backed Durable Object).
 export class AlbusStore extends DurableObject {
@@ -37,7 +37,7 @@ export default {
     try {
       switch (url.pathname) {
         case "/api/config":
-          return json({ tts: !!(env.ELEVENLABS_API_KEY && env.ELEVENLABS_VOICE_ID), chat: !!env.ANTHROPIC_API_KEY, agentId: env.ELEVENLABS_AGENT_ID || null });
+          return json({ tts: !!(env.ELEVENLABS_API_KEY && env.ELEVENLABS_VOICE_ID), chat: !!env.ANTHROPIC_API_KEY, agentId: env.ELEVENLABS_AGENT_ID || null, build: BUILD_ID });
         case "/api/chat":
           if (req.method === "POST") return chat(req, env, ctx);
           break;

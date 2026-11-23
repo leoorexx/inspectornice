@@ -329,6 +329,15 @@
   /* ---------- ElevenLabs voice agent: tap the portrait, then just talk ---------- */
   let conv = null, idleTimer = 0, agentId = null, toolBusy = 0;
   config.then((c) => { agentId = (c && c.agentId) || null; });
+  // frames on the wall are never reloaded by hand: pick up new versions by ourselves, never mid-conversation
+  config.then((c) => {
+    const build = c && c.build;
+    if (!build) return;
+    setInterval(async () => {
+      if (window.albusSessionActive) return;
+      try { const r = await api("/api/config"); const j = await r.json(); if (j.build && j.build !== build) location.reload(); } catch {}
+    }, 10 * 60 * 1000);
+  });
   function bump() {
     clearTimeout(idleTimer);
     idleTimer = setTimeout(() => { if (conv && !toolBusy) conv.endSession().catch(() => {}); else if (conv) bump(); }, 60000);
