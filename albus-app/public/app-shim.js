@@ -265,7 +265,7 @@
   };
   let here = true, lastTalk = Date.now();
   async function claimPresence() {
-    const until = place === "bornheim" ? 0 : Date.now() + 60 * 60 * 1000;
+    const until = place === "bornheim" ? 0 : Date.now() + 15 * 60 * 1000;
     await world.set("presence", { where: place, since: Date.now(), until });
     setHere(true);
   }
@@ -281,8 +281,15 @@
     const pr = await world.get("presence");
     const where = pr && PLACES[pr.where] ? pr.where : "bornheim";
     setHere(where === place);
-    if (!here || window.albusSessionActive) return;
     const now = Date.now(), hr = new Date().getHours();
+    // Bornheim is his home: if the other frame has gone quiet or the visit is over, he comes back by himself
+    if (!here && place === "bornheim" && pr) {
+      const seen = await world.get("seen-" + other);
+      if ((pr.until && now > pr.until + 60 * 1000) || !seen || now - seen.at > 3 * 60 * 1000) {
+        await world.set("presence", { where: "bornheim", since: now, until: 0 }); setHere(true); return;
+      }
+    }
+    if (!here || window.albusSessionActive) return;
     // a visit is over: back home to Bornheim
     if (place !== "bornheim" && pr && pr.until && now > pr.until && now - lastTalk > 5 * 60 * 1000) {
       await world.set("presence", { where: "bornheim", since: now, until: 0 }); setHere(false); return;
@@ -379,6 +386,8 @@
       onConnect: () => { bump(); lastTalk = Date.now(); },
       onDisconnect: () => {
         conv = null; window.albusSessionActive = false; window.albusMouthLevel = null; lastTalk = Date.now();
+        // after a talk in the other frame he lingers a few minutes, then goes home
+        if (place !== "bornheim") world.set("presence", { where: place, since: Date.now(), until: Date.now() + 5 * 60 * 1000 });
         clearTimeout(idleTimer); H.done();
       },
       onError: () => { H.caption("Meine Stimme hakt gerade. Tippe gleich noch einmal ins Bild."); },
