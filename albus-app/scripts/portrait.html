@@ -3027,7 +3027,8 @@ function buildInput(userText) {
     ? "Das ist eure erste Begegnung heute: Kündige das Wetter für heute in einem kurzen Satz an, beiläufig und in deiner Art, und geh dann auf sein Anliegen ein."
     : "Erwähne das Wetter nur, wenn er danach fragt oder es für seine Pläne wichtig ist.") +
     " Begrüß ihn nicht bei jeder Antwort. Kein „Ah, hallo“, und sprich ihn so gut wie nie mit seinem Namen an, weder mit Vor- noch mit Spitznamen, höchstens ganz selten in einem besonders herzlichen oder ernsten Moment. Ihr sprecht miteinander wie Leute, die sich gut kennen. Steig direkt ein und geh auf genau das ein, was er gerade gesagt hat.";
-  const rules = `${CHARACTER}\n\nJetzt ist ${when}. ${since}\n\n${lifeText()}\n\n${weatherText()}\n${wxHint}\n\nWas du dir über den Hausherrn gemerkt hast:\n${notes}\n\n${LORE}\n\n${FORMAT}`;
+  const placeNote = typeof window.albusPlaceNote === "function" ? window.albusPlaceNote() : "";
+  const rules = (placeNote ? placeNote + "\n\n" : "") + `${CHARACTER}\n\nJetzt ist ${when}. ${since}\n\n${lifeText()}\n\n${weatherText()}\n${wxHint}\n\nWas du dir über den Hausherrn gemerkt hast:\n${notes}\n\n${LORE}\n\n${FORMAT}`;
   let recent = (gap != null && gap > 720) ? [] : mem.recent.slice(-24);
   while (recent.length && recent[0].role !== "user") recent = recent.slice(1);
   return [{ role: "user", content: rules }, ...recent.map(({ role, content }) => ({ role, content })), { role: "user", content: userText }];
@@ -3810,6 +3811,19 @@ window.albusHooks = {
   recentText() { return mem.recent.slice(-10).map((m) => (m.role === "user" ? "Er: " : "Du: ") + m.content.slice(0, 300)).join("\n") || "(nichts)"; },
   weather() { return weatherText(); },
   life() { return lifeText(); },
+  presence(isHere, otherName) {
+    if (!isHere) {
+      if (state !== "away" && state !== "leaving") {
+        if (state === "sleeping") { state = "reading"; }
+        outing = "visit"; leaveDir = -1; awayFor = 1e9; setState("leaving");
+      } else { outing = "visit"; awayUntil = performance.now() / 1000 + 1e9; }
+      showCaption(`Albus ist gerade in ${otherName}. Tippe ins Bild, um ihn zu rufen.`);
+    } else if ((state === "away" || state === "leaving") && outing === "visit") {
+      setState("reading"); act = "fromStroll";
+      apparateIn(SPOTS[(Math.random() * SPOTS.length) | 0], false);
+      showCaption(`Albus ist aus ${otherName} herübergekommen.`);
+    }
+  },
   thinkAway(sec) {
     return new Promise((res) => {
       if (photo.on || state === "away") { res(); return; }

@@ -79,3 +79,17 @@ npx wrangler secret put ELEVENLABS_API_KEY      # optional, Stimme
 Standard ist `claude-opus-5-5` (Variable `ALBUS_MODEL` in `wrangler.jsonc`). Wenn dir die Antworten zu
 langsam sind, kannst du dort ein schnelleres Modell eintragen, etwa `claude-sonnet-5-5` oder
 `claude-haiku-5-5`.
+
+## Zweiter Rahmen (Bad Driburg)
+
+Derselbe Albus kann in zwei Rahmen hängen und zwischen ihnen wechseln. Er ist immer nur in einem davon.
+
+1. Auf dem zweiten Gerät einmal öffnen: `https://twilight-smoke-94ba.leonard-rexhepi.workers.dev/#t=DEIN_APP_TOKEN&ort=bad-driburg`
+   (dein eigenes Gerät ist ohne Angabe automatisch `bornheim`).
+2. Ist er gerade im anderen Rahmen, sieht man den leeren Sessel. Ins Bild tippen ruft ihn herüber.
+3. Tagsüber schaut er ab und zu von selbst im anderen Rahmen vorbei, schneller, wenn er eine Botschaft dabeihat.
+4. „Richte meinen Eltern aus, dass …“: Er überbringt das beim nächsten Gespräch dort und bringt Antworten zurück.
+
+Diskretion: In Bad Driburg hat Albus ein eigenes Gedächtnis. Deine Notizen und eure Gespräche werden dort nicht geladen.
+Er weiß nur, wie es dir allgemein geht (ein Satz, den er in Bornheim festhält), und kennt die Botschaften, die du ihm mitgibst.
+Beide Geräte nutzen denselben Zugangsschlüssel; wer technisch versiert ist, könnte damit die gespeicherten Daten abrufen.
