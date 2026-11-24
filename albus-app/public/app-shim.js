@@ -381,7 +381,13 @@
     async function start() {
     pauseDictation();
     const inbox = inboxCache.slice();
-    const msgs = inbox.map((m) => `Botschaft aus ${PLACES[m.from] ? PLACES[m.from].name : "dem anderen Rahmen"} (${new Date(m.at).toLocaleDateString("de-DE", { weekday: "long", hour: "2-digit", minute: "2-digit" })}): ${m.text}`).join("\n");
+    const when = (t) => {
+      const d = new Date(t), now = new Date(), hm = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+      const days = Math.round((new Date(now.toDateString()) - new Date(d.toDateString())) / 864e5);
+      return days === 0 ? "heute um " + hm : days === 1 ? "gestern um " + hm : d.toLocaleDateString("de-DE", { weekday: "long" }) + " um " + hm;
+    };
+    const who = (m) => m.from === "bornheim" ? "von Leonard aus Frankfurt-Bornheim" : "von Leonards Familie aus Bad Driburg";
+    const msgs = inbox.map((m) => `Botschaft ${who(m)}, ${when(m.at)}: „${m.text}“`).join("\n");
     const hello = ["Ja?", "Ich höre.", "Was gibt es?", "Nur zu.", "Hier bin ich."];
     const opener = inbox.length ? (place === "bornheim" ? "Bevor ich es vergesse: Ich habe eine Botschaft aus Bad Driburg für dich." : "Ich bringe eine Botschaft aus Frankfurt mit.") : hello[(Math.random() * hello.length) | 0];
     const pending = window.ElevenLabsClient.Conversation.startSession({
