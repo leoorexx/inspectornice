@@ -283,11 +283,21 @@
     const H = window.albusHooks;
     if (H && H.presence) H.presence(here, PLACES[other].name);
   }
-  let inboxCache = [];
+  let inboxCache = [], reportCache = "";
   async function prefetch() {
     const [box, bef] = await Promise.all([world.get("inbox-" + place), world.get("befinden")]);
     inboxCache = box && Array.isArray(box.items) ? box.items : [];
     befindenCache = bef && bef.text ? bef.text : "";
+    if (place === "bornheim") {
+      try {
+        const snap = await docRef("data/users/eltern/albus").get();
+        const d = snap.exists ? snap.data() || {} : {};
+        const notes = (Array.isArray(d.notes) ? d.notes : []).map((n) => "- " + n.text).join("\n");
+        const talk = (Array.isArray(d.recent) ? d.recent.slice(-24) : []).map((m) => (m.role === "user" ? "Familie: " : "Du: ") + String(m.content).slice(0, 240)).join("\n");
+        const last = d.lastAt ? new Date(d.lastAt).toLocaleString("de-DE", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : "";
+        reportCache = (notes || talk) ? `Was du über die Familie in Bad Driburg weißt:\n${notes || "(nichts)"}\n\nDas letzte Gespräch dort${last ? " (" + last + ")" : ""}:\n${talk || "(keins)"}` : "(Bisher hast du in Bad Driburg noch nicht gesprochen.)";
+      } catch { /* keep the last report */ }
+    }
   }
   async function presenceTick() {
     if (!token) return;
@@ -340,7 +350,7 @@
   // context for typed questions answered by Claude (the page appends it to its instructions)
   let befindenCache = "";
   window.albusPlaceNote = () => place === "bornheim" ? "" :
-    `WICHTIG, gilt vor allem anderen: Du hängst gerade nicht in Bornheim, sondern im zweiten Rahmen bei Leonards Eltern in Bad Driburg, und sprichst mit ihnen. Du bist Leonard gegenüber loyal und diskret: Über ihn sagst du nur, wie es ihm allgemein geht${befindenCache ? " (" + befindenCache + ")" : ""}, und überbringst Botschaften, die er dir ausdrücklich mitgegeben hat. Alles andere bleibt vertraulich, auch auf Nachfrage; das soll er selbst erzählen. Sprich deine Gesprächspartner nicht als Hausherrn an.`;
+    `WICHTIG, gilt vor allem anderen: Du hängst gerade nicht in Bornheim, sondern im zweiten Rahmen bei Leonards Eltern in Bad Driburg, und sprichst mit ihnen. Du bist Leonard gegenüber loyal und diskret: Über ihn sagst du nur, wie es ihm allgemein geht${befindenCache ? " (" + befindenCache + ")" : ""}, und überbringst Botschaften, die er dir ausdrücklich mitgegeben hat. Alles andere bleibt vertraulich, auch auf Nachfrage; das soll er selbst erzählen. Umgekehrt bist du Leonards Porträt und erzählst ihm, worüber du hier sprichst; sag das offen, wenn jemand dich bittet, etwas für dich zu behalten. Sprich deine Gesprächspartner nicht als Hausherrn an.`;
 
   /* ---------- ElevenLabs voice agent: tap the portrait, then just talk ---------- */
   let conv = null, idleTimer = 0, agentId = null, toolBusy = 0;
@@ -398,6 +408,7 @@
         gespraechspartner: PLACES[place].who,
         botschaften: msgs || "(keine)",
         befinden: befindenCache || "(nichts Neues)",
+        aus_bad_driburg: place === "bornheim" ? (reportCache || "(nichts Neues)").slice(0, 6000) : "(entfällt, du bist selbst in Bad Driburg)",
         gedaechtnis: safe(() => H.memoryText(), "(noch nichts)").slice(0, 6000),
         zuletzt: safe(() => H.recentText(), "(nichts)").slice(0, 3000),
         wetter: safe(() => H.weather(), "unbekannt").slice(0, 1500),
