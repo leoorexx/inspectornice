@@ -365,7 +365,7 @@
     else world.get("presence").then((pr) => { if (pr && PLACES[pr.where] && pr.where !== place) claimPresence(); });
     start().catch(() => {
       window.albusSessionActive = false;
-      H.caption("Mikrofon oder Verbindung haben nicht geklappt. Tippe noch einmal ins Bild.");
+      H.caption("Albus' Stimme ist gerade nicht erreichbar. Entweder fehlt die Mikrofon-Freigabe, oder das ElevenLabs-Guthaben für diesen Monat ist aufgebraucht.");
       H.done();
     });
     return true;
