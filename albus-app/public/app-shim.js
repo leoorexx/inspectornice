@@ -148,6 +148,10 @@
 
   /* ---------- dictation: Safari / Chrome speech recognition ---------- */
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  // Safari's own dictation and the voice call must not fight over the microphone
+  const dictations = new Set();
+  function pauseDictation() { dictations.forEach((d) => { try { d._abort(); } catch {} }); }
+  function resumeDictation() { dictations.forEach((d) => { try { d._resume(); } catch {} }); }
   function makeDictation() {
     const partialL = new Set(), finalL = new Set(), stateL = new Set();
     let rec = null, wanted = false, state = "idle", restarts = 0, lastFinal = "";
@@ -174,14 +178,14 @@
         if (ev.error === "not-allowed" || ev.error === "service-not-allowed") { wanted = false; emitState("idle", "not_granted"); }
       };
       r.onend = () => {
-        if (wanted && restarts < 30) {
+        if (wanted && restarts < 30 && !window.albusSessionActive) {
           restarts++;
           setTimeout(() => { if (wanted) { try { r.start(); } catch { wanted = false; emitState("idle", "upstream_error"); } } }, 250);
         } else if (state !== "idle") emitState("idle", wanted ? "upstream_error" : "stopped");
       };
       return r;
     }
-    return {
+    const api_ = {
       start(opts) {
         if (wanted) return Promise.resolve();
         return new Promise((resolve, reject) => {
@@ -204,10 +208,14 @@
         try { rec.stop(); } catch {}
       },
       active() { return state !== "idle"; },
+      _abort() { if (rec && wanted) { try { rec.abort(); } catch {} } },
+      _resume() { if (rec && wanted) { try { rec.start(); } catch {} } },
       onPartial(f) { partialL.add(f); return () => partialL.delete(f); },
       onFinal(f) { finalL.add(f); return () => finalL.delete(f); },
       onState(f) { stateL.add(f); if (state !== "idle") f({ state }); return () => stateL.delete(f); },
     };
+    dictations.add(api_);
+    return api_;
   }
 
   /* ---------- db: documents on our server ---------- */
@@ -371,9 +379,11 @@
     return true;
 
     async function start() {
+    pauseDictation();
     const inbox = inboxCache.slice();
     const msgs = inbox.map((m) => `Botschaft aus ${PLACES[m.from] ? PLACES[m.from].name : "dem anderen Rahmen"} (${new Date(m.at).toLocaleDateString("de-DE", { weekday: "long", hour: "2-digit", minute: "2-digit" })}): ${m.text}`).join("\n");
-    const opener = inbox.length ? (place === "bornheim" ? "Bevor ich es vergesse: Ich habe eine Botschaft aus Bad Driburg für dich." : "Ich bringe eine Botschaft aus Frankfurt mit.") : "";
+    const hello = ["Ja?", "Ich höre.", "Was gibt es?", "Nur zu.", "Hier bin ich."];
+    const opener = inbox.length ? (place === "bornheim" ? "Bevor ich es vergesse: Ich habe eine Botschaft aus Bad Driburg für dich." : "Ich bringe eine Botschaft aus Frankfurt mit.") : hello[(Math.random() * hello.length) | 0];
     const pending = window.ElevenLabsClient.Conversation.startSession({
       agentId,
       overrides: opener ? { agent: { firstMessage: opener } } : undefined,
@@ -417,6 +427,7 @@
       onConnect: () => { bump(); lastTalk = Date.now(); },
       onDisconnect: () => {
         conv = null; window.albusSessionActive = false; window.albusMouthLevel = null; lastTalk = Date.now();
+        resumeDictation();
         // after a talk in the other frame he lingers a few minutes, then goes home
         if (place !== "bornheim") world.get("presence").then((pr) => {
           if (pr && pr.where === place) world.set("presence", { where: place, since: pr.since || Date.now(), until: Math.max(pr.until || 0, Date.now() + 5 * 60 * 1000) });
@@ -434,6 +445,15 @@
     const c = await pending;
     conv = c;
     markDelivered(inbox);
+    // if no sound at all reaches us from the microphone, say so instead of sitting there silently
+    let heardSomething = false;
+    const meter = setInterval(() => {
+      try { if (c.getInputVolume() > 0.02) heardSomething = true; } catch {}
+    }, 250);
+    setTimeout(() => {
+      clearInterval(meter);
+      if (conv === c && !heardSomething) H.caption("Ich höre dich nicht. Ist das Mikrofon erlaubt, und ist die App nicht noch in einem zweiten Tab oder auf einem anderen Gerät offen?");
+    }, 9000);
     window.albusMouthLevel = () => { try { return c.getOutputVolume(); } catch { return 0; } };
     }
   };
